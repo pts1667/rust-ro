@@ -119,14 +119,24 @@ pub struct StatusPointRaisingCost {
     pub raising_cost: u16,
 }
 
-#[derive(Deserialize, Debug, Setters, Clone)]
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
 pub struct DatabaseConfig {
-    pub db: String,
-    pub host: String,
-    pub port: u16,
-    pub username: String,
-    #[set]
-    pub password: Option<String>,
+    pub path: String,
+    pub items_path: String,
+    pub mobs_path: String,
+    pub seed_path: Option<String>,
+}
+
+impl Default for DatabaseConfig {
+    fn default() -> Self {
+        Self {
+            path: "db/sled".into(),
+            items_path: "config/items.json".into(),
+            mobs_path: "config/mobs.json".into(),
+            seed_path: Some("db/seed.json".into()),
+        }
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -777,12 +787,6 @@ impl Config {
             ));
         }
         let mut config: Config = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
-        match env::var("DATABASE_PASSWORD") {
-            Ok(password) => config.database.set_password(Some(password)),
-            Err(_) => {
-                return Err("DATABASE_PASSWORD env is missing. please provide this env".to_string());
-            }
-        }
 
         if config.server.log_level.is_some() {
             let log_level = config.server.log_level.as_ref().unwrap();

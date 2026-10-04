@@ -1,19 +1,15 @@
-use std::collections::HashSet;
-use std::sync::{Arc, Mutex, Once};
-use std::{env, fs, thread};
+use std::sync::{Arc, Once};
+use std::{fs, thread};
 
 use configuration::configuration::DatabaseConfig;
 use models::status::KnownSkill;
 use rathena_script_lang_interpreter::lang::vm::{DebugFlag, Vm};
-use testcontainers::RunnableImage;
-use testcontainers_modules::postgres::Postgres;
-use testcontainers_modules::testcontainers::clients::Cli;
 use tokio::runtime::Runtime;
 
 use crate::MAP_DIR;
+use crate::repository::SledRepository;
 use crate::repository::model::char_model::CharSelectModel;
 use crate::repository::model::mob_model::{MobModel, MobModels};
-use crate::repository::{CharacterRepository, PgRepository};
 use crate::server::Server;
 use crate::server::boot::map_loader::MapLoader;
 use crate::server::boot::mob_spawn_loader::MobSpawnLoader;
@@ -21,10 +17,8 @@ use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::GameEvent::CharacterJoinGame;
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::model::map::Map;
-use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::map_item::MapItems;
 use crate::server::model::status::StatusFromDb;
-use crate::server::script::ScriptGlobalVariableStore;
 use crate::server::state::character::Character;
 use crate::tests::common;
 use crate::tests::common::{CONFIGS, create_mpsc};
@@ -41,45 +35,14 @@ pub async fn before_all() -> Arc<Server> {
         let npc_script_vm = Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value()));
         let item_script_vm = Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value()));
 
-        let database_config = {
-            let docker_cli = Some(Cli::with_reuse());
-            let image = RunnableImage::from(Postgres::default())
-                .with_tag("15-alpine")
-                .with_volume((env::current_dir().unwrap().join("../db/pg.sql").to_str().unwrap(), "/db/pg.sql"))
-                .with_volume((
-                    env::current_dir()
-                        .unwrap()
-                        .join("../db/alter_itemdb_add_script_compilation_result_column.sql")
-                        .to_str()
-                        .unwrap(),
-                    "/db/alter_itemdb_add_script_compilation_result_column.sql",
-                ))
-                .with_volume((
-                    env::current_dir().unwrap().join("../db/test_account.sql").to_str().unwrap(),
-                    "/db/test_account.sql",
-                ))
-                .with_volume((
-                    env::current_dir()
-                        .unwrap()
-                        .join("../docker/volumes/create_role.sql")
-                        .to_str()
-                        .unwrap(),
-                    "/create_role.sql",
-                ))
-                .with_volume((
-                    env::current_dir().unwrap().join("../docker/volumes/init.sh").to_str().unwrap(),
-                    "/docker-entrypoint-initdb.d/init.sh",
-                ));
-            let node = docker_cli.as_ref().unwrap().run(image);
-            DatabaseConfig {
-                db: "ragnarok".to_string(),
-                host: "127.0.0.1".to_string(),
-                port: node.get_host_port_ipv4(5432),
-                username: "ragnarok".to_string(),
-                password: Some("ragnarok".to_string()),
-            }
+        let database_config = DatabaseConfig {
+            items_path: "../config/items.json".into(),
+            mobs_path: "../config/mobs.json".into(),
+            seed_path: Some("../db/seed.json".into()),
+            ..DatabaseConfig::default()
         };
-        let repository: PgRepository = PgRepository::new_pg_lazy(&database_config, runtime.clone());
+        let repository = SledRepository::temporary().unwrap();
+        repository.seed_assets(&database_config).unwrap();
         let repository_arc = Arc::new(repository);
         let mut map_item_ids = MapItems::default();
 
@@ -148,26 +111,19 @@ pub async fn character_join_game() -> u32 {
     let char_model: CharSelectModel = server.repository.character_fetch(2000000, 0).await.unwrap();
     let char_id = char_model.char_id as u32;
     let skills: Vec<KnownSkill> = server.repository.character_skills(char_id).await.unwrap();
-    let character = Character {
-        name: char_model.name.clone(),
+    let mut character = Character::new(
+        char_model.name.clone(),
         char_id,
-        status: StatusFromDb::from_char_model(&char_model, &server.configuration.game, skills),
-        loaded_from_client_side: true,
-        x: char_model.last_x as u16,
-        y: char_model.last_y as u16,
-        dir: 0,
-        movements: vec![],
-        attack: None,
-        skill_in_use: None,
-        inventory: vec![],
-        map_view: HashSet::new(),
-        script_variable_store: Mutex::new(ScriptGlobalVariableStore::default()),
-        account_id: char_model.account_id as u32,
-        map_instance_key: MapInstanceKey::new("prt_fild09".to_string(), 0),
-        last_moved_at: 0,
-        hotkeys: vec![],
-        sex: 1,
-    };
+        char_model.account_id as u32,
+        StatusFromDb::from_char_model(&char_model, &server.configuration.game, skills),
+        char_model.last_x as u16,
+        char_model.last_y as u16,
+        0,
+        "prt_fild09".into(),
+        1,
+        vec![],
+    );
+    character.loaded_from_client_side = true;
     server.state_mut().insert_character(character);
     let character = server.state().get_character_unsafe(char_id);
     server.add_to_next_tick(CharacterJoinGame(character.char_id));

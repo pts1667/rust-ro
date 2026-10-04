@@ -26,7 +26,7 @@ impl Server {
                     }
                     PersistenceEvent::UpdateCharacterStatusU32(status_update) => {
                         repository
-                            .character_update_status(status_update.char_id, status_update.db_column, status_update.value)
+                            .character_update_status(status_update.char_id, status_update.field, status_update.value)
                             .await
                             .unwrap();
                     }

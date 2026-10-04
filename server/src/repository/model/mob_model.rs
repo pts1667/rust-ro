@@ -1,9 +1,7 @@
-use models::enums::{EnumWithMaskValueU32, EnumWithStringValue};
+use models::enums::EnumWithStringValue;
 use models::enums::element::Element;
-use models::enums::mob::{MobMode, MobRace};
+use models::enums::mob::MobRace;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgRow;
-use sqlx::{Error, FromRow, Row};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MobModels {
@@ -105,80 +103,5 @@ impl Default for MobModel {
             mvp_drops: Default::default(),
             size: "Medium".to_string(),
         }
-    }
-}
-
-impl<'r> FromRow<'r, PgRow> for MobModel {
-    fn from_row(row: &'r PgRow) -> Result<Self, Error> {
-        let mut model = MobModel::default();
-        model.set_id(row.get::<i32, _>("id"));
-        model.set_name(row.get("name_aegis"));
-        model.set_name_english(row.get("name_english"));
-        model.set_level(row.try_get::<i32, _>("level").unwrap_or(0));
-        model.set_hp(row.try_get::<i32, _>("hp").unwrap_or(0));
-        model.set_sp(row.try_get::<i32, _>("sp").unwrap_or(0));
-        model.set_exp(row.try_get::<i32, _>("base_exp").unwrap_or(0));
-        model.set_job_exp(row.try_get::<i32, _>("job_exp").unwrap_or(0));
-        model.set_range1(row.try_get::<i16, _>("attack_range").unwrap_or(0));
-        model.set_range2(row.try_get::<i16, _>("skill_range").unwrap_or(0));
-        model.set_range3(row.try_get::<i16, _>("chase_range").unwrap_or(0));
-        model.set_atk1(row.try_get::<i32, _>("attack").unwrap_or(0));
-        model.set_atk2(row.try_get::<i32, _>("attack2").unwrap_or(0));
-        model.set_def(row.try_get::<i32, _>("defense").unwrap_or(0));
-        model.set_mdef(row.try_get::<i32, _>("magic_defense").unwrap_or(0));
-        model.set_str(row.try_get::<i32, _>("str").unwrap_or(1));
-        model.set_agi(row.try_get::<i32, _>("agi").unwrap_or(1));
-        model.set_vit(row.try_get::<i32, _>("vit").unwrap_or(1));
-        model.set_int(row.try_get::<i32, _>("int").unwrap_or(1));
-        model.set_dex(row.try_get::<i32, _>("dex").unwrap_or(1));
-        model.set_luk(row.try_get::<i32, _>("luk").unwrap_or(1));
-        model.set_scale(row.try_get::<i16, _>("size").unwrap_or(0));
-        model.set_race(row.get("race"));
-        model.set_element(row.get("element"));
-        model.set_element_level(row.try_get::<i16, _>("element_level").unwrap_or(0) as i8);
-        let ai_type = row
-            .try_get::<String, _>("ai")
-            .ok()
-            .and_then(|s| s.parse::<i32>().ok())
-            .unwrap_or(1);
-        let mode = MobMode::from_ai_type(ai_type);
-        model.set_mode(mode as i16);
-        model.set_speed(row.try_get::<i32, _>("walk_speed").unwrap_or(0));
-        model.set_atk_delay(row.try_get::<i32, _>("attack_delay").unwrap_or(0));
-        model.set_atk_motion(row.try_get::<i32, _>("attack_motion").unwrap_or(0));
-        model.set_damage_motion(row.try_get::<i32, _>("damage_motion").unwrap_or(0));
-        model.set_size(row.get("size"));
-        let mut drops = vec![];
-        let mut mvp_drops = vec![];
-        let _card: Option<Drop> = None;
-        for i in 1..=10 {
-            if let Ok(item_name) = row.try_get::<String, _>(format!("drop{i}_item").as_str()) {
-                let drop = Drop {
-                    item_name: item_name.clone(),
-                    is_card: item_name.to_lowercase().ends_with("card"),
-                    item_id: row.get::<i32, _>(format!("drop{i}_itemid").as_str()),
-                    rate: row.get::<i32, _>(format!("drop{i}_rate").as_str()) as u16,
-                };
-                drops.push(drop)
-            } else {
-                break;
-            }
-        }
-        for i in 1..=3 {
-            if let Ok(item_name) = row.try_get::<String, _>(format!("mvpdrop{i}_item").as_str()) {
-                let drop = Drop {
-                    item_name,
-                    is_card: false,
-                    item_id: row.get::<i32, _>(format!("mvpdrop{i}_itemid").as_str()),
-                    rate: row.get::<i32, _>(format!("mvpdrop{i}_rate").as_str()) as u16,
-                };
-                mvp_drops.push(drop)
-            } else {
-                break;
-            }
-        }
-        model.set_drops(drops);
-        model.set_mvp_drops(mvp_drops);
-        Ok(model)
     }
 }

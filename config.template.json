@@ -11,10 +11,10 @@
     "port": 6901
   },
   "database": {
-    "db": "ragnarok",
-    "host": "localhost",
-    "port": 5433,
-    "username": "ragnarok"
+    "path": "db/sled",
+    "items_path": "config/items.json",
+    "mobs_path": "config/mobs.json",
+    "seed_path": "db/seed.json"
   },
   "game": {
     "default_char_speed": 150,

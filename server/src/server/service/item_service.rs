@@ -111,7 +111,7 @@ impl ItemService {
                                 char_id: character.char_id as i32,
                                 item_inventory_id,
                                 unique_id: item_unique_id,
-                                amount: remaining_item as i16,
+                                amount_to_remove: 1,
                             }))
                             .expect("Failed to send delete item event");
                         packet_zc_use_item_ack.set_count(remaining_item as i16);

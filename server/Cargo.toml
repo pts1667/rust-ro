@@ -13,8 +13,7 @@ fastmurmur3 = {workspace = true}
 regex-lite = {workspace = true}
 tokio = {workspace = true}
 futures = {workspace = true}
-sqlx = {workspace = true}
-sqlx-macros-core = {workspace = true}
+sled = {workspace = true}
 tracing = {workspace = true}
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 rand = {workspace = true}
@@ -29,8 +28,6 @@ winit = {version = "0.30.8", default-features = false, optional = true}
 sprintf = "0.1.4"
 async-trait = "0.1.74"
 
-testcontainers = {  version= "0.15.0" , optional = true }
-testcontainers-modules = { version = "0.2.1", features = ["postgres"], optional = true  }
 
 rathena_script_lang_interpreter = { git = "https://github.com/nmeylan/rathena-script-lang-interpreter", rev = "c856050"}
 
@@ -38,7 +35,7 @@ configuration = { path = "../lib/configuration" }
 accessor = { path = "../lib/accessor" }
 metrics = { path = "../lib/metrics" }
 packets = { path = "../lib/packets" }
-sql = { path = "../lib/sql" }
+database = { path = "../lib/database" }
 skills = { path = "../lib/skills" }
 map-cache = { path = "../lib/map-cache" }
 models = { path = "../lib/models" }
@@ -58,5 +55,5 @@ visual_debugger = ["eframe", "winit"]
 static_db_update = []
 debug_movement = []
 debug_mob_movement = []
-integration_tests = ["testcontainers", "testcontainers-modules"]
+integration_tests = []
 unit_tests = []

@@ -8,7 +8,7 @@ note top of service: A service can:\n- Mutate received state. \n- Notify client 
 [Client notification] as response
 [Persistence notification] as persistence
 [Repository] as repository
-database Postgresql as database
+database sled as database
 mutin <- service
 mutin -> service
 service ..> response

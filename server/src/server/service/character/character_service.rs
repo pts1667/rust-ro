@@ -1,20 +1,20 @@
 use std::collections::HashSet;
 use std::io;
 use std::io::Write;
-use std::sync::mpsc::SyncSender;
 use std::sync::Arc;
+use std::sync::mpsc::SyncSender;
 
 use futures::task::Spawn;
+use models::enums::EnumWithNumberValue;
 use models::enums::action::ActionType;
-use models::enums::class::{JobName, JOB_BASE_MASK};
+use models::enums::class::{JOB_BASE_MASK, JobName};
 use models::enums::client_effect_icon::ClientEffectIcon;
 use models::enums::effect::Effect;
 use models::enums::look::LookType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::status::StatusTypes;
-use models::enums::EnumWithNumberValue;
-use movement::position::Position;
 use models::status::{KnownSkill, Status, StatusSnapshot};
+use movement::position::Position;
 use packets::packets::{
     Packet, PacketZcAttackRange, PacketZcItemDisappear, PacketZcItemEntry, PacketZcLongparChange, PacketZcMsgStateChange,
     PacketZcMsgStateChange2, PacketZcNotifyAct, PacketZcNotifyEffect, PacketZcNotifyMove, PacketZcNotifyPlayermove,
@@ -23,8 +23,9 @@ use packets::packets::{
 };
 use tokio::runtime::Runtime;
 
-use crate::repository::model::item_model::InventoryItemModel;
 use crate::repository::CharacterRepository;
+use crate::repository::model::item_model::InventoryItemModel;
+use crate::server::PLAYER_FOV;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, GameEvent};
 use crate::server::model::events::map_event::{MapEvent, MobDropItems};
@@ -44,7 +45,6 @@ use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::server::ServerState;
-use crate::server::PLAYER_FOV;
 use crate::util::packet::chain_packets;
 use crate::util::string::StringUtil;
 use crate::util::tick::{get_tick, get_tick_client};
@@ -185,13 +185,13 @@ impl CharacterService {
     }
 
     pub fn change_look(&self, character_look: CharacterLook, character: &mut Character) {
-        let db_column = character.change_look(character_look.look_type, character_look.look_value);
-        if let Some(db_column) = db_column {
+        let field = character.change_look(character_look.look_type, character_look.look_value);
+        if let Some(field) = field {
             self.change_sprite(character, character_look.look_type, character_look.look_value, 0);
             self.persistence_event_sender
                 .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                     char_id: character_look.char_id,
-                    db_column,
+                    field,
                     value: character_look.look_value as u32,
                 }))
                 .expect("Fail to send persistence notification");
@@ -229,7 +229,7 @@ impl CharacterService {
                 .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                     char_id: zeny_update.char_id,
                     value: zeny,
-                    db_column: "zeny".to_string(),
+                    field: "zeny".to_string(),
                 }))
                 .expect("Fail to send persistence notification");
             zeny
@@ -274,11 +274,13 @@ impl CharacterService {
             .unwrap_or_else(|_| error!("Failed to send notification packet_status_change(status update) to client"));
     }
 
-    /// Apply damage to character and send HP update. Returns true if character died.
-    /// TODO damage should be an enum we should now attack kind (physical, magic, range, etc) and element
+    /// Apply damage to character and send HP update. Returns true if character
+    /// died. TODO damage should be an enum we should now attack kind
+    /// (physical, magic, range, etc) and element
     pub fn take_damage(&self, character: &mut Character, damage: u32) -> bool {
         let current_hp = character.status.hp();
-        // TODO this is very simplistic, we should use status snapshot to calculate actual damage
+        // TODO this is very simplistic, we should use status snapshot to calculate
+        // actual damage
         let new_hp = if damage >= current_hp { 0 } else { current_hp - damage };
         character.status.set_hp(new_hp);
 
@@ -533,7 +535,7 @@ impl CharacterService {
         self.persistence_event_sender
             .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "class".to_string(),
+                field: "class".to_string(),
                 value: character.status.job,
             }))
             .expect("Fail to send persistence notification");
@@ -691,7 +693,7 @@ impl CharacterService {
         self.persistence_event_sender
             .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: status_type
+                field: status_type
                     .to_column()
                     .unwrap_or_else(|| panic!("no db column name for status of type {status_type:?}"))
                     .to_string(),
@@ -701,7 +703,7 @@ impl CharacterService {
         self.persistence_event_sender
             .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "status_point".to_string(),
+                field: "status_point".to_string(),
                 value: character.status.status_point,
             }))
             .expect("Fail to send persistence notification");
@@ -854,7 +856,7 @@ impl CharacterService {
             self.persistence_event_sender
                 .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                     char_id: character.char_id,
-                    db_column: column_name.to_string(),
+                    field: column_name.to_string(),
                     value: 1,
                 }))
                 .expect("Fail to send persistence notification");
@@ -1446,7 +1448,7 @@ impl CharacterService {
         self.persistence_event_sender
             .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id,
-                db_column: status_type
+                field: status_type
                     .to_column()
                     .unwrap_or_else(|| panic!("no db column name for status of type {status_type:?}"))
                     .to_string(),

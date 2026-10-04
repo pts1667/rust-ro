@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides repository guidance to Codex and other coding agents.
 
 ## Development Commands
 
@@ -9,8 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build in release mode (optimized)
 cargo build --release
 
-# Run the server with its embedded sled database
-cargo run --package server --bin server
+# Run the server (requires DATABASE_PASSWORD environment variable)
+DATABASE_PASSWORD=ragnarok cargo run --package server --bin server
 
 # Run with visual debugger (requires visual_debugger feature)
 cargo run --package server --bin server --features visual_debugger
@@ -21,7 +21,7 @@ cargo run --package server --bin server --features visual_debugger
 # Run all tests
 cargo test --release
 
-# Run integration tests (uses temporary sled databases)
+# Run integration tests (requires running PostgreSQL database)
 cargo test --features integration_tests
 
 # Run unit tests only
@@ -57,7 +57,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/`: Core server implementation
 - `server/src/server/boot/`: Server initialization (map loading, script compilation, etc.)
 - `server/src/server/service/`: Business logic layer (character, battle, inventory, etc.)
-- `server/src/server/repository/`: Data access layer with sled integration
+- `server/src/server/repository/`: Data access layer with PostgreSQL integration
 - `server/src/server/request_handler/`: Packet handling controllers
 - `server/src/server/script/`: Integration with rAthena script virtual machine
 - `server/src/server/state/`: Game state management (characters, maps, mobs)
@@ -69,7 +69,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/model/events/game_event.rs`: Contains enumeration of game event, that are handled by the game loop. It is used for message passing between request handler thread and game loop.
 - `server/src/server/model/events/client_notification.rs`: Enumeration for sending packet to the client
 - `server/src/server/state/server.rs`: Access to server state, access should only be done from game loop, state can be accessed for mutability in an unsafe way, thus it is mandatory to access it only from main game loop
-- `/src/repository/`: data access layer, implemented with sled key/value storage and transactions.
+- `/src/repository/`: data access layer, this is the implementation of database interaction using `sqlx`, we write mainly raw SQL with prepared statement.
 - `/src/tests/`: unit and integration test of the server
 - `lib/`: crate for specific logic implementation
   - `lib/configuration`: Structure for configuration the server. This is where configuration entry should be added 
@@ -78,7 +78,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
   - `lib/skills`: Structures containing implementation of all class skills
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)
-- Embedded sled database for persistent data (accounts, characters, etc.)
+- PostgreSQL database for persistent data (accounts, characters, etc.)
 
 ### Sending packet to the client
 - All services have an instance of `client_notification_sender: SyncSender<Notification>,` in their structure
@@ -92,6 +92,8 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 ## Files to read or to avoid
 ### Read
 **Only read** files and directory listed in **Major modules** section, if file or directory path does not start with ones listed in Major modules section, ignore them
+
+Task-specific exceptions: read applicable `AGENTS.md` files and relevant `.agents/skills/` instructions. When using `$feature`, also read the task file supplied by the user under `doc/tasks/`. When using `$ragnarok-pre-renewal-research`, also read relevant pre-renewal documentation and source files under `../rathena/doc` and `../rathena`.
 
 ### Avoid
 Never read files/directory belows because they are too big
@@ -148,3 +150,21 @@ let mode = MobMode::CanMove.as_flag() | MobMode::CanAttack.as_flag();
 // Bad - never do this
 let mode = 0x81;
 ```
+
+## Comment Policy
+
+Apply this policy to new Rust comments:
+
+- Prefer descriptive names and clear code over comments explaining what the code does.
+- Add concise comments only when they explain why the code is written this way.
+- Avoid comments that repeat the code or describe obvious operations.
+- Do not delete existing comments just because they do not follow this policy.
+
+## Codex Skills
+
+Repository skills live in `.agents/skills/`:
+
+- `$feature <task-file>`: read `doc/tasks/<task-file>` and produce an implementation plan grounded in existing code. Instructions: [.agents/skills/feature/SKILL.md](.agents/skills/feature/SKILL.md).
+- `$ragnarok-pre-renewal-research <question>`: research pre-renewal mechanics using local rAthena references and the approved web sources. Instructions: [.agents/skills/ragnarok-pre-renewal-research/SKILL.md](.agents/skills/ragnarok-pre-renewal-research/SKILL.md).
+
+These skills replace the Claude `/feature` command and game mechanics research skill for Codex. The Rust comment rule is included above. Keep Claude's configuration in `.claude/` for Claude Code.

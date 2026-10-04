@@ -5,18 +5,15 @@ pub mod item_repository;
 mod login_repository;
 pub mod mob_repository;
 pub mod model;
-pub mod persistence_error;
 pub mod script_variable_repository;
-
-use std::sync::Arc;
-use std::time::Duration;
+#[cfg(test)]
+mod tests;
 
 use async_trait::async_trait;
 use configuration::configuration::DatabaseConfig;
+use database::Database;
+pub use database::DatabaseError as Error;
 use models::status::{KnownSkill, Status, StatusSnapshot};
-use sqlx::postgres::{PgPoolOptions, PgQueryResult};
-use sqlx::{Error, PgPool};
-use tokio::runtime::Runtime;
 
 use crate::repository::model::char_model::{CharInsertModel, CharSelectModel, CharacterInfoNeoUnionWrapped};
 use crate::repository::model::item_model::{GetItemModel, InventoryItemModel, ItemBuySellModel, ItemModel};
@@ -26,46 +23,24 @@ use crate::server::model::events::persistence_event::{DeleteItems, InventoryItem
 use crate::server::model::hotkey::Hotkey;
 use crate::server::script::Value;
 
-pub struct PgRepository {
-    pub pool: PgPool,
-    pub runtime: Arc<Runtime>,
+pub struct SledRepository {
+    pub database: Database,
 }
 
-impl PgRepository {
-    fn pool_options() -> PgPoolOptions {
-        PgPoolOptions::new()
-            .min_connections(10)
-            .max_connections(10)
-            .idle_timeout(Some(Duration::from_secs(60 * 60)))
-            .max_lifetime(Some(Duration::from_secs(120 * 60)))
-            .acquire_timeout(Duration::from_secs(5))
+impl SledRepository {
+    pub fn open(configuration: &DatabaseConfig) -> Result<Self, Error> {
+        let repository = Self {
+            database: Database::open(&configuration.path)?,
+        };
+        repository.seed_assets(configuration)?;
+        Ok(repository)
     }
 
-    pub async fn new_pg(configuration: &DatabaseConfig, runtime: Arc<Runtime>) -> PgRepository {
-        let connection_url = format!(
-            "postgresql://{}:{}@{}:{}/{}?keepalives=1&keepalives_idle=7200",
-            configuration.username,
-            configuration.password.as_ref().unwrap(),
-            configuration.host,
-            configuration.port,
-            configuration.db
-        );
-        let pool = Self::pool_options().connect(&connection_url).await.unwrap();
-        PgRepository { runtime, pool }
-    }
-
-    #[allow(dead_code)]
-    pub fn new_pg_lazy(configuration: &DatabaseConfig, runtime: Arc<Runtime>) -> PgRepository {
-        let connection_url = format!(
-            "postgresql://{}:{}@{}:{}/{}",
-            configuration.username,
-            configuration.password.as_ref().unwrap(),
-            configuration.host,
-            configuration.port,
-            configuration.db
-        );
-        let pool = Self::pool_options().connect_lazy(&connection_url).unwrap();
-        PgRepository { runtime, pool }
+    #[cfg(test)]
+    pub fn temporary() -> Result<Self, Error> {
+        Ok(Self {
+            database: Database::temporary()?,
+        })
     }
 }
 
@@ -82,7 +57,7 @@ pub trait Repository:
 {
 }
 
-impl Repository for PgRepository {}
+impl Repository for SledRepository {}
 
 #[async_trait]
 pub trait LoginRepository {
@@ -111,7 +86,7 @@ pub trait CharacterRepository {
     async fn character_save_position(&self, _char_id: u32, _map_name: String, _x: u16, _y: u16) -> Result<(), Error> {
         todo!()
     }
-    async fn character_update_status(&self, _char_id: u32, _db_column: String, _value: u32) -> Result<(), Error> {
+    async fn character_update_status(&self, _char_id: u32, _field: String, _value: u32) -> Result<(), Error> {
         todo!()
     }
     async fn character_zeny_fetch(&self, _char_id: u32) -> Result<i32, Error> {
@@ -137,8 +112,8 @@ pub trait CharacterRepository {
     }
     async fn characters_update(
         &self,
-        statuses: Vec<&Status>,
-        _statuses: Vec<StatusSnapshot>,
+        _statuses: Vec<&Status>,
+        _snapshots: Vec<StatusSnapshot>,
         _char_ids: Vec<i32>,
         _x: Vec<i16>,
         _y: Vec<i16>,
@@ -165,7 +140,11 @@ pub trait CharacterRepository {
 
 #[async_trait]
 pub trait InventoryRepository {
-    async fn character_inventory_update_add(&self, _inventory_update_items: &[InventoryItemUpdate], _buy: bool) -> Result<(), Error> {
+    async fn character_inventory_update_add(
+        &self,
+        _inventory_update_items: &[InventoryItemUpdate],
+        _buy: bool,
+    ) -> Result<Vec<InventoryItemModel>, Error> {
         todo!()
     }
     async fn character_inventory_update_remove(
@@ -175,13 +154,13 @@ pub trait InventoryRepository {
     ) -> Result<(), Error> {
         todo!()
     }
-    async fn character_inventory_delete(&self, _delete_items: DeleteItems) -> Result<PgQueryResult, Error> {
+    async fn character_inventory_delete(&self, _delete_items: DeleteItems) -> Result<(), Error> {
         todo!()
     }
     async fn character_inventory_fetch(&self, _char_id: i32) -> Result<Vec<InventoryItemModel>, Error> {
         todo!()
     }
-    async fn character_inventory_wearable_item_update(&self, _items: Vec<InventoryItemModel>) -> Result<PgQueryResult, Error> {
+    async fn character_inventory_wearable_item_update(&self, _items: Vec<InventoryItemModel>) -> Result<(), Error> {
         todo!()
     }
     async fn character_slot_card(

@@ -76,8 +76,8 @@ node "Repository layer" as repositories {
     [InventoryService]
 }
 '
-repositories --> "Postgresql"
-database "Postgresql" {
+repositories --> "sled"
+database "sled" {
 
 }
 

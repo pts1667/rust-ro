@@ -10,7 +10,7 @@ This project does **not** aim to compete with [herculesWS](https://github.com/He
 
 Although the architecture and technical decision of this project are very different than **rathena** or **hercules**, both projects are still a source of inspiration and remain source of truth for game behavior.
 
-In addition, this project kept some concept of existing implementations: for example this project support same scripting language for NPC meaning that existing scripts should work on this implementation and use the same database structure than rathena and some naming convention were kept.
+In addition, this project kept some concept of existing implementations: for example this project support same scripting language for NPC meaning that existing scripts should work on this implementation and keeps familiar game data names while storing persistent state in sled.
 
 Architecture and technical decision are documented [here](/doc/adr)
 
@@ -65,7 +65,6 @@ To understand what is going on at this project, check the [architectures notes](
 
 Here's a list of **pre-requisites** to run rust-ro:
 
-* Docker OR PostgreSQL 12+ directly on your machine 
 * Rust - nighly build
 
 ### 5.1 Config
@@ -82,55 +81,53 @@ Inside this JSON, you will find **database related variables**, **game related v
 
 ### 5.2 Database
 
-The entire database structure was based on **rAthena** but instead of using MySQL, we decided to go with PostgreSQL. There's minor modifications so far but until we mapped some **constraints**. 
+The server uses the embedded Rust database [sled](https://github.com/spacejam/sled). No separate database service is required.
 
-The choice to use Postgresql instead of MySQL was mainly motivated because I know better how to operate Postgresql than MySQL, and know better how Postgresql (mvcc) works internally.
-In addition past years Postgresql gained more traction than MySQL and its open source model 
+The database configuration specifies local paths:
 
-#### 5.2.1 Setup Database - Using Docker
-
-If you already have **Docker** installed in your machine, we prepared a **docker-compose.yml** with all configs ready for your ragnarok server.
-
-Go to */docker* and run:
-```shell
-docker-compose up -d
+```json
+"database": {
+  "path": "db/sled",
+  "items_path": "config/items.json",
+  "mobs_path": "config/mobs.json",
+  "seed_path": "db/seed.json"
+}
 ```
 
-The first time, along with postgresql `initdb` is run, our custom script `init.sh` will be execute, it will create `ragnarok` database and create `ragnarok` user using `postgres` user. Then it will create ragnarok table using `ragnarok` user.
+Paths are relative to the working directory. On the first start, the server creates the database, imports the item and monster catalogs, and imports the account, character, inventory, and skill records from `db/seed.json`. Catalog and account seeding runs once for each database directory. Set `seed_path` to `null` to create a database without the example account. Item script source and compiled bytecode are stored together.
 
-It comes with a default player account with following credentials: `admin/qwertz`
+The example account is `admin/qwertz`, with account ID `2000000`. Its inventory and skills are included in the seed file.
 
-#### 5.2.1 Setup Database - From binary
+Writes use sled transactions, including transactions spanning records and indexes in multiple trees. The application makes no explicit flush calls; sled performs background syncing. Transaction atomicity does not guarantee that the latest committed changes survive a power loss before background syncing completes.
 
-If you have PostgreSQL installed in your machine, you will need to log-in into PSQL and create the user, dabase and give the necessary privilege for it:
-
-```shell
-sudo -u postgres psql
-```
-
-Run the queries below: 
-
-```sql 
-CREATE USER ragnarok WITH PASSWORD 'ragnarok';
-CREATE DATABASE ragnarok;
-GRANT ALL PRIVILEGES ON DATABASE ragnarok TO ragnarok;
-ALTER DATABASE ragnarok OWNER TO ragnarok;
-```
-
-After that, exit pgsql and import our `/rust-ro/db/pg.sql` via cli with:
+Stop the server before using the account setup tool, because sled allows one process to open a database directory at a time:
 
 ```shell
- sudo -u postgres psql -U ragnarok ragnarok < db/pg.sql
+cargo run --package tools --bin account-setup -- seed
 ```
+
+To provision another account, set `ACCOUNT_PASSWORD` and run:
+
+```shell
+cargo run --package tools --bin account-setup -- create player
+```
+
+Add the resulting account ID to `server.accounts` in `config.json`. The tool also supports `seed FILE` for a custom seed file and `characters FILE` for character presets. Existing records are preserved by default; pass `--replace` to replace the supplied records.
 
 ### 5.3 Running the Server
 
-After we have everyting set-up (binaries and database), we should run server binary to turn on **rust-ro**.
-
-To run the `server` binary, you will need a `ENV` variable called `DATABASE_PASSWORD` together with your command:
+Run from the repository root:
 
 ```shell
-DATABASE_PASSWORD=ragnarok cargo run --package server --bin server
+cargo run --package server --bin server
+```
+
+Integration tests use temporary sled databases and require no database service:
+
+```shell
+cargo test --package server --bin server --features unit_tests
+cargo test --package server --bin server --features integration_tests
+cargo test --package database
 ```
 
 If everything goes right, you should receive something like this output:

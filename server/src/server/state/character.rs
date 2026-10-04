@@ -1,13 +1,13 @@
 use std::collections::HashSet;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use accessor::Setters;
 use models::enums::item::ItemType;
 use models::enums::look::LookType;
 use models::item::EquippedItem;
-use movement::position::Position;
 use models::status::Status;
+use movement::position::Position;
 use skills::Skill;
 
 use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
@@ -69,15 +69,9 @@ pub enum CharacterAction {
     /// Character is moving
     Moving,
     /// Character is attacking a target
-    Attacking {
-        target_id: u32,
-        repeat: bool,
-    },
+    Attacking { target_id: u32, repeat: bool },
     /// Character is casting/using a skill
-    UsingSkill {
-        target_id: Option<u32>,
-        skill_id: u32,
-    },
+    UsingSkill { target_id: Option<u32>, skill_id: u32 },
     /// Character is sitting
     Sitting,
     /// Character is dead
@@ -299,7 +293,8 @@ impl Character {
         self.pending_skill.as_ref().unwrap()
     }
 
-    /// Check if character can move at the given tick (atomic check for movement thread)
+    /// Check if character can move at the given tick (atomic check for movement
+    /// thread)
     pub fn can_move(&self, tick: u128) -> bool {
         tick >= self.timing.get_canmove_tick()
     }
@@ -474,7 +469,7 @@ impl Character {
             error!("Character has no look");
             return None;
         }
-        let db_column = match look {
+        let field = match look {
             LookType::Hair => {
                 self.status.look.as_mut().unwrap().hair = value;
                 "hair"
@@ -517,7 +512,7 @@ impl Character {
             }
             _ => "shoes",
         };
-        Some(db_column.to_string())
+        Some(field.to_string())
     }
 
     pub fn get_zeny(&self) -> u32 {

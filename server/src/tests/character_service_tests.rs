@@ -15,7 +15,7 @@ use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{create_mpsc, test_script_vm, TestContext};
+use crate::tests::common::{TestContext, create_mpsc, test_script_vm};
 
 struct CharacterServiceTestContext {
     test_context: TestContext,
@@ -66,9 +66,9 @@ fn before_each_with_latch(character_repository: Arc<dyn CharacterRepository + Sy
 #[cfg(test)]
 #[cfg(not(feature = "integration_tests"))]
 mod tests {
+    use std::sync::Arc;
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::Ordering::Relaxed;
-    use std::sync::Arc;
     use std::time::Duration;
 
     use async_trait::async_trait;
@@ -77,15 +77,14 @@ mod tests {
     use models::enums::skill_enums::SkillEnum;
     use models::enums::status::StatusTypes;
     use models::enums::{EnumWithNumberValue, EnumWithStringValue};
-    use movement::position::Position;
     use models::status::KnownSkill;
+    use movement::position::Position;
     use packets::packets::{
         PacketZcLongparChange, PacketZcNotifyEffect, PacketZcParChange, PacketZcSkillinfoList, PacketZcSpriteChange2,
         PacketZcStatusChangeAck,
     };
-    use sqlx::Error;
 
-    use crate::repository::CharacterRepository;
+    use crate::repository::{CharacterRepository, Error};
     use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny};
     use crate::server::model::events::map_event::{MapEvent, MobDropItems};
     use crate::server::model::events::persistence_event::{
@@ -95,10 +94,10 @@ mod tests {
     use crate::server::model::movement::Movement;
     use crate::server::model::tasks_queue::TasksQueue;
     use crate::server::service::global_config_service::GlobalConfigService;
-    use crate::tests::character_service_tests::{before_each, GameEvent};
+    use crate::tests::character_service_tests::{GameEvent, before_each};
     use crate::tests::common::assert_helper::{
-        has_sent_notification, has_sent_persistence_event, task_queue_contains_event, task_queue_contains_event_at_tick, NotificationExpectation,
-        SentPacket,
+        NotificationExpectation, SentPacket, has_sent_notification, has_sent_persistence_event, task_queue_contains_event,
+        task_queue_contains_event_at_tick,
     };
     use crate::tests::common::character_helper::{add_items_in_inventory, create_character};
     use crate::tests::common::map_instance_helper::create_empty_map_instance;
@@ -282,7 +281,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "hair".to_string(),
+                field: "hair".to_string(),
                 value: 10,
             })
         );
@@ -356,7 +355,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "zeny".to_string(),
+                field: "zeny".to_string(),
                 value: 100,
             })
         );
@@ -474,7 +473,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "base_level".to_string(),
+                field: "base_level".to_string(),
                 value: 78,
             })
         );
@@ -482,7 +481,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "status_point".to_string(),
+                field: "status_point".to_string(),
                 value: 849,
             })
         );
@@ -834,7 +833,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "job_level".to_string(),
+                field: "job_level".to_string(),
                 value: 68,
             })
         );
@@ -842,7 +841,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "skill_point".to_string(),
+                field: "skill_point".to_string(),
                 value: 67,
             })
         );
@@ -1300,7 +1299,7 @@ mod tests {
                 context,
                 PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                     char_id: character.char_id,
-                    db_column: "skill_point".to_string(),
+                    field: "skill_point".to_string(),
                     value: character.status.skill_point,
                 })
             );
@@ -1338,7 +1337,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "class".to_string(),
+                field: "class".to_string(),
                 value: JobName::Assassin.value() as u32,
             })
         );
@@ -1986,7 +1985,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "status_point".to_string(),
+                field: "status_point".to_string(),
                 value: 10,
             })
         );
@@ -2014,7 +2013,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "status_point".to_string(),
+                field: "status_point".to_string(),
                 value: character.status.status_point,
             })
         );
@@ -2022,7 +2021,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "str".to_string(),
+                field: "str".to_string(),
                 value: 1,
             })
         );
@@ -2030,7 +2029,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "agi".to_string(),
+                field: "agi".to_string(),
                 value: 1,
             })
         );
@@ -2038,7 +2037,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "dex".to_string(),
+                field: "dex".to_string(),
                 value: 1,
             })
         );
@@ -2046,7 +2045,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "vit".to_string(),
+                field: "vit".to_string(),
                 value: 1,
             })
         );
@@ -2054,7 +2053,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "int".to_string(),
+                field: "int".to_string(),
                 value: 1,
             })
         );
@@ -2062,7 +2061,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "luk".to_string(),
+                field: "luk".to_string(),
                 value: 1,
             })
         );
@@ -2166,7 +2165,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "skill_point".to_string(),
+                field: "skill_point".to_string(),
                 value: character.status.skill_point,
             })
         );
@@ -2402,7 +2401,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "status_point".to_string(),
+                field: "status_point".to_string(),
                 value: character.status.status_point,
             })
         );
@@ -2410,7 +2409,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "str".to_string(),
+                field: "str".to_string(),
                 value: 99,
             })
         );
@@ -2453,7 +2452,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id as u32,
-                db_column: "skill_point".to_string(),
+                field: "skill_point".to_string(),
                 value: 0,
             })
         );
@@ -2518,7 +2517,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "base_exp".to_string(),
+                field: "base_exp".to_string(),
                 value: character.status.base_exp,
             })
         );
@@ -2649,7 +2648,7 @@ mod tests {
             context,
             PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,
-                db_column: "job_exp".to_string(),
+                field: "job_exp".to_string(),
                 value: character.status.job_exp,
             })
         );

@@ -63,24 +63,24 @@ impl InventoryService {
             .items
             .iter()
             .map(|item| {
-                if item.item_type().is_stackable() {
-                    InventoryItemUpdate {
-                        char_id: add_items.char_id as i32,
-                        item_id: item.item_id,
-                        amount: item.amount,
-                        stackable: true,
-                        identified: item.is_identified,
-                        unique_id: 0,
-                    }
+                let stackable = item.item_type().is_stackable();
+                let unique_id = if stackable {
+                    0
+                } else if item.unique_id != 0 {
+                    item.unique_id
                 } else {
-                    InventoryItemUpdate {
-                        char_id: add_items.char_id as i32,
-                        item_id: item.item_id,
-                        amount: item.amount,
-                        stackable: false,
-                        identified: item.is_identified,
-                        unique_id: rng.next_u32() as i64,
-                    }
+                    i64::from(rng.next_u32().max(1))
+                };
+                InventoryItemUpdate {
+                    char_id: add_items.char_id as i32,
+                    item_id: item.item_id,
+                    amount: item.amount,
+                    stackable,
+                    identified: item.is_identified,
+                    unique_id,
+                    refine: item.refine,
+                    damaged: item.is_damaged,
+                    cards: [item.card0, item.card1, item.card2, item.card3],
                 }
             })
             .collect();
@@ -90,9 +90,9 @@ impl InventoryService {
                 .character_inventory_update_add(&inventory_item_updates, add_items.buy)
                 .await
         });
-        if result.is_ok() {
+        if let Ok(added_items) = result {
             let mut packets = vec![];
-            character.add_items(add_items.items).iter().for_each(|(index, item)| {
+            character.add_items(added_items).iter().for_each(|(index, item)| {
                 let item_info = self.configuration_service.get_item(item.item_id);
                 let mut packet_zc_item_pickup_ack3 = PacketZcItemPickupAck3::new(self.configuration_service.packetver());
                 packet_zc_item_pickup_ack3.set_itid(item.item_id as u16);
@@ -764,7 +764,8 @@ impl InventoryService {
         packet_zc_ack_item_composition.set_equip_index(slot_card_args.equip_index as i16);
         match result {
             Ok(slot_index) => {
-                self.remove_single_item_from_inventory(runtime, slot_card_args.card_index, character, false);
+                character.del_item_from_inventory(slot_card_args.card_index, 1);
+                self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
                 if let Some(equipment) = character.inventory.get_mut(slot_card_args.equip_index) {
                     if let Some(equipment) = equipment {
                         equipment.set_card_at(slot_index as usize, card.item_id as i16);

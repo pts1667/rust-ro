@@ -5,6 +5,7 @@
 config.json
 .stignore
 .stfolder
+/db/sled/
 /docker/volumes/pgdata/
 tools/stat-calc/node_modules/
 dep.graph

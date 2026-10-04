@@ -1,330 +1,146 @@
-use sqlx::Error;
+use std::collections::BTreeMap;
 
-use crate::repository::model::script_variable_registry_model::{AccountRegNum, AccountRegStr, CharRegNum, CharRegStr, ServerRegStr};
-use crate::repository::{PgRepository, ScriptVariableRepository};
+use database::{read, tx_read, tx_write};
+use serde::Serialize;
+use serde::de::DeserializeOwned;
 
-impl ScriptVariableRepository for PgRepository {
+use crate::repository::{Error, ScriptVariableRepository, SledRepository};
+
+fn variable_key(scope: u8, owner: u32, name: &str) -> Vec<u8> {
+    let mut key = Vec::with_capacity(5 + name.len());
+    key.push(scope);
+    key.extend_from_slice(&owner.to_be_bytes());
+    key.extend_from_slice(name.as_bytes());
+    key
+}
+
+fn save<T: Serialize + DeserializeOwned + Clone>(
+    tree: &sled::Tree,
+    scope: u8,
+    owner: u32,
+    name: &str,
+    index: u32,
+    value: &T,
+) -> Result<(), Error> {
+    let key = variable_key(scope, owner, name);
+    tree.transaction(|tree| {
+        let mut values: BTreeMap<u32, T> = tx_read(tree, &key)?.unwrap_or_default();
+        values.insert(index, value.clone());
+        tx_write(tree, &key, &values)
+    })?;
+    Ok(())
+}
+
+fn fetch<T: DeserializeOwned>(tree: &sled::Tree, scope: u8, owner: u32, name: &str) -> Result<BTreeMap<u32, T>, Error> {
+    Ok(read(tree, &variable_key(scope, owner, name))?.unwrap_or_default())
+}
+
+impl ScriptVariableRepository for SledRepository {
     fn script_variable_char_num_save(&self, char_id: u32, key: String, index: u32, value: i32) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO char_reg_num (char_id, key, index, value) VALUES ($1, $2, $3, $4) ON CONFLICT (char_id, key, index) DO \
-                 UPDATE SET value = $4",
-            )
-            .bind(char_id as i32)
-            .bind(key)
-            .bind(index as i32)
-            .bind(value)
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_char_str_save(&self, char_id: u32, key: String, index: u32, value: String) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO char_reg_str (char_id, key, index, value) VALUES ($1, $2, $3, $4) ON CONFLICT (char_id, key, index) DO \
-                 UPDATE SET value = $4",
-            )
-            .bind(char_id as i32)
-            .bind(key)
-            .bind(index as i32)
-            .bind(value)
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_account_num_save(&self, account_id: u32, key: String, index: u32, value: i32) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO global_acc_reg_num (account_id, key, index, value) VALUES ($1, $2, $3, $4) ON CONFLICT (account_id, key, \
-                 index) DO UPDATE SET value = $4",
-            )
-            .bind(account_id as i32)
-            .bind(key)
-            .bind(index as i32)
-            .bind(value)
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_account_str_save(&self, account_id: u32, key: String, index: u32, value: String) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO global_acc_reg_str (account_id, key, index, value) VALUES ($1, $2, $3, $4) ON CONFLICT (account_id, key, \
-                 index) DO UPDATE SET value = $4",
-            )
-            .bind(account_id as i32)
-            .bind(key)
-            .bind(index as i32)
-            .bind(value)
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_server_num_save(&self, varname: String, index: u32, value: i32) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO mapreg (varname, index, value) VALUES ($1, $2, $3) ON CONFLICT (varname, index) DO UPDATE SET value = $3",
-            )
-            .bind(varname)
-            .bind(index as i32)
-            .bind(format!("{value}"))
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_server_str_save(&self, varname: String, index: u32, value: String) {
-        self.runtime.block_on(async {
-            sqlx::query(
-                "INSERT INTO mapreg (varname, index, value) VALUES ($1, $2, $3) ON CONFLICT (varname, index) DO UPDATE SET value = $3",
-            )
-            .bind(varname)
-            .bind(index as i32)
-            .bind(value)
-            .execute(&self.pool)
-            .await
-            .unwrap()
-        });
-    }
-
-    fn script_variable_char_str_fetch_one(&self, char_id: u32, variable_name: String, index: u32) -> String {
-        let char_reg_str: Result<CharRegStr, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, CharRegStr>("SELECT * FROM char_reg_str WHERE char_id = $1 AND key = $2 AND index = $3")
-                .bind(char_id as i32)
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if char_reg_str.is_err() {
-            error!(
-                "char_permanent fetch_one string {} {:?}",
-                variable_name,
-                char_reg_str.as_ref().err().unwrap()
-            );
-        }
-        char_reg_str.map_or(String::from(""), |res| res.value)
+        save(&self.database.numeric_variables, 0, char_id, &key, index, &value).expect("Failed to persist script variable");
     }
 
     fn script_variable_char_num_fetch_one(&self, char_id: u32, variable_name: String, index: u32) -> i32 {
-        let char_reg_num: Result<CharRegNum, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, CharRegNum>("SELECT * FROM char_reg_num WHERE char_id = $1 AND key = $2 AND index = $3")
-                .bind(char_id as i32)
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if char_reg_num.is_err() {
-            error!(
-                "char_permanent fetch_one number {} {:?}",
-                variable_name,
-                char_reg_num.as_ref().err().unwrap()
-            );
-        }
-        char_reg_num.map_or(0, |res| res.value)
-    }
-
-    fn script_variable_account_str_fetch_one(&self, account_id: u32, variable_name: String, index: u32) -> String {
-        let account_reg_str: Result<AccountRegStr, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, AccountRegStr>("SELECT * FROM account_reg_str WHERE char_id = $1 AND key = $2 AND index = $3")
-                .bind(account_id as i32)
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if account_reg_str.is_err() {
-            error!(
-                "account_permanent fetch_one string {} {:?}",
-                variable_name,
-                account_reg_str.as_ref().err().unwrap()
-            );
-        }
-        account_reg_str.map_or(String::from(""), |res| res.value)
-    }
-
-    fn script_variable_account_num_fetch_one(&self, account_id: u32, variable_name: String, index: u32) -> i32 {
-        let account_reg_num: Result<AccountRegNum, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, AccountRegNum>("SELECT * FROM account_reg_num WHERE char_id = $1 AND key = $2 AND index = $3")
-                .bind(account_id as i32)
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if account_reg_num.is_err() {
-            error!(
-                "account_permanent fetch_one number {} {:?}",
-                variable_name,
-                account_reg_num.as_ref().err().unwrap()
-            );
-        }
-        account_reg_num.map_or(0, |res| res.value)
-    }
-
-    fn script_variable_server_str_fetch_one(&self, variable_name: String, index: u32) -> String {
-        let server_reg: Result<ServerRegStr, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, ServerRegStr>("SELECT * FROM mapreg WHERE AND varname = $1 AND index = $2")
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if server_reg.is_err() {
-            error!(
-                "server_permanent fetch_one string {} {:?}",
-                variable_name,
-                server_reg.as_ref().err().unwrap()
-            );
-        }
-        server_reg.map_or(String::from(""), |res| res.value)
-    }
-
-    fn script_variable_server_num_fetch_one(&self, variable_name: String, index: u32) -> i32 {
-        let server_reg: Result<ServerRegStr, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, ServerRegStr>("SELECT * FROM mapreg WHERE AND varname = $1 AND index = $2")
-                .bind(variable_name.clone())
-                .bind(index as i32)
-                .fetch_one(&self.pool)
-                .await
-        });
-        if server_reg.is_err() {
-            error!(
-                "server_permanent fetch_one number {} {:?}",
-                variable_name,
-                server_reg.as_ref().err().unwrap()
-            );
-        }
-        server_reg.map_or(0, |res| res.value.parse::<i32>().unwrap())
-    }
-
-    fn script_variable_char_str_fetch_all(&self, char_id: u32, variable_name: String) -> Vec<(u32, String)> {
-        let char_reg_str: Result<Vec<CharRegStr>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, CharRegStr>("SELECT * FROM char_reg_str WHERE char_id = $1 AND key = $2")
-                .bind(char_id as i32)
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if char_reg_str.is_err() {
-            error!(
-                "char_permanent fetch_all string {} {:?}",
-                variable_name,
-                char_reg_str.as_ref().err().unwrap()
-            );
-        }
-        char_reg_str
-            .as_ref()
-            .map_or(vec![], |rows| rows.iter().map(|r| (r.index as u32, r.value.clone())).collect())
+        fetch::<i32>(&self.database.numeric_variables, 0, char_id, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
     }
 
     fn script_variable_char_num_fetch_all(&self, char_id: u32, variable_name: String) -> Vec<(u32, i32)> {
-        let char_reg_num: Result<Vec<CharRegNum>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, CharRegNum>("SELECT * FROM char_reg_num WHERE char_id = $1 AND key = $2 ")
-                .bind(char_id as i32)
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if char_reg_num.is_err() {
-            error!(
-                "char_permanent fetch_all number {} {:?}",
-                variable_name,
-                char_reg_num.as_ref().err().unwrap()
-            );
-        }
-        char_reg_num
-            .as_ref()
-            .map_or(vec![], |rows| rows.iter().map(|r| (r.index as u32, r.value)).collect())
+        fetch::<i32>(&self.database.numeric_variables, 0, char_id, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
     }
 
-    fn script_variable_account_str_fetch_all(&self, account_id: u32, variable_name: String) -> Vec<(u32, String)> {
-        let account_reg_str: Result<Vec<AccountRegStr>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, AccountRegStr>("SELECT * FROM acc_reg_str WHERE account_id = $1 AND key = $2")
-                .bind(account_id as i32)
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if account_reg_str.is_err() {
-            error!(
-                "account_permanent fetch_all string {} {:?}",
-                variable_name,
-                account_reg_str.as_ref().err().unwrap()
-            );
-        }
-        account_reg_str
-            .as_ref()
-            .map_or(vec![], |rows| rows.iter().map(|r| (r.index as u32, r.value.clone())).collect())
+    fn script_variable_char_str_save(&self, char_id: u32, key: String, index: u32, value: String) {
+        save(&self.database.string_variables, 0, char_id, &key, index, &value).expect("Failed to persist script variable");
+    }
+
+    fn script_variable_char_str_fetch_one(&self, char_id: u32, variable_name: String, index: u32) -> String {
+        fetch::<String>(&self.database.string_variables, 0, char_id, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
+    }
+
+    fn script_variable_char_str_fetch_all(&self, char_id: u32, variable_name: String) -> Vec<(u32, String)> {
+        fetch::<String>(&self.database.string_variables, 0, char_id, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
+    }
+
+    fn script_variable_account_num_save(&self, account_id: u32, key: String, index: u32, value: i32) {
+        save(&self.database.numeric_variables, 1, account_id, &key, index, &value).expect("Failed to persist script variable");
+    }
+
+    fn script_variable_account_num_fetch_one(&self, account_id: u32, variable_name: String, index: u32) -> i32 {
+        fetch::<i32>(&self.database.numeric_variables, 1, account_id, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
     }
 
     fn script_variable_account_num_fetch_all(&self, account_id: u32, variable_name: String) -> Vec<(u32, i32)> {
-        let account_reg_num: Result<Vec<AccountRegNum>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, AccountRegNum>("SELECT * FROM acc_reg_num WHERE account_id = $1 AND key = $2")
-                .bind(account_id as i32)
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if account_reg_num.is_err() {
-            error!(
-                "account_permanent fetch_all number {} {:?}",
-                variable_name,
-                account_reg_num.as_ref().err().unwrap()
-            );
-        }
-        account_reg_num
-            .as_ref()
-            .map_or(vec![], |rows| rows.iter().map(|r| (r.index as u32, r.value)).collect())
+        fetch::<i32>(&self.database.numeric_variables, 1, account_id, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
     }
 
-    fn script_variable_server_str_fetch_all(&self, variable_name: String) -> Vec<(u32, String)> {
-        let server_reg: Result<Vec<ServerRegStr>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, ServerRegStr>("SELECT * FROM mapreg WHERE varname = $1")
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if server_reg.is_err() {
-            error!(
-                "server_permanent fetch_all string {} {:?}",
-                variable_name,
-                server_reg.as_ref().err().unwrap()
-            );
-        }
-        server_reg
-            .as_ref()
-            .map_or(vec![], |rows| rows.iter().map(|r| (r.index as u32, r.value.clone())).collect())
+    fn script_variable_account_str_save(&self, account_id: u32, key: String, index: u32, value: String) {
+        save(&self.database.string_variables, 1, account_id, &key, index, &value).expect("Failed to persist script variable");
+    }
+
+    fn script_variable_account_str_fetch_one(&self, account_id: u32, variable_name: String, index: u32) -> String {
+        fetch::<String>(&self.database.string_variables, 1, account_id, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
+    }
+
+    fn script_variable_account_str_fetch_all(&self, account_id: u32, variable_name: String) -> Vec<(u32, String)> {
+        fetch::<String>(&self.database.string_variables, 1, account_id, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
+    }
+
+    fn script_variable_server_num_save(&self, varname: String, index: u32, value: i32) {
+        save(&self.database.numeric_variables, 2, 0, &varname, index, &value).expect("Failed to persist script variable");
+    }
+
+    fn script_variable_server_num_fetch_one(&self, variable_name: String, index: u32) -> i32 {
+        fetch::<i32>(&self.database.numeric_variables, 2, 0, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
     }
 
     fn script_variable_server_num_fetch_all(&self, variable_name: String) -> Vec<(u32, i32)> {
-        let server_reg: Result<Vec<ServerRegStr>, Error> = self.runtime.block_on(async {
-            sqlx::query_as::<_, ServerRegStr>("SELECT * FROM mapreg WHERE varname = $1")
-                .bind(variable_name.clone())
-                .fetch_all(&self.pool)
-                .await
-        });
-        if server_reg.is_err() {
-            error!(
-                "server_permanent fetch_all number {} {:?}",
-                variable_name,
-                server_reg.as_ref().err().unwrap()
-            );
-        }
-        server_reg.as_ref().map_or(vec![], |rows| {
-            rows.iter()
-                .map(|r| (r.index as u32, r.value.clone().parse::<i32>().unwrap_or(0_i32)))
-                .collect()
-        })
+        fetch::<i32>(&self.database.numeric_variables, 2, 0, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
+    }
+
+    fn script_variable_server_str_save(&self, varname: String, index: u32, value: String) {
+        save(&self.database.string_variables, 2, 0, &varname, index, &value).expect("Failed to persist script variable");
+    }
+
+    fn script_variable_server_str_fetch_one(&self, variable_name: String, index: u32) -> String {
+        fetch::<String>(&self.database.string_variables, 2, 0, &variable_name)
+            .expect("Failed to load script variable")
+            .remove(&index)
+            .unwrap_or_default()
+    }
+
+    fn script_variable_server_str_fetch_all(&self, variable_name: String) -> Vec<(u32, String)> {
+        fetch::<String>(&self.database.string_variables, 2, 0, &variable_name)
+            .expect("Failed to load script variables")
+            .into_iter()
+            .collect()
     }
 }

@@ -47,7 +47,7 @@ use self::server::script::MapScriptHandler;
 use crate::proxy::char::CharProxy;
 use crate::repository::model::item_model::{ItemModel, ItemModels};
 use crate::repository::model::mob_model::{MobModel, MobModels};
-use crate::repository::{ItemRepository, MobRepository, PgRepository, Repository};
+use crate::repository::{ItemRepository, MobRepository, Repository, SledRepository};
 use crate::server::boot::map_loader::MapLoader;
 use crate::server::boot::mob_spawn_loader::MobSpawnLoader;
 use crate::server::boot::script_loader::ScriptLoader;
@@ -72,7 +72,7 @@ pub async fn main() {
 
     setup_logger(configs());
     let runtime = Arc::new(Runtime::new().unwrap());
-    let repository: PgRepository = PgRepository::new_pg(&configs().database, runtime.clone()).await;
+    let repository = SledRepository::open(&configs().database).expect("Failed to open sled database and seed assets");
     let repository_arc = Arc::new(repository);
     // Load all items in memory, it takes only few mb
     let mut items = repository_arc.get_all_items().await.unwrap();
@@ -201,7 +201,7 @@ fn update_item_and_mob_static_db(items: &mut Vec<ItemModel>, mobs: &Vec<MobModel
     }
 }
 
-async fn compile_item_scripts(repository_arc: &Arc<PgRepository>, items: &mut Vec<ItemModel>) {
+async fn compile_item_scripts(repository_arc: &Arc<SledRepository>, items: &mut Vec<ItemModel>) {
     let start = Instant::now();
     let mut script_compilation_to_update: Vec<(i32, Vec<u8>, u128)> = vec![];
     let mut item_script_compiled = 0;

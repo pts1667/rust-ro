@@ -1,344 +1,291 @@
+use std::collections::BTreeMap;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use async_trait::async_trait;
+use database::{abort, character_slot_key, read, required, tx_read, tx_required, tx_write};
 use models::enums::EnumWithMaskValueU64;
 use models::enums::skill_enums::SkillEnum;
 use models::status::{KnownSkill, Status, StatusSnapshot};
-use models::status_bonus::{StatusBonusFlag, StatusBonusSource, TemporaryStatusBonuses};
-use sqlx::{Error, Postgres, Row};
+use models::status_bonus::{BonusExpiry, StatusBonusFlag, StatusBonusSource, TemporaryStatusBonus, TemporaryStatusBonuses};
+use serde::{Deserialize, Serialize};
+use sled::transaction::Transactional;
 
 use crate::repository::model::char_model::{CharInsertModel, CharSelectModel, CharacterInfoNeoUnionWrapped};
-use crate::repository::{CharacterRepository, PgRepository};
+use crate::repository::{CharacterRepository, Error, SledRepository};
 use crate::util::tick::get_tick;
 
+#[derive(Serialize, Deserialize)]
+struct StoredBonus {
+    remaining_ms: u32,
+    bonus_type: i32,
+    flags: u64,
+    source: Option<(String, i32)>,
+    val1: i32,
+    val2: i32,
+}
+
+fn bonus_key(char_id: u32, account_id: u32) -> [u8; 8] {
+    let mut key = [0; 8];
+    key[..4].copy_from_slice(&char_id.to_be_bytes());
+    key[4..].copy_from_slice(&account_id.to_be_bytes());
+    key
+}
+
 #[async_trait]
-impl CharacterRepository for PgRepository {
+impl CharacterRepository for SledRepository {
     async fn character_insert(&self, char_model: &CharInsertModel) -> Result<(), Error> {
-        char_model
-            .insert(&self.pool, "char")
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {}", e.as_database_error().unwrap());
-            })
-            .map(|_| ())
+        self.database.insert_character(&CharSelectModel::try_from(char_model)?)?;
+        Ok(())
     }
 
     async fn character_info(&self, account_id: i32, char_name: &str) -> Result<CharacterInfoNeoUnionWrapped, Error> {
-        sqlx::query_as::<_, CharacterInfoNeoUnionWrapped>("SELECT * from char WHERE name = $1 AND account_id = $2")
-            .bind(char_name)
-            .bind(account_id)
-            .fetch_one(&self.pool)
-            .await
+        Ok(
+            (&self.database.character_names, &self.database.characters).transaction(|(names, characters)| {
+                let id: i32 = tx_required(names, char_name.as_bytes())?;
+                let character: CharSelectModel = tx_required(characters, &id.to_be_bytes())?;
+                if character.account_id != account_id {
+                    return Err(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound));
+                }
+                Ok(CharacterInfoNeoUnionWrapped::from(&character))
+            })?,
+        )
     }
 
     async fn characters_info(&self, account_id: u32) -> Vec<CharacterInfoNeoUnionWrapped> {
-        sqlx::query_as::<Postgres, CharacterInfoNeoUnionWrapped>("SELECT * FROM char WHERE account_id = $1")
-            .bind(account_id as i32)
-            .fetch_all(&self.pool)
-            .await
-            .unwrap_or(vec![])
+        let result = self
+            .database
+            .character_slots
+            .scan_prefix(account_id.to_be_bytes())
+            .map(|entry| {
+                let (_, bytes) = entry?;
+                let id: i32 = serde_json::from_slice(&bytes)?;
+                let character: CharSelectModel = required(&self.database.characters, &id.to_be_bytes())?;
+                Ok(CharacterInfoNeoUnionWrapped::from(&character))
+            })
+            .collect::<Result<Vec<_>, Error>>();
+        result.unwrap_or_else(|error| {
+            error!("Failed to load account characters: {error}");
+            Vec::new()
+        })
     }
 
     async fn character_delete_reserved(&self, account_id: u32, char_id: u32) -> Result<(), Error> {
-        sqlx::query("UPDATE `char` SET delete_date = UNIX_TIMESTAMP(now() + INTERVAL 1 DAY) WHERE account_id = $1 AND char_id = $2")
-            .bind(account_id as i32)
-            .bind(char_id as i32)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {}", e.as_database_error().unwrap());
-            })
-            .map(|_| ())
+        let delete_date = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| Error::new(error.to_string()))?
+            .as_secs()
+            .checked_add(24 * 60 * 60)
+            .and_then(|value| u32::try_from(value).ok())
+            .ok_or_else(|| Error::new("Deletion date is out of bounds".into()))?;
+        self.database.characters.transaction(|tree| {
+            let mut character: CharSelectModel = tx_required(tree, &char_id.to_be_bytes())?;
+            if character.account_id as u32 != account_id {
+                return abort("Character belongs to another account");
+            }
+            character.delete_date = delete_date;
+            tx_write(tree, &char_id.to_be_bytes(), &character)
+        })?;
+        Ok(())
     }
 
     async fn character_save_position(&self, char_id: u32, map_name: String, x: u16, y: u16) -> Result<(), Error> {
-        sqlx::query("UPDATE char SET last_map = $1, last_x = $2, last_y = $3 WHERE char_id = $4")
-            .bind(map_name)
-            .bind(x as i16)
-            .bind(y as i16)
-            .bind(char_id as i32)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })
-            .map(|_| ())
+        let x = i16::try_from(x).map_err(|_| Error::new("Map x coordinate is out of bounds".into()))?;
+        let y = i16::try_from(y).map_err(|_| Error::new("Map y coordinate is out of bounds".into()))?;
+        self.database.characters.transaction(|tree| {
+            let mut character: CharSelectModel = tx_required(tree, &char_id.to_be_bytes())?;
+            character.last_map = map_name.clone();
+            character.last_x = x;
+            character.last_y = y;
+            tx_write(tree, &char_id.to_be_bytes(), &character)
+        })?;
+        Ok(())
     }
 
-    async fn character_update_status(&self, char_id: u32, db_column: String, value: u32) -> Result<(), Error> {
-        let sql = format!("UPDATE char SET {db_column} = $1 WHERE char_id = $2"); // TODO sanitize db_column
-        sqlx::query(&sql)
-            .bind(value as i32)
-            .bind(char_id as i32)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })
-            .map(|_| ())
+    async fn character_update_status(&self, char_id: u32, field: String, value: u32) -> Result<(), Error> {
+        self.database.characters.transaction(|tree| {
+            let mut character: CharSelectModel = tx_required(tree, &char_id.to_be_bytes())?;
+            macro_rules! set_field {
+                ($($name:ident),*) => {
+                    match field.as_str() {
+                        $(stringify!($name) => {
+                            character.$name = value.try_into().map_err(|_| {
+                                sled::transaction::ConflictableTransactionError::Abort(Error::new(
+                                    format!("Character field {} is out of bounds", field)
+                                ))
+                            })?;
+                        },)*
+                        _ => return abort(format!("Unknown character field {field}")),
+                    }
+                }
+            }
+            set_field!(
+                class,
+                zeny,
+                status_point,
+                skill_point,
+                str,
+                agi,
+                vit,
+                int,
+                dex,
+                luk,
+                max_hp,
+                hp,
+                max_sp,
+                sp,
+                hair,
+                hair_color,
+                clothes_color,
+                body,
+                weapon,
+                shield,
+                head_top,
+                head_mid,
+                head_bottom,
+                robe,
+                base_level,
+                job_level,
+                base_exp,
+                job_exp,
+                option,
+                karma,
+                manner,
+                rename,
+                delete_date
+            );
+            tx_write(tree, &char_id.to_be_bytes(), &character)
+        })?;
+        Ok(())
     }
 
     async fn character_zeny_fetch(&self, char_id: u32) -> Result<i32, Error> {
-        sqlx::query("SELECT zeny FROM char WHERE char_id = $1")
-            .bind(char_id as i32)
-            .fetch_one(&self.pool)
-            .await
-            .map(|row| Ok(row.get::<i32, _>(0)))?
+        Ok(required::<CharSelectModel>(&self.database.characters, &char_id.to_be_bytes())?.zeny)
     }
 
     async fn character_allocated_skill_points(&self, char_id: u32) -> Result<i32, Error> {
-        sqlx::query("SELECT sum(lv) FROM skill WHERE char_id = $1")
-            .bind(char_id as i32)
-            .fetch_one(&self.pool)
-            .await
-            .map(|row| Ok(row.get::<i32, _>(0)))?
+        let skills: BTreeMap<u32, u8> = read(&self.database.skills, &char_id.to_be_bytes())?.unwrap_or_default();
+        Ok(skills.values().map(|level| *level as i32).sum())
     }
 
     async fn character_skills(&self, char_id: u32) -> Result<Vec<KnownSkill>, Error> {
-        sqlx::query("SELECT id, lv FROM skill WHERE char_id = $1")
-            .bind(char_id as i32)
-            .fetch_all(&self.pool)
-            .await
-            .map(|rows| {
-                rows.iter()
-                    .map(|row| KnownSkill {
-                        value: SkillEnum::from_id(row.get::<i32, _>(0) as u32),
-                        level: row.get::<i16, _>(1) as u8,
-                    })
-                    .collect::<Vec<KnownSkill>>()
+        let skills: BTreeMap<u32, u8> = read(&self.database.skills, &char_id.to_be_bytes())?.unwrap_or_default();
+        Ok(skills
+            .into_iter()
+            .map(|(id, level)| KnownSkill {
+                value: SkillEnum::from_id(id),
+                level,
             })
+            .collect())
     }
 
     async fn character_fetch(&self, account_id: u32, char_num: u8) -> Result<CharSelectModel, Error> {
-        sqlx::query_as::<_, CharSelectModel>("SELECT * FROM char WHERE account_id = $1 AND char_num = $2")
-            .bind(account_id as i32)
-            .bind(char_num as i16)
-            .fetch_one(&self.pool)
-            .await
+        Ok(
+            (&self.database.character_slots, &self.database.characters).transaction(|(slots, characters)| {
+                let id: i32 = tx_required(slots, &character_slot_key(account_id as i32, char_num as i16))?;
+                tx_required(characters, &id.to_be_bytes())
+            })?,
+        )
     }
 
     async fn character_with_id_fetch(&self, char_id: u32) -> Result<CharSelectModel, Error> {
-        sqlx::query_as::<_, CharSelectModel>("SELECT * FROM char WHERE char_id = $1")
-            .bind(char_id as i32)
-            .fetch_one(&self.pool)
-            .await
+        required(&self.database.characters, &char_id.to_be_bytes())
     }
 
     async fn character_reset_skills(&self, char_id: i32, skills: Vec<i32>) -> Result<(), Error> {
-        sqlx::query("DELETE FROM skill WHERE char_id = $1 and id IN (SELECT * FROM UNNEST($2::int4[]))")
-            .bind(char_id)
-            .bind(skills)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {}", e.as_database_error().unwrap());
-            })
-            .map(|_| ())
+        self.database.skills.transaction(|tree| {
+            let mut known: BTreeMap<u32, u8> = tx_read(tree, &char_id.to_be_bytes())?.unwrap_or_default();
+            for id in &skills {
+                known.remove(&(*id as u32));
+            }
+            tx_write(tree, &char_id.to_be_bytes(), &known)
+        })?;
+        Ok(())
     }
 
     async fn character_allocate_skill_point(&self, char_id: i32, skill_id: i32, increment: u8) -> Result<(), Error> {
-        sqlx::query(
-            "INSERT INTO skill (char_id, id, lv, flag) values ($1, $2, $3, 0) ON CONFLICT (char_id, id) DO UPDATE set lv = skill.lv + \
-             EXCLUDED.lv",
-        )
-        .bind(char_id)
-        .bind(skill_id)
-        .bind(increment as i16)
-        .execute(&self.pool)
-        .await
-        .inspect_err(|e| {
-            error!("DB error: {}", e.as_database_error().unwrap());
-        })
-        .map(|_| ())
+        if skill_id <= 0 {
+            return Err(Error::new("Skill ID must be positive".into()));
+        }
+        self.database.skills.transaction(|tree| {
+            let mut known: BTreeMap<u32, u8> = tx_read(tree, &char_id.to_be_bytes())?.unwrap_or_default();
+            let level = known.entry(skill_id as u32).or_default();
+            *level = level
+                .checked_add(increment)
+                .ok_or_else(|| sled::transaction::ConflictableTransactionError::Abort(Error::new("Skill level is out of bounds".into())))?;
+            tx_write(tree, &char_id.to_be_bytes(), &known)
+        })?;
+        Ok(())
     }
 
     async fn characters_update(
         &self,
         statuses: Vec<&Status>,
-        statuses_snaphot: Vec<StatusSnapshot>,
+        snapshots: Vec<StatusSnapshot>,
         char_ids: Vec<i32>,
         x: Vec<i16>,
         y: Vec<i16>,
         maps: Vec<String>,
     ) -> Result<(), Error> {
-        let classes: Vec<i16> = statuses_snaphot.iter().map(|s| s.job() as i16).collect();
-        let base_levels: Vec<i32> = statuses.iter().map(|s| s.base_level() as i32).collect();
-        let job_levels: Vec<i32> = statuses.iter().map(|s| s.job_level() as i32).collect();
-        let base_exps: Vec<i32> = statuses.iter().map(|s| s.job_exp() as i32).collect();
-        let job_exps: Vec<i32> = statuses.iter().map(|s| s.job_exp() as i32).collect();
-        let zenys: Vec<i32> = statuses.iter().map(|s| s.zeny() as i32).collect();
-        let strs: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_str() as i16).collect();
-        let agis: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_agi() as i16).collect();
-        let vits: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_vit() as i16).collect();
-        let ints: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_int() as i16).collect();
-        let dexs: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_dex() as i16).collect();
-        let luks: Vec<i16> = statuses_snaphot.iter().map(|s| s.base_luk() as i16).collect();
-        let max_hps: Vec<i32> = statuses_snaphot.iter().map(|s| s.max_hp() as i32).collect();
-        let hps: Vec<i32> = statuses_snaphot.iter().map(|s| s.hp() as i32).collect();
-        let max_sps: Vec<i32> = statuses_snaphot.iter().map(|s| s.max_sp() as i32).collect();
-        let sps: Vec<i32> = statuses_snaphot.iter().map(|s| s.sp() as i32).collect();
-        let status_points: Vec<i16> = statuses.iter().map(|s| s.status_point() as i16).collect();
-        let skill_points: Vec<i16> = statuses.iter().map(|s| s.skill_point() as i16).collect();
-        let hairs: Vec<i16> = statuses
+        let count = char_ids.len();
+        if [statuses.len(), snapshots.len(), x.len(), y.len(), maps.len()]
             .iter()
-            .map(|s| s.look().map(|l| l.hair() as i16).unwrap_or(0_i16))
-            .collect();
-        let hair_colors: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.look().map(|l| l.hair_color() as i16).unwrap_or(0_i16))
-            .collect();
-        let clothes_colors: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.look().map(|l| l.clothes_color() as i16).unwrap_or(0_i16))
-            .collect();
-        let bodies: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.armor().map(|e| e.item_id as i16).unwrap_or(0_i16))
-            .collect();
-        let weapons: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.right_hand_weapon().map(|w| w.item_id() as i16).unwrap_or(0_i16))
-            .collect();
-        let shields: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.shield().map(|e| e.item_id() as i16).unwrap_or(0_i16))
-            .collect();
-        let head_tops: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.head_top().map(|e| e.item_id as i16).unwrap_or(0_i16))
-            .collect();
-        let head_mids: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.head_mid().map(|e| e.item_id as i16).unwrap_or(0_i16))
-            .collect();
-        let head_bottoms: Vec<i16> = statuses
-            .iter()
-            .map(|s| s.head_low().map(|e| e.item_id as i16).unwrap_or(0_i16))
-            .collect();
-        let robes: Vec<i32> = statuses
-            .iter()
-            .map(|s| s.look().map(|l| l.robe() as i32).unwrap_or(0_i32))
-            .collect();
-
-        let last_maps: Vec<String> = maps;
-        let last_xs: Vec<i16> = x;
-        let last_ys: Vec<i16> = y;
-
-        // Use UNNEST to perform the bulk update
-        let query = r#"
-        UPDATE ragnarok."char" AS c
-        SET
-            class = u.class,
-            base_level = u.base_level,
-            job_level = u.job_level,
-            base_exp = u.base_exp,
-            job_exp = u.job_exp,
-            zeny = u.zeny,
-            str = u.str,
-            agi = u.agi,
-            vit = u.vit,
-            "int" = u.int,
-            dex = u.dex,
-            luk = u.luk,
-            max_hp = u.max_hp,
-            hp = u.hp,
-            max_sp = u.max_sp,
-            sp = u.sp,
-            status_point = u.status_point,
-            skill_point = u.skill_point,
-            hair = u.hair,
-            hair_color = u.hair_color,
-            clothes_color = u.clothes_color,
-            body = u.body,
-            weapon = u.weapon,
-            shield = u.shield,
-            head_top = u.head_top,
-            head_mid = u.head_mid,
-            head_bottom = u.head_bottom,
-            robe = u.robe,
-            last_map = u.last_map,
-            last_x = u.last_x,
-            last_y = u.last_y
-        FROM (
-            SELECT
-                UNNEST($1::SMALLINT[]) AS class,
-                UNNEST($2::INTEGER[]) AS base_level,
-                UNNEST($3::INTEGER[]) AS job_level,
-                UNNEST($4::INTEGER[]) AS base_exp,
-                UNNEST($5::INTEGER[]) AS job_exp,
-                UNNEST($6::INTEGER[]) AS zeny,
-                UNNEST($7::SMALLINT[]) AS str,
-                UNNEST($8::SMALLINT[]) AS agi,
-                UNNEST($9::SMALLINT[]) AS vit,
-                UNNEST($10::SMALLINT[]) AS int,
-                UNNEST($11::SMALLINT[]) AS dex,
-                UNNEST($12::SMALLINT[]) AS luk,
-                UNNEST($13::INTEGER[]) AS max_hp,
-                UNNEST($14::INTEGER[]) AS hp,
-                UNNEST($15::INTEGER[]) AS max_sp,
-                UNNEST($16::INTEGER[]) AS sp,
-                UNNEST($17::SMALLINT[]) AS status_point,
-                UNNEST($18::SMALLINT[]) AS skill_point,
-                UNNEST($19::SMALLINT[]) AS hair,
-                UNNEST($20::SMALLINT[]) AS hair_color,
-                UNNEST($21::SMALLINT[]) AS clothes_color,
-                UNNEST($22::SMALLINT[]) AS body,
-                UNNEST($23::SMALLINT[]) AS weapon,
-                UNNEST($24::SMALLINT[]) AS shield,
-                UNNEST($25::SMALLINT[]) AS head_top,
-                UNNEST($26::SMALLINT[]) AS head_mid,
-                UNNEST($27::SMALLINT[]) AS head_bottom,
-                UNNEST($28::INTEGER[]) AS robe,
-                UNNEST($29::VARCHAR[]) AS last_map,
-                UNNEST($30::SMALLINT[]) AS last_x,
-                UNNEST($31::SMALLINT[]) AS last_y,
-                UNNEST($32::INTEGER[]) AS char_id
-        ) AS u
-        WHERE c.char_id = u.char_id
-    "#;
-        sqlx::query(query)
-            .bind(&classes)
-            .bind(&base_levels)
-            .bind(&job_levels)
-            .bind(&base_exps)
-            .bind(&job_exps)
-            .bind(&zenys)
-            .bind(&strs)
-            .bind(&agis)
-            .bind(&vits)
-            .bind(&ints)
-            .bind(&dexs)
-            .bind(&luks)
-            .bind(&max_hps)
-            .bind(&hps)
-            .bind(&max_sps)
-            .bind(&sps)
-            .bind(&status_points)
-            .bind(&skill_points)
-            .bind(&hairs)
-            .bind(&hair_colors)
-            .bind(&clothes_colors)
-            .bind(&bodies)
-            .bind(&weapons)
-            .bind(&shields)
-            .bind(&head_tops)
-            .bind(&head_mids)
-            .bind(&head_bottoms)
-            .bind(&robes)
-            .bind(&last_maps)
-            .bind(&last_xs)
-            .bind(&last_ys)
-            .bind(&char_ids)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })
-            .map(|_| ())
+            .any(|len| *len != count)
+        {
+            return Err(Error::new("Character snapshot lengths do not match".into()));
+        }
+        self.database.characters.transaction(|tree| {
+            for i in 0..count {
+                let mut character: CharSelectModel = tx_required(tree, &char_ids[i].to_be_bytes())?;
+                let status = statuses[i];
+                let snapshot = &snapshots[i];
+                character.class = snapshot.job() as i16;
+                character.base_level = status.base_level() as i32;
+                character.job_level = status.job_level() as i32;
+                character.base_exp = status.base_exp() as i32;
+                character.job_exp = status.job_exp() as i32;
+                character.zeny = status.zeny() as i32;
+                character.str = snapshot.base_str() as i16;
+                character.agi = snapshot.base_agi() as i16;
+                character.vit = snapshot.base_vit() as i16;
+                character.int = snapshot.base_int() as i16;
+                character.dex = snapshot.base_dex() as i16;
+                character.luk = snapshot.base_luk() as i16;
+                character.max_hp = snapshot.max_hp() as i32;
+                character.hp = snapshot.hp() as i32;
+                character.max_sp = snapshot.max_sp() as i32;
+                character.sp = snapshot.sp() as i32;
+                character.status_point = status.status_point() as i16;
+                character.skill_point = status.skill_point() as i16;
+                character.hair = status.look().map_or(0, |look| look.hair() as i16);
+                character.hair_color = status.look().map_or(0, |look| look.hair_color() as i16);
+                character.clothes_color = status.look().map_or(0, |look| look.clothes_color() as i16);
+                character.body = status.armor().map_or(0, |item| item.item_id as i16);
+                character.weapon = status.right_hand_weapon().map_or(0, |item| item.item_id() as i16);
+                character.shield = status.shield().map_or(0, |item| item.item_id() as i16);
+                character.head_top = status.head_top().map_or(0, |item| item.item_id as i16);
+                character.head_mid = status.head_mid().map_or(0, |item| item.item_id as i16);
+                character.head_bottom = status.head_low().map_or(0, |item| item.item_id as i16);
+                character.robe = status.look().map_or(0, |look| look.robe() as i32);
+                character.last_map = maps[i].clone();
+                character.last_x = x[i];
+                character.last_y = y[i];
+                tx_write(tree, &char_ids[i].to_be_bytes(), &character)?;
+            }
+            Ok(())
+        })?;
+        Ok(())
     }
 
     async fn characters_list_for_simulator(&self) -> Result<Vec<CharSelectModel>, Error> {
-        sqlx::query_as::<_, CharSelectModel>("SELECT * from char limit 100")
-            .fetch_all(&self.pool)
-            .await
+        self.database
+            .characters
+            .iter()
+            .take(100)
+            .map(|entry| {
+                let (_, bytes) = entry?;
+                Ok(serde_json::from_slice(&bytes)?)
+            })
+            .collect()
     }
 
     async fn character_save_temporary_bonus(
@@ -347,142 +294,63 @@ impl CharacterRepository for PgRepository {
         account_id: u32,
         temporary_bonuses: &TemporaryStatusBonuses,
     ) -> Result<(), Error> {
-        sqlx::query("DELETE FROM ragnarok.status_bonus WHERE char_id = $1")
-            .bind(char_id as i32)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })?;
-
-        let persist_bonuses: Vec<_> = temporary_bonuses
-            .iter()
-            .filter(|bonus| bonus.flags() & StatusBonusFlag::Persist.as_flag() > 0)
-            .collect();
-
-        if persist_bonuses.is_empty() {
-            return Ok(());
-        }
-
-        let mut account_ids: Vec<i32> = Vec::new();
-        let mut char_ids: Vec<i32> = Vec::new();
-        let mut remaining_ms: Vec<i32> = Vec::new();
-        let mut bonus_types: Vec<String> = Vec::new();
-        let mut flags: Vec<i32> = Vec::new();
-        let mut sources: Vec<Option<String>> = Vec::new();
-        let mut source_val1s: Vec<Option<i32>> = Vec::new();
-        let mut bonus_val1s: Vec<i32> = Vec::new();
-        let mut bonus_val2s: Vec<i32> = Vec::new();
-
         let now = get_tick();
-        for bonus in persist_bonuses {
-            let (bonus_type_id, val1, val2) = bonus.bonus().serialize_to_sc_data();
-            let remaining_duration = match bonus.expirency() {
-                models::status_bonus::BonusExpiry::Time(until) => {
-                    if *until > now {
-                        *until - now
-                    } else {
-                        0
-                    }
-                }
-                models::status_bonus::BonusExpiry::Never => 0,
-                models::status_bonus::BonusExpiry::Counter(_) => 0,
+        let mut stored = Vec::new();
+        for bonus in temporary_bonuses
+            .iter()
+            .filter(|bonus| bonus.flags() & StatusBonusFlag::Persist.as_flag() != 0)
+        {
+            let remaining_ms = match bonus.expirency() {
+                BonusExpiry::Time(until) => until.saturating_sub(now),
+                _ => 0,
             };
-            if remaining_duration == 0 {
+            if remaining_ms == 0 {
                 continue;
             }
-
-            let (source_text, source_val1) = if let Some(source) = bonus.source() {
-                let (source_type, source_value) = source.serialize_to_sc_data();
-                (Some(source_type.to_string()), Some(source_value))
-            } else {
-                (None, None)
-            };
-
-            account_ids.push(account_id as i32);
-            char_ids.push(char_id as i32);
-            remaining_ms.push(remaining_duration as i32);
-            bonus_types.push(format!("{}", bonus_type_id));
-            flags.push(bonus.flags() as i32);
-            sources.push(source_text);
-            source_val1s.push(source_val1);
-            bonus_val1s.push(val1);
-            bonus_val2s.push(val2);
+            let remaining_ms = u32::try_from(remaining_ms).map_err(|_| Error::new("Persisted bonus duration is out of bounds".into()))?;
+            let (bonus_type, val1, val2) = bonus.bonus().serialize_to_sc_data();
+            let source = bonus.source().map(|source| {
+                let (name, value) = source.serialize_to_sc_data();
+                (name.to_string(), value)
+            });
+            stored.push(StoredBonus {
+                remaining_ms,
+                bonus_type,
+                val1,
+                val2,
+                flags: bonus.flags(),
+                source,
+            });
         }
-
-        let query = r#"
-        INSERT INTO ragnarok.status_bonus (account_id, char_id, remaining_ms, bonus_type, flag, source, source_val1, bonus_val1, bonus_val2)
-        SELECT * FROM UNNEST($1::INTEGER[], $2::INTEGER[], $3::INTEGER[], $4::TEXT[], $5::INTEGER[], $6::TEXT[], $7::INTEGER[], $8::INTEGER[], $9::INTEGER[])
-        "#;
-
-        sqlx::query(query)
-            .bind(&account_ids)
-            .bind(&char_ids)
-            .bind(&remaining_ms)
-            .bind(&bonus_types)
-            .bind(&flags)
-            .bind(&sources)
-            .bind(&source_val1s)
-            .bind(&bonus_val1s)
-            .bind(&bonus_val2s)
-            .execute(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })
-            .map(|_| ())
+        self.database
+            .bonuses
+            .transaction(|tree| tx_write(tree, &bonus_key(char_id, account_id), &stored))?;
+        Ok(())
     }
 
     async fn character_load_temporary_bonus(&self, char_id: u32, account_id: u32) -> Result<TemporaryStatusBonuses, Error> {
-        let query = r#"
-        DELETE FROM ragnarok.status_bonus 
-        WHERE char_id = $1 AND account_id = $2
-        RETURNING remaining_ms, bonus_type, flag, source, source_val1, bonus_val1, bonus_val2
-        "#;
-
-        let rows = sqlx::query(query)
-            .bind(char_id as i32)
-            .bind(account_id as i32)
-            .fetch_all(&self.pool)
-            .await
-            .inspect_err(|e| {
-                error!("DB error: {:?}", e);
-            })?;
-
+        let stored: Vec<StoredBonus> = self.database.bonuses.transaction(|tree| {
+            let key = bonus_key(char_id, account_id);
+            let stored = tx_read(tree, &key)?.unwrap_or_default();
+            tree.remove(key.to_vec())?;
+            Ok::<_, sled::transaction::ConflictableTransactionError<Error>>(stored)
+        })?;
         let now = get_tick();
-        let mut temporary_bonuses = TemporaryStatusBonuses::default();
-
-        for row in rows {
-            let remaining_ms: i32 = row.get("remaining_ms");
-            let bonus_type_str: String = row.get("bonus_type");
-            let flag: i32 = row.get("flag");
-            let source_str: Option<String> = row.get("source");
-            let source_val1: Option<i32> = row.get("source_val1");
-            let bonus_val1: i32 = row.get("bonus_val1");
-            let bonus_val2: i32 = row.get("bonus_val2");
-
-            // Parse bonus type from string
-            let bonus_type_id: i32 = bonus_type_str.parse().unwrap_or(0);
-
-            // Deserialize source
-            let source = if let (Some(source_type), Some(source_value)) = (source_str, source_val1) {
-                StatusBonusSource::deserialize_sc_data(source_type.as_str(), source_value)
-            } else {
-                None
-            };
-
-            if let Some(bonus) = models::enums::bonus::BonusType::deserialize_from_sc_data(bonus_type_id, bonus_val1, bonus_val2) {
-                let temporary_bonus = models::status_bonus::TemporaryStatusBonus::with_duration_and_source(
+        let mut bonuses = TemporaryStatusBonuses::default();
+        for stored in stored {
+            let source = stored
+                .source
+                .and_then(|(name, value)| StatusBonusSource::deserialize_sc_data(&name, value));
+            if let Some(bonus) = models::enums::bonus::BonusType::deserialize_from_sc_data(stored.bonus_type, stored.val1, stored.val2) {
+                bonuses.add(TemporaryStatusBonus::with_duration_and_source(
                     bonus,
-                    flag as u64,
+                    stored.flags,
                     now,
-                    remaining_ms as u32,
+                    stored.remaining_ms,
                     source,
-                );
-                temporary_bonuses.add(temporary_bonus);
+                ));
             }
         }
-
-        Ok(temporary_bonuses)
+        Ok(bonuses)
     }
 }

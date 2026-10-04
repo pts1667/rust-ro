@@ -1,4 +1,6 @@
 # Using Postgresql as database
+**Status**: Superseded by [embedded sled storage](2-sled.md).
+
 **Date**: 2021-12-01
 
 # Context

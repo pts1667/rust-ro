@@ -73,11 +73,9 @@ mod tests {
         Packet, PacketZcAckItemcomposition, PacketZcAttackRange, PacketZcEquipArrow, PacketZcItemThrowAck, PacketZcItemcompositionList,
         PacketZcReqTakeoffEquipAck2, PacketZcReqWearEquipAck2, PacketZcSpriteChange2,
     };
-    use sqlx::Error;
 
-    use crate::repository::InventoryRepository;
     use crate::repository::model::item_model::InventoryItemModel;
-    use crate::repository::persistence_error::PersistenceError;
+    use crate::repository::{Error, InventoryRepository};
     use crate::server::model::events::game_event::{
         CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterSlotCard, CharacterZeny,
     };
@@ -112,10 +110,10 @@ mod tests {
                 &self,
                 inventory_update_items: &[InventoryItemUpdate],
                 _buy: bool,
-            ) -> Result<(), Error> {
+            ) -> Result<Vec<InventoryItemModel>, Error> {
                 let mut guard = self.inventory_update_items.lock().unwrap();
                 guard.extend(inventory_update_items.to_vec());
-                Ok(())
+                Ok(mocked_repository::added_items(inventory_update_items))
             }
         }
         let inventory_repository = Arc::new(MockedInventoryRepository {
@@ -246,10 +244,10 @@ mod tests {
         impl InventoryRepository for MockedInventoryRepository {
             async fn character_inventory_update_add(
                 &self,
-                _inventory_update_items: &[InventoryItemUpdate],
+                inventory_update_items: &[InventoryItemUpdate],
                 _buy: bool,
-            ) -> Result<(), Error> {
-                Ok(())
+            ) -> Result<Vec<InventoryItemModel>, Error> {
+                Ok(mocked_repository::added_items(inventory_update_items))
             }
 
             async fn character_inventory_fetch(&self, _char_id: i32) -> Result<Vec<InventoryItemModel>, Error> {
@@ -1200,7 +1198,7 @@ mod tests {
                 _inventory_update_items: &Vec<(InventoryItemModel, CharacterRemoveItem)>,
                 _buy: bool,
             ) -> Result<(), Error> {
-                Err(Error::Database(Box::new(PersistenceError::new("mocked error".to_string()))))
+                Err(Error::new("mocked error".to_string()))
             }
         }
         let context = before_each(Arc::new(MockedInventoryRepository {}));
@@ -1323,7 +1321,7 @@ mod tests {
         let inventory_repository = Arc::new(MockedInventoryRepository {
             inventory_update_items: Mutex::new(vec![]),
         });
-        let context = before_each_with_latch(inventory_repository.clone(), 3); // Increased for remove_single_item_from_inventory
+        let context = before_each_with_latch(inventory_repository.clone(), 1);
         let mut character = create_character();
         character.char_id = 123;
 
@@ -1348,7 +1346,7 @@ mod tests {
         // Verify card was removed from inventory
         assert!(character.inventory.get(0).is_none() || character.inventory.get(0).unwrap().is_none());
         let inventory_database = inventory_repository.inventory_update_items.lock().unwrap();
-        assert!(inventory_database.len() == 1);
+        assert!(inventory_database.is_empty());
 
         // Verify success response packet was sent
         let packetver = GlobalConfigService::instance().packetver();
@@ -1383,7 +1381,7 @@ mod tests {
                     equipment_inventory_item.item_id,
                     GlobalConfigService::instance().get_item_id_from_name("Sunglasses_") as i32
                 );
-                Err(Error::RowNotFound) // Simulate all card slots occupied
+                Err(Error::NotFound) // Simulate all card slots occupied
             }
         }
 

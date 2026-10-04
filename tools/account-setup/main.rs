@@ -1,24 +1,19 @@
-use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
-use std::time::SystemTime;
+use std::collections::{BTreeMap, HashMap};
+use std::{env, fs};
 
 use configuration::configuration::Config;
+use database::Database;
+use database::model::{AccountRecord, CharacterInventory, CharacterRecord, CharacterSkills, InventoryRecord, SeedData};
 use models::enums::class::JobName;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithNumberValue, EnumWithStringValue};
-use postgres::{Client, NoTls};
 use rand::{Rng, thread_rng};
 use serde::Deserialize;
 use serde_json::Value;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct Character {
-    id: i32,
-    name: String,
     job: String,
-    class: Option<i16>,
-    char_num: i16,
     hair: i16,
     hair_color: i16,
     clothes_color: i16,
@@ -43,245 +38,147 @@ struct Character {
     skill_point: i16,
     skills: Vec<Skill>,
 }
-#[derive(Debug, Deserialize)]
+
+#[derive(Deserialize)]
 struct Equipment {
-    name: String,
     #[serde(rename = "itemId")]
-    item_id: i16,
-    #[serde(skip_deserializing)]
-    item_id_32: i32,
-    location: Option<i32>,
-    unique_id: Option<i64>,
+    item_id: i32,
 }
-#[derive(Debug, Deserialize)]
+
+#[derive(Deserialize)]
 struct Skill {
     name: String,
-    #[serde(skip_deserializing)]
-    id: i32,
-    lvl: i16,
+    lvl: u8,
 }
 
-fn main() {
-    let mut replace_existing_char = true;
-    let mut account_id = 2000002;
-    let mut char_id_start = 160100;
-    let mut char_num_start = 0;
-    let mut sex = "M".to_string();
-    let mut zeny = 11127525_i32;
-
-    let config = Config::load("").unwrap();
-    let mut client = Client::connect(
-        format!(
-            "host={} port={} user={} password={} dbname={}",
-            config.database.host,
-            config.database.port,
-            config.database.username,
-            config.database.password.unwrap(),
-            config.database.db
-        )
-        .as_str(),
-        NoTls,
-    );
-    let mut client = client.unwrap();
-    let path = Path::new("./tools/account-setup/characters.json");
-    if !path.exists() {
-        panic!(
-            "tools/account-setup/characters.json file does not exists at {}",
-            path.to_str().unwrap()
-        );
-    }
-
-    let json = fs::read_to_string(path).unwrap();
-    let mut config_deserializer = serde_json::Deserializer::from_str(&json);
-    let result: Result<Vec<Character>, _> = serde_path_to_error::deserialize(&mut config_deserializer);
-    match result {
-        Err(err) => {
-            let path = err.path().to_string();
-            println!("Path in error {}", path);
-            panic!("{}", err);
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = Config::load("").map_err(std::io::Error::other)?;
+    let database = Database::open(&config.database.path)?;
+    let args: Vec<String> = env::args().skip(1).collect();
+    let replace = args.iter().any(|arg| arg == "--replace");
+    let args: Vec<_> = args.iter().filter(|arg| arg.as_str() != "--replace").collect();
+    match args.first().map(|arg| arg.as_str()).unwrap_or("seed") {
+        "seed" => {
+            let path = args
+                .get(1)
+                .map(|arg| arg.as_str())
+                .or(config.database.seed_path.as_deref())
+                .ok_or("No seed file configured")?;
+            let seed: SeedData = serde_json::from_slice(&fs::read(path)?)?;
+            database.seed(&seed, replace)?;
+            println!(
+                "Seeded {} accounts and {} characters in {}",
+                seed.accounts.len(),
+                seed.characters.len(),
+                config.database.path
+            );
         }
-        _ => {}
-    }
-    let mut characters = result.unwrap();
-
-    let path = Path::new("./config/items.json");
-    if !path.exists() {
-        panic!("config/items.json file does not exists at {}", path.to_str().unwrap());
-    }
-    let json = fs::read_to_string(path).unwrap();
-    let mut config_deserializer = serde_json::Deserializer::from_str(&json);
-    let result: Result<Value, _> = serde_path_to_error::deserialize(&mut config_deserializer);
-    let value = result.unwrap();
-    let items = value.as_object().unwrap().get("items").unwrap().as_array().unwrap();
-
-    let mut query_insert_char = "INSERT INTO \"char\" (account_id, char_id, class, max_hp, max_sp, agi, dex, str, int, vit, luk, \
-                                 base_level, job_level, save_y, last_y, save_x, last_x, last_map, save_map, hair_color, hair, char_num, \
-                                 name, clothes_color, skill_point, status_point, sex, zeny, hp, sp, body, weapon, shield, head_top, \
-                                 head_mid, head_bottom) VALUES "
-        .to_string();
-    let mut query_insert_inventory =
-        "INSERT INTO \"inventory\" (char_id, nameid, amount, equip, identified, unique_id) VALUES ".to_string();
-    let mut query_insert_skill = "INSERT INTO \"skill\" (char_id, id, lv) VALUES ".to_string();
-    let mut query_delete_char = "DELETE FROM \"char\" WHERE char_id = ANY($1);".to_string();
-    let mut query_delete_inventory = "DELETE FROM \"inventory\" WHERE char_id = ANY($1);".to_string();
-    let mut query_delete_skill = "DELETE FROM \"skill\" WHERE char_id = ANY($1);".to_string();
-    const CHAR_FIELD_COUNT: usize = 36;
-    const INVENTORY_FIELD_COUNT: usize = 6;
-    const SKILL_FIELD_COUNT: usize = 3;
-
-    let mut inventory_count = 0;
-    for character in characters.iter_mut() {
-        character.id = char_id_start;
-        character.name = generate_player_name();
-        character.class = Some(JobName::from_string(&character.job).value() as i16);
-        for (location, item) in character.equipments.iter_mut() {
-            let it = items
-                .iter()
-                .find(|it| it.get("id").unwrap().as_u64().unwrap() == item.item_id as u64)
-                .unwrap()
-                .as_object()
-                .unwrap();
-            let location = it.get("location").unwrap().as_u64().unwrap();
-            item.location = Some(location as i32);
-            item.item_id_32 = item.item_id as i32;
-            item.unique_id =
-                Some((SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_nanos() << 9) as i64 + item.item_id as i64);
+        "create" => {
+            let username = args.get(1).ok_or("Usage: account-setup create USERNAME (set ACCOUNT_PASSWORD)")?;
+            let password = env::var("ACCOUNT_PASSWORD").map_err(|_| "Set ACCOUNT_PASSWORD to the new account password")?;
+            let id = database.create_account((*username).clone(), password)?;
+            println!("Created account {id}; add this ID to server.accounts in config.json");
         }
-        for skill in character.skills.iter_mut() {
-            skill.id = SkillEnum::from_name(skill.name.as_str()).id() as i32;
-        }
-        inventory_count += character.equipments.len();
-        char_id_start += 1;
-    }
-
-    let mut char_params: Vec<&(dyn postgres::types::ToSql + Sync)> = Vec::with_capacity(CHAR_FIELD_COUNT * characters.len());
-    let mut inventory_params: Vec<&(dyn postgres::types::ToSql + Sync)> = Vec::with_capacity(INVENTORY_FIELD_COUNT * inventory_count);
-    let mut skill_params: Vec<&(dyn postgres::types::ToSql + Sync)> = Vec::with_capacity(SKILL_FIELD_COUNT * inventory_count);
-    let mut inventory_placeholder_count = 0;
-    let mut skill_placeholder_count = 0;
-    for (i, character) in characters.iter().enumerate() {
-        if i > 0 {
-            query_insert_char.push_str(", ");
-        }
-
-        for ((location, equipment)) in character.equipments.iter() {
-            if inventory_placeholder_count > 0 {
-                query_insert_inventory.push_str(", ");
+        "characters" => {
+            let path = args.get(1).map(|arg| arg.as_str()).unwrap_or("tools/account-setup/characters.json");
+            let presets: Vec<Character> = serde_json::from_slice(&fs::read(path)?)?;
+            let catalog: Value = serde_json::from_slice(&fs::read(&config.database.items_path)?)?;
+            let items = catalog["items"].as_array().ok_or("Invalid item catalog")?;
+            let account_id = 2_000_002;
+            let mut seed = SeedData {
+                accounts: vec![AccountRecord {
+                    account_id,
+                    username: "test".into(),
+                    password: env::var("ACCOUNT_PASSWORD").unwrap_or_else(|_| "qwertz".into()),
+                }],
+                ..SeedData::default()
+            };
+            let mut rng = thread_rng();
+            for (index, preset) in presets.into_iter().enumerate() {
+                let char_id = 160_100 + i32::try_from(index)?;
+                let equipment_id = |slot: &str| -> i16 { preset.equipments.get(slot).map_or(0, |equipment| equipment.item_id as i16) };
+                let character = CharacterRecord {
+                    char_id,
+                    account_id: account_id as i32,
+                    char_num: i16::try_from(index)?,
+                    name: format!("{}{}", generate_player_name(), index),
+                    class: JobName::from_string(&preset.job).value() as i16,
+                    zeny: 11_127_525,
+                    hair: preset.hair,
+                    hair_color: preset.hair_color,
+                    clothes_color: preset.clothes_color,
+                    hp: preset.max_hp,
+                    max_hp: preset.max_hp,
+                    sp: preset.max_sp,
+                    max_sp: preset.max_sp,
+                    agi: preset.agi,
+                    dex: preset.dex,
+                    str: preset.str,
+                    vit: preset.vit,
+                    int: preset.int,
+                    luk: preset.luk,
+                    base_level: preset.base_level,
+                    job_level: preset.job_level,
+                    inventory_slots: 100,
+                    last_map: preset.last_map.clone(),
+                    last_x: preset.last_x,
+                    last_y: preset.last_y,
+                    save_map: preset.save_map.clone(),
+                    save_x: preset.save_x,
+                    save_y: preset.save_y,
+                    status_point: preset.status_point,
+                    skill_point: preset.skill_point,
+                    sex: "M".into(),
+                    body: equipment_id("body"),
+                    weapon: equipment_id("weapon"),
+                    shield: equipment_id("shield"),
+                    head_top: equipment_id("head_top"),
+                    head_mid: equipment_id("head_mid"),
+                    head_bottom: equipment_id("head_low"),
+                    ..CharacterRecord::default()
+                };
+                let mut inventory = Vec::new();
+                for equipment in preset.equipments.values() {
+                    let item = items
+                        .iter()
+                        .find(|item| item["id"].as_i64() == Some(equipment.item_id as i64))
+                        .ok_or_else(|| format!("Unknown equipment {}", equipment.item_id))?;
+                    let location = item["location"].as_u64().ok_or("Invalid equipment location")?;
+                    inventory.push(InventoryRecord {
+                        item_id: equipment.item_id,
+                        amount: 1,
+                        equip: i32::try_from(location)?,
+                        is_identified: true,
+                        unique_id: rng.gen_range(1..i64::MAX),
+                        ..InventoryRecord::default()
+                    });
+                }
+                let skills: BTreeMap<u32, u8> = preset
+                    .skills
+                    .iter()
+                    .map(|skill| (SkillEnum::from_name(&skill.name).id(), skill.lvl))
+                    .collect();
+                seed.characters.push(character);
+                seed.inventories.push(CharacterInventory { char_id, items: inventory });
+                seed.skills.push(CharacterSkills { char_id, skills });
             }
-            query_insert_inventory.push_str(&format!(
-                "({})",
-                generate_placeholder(inventory_placeholder_count, INVENTORY_FIELD_COUNT).join(", ")
-            ));
-
-            inventory_params.extend_from_slice(&[
-                &character.id,
-                &equipment.item_id_32,
-                &1_i16,
-                equipment.location.as_ref().unwrap(),
-                &true,
-                equipment.unique_id.as_ref().unwrap(),
-            ]);
-            inventory_placeholder_count += 1;
+            database.seed(&seed, replace)?;
+            println!("Seeded {} preset characters for account {account_id}", seed.characters.len());
         }
-
-        for (skill) in character.skills.iter() {
-            if skill_placeholder_count > 0 {
-                query_insert_skill.push_str(", ");
-            }
-            query_insert_skill.push_str(&format!(
-                "({})",
-                generate_placeholder(skill_placeholder_count, SKILL_FIELD_COUNT).join(", ")
-            ));
-
-            skill_params.extend_from_slice(&[&character.id, &skill.id, &skill.lvl]);
-            skill_placeholder_count += 1;
-        }
-
-        query_insert_char.push_str(&format!("({})", generate_placeholder(i, CHAR_FIELD_COUNT).join(", ")));
-
-        // Add the parameters
-        char_params.extend_from_slice(&[
-            &account_id,
-            &character.id,
-            &character.class,
-            &character.max_hp,
-            &character.max_sp,
-            &character.agi,
-            &character.dex,
-            &character.str,
-            &character.int,
-            &character.vit,
-            &character.luk,
-            &character.base_level,
-            &character.job_level,
-            &character.save_y,
-            &character.last_y,
-            &character.save_x,
-            &character.last_x,
-            &character.last_map,
-            &character.save_map,
-            &character.hair_color,
-            &character.hair,
-            &character.char_num,
-            &character.name,
-            &character.clothes_color,
-            &character.skill_point,
-            &character.status_point,
-            &sex,
-            &zeny,
-            &character.max_hp,
-            &character.max_sp,
-            character.equipments.get("body").map_or(&0_i16, |e| &e.item_id),
-            character.equipments.get("weapon").map_or(&0_i16, |e| &e.item_id),
-            character.equipments.get("shield").map_or(&0_i16, |e| &e.item_id),
-            character.equipments.get("head_top").map_or(&0_i16, |e| &e.item_id),
-            character.equipments.get("head_mid").map_or(&0_i16, |e| &e.item_id),
-            character.equipments.get("head_low").map_or(&0_i16, |e| &e.item_id),
-        ]);
+        _ => return Err("Usage: account-setup [seed [FILE] | create USERNAME | characters [FILE]] [--replace]".into()),
     }
-    // println!("{}, params: {}", query, params.iter().map(|p| format!("{:?}",
-    // p)).collect::<Vec<String>>().join(","));
-    let mut transaction = client.transaction().unwrap();
-    if replace_existing_char {
-        let vec = characters.iter().map(|c| c.id).collect::<Vec<i32>>();
-        transaction.execute(query_delete_char.as_str(), &[&vec]).unwrap();
-        transaction.execute(query_delete_inventory.as_str(), &[&vec]).unwrap();
-        transaction.execute(query_delete_skill.as_str(), &[&vec]).unwrap();
-    }
-    transaction.execute(&query_insert_char, &char_params).unwrap();
-    // println!("{}, params: {}", query_insert_inventory,
-    // inventory_params.iter().map(|p| format!("{:?}",
-    // p)).collect::<Vec<String>>().join(","));
-    transaction.execute(&query_insert_inventory, &inventory_params).unwrap();
-    transaction.execute(&query_insert_skill, &skill_params).unwrap();
-    transaction.commit().unwrap();
-}
-
-fn generate_placeholder(i: usize, field_count: usize) -> Vec<String> {
-    (0..field_count).map(|j| format!("${}", i * field_count + j + 1)).collect()
+    Ok(())
 }
 
 fn generate_player_name() -> String {
-    let mut rng = thread_rng();
-
-    // Define syllables to create more realistic names
     let syllables = [
         "ar", "el", "ka", "an", "ra", "na", "to", "li", "ma", "in", "er", "la", "do", "sa", "vi", "no", "mi", "al", "es", "ro",
     ];
-
-    let syllable_count = rng.gen_range(2..=4);
-
-    // Combine random syllables
+    let mut rng = thread_rng();
     let mut name = String::new();
-    for _ in 0..syllable_count {
-        let syllable = syllables[rng.gen_range(0..syllables.len())];
-        name.push_str(syllable);
+    for _ in 0..rng.gen_range(2..=4) {
+        name.push_str(syllables[rng.gen_range(0..syllables.len())]);
     }
-
-    // Ensure the name length is between 5 and 10 characters
-    if name.len() > 10 {
-        name.truncate(10);
-    }
-
+    name.truncate(name.len().min(10));
     name
 }

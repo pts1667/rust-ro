@@ -25,11 +25,11 @@ pub struct SavePositionUpdate {
 #[derive(Debug, PartialEq)]
 pub struct StatusUpdate<T: Debug + Sized + PartialEq> {
     pub char_id: u32,
-    pub(crate) db_column: String,
+    pub(crate) field: String,
     pub(crate) value: T,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct InventoryItemUpdate {
     pub item_id: i32,
     pub char_id: i32,
@@ -37,6 +37,9 @@ pub struct InventoryItemUpdate {
     pub amount: i16,
     pub identified: bool,
     pub stackable: bool,
+    pub refine: i16,
+    pub damaged: bool,
+    pub cards: [i16; 4],
 }
 
 #[derive(Debug, PartialEq)]
@@ -44,7 +47,7 @@ pub struct DeleteItems {
     pub char_id: i32,
     pub item_inventory_id: i32,
     pub unique_id: i64,
-    pub amount: i16,
+    pub amount_to_remove: i16,
 }
 
 #[derive(Debug, PartialEq)]
