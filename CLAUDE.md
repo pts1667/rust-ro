@@ -59,7 +59,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/service/`: Business logic layer (character, battle, inventory, etc.)
 - `server/src/server/repository/`: Data access layer with sled integration
 - `server/src/server/request_handler/`: Packet handling controllers
-- `server/src/server/script/`: Integration with rAthena script virtual machine
+- `server/src/server/script/`: Typed game API for compiled Wasmtime NPC and item modules
 - `server/src/server/state/`: Game state management (characters, maps, mobs)
 - `server/src/server/mod.rs`: Implementation of server threads
 - `server/src/server/game_loop.rs`: Implementation of the main game loop, latency of operation within the game loop should be low (<20ms) or server will lag. There is only one loop for the whole server. it handles action made by player

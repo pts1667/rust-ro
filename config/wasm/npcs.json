@@ -1,0 +1,3772 @@
+[
+  {
+    "map_name": "prontera",
+    "x": 154,
+    "y": 188,
+    "dir": 4,
+    "name": "Global Variable Test",
+    "sprite": "98",
+    "entry_id": 2,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prontera",
+    "x": 154,
+    "y": 178,
+    "dir": 4,
+    "name": "Test Npc Instance1",
+    "sprite": "100",
+    "entry_id": 1,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prontera",
+    "x": 159,
+    "y": 178,
+    "dir": 4,
+    "name": "Test Npc Instance2",
+    "sprite": "100",
+    "entry_id": 1,
+    "constructor_args": []
+  },
+  {
+    "map_name": "alb2trea",
+    "x": 57,
+    "y": 70,
+    "dir": 6,
+    "name": "Warper#tre",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "alberta",
+    "x": 28,
+    "y": 240,
+    "dir": 4,
+    "name": "Warper#alb",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "aldebaran",
+    "x": 145,
+    "y": 118,
+    "dir": 4,
+    "name": "Warper#alde",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "amatsu",
+    "x": 203,
+    "y": 87,
+    "dir": 4,
+    "name": "Warper#ama",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "ayothaya",
+    "x": 209,
+    "y": 169,
+    "dir": 6,
+    "name": "Warper#ayo",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "comodo",
+    "x": 194,
+    "y": 158,
+    "dir": 4,
+    "name": "Warper#com",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "einbech",
+    "x": 59,
+    "y": 38,
+    "dir": 6,
+    "name": "Warper#einbe",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "einbroch",
+    "x": 69,
+    "y": 202,
+    "dir": 4,
+    "name": "Warper#einbr",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "gef_fild10",
+    "x": 71,
+    "y": 339,
+    "dir": 4,
+    "name": "Warper#orc",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "geffen",
+    "x": 124,
+    "y": 72,
+    "dir": 4,
+    "name": "Warper#gef",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "glast_01",
+    "x": 372,
+    "y": 308,
+    "dir": 4,
+    "name": "Warper#glh",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "gonryun",
+    "x": 162,
+    "y": 122,
+    "dir": 4,
+    "name": "Warper#gon",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "hugel",
+    "x": 101,
+    "y": 151,
+    "dir": 4,
+    "name": "Warper#hug",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "izlu2dun",
+    "x": 110,
+    "y": 92,
+    "dir": 4,
+    "name": "Warper#izd",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "izlude",
+    "x": 134,
+    "y": 150,
+    "dir": 4,
+    "name": "Warper#izl",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "jawaii",
+    "x": 253,
+    "y": 138,
+    "dir": 4,
+    "name": "Warper#jaw",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "lighthalzen",
+    "x": 162,
+    "y": 102,
+    "dir": 4,
+    "name": "Warper#lhz",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "louyang",
+    "x": 208,
+    "y": 103,
+    "dir": 6,
+    "name": "Warper#lou",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "manuk",
+    "x": 274,
+    "y": 146,
+    "dir": 6,
+    "name": "Warper#man",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "mid_camp",
+    "x": 216,
+    "y": 288,
+    "dir": 4,
+    "name": "Warper#mid",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "mjolnir_02",
+    "x": 85,
+    "y": 364,
+    "dir": 4,
+    "name": "Warper#mjo",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_ruins",
+    "x": 64,
+    "y": 164,
+    "dir": 4,
+    "name": "Warper#moc",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "morocc",
+    "x": 159,
+    "y": 97,
+    "dir": 4,
+    "name": "Warper#mor",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moscovia",
+    "x": 229,
+    "y": 191,
+    "dir": 4,
+    "name": "Warper#mos",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "nameless_n",
+    "x": 259,
+    "y": 213,
+    "dir": 4,
+    "name": "Warper#nam",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "niflheim",
+    "x": 205,
+    "y": 179,
+    "dir": 4,
+    "name": "Warper#nif",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "pay_arche",
+    "x": 42,
+    "y": 134,
+    "dir": 4,
+    "name": "Warper#arc",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "payon",
+    "x": 182,
+    "y": 108,
+    "dir": 4,
+    "name": "Warper#pay",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prontera",
+    "x": 159,
+    "y": 192,
+    "dir": 4,
+    "name": "Warper#prt",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prt_fild05",
+    "x": 279,
+    "y": 223,
+    "dir": 6,
+    "name": "Warper#cul",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "rachel",
+    "x": 135,
+    "y": 116,
+    "dir": 4,
+    "name": "Warper#rac",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "splendide",
+    "x": 205,
+    "y": 153,
+    "dir": 4,
+    "name": "Warper#spl",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "thor_camp",
+    "x": 249,
+    "y": 76,
+    "dir": 4,
+    "name": "Warper#thor",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "umbala",
+    "x": 106,
+    "y": 150,
+    "dir": 3,
+    "name": "Warper#umb",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "veins",
+    "x": 214,
+    "y": 123,
+    "dir": 4,
+    "name": "Warper#ve",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "xmas",
+    "x": 150,
+    "y": 136,
+    "dir": 6,
+    "name": "Warper#xmas",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "yuno",
+    "x": 162,
+    "y": 47,
+    "dir": 4,
+    "name": "Warper#yuno",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prt_monk",
+    "x": 159,
+    "y": 175,
+    "dir": 4,
+    "name": "Warper#mnk",
+    "sprite": "4_F_VALKYRIE",
+    "entry_id": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prontera",
+    "x": 170,
+    "y": 180,
+    "dir": 1,
+    "name": "Stylist#custom_stylist",
+    "sprite": "122",
+    "entry_id": 4,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prontera",
+    "x": 153,
+    "y": 193,
+    "dir": 6,
+    "name": "Job Master",
+    "sprite": "123",
+    "entry_id": 5,
+    "constructor_args": []
+  },
+  {
+    "map_name": "prt_in",
+    "x": 126,
+    "y": 76,
+    "dir": 0,
+    "name": "Tool Dealer#prt1",
+    "sprite": "53",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 611
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1750
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 501
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 502
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 503
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 504
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 506
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 645
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 656
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 601
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 602
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1065
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2239
+      },
+      {
+        "Number": -1
+      }
+    ]
+  },
+  {
+    "map_name": "prt_monk",
+    "x": 172,
+    "y": 196,
+    "dir": 0,
+    "name": "Tool Dealer#prt_monk",
+    "sprite": "53",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 611
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1750
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 501
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 502
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 503
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 504
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 506
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 645
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 656
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 601
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 602
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1065
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2239
+      },
+      {
+        "Number": -1
+      }
+    ]
+  },
+  {
+    "map_name": "prt_monk",
+    "x": 193,
+    "y": 210,
+    "dir": 0,
+    "name": "Weapon#prt_monk",
+    "sprite": "119",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 611
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1750
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 501
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 502
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 503
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 504
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 506
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 645
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 656
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 601
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 602
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1065
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2239
+      },
+      {
+        "Number": -1
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 240,
+    "dir": 5,
+    "name": "Armor",
+    "sprite": "99",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2304
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2306
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2308
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2310
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2311
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2313
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2315
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 2317
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2322
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2326
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 2331
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 2342
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2353
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 2364
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 2367
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2399
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 242,
+    "dir": 5,
+    "name": "Shield",
+    "sprite": "99",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2102
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2106
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 2108
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 2110
+      },
+      {
+        "Number": 85000
+      },
+      {
+        "Number": 2114
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2116
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2123
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2124
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 244,
+    "dir": 5,
+    "name": "Footgear",
+    "sprite": "99",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2404
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2406
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2409
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2412
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2417
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2418
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2424
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2425
+      },
+      {
+        "Number": 20000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 246,
+    "dir": 5,
+    "name": "Mace",
+    "sprite": "99",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1502
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1505
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1511
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1514
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1517
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1520
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1522
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1523
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 1528
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1529
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1531
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 248,
+    "dir": 5,
+    "name": "Knuckle",
+    "sprite": "494",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1802
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1804
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1806
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 1808
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1810
+      },
+      {
+        "Number": 70000
+      },
+      {
+        "Number": 1812
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 1813
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1814
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1822
+      },
+      {
+        "Number": 150000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 250,
+    "dir": 5,
+    "name": "Whips",
+    "sprite": "494",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1951
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1953
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1955
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 1962
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1963
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1972
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1974
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1976
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 252,
+    "dir": 5,
+    "name": "Instruments",
+    "sprite": "494",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1902
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1904
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1906
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1908
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1913
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1914
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1915
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1916
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1917
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 254,
+    "dir": 5,
+    "name": "Books",
+    "sprite": "494",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1550
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 1551
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 1552
+      },
+      {
+        "Number": 51000
+      },
+      {
+        "Number": 1559
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 1561
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1564
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 1568
+      },
+      {
+        "Number": 70000
+      },
+      {
+        "Number": 1569
+      },
+      {
+        "Number": 70000
+      },
+      {
+        "Number": 1570
+      },
+      {
+        "Number": 70000
+      },
+      {
+        "Number": 1571
+      },
+      {
+        "Number": 70000
+      },
+      {
+        "Number": 1572
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 256,
+    "dir": 5,
+    "name": "Guns",
+    "sprite": "497",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 13103
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 13105
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 13106
+      },
+      {
+        "Number": 200000
+      },
+      {
+        "Number": 13101
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 13150
+      },
+      {
+        "Number": 6000
+      },
+      {
+        "Number": 13152
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 13153
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 13155
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 13156
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 13154
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 13159
+      },
+      {
+        "Number": 250000
+      },
+      {
+        "Number": 13157
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 13161
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 13162
+      },
+      {
+        "Number": 500000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 258,
+    "dir": 5,
+    "name": "Fuuma Shuriken",
+    "sprite": "497",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 7522
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7521
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7523
+      },
+      {
+        "Number": 500
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 260,
+    "dir": 5,
+    "name": "OneHanded Swords",
+    "sprite": "497",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1108
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1117
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1120
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1124
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1130
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1131
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1133
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1138
+      },
+      {
+        "Number": 200000
+      },
+      {
+        "Number": 1139
+      },
+      {
+        "Number": 200000
+      },
+      {
+        "Number": 1145
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1149
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 262,
+    "dir": 5,
+    "name": "TwoHanded Swords",
+    "sprite": "497",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1155
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1158
+      },
+      {
+        "Number": 90000
+      },
+      {
+        "Number": 1163
+      },
+      {
+        "Number": 120000
+      },
+      {
+        "Number": 1164
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1165
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1166
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1168
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1169
+      },
+      {
+        "Number": 500000
+      },
+      {
+        "Number": 1172
+      },
+      {
+        "Number": 200000
+      },
+      {
+        "Number": 1175
+      },
+      {
+        "Number": 75000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 264,
+    "dir": 5,
+    "name": "Spears",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1405
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1408
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1415
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1417
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1421
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1422
+      },
+      {
+        "Number": 25000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 147,
+    "y": 238,
+    "dir": 1,
+    "name": "Dagger",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1208
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1211
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1217
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1223
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1231
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1235
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1236
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1237
+      },
+      {
+        "Number": 75000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 264,
+    "dir": 4,
+    "name": "Axes",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1302
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 1306
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1307
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 1309
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1352
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1355
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 1358
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1363
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1364
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1365
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1366
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1371
+      },
+      {
+        "Number": 100000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 262,
+    "dir": 4,
+    "name": "Accessories",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2621
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2622
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2624
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2618
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2625
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2626
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2674
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2648
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2649
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2627
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 2701
+      },
+      {
+        "Number": 75000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 260,
+    "dir": 4,
+    "name": "Bows",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1702
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1705
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1708
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1720
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1723
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1724
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1725
+      },
+      {
+        "Number": 75000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 258,
+    "dir": 4,
+    "name": "Staffs / Rods",
+    "sprite": "731",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1602
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1605
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1608
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1611
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 1618
+      },
+      {
+        "Number": 85000
+      },
+      {
+        "Number": 1620
+      },
+      {
+        "Number": 85000
+      },
+      {
+        "Number": 1622
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1624
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1625
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1626
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 256,
+    "dir": 4,
+    "name": "Garments",
+    "sprite": "405",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2504
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2506
+      },
+      {
+        "Number": 40000
+      },
+      {
+        "Number": 2507
+      },
+      {
+        "Number": 82000
+      },
+      {
+        "Number": 2508
+      },
+      {
+        "Number": 56000
+      },
+      {
+        "Number": 2514
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2518
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 2519
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 2528
+      },
+      {
+        "Number": 85000
+      },
+      {
+        "Number": 2531
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2553
+      },
+      {
+        "Number": 10000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 254,
+    "dir": 4,
+    "name": "Katars",
+    "sprite": "405",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1251
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 1253
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1255
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 1261
+      },
+      {
+        "Number": 125000
+      },
+      {
+        "Number": 1262
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1263
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 1265
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1275
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1276
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1277
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 1278
+      },
+      {
+        "Number": 100000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 252,
+    "dir": 4,
+    "name": "Lower Headgear",
+    "sprite": "405",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2218
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 5054
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2267
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 5107
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2265
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 2266
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2269
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2270
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 250,
+    "dir": 4,
+    "name": "Middle Headgear",
+    "sprite": "405",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2201
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 2203
+      },
+      {
+        "Number": 4000
+      },
+      {
+        "Number": 2205
+      },
+      {
+        "Number": 3500
+      },
+      {
+        "Number": 2212
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 2225
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2229
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2231
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2234
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2235
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2281
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 2292
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 2296
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 248,
+    "dir": 4,
+    "name": "Upper Headgear",
+    "sprite": "405",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 2210
+      },
+      {
+        "Number": 1000
+      },
+      {
+        "Number": 2211
+      },
+      {
+        "Number": 1000
+      },
+      {
+        "Number": 2213
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2214
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2217
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2221
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 2223
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2246
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 2256
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 2264
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2280
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 2299
+      },
+      {
+        "Number": 30000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 246,
+    "dir": 4,
+    "name": "Headgear 01",
+    "sprite": "832",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 5380
+      },
+      {
+        "Number": 40000
+      },
+      {
+        "Number": 5382
+      },
+      {
+        "Number": 40000
+      },
+      {
+        "Number": 2269
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 2270
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 5107
+      },
+      {
+        "Number": 15000
+      },
+      {
+        "Number": 5110
+      },
+      {
+        "Number": 15000
+      },
+      {
+        "Number": 2247
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 5206
+      },
+      {
+        "Number": 10000
+      },
+      {
+        "Number": 2245
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 2286
+      },
+      {
+        "Number": 35000
+      },
+      {
+        "Number": 2296
+      },
+      {
+        "Number": 15000
+      },
+      {
+        "Number": 2258
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 5161
+      },
+      {
+        "Number": 200000
+      },
+      {
+        "Number": 5104
+      },
+      {
+        "Number": 40000
+      },
+      {
+        "Number": 2295
+      },
+      {
+        "Number": 20000
+      },
+      {
+        "Number": 5026
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 5032
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5038
+      },
+      {
+        "Number": 30000
+      },
+      {
+        "Number": 5229
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5227
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5228
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5198
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5058
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5253
+      },
+      {
+        "Number": 80000
+      },
+      {
+        "Number": 5252
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 5296
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5231
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5232
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5233
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5230
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5234
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5076
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 244,
+    "dir": 4,
+    "name": "Headgear 02",
+    "sprite": "832",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 5059
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5235
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5236
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5237
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5293
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5303
+      },
+      {
+        "Number": 35000
+      },
+      {
+        "Number": 5304
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5312
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5315
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 5317
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 5319
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5320
+      },
+      {
+        "Number": 120000
+      },
+      {
+        "Number": 5323
+      },
+      {
+        "Number": 588888
+      },
+      {
+        "Number": 5336
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5337
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5338
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5339
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5346
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 242,
+    "dir": 4,
+    "name": "Headgear 03",
+    "sprite": "832",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 5181
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5102
+      },
+      {
+        "Number": 500000
+      },
+      {
+        "Number": 5016
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5349
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5013
+      },
+      {
+        "Number": 700000
+      },
+      {
+        "Number": 5022
+      },
+      {
+        "Number": 500000
+      },
+      {
+        "Number": 5171
+      },
+      {
+        "Number": 1250000
+      },
+      {
+        "Number": 5135
+      },
+      {
+        "Number": 500000
+      },
+      {
+        "Number": 5029
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5033
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5040
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5047
+      },
+      {
+        "Number": 35000
+      },
+      {
+        "Number": 5065
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5068
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5074
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5084
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5086
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5108
+      },
+      {
+        "Number": 350000
+      },
+      {
+        "Number": 5121
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5133
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5137
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5138
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5140
+      },
+      {
+        "Number": 55000
+      },
+      {
+        "Number": 5146
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5151
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5152
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5170
+      },
+      {
+        "Number": 150000
+      },
+      {
+        "Number": 5173
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5174
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5175
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5184
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5185
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 5187
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5188
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5191
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5192
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5193
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5194
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5195
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5196
+      },
+      {
+        "Number": 25000
+      },
+      {
+        "Number": 5197
+      },
+      {
+        "Number": 25000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 240,
+    "dir": 4,
+    "name": "Headgear 04",
+    "sprite": "832",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 5200
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5205
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5211
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5226
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5238
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5239
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5240
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5241
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5242
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5243
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5325
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5254
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5255
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5257
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5297
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 2202
+      },
+      {
+        "Number": 45000
+      },
+      {
+        "Number": 5258
+      },
+      {
+        "Number": 35000
+      },
+      {
+        "Number": 5298
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5276
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5273
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5275
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5274
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5259
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5271
+      },
+      {
+        "Number": 250000
+      },
+      {
+        "Number": 5272
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5284
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5286
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5288
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5289
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5291
+      },
+      {
+        "Number": 55000
+      },
+      {
+        "Number": 5292
+      },
+      {
+        "Number": 55000
+      },
+      {
+        "Number": 5294
+      },
+      {
+        "Number": 55000
+      },
+      {
+        "Number": 5352
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5324
+      },
+      {
+        "Number": 100000
+      },
+      {
+        "Number": 5359
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5360
+      },
+      {
+        "Number": 50000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 164,
+    "y": 238,
+    "dir": 4,
+    "name": "Headgear 05",
+    "sprite": "832",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 5340
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5341
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5342
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5343
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5344
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5345
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5354
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5355
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5361
+      },
+      {
+        "Number": 65000
+      },
+      {
+        "Number": 5365
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5373
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5374
+      },
+      {
+        "Number": 350000
+      },
+      {
+        "Number": 5379
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5383
+      },
+      {
+        "Number": 60000
+      },
+      {
+        "Number": 5384
+      },
+      {
+        "Number": 88888
+      },
+      {
+        "Number": 5390
+      },
+      {
+        "Number": 88888
+      },
+      {
+        "Number": 5388
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5411
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5393
+      },
+      {
+        "Number": 75000
+      },
+      {
+        "Number": 5397
+      },
+      {
+        "Number": 35000
+      },
+      {
+        "Number": 5399
+      },
+      {
+        "Number": 50000
+      },
+      {
+        "Number": 5800
+      },
+      {
+        "Number": 175000
+      },
+      {
+        "Number": 5801
+      },
+      {
+        "Number": 300000
+      },
+      {
+        "Number": 5802
+      },
+      {
+        "Number": 150000
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 151,
+    "y": 284,
+    "dir": 4,
+    "name": "Ammunition",
+    "sprite": "880",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 1766
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 1755
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1750
+      },
+      {
+        "Number": 10
+      },
+      {
+        "Number": 1754
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1761
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1752
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1760
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1759
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1772
+      },
+      {
+        "Number": 100
+      },
+      {
+        "Number": 1757
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1770
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1769
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1765
+      },
+      {
+        "Number": 40
+      },
+      {
+        "Number": 1763
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1762
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1767
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1764
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1751
+      },
+      {
+        "Number": 20
+      },
+      {
+        "Number": 1768
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1753
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1756
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1758
+      },
+      {
+        "Number": 30
+      },
+      {
+        "Number": 1771
+      },
+      {
+        "Number": 1000
+      },
+      {
+        "Number": 13200
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13202
+      },
+      {
+        "Number": 100
+      },
+      {
+        "Number": 13201
+      },
+      {
+        "Number": 300
+      },
+      {
+        "Number": 13206
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13203
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13207
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13204
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13205
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13252
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13254
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 13251
+      },
+      {
+        "Number": 100
+      },
+      {
+        "Number": 13253
+      },
+      {
+        "Number": 300
+      },
+      {
+        "Number": 13250
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13256
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13259
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13258
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13255
+      },
+      {
+        "Number": 50
+      },
+      {
+        "Number": 13257
+      },
+      {
+        "Number": 50
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 153,
+    "y": 284,
+    "dir": 4,
+    "name": "AlchemistDealer",
+    "sprite": "880",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 715
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 716
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 717
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 1025
+      },
+      {
+        "Number": 200
+      },
+      {
+        "Number": 7136
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7135
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7137
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7138
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 7139
+      },
+      {
+        "Number": 500
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 155,
+    "y": 284,
+    "dir": 4,
+    "name": "StreetDealer",
+    "sprite": "880",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 678
+      },
+      {
+        "Number": 5000
+      },
+      {
+        "Number": 505
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 506
+      },
+      {
+        "Number": 40
+      },
+      {
+        "Number": 610
+      },
+      {
+        "Number": -1
+      },
+      {
+        "Number": 545
+      },
+      {
+        "Number": 150
+      },
+      {
+        "Number": 546
+      },
+      {
+        "Number": 600
+      },
+      {
+        "Number": 547
+      },
+      {
+        "Number": 1650
+      }
+    ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 157,
+    "y": 284,
+    "dir": 4,
+    "name": "SheepyGonzales",
+    "sprite": "895",
+    "entry_id": 6,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 12028
+      },
+      {
+        "Number": 1000
+      },
+      {
+        "Number": 12262
+      },
+      {
+        "Number": 500
+      },
+      {
+        "Number": 12016
+      },
+      {
+        "Number": 750
+      }
+    ]
+  }
+]

@@ -3,6 +3,7 @@ use std::fs::File;
 use std::hash::Hash;
 use std::io::Write;
 use std::net::{Shutdown, TcpStream};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 
 use packets::packets::{Packet, PacketUnknown};
@@ -10,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio::sync::mpsc::Sender;
 
+use crate::server::script::PlayerInput;
 use crate::server::state::character::Character;
 
 pub struct Session {
@@ -23,8 +25,8 @@ pub struct Session {
     pub char_id: Option<u32>,
     pub packetver: u32,
     pub is_simulated: bool,
-    pub script_handler_channel_sender: Mutex<Option<Sender<Vec<u8>>>>, /* TODO keep track on creation. Abort script thread after X
-                                                                        * minutes + abort on new script interaction */
+    pub script_generation: AtomicU64,
+    pub script_handler_channel_sender: Mutex<Option<Sender<PlayerInput>>>,
 }
 
 impl PartialEq for Session {
@@ -243,6 +245,7 @@ impl Session {
             char_id: None,
             packetver,
             is_simulated: false,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -257,6 +260,7 @@ impl Session {
             char_id: self.char_id,
             packetver: self.packetver,
             is_simulated: self.is_simulated,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -271,6 +275,7 @@ impl Session {
             char_id: self.char_id,
             packetver: self.packetver,
             is_simulated: false,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -290,6 +295,7 @@ impl Session {
             char_id: Some(char_id),
             packetver,
             is_simulated: true,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -304,6 +310,7 @@ impl Session {
             char_id: Some(char_id),
             packetver: self.packetver,
             is_simulated: self.is_simulated,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -318,6 +325,7 @@ impl Session {
             char_id: None,
             packetver: self.packetver,
             is_simulated: self.is_simulated,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
@@ -332,12 +340,29 @@ impl Session {
             char_id: self.char_id,
             packetver: self.packetver,
             is_simulated: self.is_simulated,
+            script_generation: AtomicU64::new(0),
             script_handler_channel_sender: Mutex::new(None),
         }
     }
 
-    pub fn set_script_handler_channel_sender(&self, script_handler_channel_sender: Sender<Vec<u8>>) {
-        *self.script_handler_channel_sender.lock().unwrap() = Some(script_handler_channel_sender);
+    pub fn set_script_handler_channel_sender(&self, sender: Sender<PlayerInput>) -> u64 {
+        let mut channel = self.script_handler_channel_sender.lock().unwrap();
+        let generation = self.script_generation.fetch_add(1, Ordering::AcqRel) + 1;
+        *channel = Some(sender);
+        generation
+    }
+
+    pub fn finish_script(&self, generation: u64) {
+        let mut channel = self.script_handler_channel_sender.lock().unwrap();
+        if self.script_generation.load(Ordering::Acquire) == generation {
+            channel.take();
+        }
+    }
+
+    pub fn cancel_script(&self) {
+        let mut channel = self.script_handler_channel_sender.lock().unwrap();
+        self.script_generation.fetch_add(1, Ordering::AcqRel);
+        channel.take();
     }
 
     pub fn char_id(&self) -> u32 {
@@ -345,6 +370,7 @@ impl Session {
     }
 
     pub fn disconnect(&self) {
+        self.cancel_script();
         if let Some(socket) = self.char_server_socket.as_ref() {
             let write_guard = socket.write().unwrap();
             if let Ok(_) = write_guard.shutdown(Shutdown::Both) {

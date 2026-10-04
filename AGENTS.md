@@ -9,8 +9,8 @@ This file provides repository guidance to Codex and other coding agents.
 # Build in release mode (optimized)
 cargo build --release
 
-# Run the server (requires DATABASE_PASSWORD environment variable)
-DATABASE_PASSWORD=ragnarok cargo run --package server --bin server
+# Run the server (opens the configured sled database)
+cargo run --package server --bin server
 
 # Run with visual debugger (requires visual_debugger feature)
 cargo run --package server --bin server --features visual_debugger
@@ -21,7 +21,7 @@ cargo run --package server --bin server --features visual_debugger
 # Run all tests
 cargo test --release
 
-# Run integration tests (requires running PostgreSQL database)
+# Run integration tests using temporary sled databases
 cargo test --features integration_tests
 
 # Run unit tests only
@@ -57,9 +57,9 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/`: Core server implementation
 - `server/src/server/boot/`: Server initialization (map loading, script compilation, etc.)
 - `server/src/server/service/`: Business logic layer (character, battle, inventory, etc.)
-- `server/src/server/repository/`: Data access layer with PostgreSQL integration
+- `server/src/repository/`: Data access layer with sled transactions
 - `server/src/server/request_handler/`: Packet handling controllers
-- `server/src/server/script/`: Integration with rAthena script virtual machine
+- `server/src/server/script/`: Host operations for compiled scripts running in Wasmtime
 - `server/src/server/state/`: Game state management (characters, maps, mobs)
 - `server/src/server/mod.rs`: Implementation of server threads
 - `server/src/server/game_loop.rs`: Implementation of the main game loop, latency of operation within the game loop should be low (<20ms) or server will lag. There is only one loop for the whole server. it handles action made by player
@@ -69,7 +69,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/model/events/game_event.rs`: Contains enumeration of game event, that are handled by the game loop. It is used for message passing between request handler thread and game loop.
 - `server/src/server/model/events/client_notification.rs`: Enumeration for sending packet to the client
 - `server/src/server/state/server.rs`: Access to server state, access should only be done from game loop, state can be accessed for mutability in an unsafe way, thus it is mandatory to access it only from main game loop
-- `/src/repository/`: data access layer, this is the implementation of database interaction using `sqlx`, we write mainly raw SQL with prepared statement.
+- `server/src/repository/`: Database access through sled multi-key and multi-tree ACID transactions. Never call explicit database flush methods.
 - `/src/tests/`: unit and integration test of the server
 - `lib/`: crate for specific logic implementation
   - `lib/configuration`: Structure for configuration the server. This is where configuration entry should be added 
@@ -78,7 +78,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
   - `lib/skills`: Structures containing implementation of all class skills
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)
-- PostgreSQL database for persistent data (accounts, characters, etc.)
+- Embedded sled database for persistent data (accounts, characters, etc.), seeded from repository assets on a fresh start
 
 ### Sending packet to the client
 - All services have an instance of `client_notification_sender: SyncSender<Notification>,` in their structure

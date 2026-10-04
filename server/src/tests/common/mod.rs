@@ -19,7 +19,7 @@ use std::{fs, thread};
 
 use configuration::configuration::Config;
 use packets::packets::Packet;
-use rathena_script_lang_interpreter::lang::vm::{DebugFlag, Vm};
+use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
 
 use crate::repository::model::item_model::{ItemModel, ItemModels};
@@ -166,7 +166,7 @@ pub fn before_all() {
 
         let item_models = serde_json::from_str::<ItemModels>(&fs::read_to_string("../config/items.json").unwrap());
         let mut items: Vec<ItemModel> = item_models.unwrap().into();
-        ItemService::convert_script_into_bonuses(&mut items, "../native_functions_list.txt");
+        ItemService::convert_script_into_bonuses(&mut items, test_script_vm());
 
         let mob_models = serde_json::from_str::<MobModels>(&fs::read_to_string("../config/mobs.json").unwrap());
         let mobs: Vec<MobModel> = mob_models.unwrap().into();
@@ -192,8 +192,13 @@ pub fn mocked_repository() -> Arc<MockedRepository> {
     Arc::new(MockedRepository)
 }
 
-pub fn test_script_vm() -> Arc<Vm> {
-    Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value()))
+pub fn test_script_vm() -> Arc<WasmRuntime> {
+    static RUNTIME: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
+    RUNTIME
+        .get_or_init(|| {
+            WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/game_scripts.wasm")).unwrap()
+        })
+        .clone()
 }
 
 pub struct ServerBuilder {

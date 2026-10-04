@@ -1,3 +1,5 @@
+Historical rAthena command reference. The running server now uses the typed Rust API in lib/script-sdk and compiled Wasm modules; see docs/adr/3-wasmtime.md.
+
 * purchaseitems items_id_array, items_amount_array
 * purchaseitems items_name_array, items_amount_array
 

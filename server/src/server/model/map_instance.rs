@@ -4,7 +4,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::SyncSender;
 
-use rathena_script_lang_interpreter::lang::vm::Vm;
+use script_runtime::WasmRuntime;
 
 use crate::server::map_instance_loop::MAP_LOOP_TICK_RATE;
 use crate::server::model::events::client_notification::Notification;
@@ -14,7 +14,6 @@ use crate::server::model::map_item::{MapItems, ToMapItem};
 use crate::server::model::script::Script;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::model::warp::Warp;
-use crate::server::script::MapScriptHandler;
 use crate::server::state::map_instance::{MapInstanceState, MobSpawnTrack};
 use crate::util::cell::{MyRef, MyRefMut, MyUnsafeCell};
 use crate::util::string::StringUtil;
@@ -78,7 +77,7 @@ unsafe impl Send for MapInstance {}
 
 impl MapInstance {
     pub fn from_map(
-        vm: Arc<Vm>,
+        _vm: Arc<WasmRuntime>,
         map: &'static Map,
         id: u8,
         cells: Vec<u16>,
@@ -88,21 +87,13 @@ impl MapInstance {
     ) -> MapInstance {
         let mut scripts = vec![];
         map.scripts().iter().for_each(|script| {
-            let (_, instance_reference) = Vm::create_instance(
-                vm.clone(),
-                script.class_name.clone(),
-                Box::new(&MapScriptHandler),
-                script.constructor_args.clone(),
-            )
-            .unwrap();
-            let mut script = script.clone();
-            script.set_instance_reference(instance_reference);
+            let script = script.clone();
             let script_arc = Arc::new(script);
             map_items.insert(script_arc.id(), script_arc.to_map_item());
             scripts.push(script_arc);
         });
         let key = MapInstanceKey::new(map.name().to_string(), id);
-        MapInstance {
+        let instance = MapInstance {
             key: key.clone(),
             client_notification_channel,
             tasks_queue,
@@ -120,7 +111,9 @@ impl MapInstance {
                     .collect::<HashMap<u32, MobSpawnTrack>>(),
             )),
             shutdown: AtomicBool::new(false),
-        }
+        };
+        instance.state_mut().flags = map.flags().clone();
+        instance
     }
 
     pub fn shutdown(&self) {

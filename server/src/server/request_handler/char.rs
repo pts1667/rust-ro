@@ -264,7 +264,7 @@ pub fn handle_select_char(server: &Server, context: Request) {
         last_map = "prontera".to_string();
     }
 
-    let character = Character::new(
+    let mut character = Character::new(
         char_model.name.clone(),
         char_id,
         session_id,
@@ -276,6 +276,31 @@ pub fn handle_select_char(server: &Server, context: Request) {
         if char_model.sex == "M" { 1 } else { 0 },
         hotkeys,
     );
+    character.save_map = char_model.save_map.clone();
+    character.save_x = char_model.save_x.max(0) as u16;
+    character.save_y = char_model.save_y.max(0) as u16;
+    character.options = char_model.option as u32 as u64;
+    character.karma = char_model.karma;
+    character.manner = char_model.manner;
+    match server.repository.character_game_systems(char_id) {
+        Ok(systems) => character.game_systems = systems,
+        Err(error) => {
+            error!("Failed to load character game systems: {error}");
+            return;
+        }
+    }
+    match server.repository.account_game_systems(character.account_id) {
+        Ok(systems) => character.account_game_systems = systems,
+        Err(error) => { error!("Failed to load account game systems: {error}"); return; }
+    }
+    if character.game_systems.guild_id != 0 {
+        match server.repository.guild(character.game_systems.guild_id) {
+            Ok(Some(guild)) => character.guild_name = guild.name,
+            Ok(None) => {}
+            Err(error) => { error!("Failed to load guild: {error}"); return; }
+        }
+    }
+    character.refresh_script_context();
     let char_id = character.char_id;
     let mut map_name = [0 as char; 16];
     character.current_map_name().fill_char_array(map_name.as_mut());

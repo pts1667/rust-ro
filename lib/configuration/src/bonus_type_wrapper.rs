@@ -106,6 +106,24 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 "Hit" => BonusType::Hit(value.unwrap() as i16),
                 "HitPercentage" => BonusType::HitPercentage(value.unwrap() as i8),
                 "Flee" => BonusType::Flee(value.unwrap() as i16),
+                "FleePercentage" => BonusType::FleePercentage(value.ok_or_else(|| serde::de::Error::custom("Missing flee rate"))?),
+                "ResistanceMiscAttackPercentage" => {
+                    BonusType::ResistanceMiscAttackPercentage(value.ok_or_else(|| serde::de::Error::custom("Missing misc resistance"))?)
+                }
+                "ResistanceSkillIdPercentage" => BonusType::ResistanceSkillIdPercentage(
+                    value.ok_or_else(|| serde::de::Error::custom("Missing skill ID"))? as u32,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing skill resistance"))?,
+                ),
+                "ConditionalWeaponAtk" | "ConditionalWeaponDamagePercentage" => {
+                    let weapon = WeaponType::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing weapon type"))? as usize)
+                        .map_err(serde::de::Error::custom)?;
+                    let amount = value2.ok_or_else(|| serde::de::Error::custom("Missing weapon bonus"))?;
+                    if bonus == "ConditionalWeaponAtk" {
+                        BonusType::ConditionalWeaponAtk(weapon, amount)
+                    } else {
+                        BonusType::ConditionalWeaponDamagePercentage(weapon, amount)
+                    }
+                }
                 "Crit" => BonusType::Crit(Self::f32_value(value, value_f32, "Crit").map_err(|e| serde::de::Error::custom(e.as_str()))?),
                 "PerfectDodge" => BonusType::PerfectDodge(value.unwrap() as i8),
                 "Aspd" => BonusType::Aspd(value.unwrap() as i8),
@@ -117,6 +135,25 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 "MaxhpPercentage" => BonusType::MaxhpPercentage(value.unwrap() as i8),
                 "MaxspPercentage" => BonusType::MaxspPercentage(value.unwrap() as i8),
                 "Atk" => BonusType::Atk(value.ok_or_else(|| serde::de::Error::custom("Empty value for Atk"))? as i16),
+                "WeaponAtk" => BonusType::WeaponAtk(value.ok_or_else(|| serde::de::Error::custom("Empty value for WeaponAtk"))?),
+                "WeaponRefineAtk" => {
+                    BonusType::WeaponRefineAtk(value.ok_or_else(|| serde::de::Error::custom("Empty value for WeaponRefineAtk"))?)
+                }
+                "WeaponComaAgainstElement" => BonusType::WeaponComaAgainstElement(
+                    Element::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing Coma element"))? as usize)
+                        .map_err(|error| serde::de::Error::custom(error))?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing Coma rate"))?,
+                ),
+                "WeaponComaAgainstClass" => BonusType::WeaponComaAgainstClass(
+                    MobClass::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing Coma class"))? as usize)
+                        .map_err(|error| serde::de::Error::custom(error))?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing Coma rate"))?,
+                ),
+                "WeaponComaAgainstRace" => BonusType::WeaponComaAgainstRace(
+                    MobRace::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing Coma race"))? as usize)
+                        .map_err(|error| serde::de::Error::custom(error))?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing Coma rate"))?,
+                ),
                 "Def" => BonusType::Def(value.unwrap() as i16),
                 "VitDefPercentage" => BonusType::VitDefPercentage(value.unwrap() as i8),
                 "DefPercentage" => BonusType::DefPercentage(value.unwrap() as i8),
@@ -139,17 +176,24 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 "AfterCastDelayPercentage" => BonusType::AfterCastDelayPercentage(value.unwrap() as i8),
                 "NaturalHpRecoveryPercentage" => BonusType::NaturalHpRecoveryPercentage(value.unwrap() as i8),
                 "NaturalSpRecoveryPercentage" => BonusType::NaturalSpRecoveryPercentage(value.unwrap() as i8),
-                "HpRegenFromItemPercentage" => BonusType::HpRegenFromItemPercentage(value.unwrap() as i8),
-                "SpRegenFromItemPercentage" => BonusType::SpRegenFromItemPercentage(value.unwrap() as i8),
-                "HpRegenFromItemIDPercentage" => BonusType::HpRegenFromItemIDPercentage(value.unwrap() as u32, value2.unwrap() as i8),
-                "HpRegenFromHerbPercentage" => BonusType::HpRegenFromHerbPercentage(value.unwrap() as i8),
-                "HpRegenFromFruitPercentage" => BonusType::HpRegenFromFruitPercentage(value.unwrap() as i8),
-                "HpRegenFromMeatPercentage" => BonusType::HpRegenFromMeatPercentage(value.unwrap() as i8),
-                "HpRegenFromCandyPercentage" => BonusType::HpRegenFromCandyPercentage(value.unwrap() as i8),
-                "HpRegenFromJuicePercentage" => BonusType::HpRegenFromJuicePercentage(value.unwrap() as i8),
-                "HpRegenFromFishPercentage" => BonusType::HpRegenFromFishPercentage(value.unwrap() as i8),
-                "HpRegenFromFoodPercentage" => BonusType::HpRegenFromFoodPercentage(value.unwrap() as i8),
-                "HpRegenFromPotionPercentage" => BonusType::HpRegenFromPotionPercentage(value.unwrap() as i8),
+                "HpRegenFromItemPercentage" => BonusType::HpRegenFromItemPercentage(value.unwrap() as i16),
+                "SpRegenFromItemPercentage" => BonusType::SpRegenFromItemPercentage(value.unwrap() as i16),
+                "HpRegenFromItemIDPercentage" => BonusType::HpRegenFromItemIDPercentage(value.unwrap() as u32, value2.unwrap() as i16),
+                "SpRegenFromItemIDPercentage" => BonusType::SpRegenFromItemIDPercentage(value.unwrap() as u32, value2.unwrap() as i16),
+                "HpRegenFromItemGroupPercentage" => {
+                    BonusType::HpRegenFromItemGroupPercentage(value.unwrap() as i32, value2.unwrap() as i16)
+                }
+                "SpRegenFromItemGroupPercentage" => {
+                    BonusType::SpRegenFromItemGroupPercentage(value.unwrap() as i32, value2.unwrap() as i16)
+                }
+                "HpRegenFromHerbPercentage" => BonusType::HpRegenFromHerbPercentage(value.unwrap() as i16),
+                "HpRegenFromFruitPercentage" => BonusType::HpRegenFromFruitPercentage(value.unwrap() as i16),
+                "HpRegenFromMeatPercentage" => BonusType::HpRegenFromMeatPercentage(value.unwrap() as i16),
+                "HpRegenFromCandyPercentage" => BonusType::HpRegenFromCandyPercentage(value.unwrap() as i16),
+                "HpRegenFromJuicePercentage" => BonusType::HpRegenFromJuicePercentage(value.unwrap() as i16),
+                "HpRegenFromFishPercentage" => BonusType::HpRegenFromFishPercentage(value.unwrap() as i16),
+                "HpRegenFromFoodPercentage" => BonusType::HpRegenFromFoodPercentage(value.unwrap() as i16),
+                "HpRegenFromPotionPercentage" => BonusType::HpRegenFromPotionPercentage(value.unwrap() as i16),
                 "GainHpWhenKillingEnemy" => BonusType::GainHpWhenKillingEnemy(value.unwrap() as i8),
                 "GainHpWhenKillingEnemyWithMagicAttack" => BonusType::GainHpWhenKillingEnemyWithMagicAttack(value.unwrap() as i8),
                 "GainSpWhenKillingEnemyWithMagicAttack" => BonusType::GainSpWhenKillingEnemyWithMagicAttack(value.unwrap() as i8),
@@ -677,6 +721,10 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 "EnableFullHpSpRecoverOnResurrect" => BonusType::EnableFullHpSpRecoverOnResurrect,
                 "EnableSeeHidden" => BonusType::EnableSeeHidden,
                 "EnableNoCancelCast" => BonusType::EnableNoCancelCast,
+                "EnableNoCancelCast2" => BonusType::EnableNoCancelCast2,
+                "DoubleAttackAdditionalChancePercentage" => BonusType::DoubleAttackAdditionalChancePercentage(
+                    value.ok_or_else(|| serde::de::Error::custom("Missing additional Double Attack chance"))? as i16,
+                ),
                 "EnableNoGemstoneRequired" => BonusType::EnableNoGemstoneRequired,
                 "EnableIgnoreSizeModifier" => BonusType::EnableIgnoreSizeModifier,
                 "EnableNoKnockback" => BonusType::EnableNoKnockback,
@@ -687,6 +735,11 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 "UnbreakableShield" => BonusType::UnbreakableShield,
                 "UnbreakableShoes" => BonusType::UnbreakableShoes,
                 "UnbreakableWeapon" => BonusType::UnbreakableWeapon,
+                "UnstripableWeapon" => BonusType::UnstripableWeapon,
+                "UnstripableArmor" => BonusType::UnstripableArmor,
+                "UnstripableHelm" => BonusType::UnstripableHelm,
+                "UnstripableShield" => BonusType::UnstripableShield,
+                "Unstripable" => BonusType::Unstripable,
                 "BreakSelfWeaponPercentage" => BonusType::BreakSelfWeaponPercentage(value_f32.unwrap()),
                 "ResistancePhysicalAttackFromMobIdPercentage" => {
                     BonusType::ResistancePhysicalAttackFromMobIdPercentage(value.unwrap() as u32, value2.unwrap() as i8)
@@ -783,6 +836,9 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
                 }
                 "DamageUsingElementPercentage" => {
                     BonusType::DamageUsingElementPercentage(Element::from_string(&value_str.unwrap()), value2.unwrap() as i8)
+                }
+                "MagicalDamageUsingElementPercentage" => {
+                    BonusType::MagicalDamageUsingElementPercentage(Element::from_string(&value_str.unwrap()), value2.unwrap() as i16)
                 }
                 "AccuracyPercentage" => BonusType::AccuracyPercentage(value.unwrap() as i8),
                 "HpRecoveryMaxSpPercentage" => BonusType::HpRecoveryMaxSpPercentage(

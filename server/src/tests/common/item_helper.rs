@@ -7,6 +7,7 @@ pub fn create_inventory_item(item_name: &str, amount: i16) -> InventoryItemModel
     let item = GlobalConfigService::instance().get_item_by_name(item_name);
     let mut rng = rand::thread_rng();
     InventoryItemModel {
+        shop_price: None,
         id: rng.next_u32() as i32,
         unique_id: 0,
         item_id: item.id,

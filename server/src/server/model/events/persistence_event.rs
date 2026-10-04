@@ -40,6 +40,7 @@ pub struct InventoryItemUpdate {
     pub refine: i16,
     pub damaged: bool,
     pub cards: [i16; 4],
+    pub price: Option<i32>,
 }
 
 #[derive(Debug, PartialEq)]

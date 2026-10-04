@@ -333,7 +333,7 @@ pub fn handle_reload(server: &Server, _session: Arc<Session>, args: Vec<&str>) -
     match args[0] {
         "script" => {
             let start = Instant::now();
-            let scripts = load_scripts(server.script_service().vm.clone());
+            let scripts = load_scripts();
             format!(
                 "{} scripts have been recompiled and reloaded in {} secs",
                 scripts.len(),

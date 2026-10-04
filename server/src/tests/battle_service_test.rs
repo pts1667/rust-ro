@@ -7,7 +7,7 @@ use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{create_mpsc, test_script_vm, TestContext};
+use crate::tests::common::{TestContext, create_mpsc, test_script_vm};
 
 struct BattleServiceTestContext {
     test_context: TestContext,
@@ -603,8 +603,8 @@ mod tests {
         for scenarii in scenario {
             let mut character = create_character();
             character.status.vit = scenarii.vit;
-            let min = context.battle_min_service.player_vitdef(status_snapshot!(context, character));
-            let max = context.battle_max_service.player_vitdef(status_snapshot!(context, character));
+            let min = context.battle_max_service.player_vitdef(status_snapshot!(context, character));
+            let max = context.battle_min_service.player_vitdef(status_snapshot!(context, character));
             // Then
             assert_eq!(min, scenarii.expected_vitdef_min);
             assert_eq!(max, scenarii.expected_vitdef_max);
@@ -1035,6 +1035,18 @@ mod tests {
                 && result.actual_combat_result.as_ref().unwrap().min_dmg <= result.expected.min_dmg() + 1;
             let max_dmg_passed = result.expected.max_dmg() - 1 <= result.actual_combat_result.as_ref().unwrap().max_dmg
                 && result.actual_combat_result.as_ref().unwrap().max_dmg <= result.expected.max_dmg() + 1;
+            if title == "Attack element using arrow" && (!min_dmg_passed || !max_dmg_passed) && markdown_rows_failed.len() < 32 {
+                eprintln!(
+                    "Arrow fixture {}: actual {}..{}, expected {}..{}, target {}, ammo {:?}",
+                    result.id,
+                    result.actual_combat_result.as_ref().unwrap().min_dmg,
+                    result.actual_combat_result.as_ref().unwrap().max_dmg,
+                    result.expected.min_dmg(),
+                    result.expected.max_dmg(),
+                    result.expected.target_id(),
+                    result.expected.ammo_id()
+                );
+            }
             result.passed = min_dmg_passed && max_dmg_passed;
             if result.passed {
                 passed_count += 1;

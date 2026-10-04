@@ -1,0 +1,13 @@
+[package]
+name = "script-runtime"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasmtime = { workspace = true }
+serde_json = { workspace = true }
+async-trait = "0.1"
+script-sdk = { path = "../script-sdk" }
+
+[dev-dependencies]
+tokio = { workspace = true }

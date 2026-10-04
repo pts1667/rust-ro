@@ -33,7 +33,7 @@ impl MobService {
 
     pub fn action_move(&self, mob: &mut Mob, cells: &[u16], x_size: u16, y_size: u16, start_at: u128) -> Option<MobMovement> {
         // Check state machine - can't move if flinching or dead
-        if !mob.can_act() {
+        if !mob.can_act() || mob.script_cast_until > start_at || mob.blocks_movement() || !MobMode::can_move(mob.mode) {
             return None;
         }
         if !mob.is_present()
@@ -97,7 +97,7 @@ impl MobService {
         // Update flinch first - may transition to Idle if flinch duration ended
         mob.update_flinch(tick);
 
-        if !mob.can_act() {
+        if !mob.can_act() || mob.script_cast_until > tick || mob.blocks_attack() {
             return None;
         }
 
@@ -270,10 +270,12 @@ impl MobService {
         &self,
         mob: &mut Mob,
         target_id: u32,
-        _target_x: u16,
-        _target_y: u16,
+        target_x: u16,
+        target_y: u16,
         tick: u128,
     ) -> Option<MobAIAction> {
+        if mob.blocks_attack() { return None; }
+        mob.face_towards(target_x, target_y);
         mob.update_last_attack(tick);
         mob.timing.set_canattack_tick(tick + mob.atk_delay as u128);
 
@@ -306,7 +308,7 @@ impl MobService {
 
         for character in characters
             .iter()
-            .filter(|c| matches!(c.map_item.object_type(), MapItemType::Character))
+            .filter(|c| matches!(c.map_item.object_type(), MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::Mob))
         {
             let distance = manhattan_distance(mob.x, mob.y, character.position.x, character.position.y);
 
@@ -335,6 +337,7 @@ impl MobService {
         y_size: u16,
         tick: u128,
     ) -> Option<MobAIAction> {
+        if !MobMode::can_move(mob.mode) || mob.blocks_movement() { return None; }
         let path = path_search_client_side_algorithm(x_size, y_size, cells, mob.x, mob.y, target_pos.x, target_pos.y);
 
         if path.is_empty() {

@@ -7,4 +7,6 @@ edition = "2021"
 enum_macro = { path = "../enum_macro" }
 accessor = { path = "../accessor" }
 tracing = {workspace = true}
+serde = {workspace = true}
+serde_json = {workspace = true}
 movement = { path = "../movement" }

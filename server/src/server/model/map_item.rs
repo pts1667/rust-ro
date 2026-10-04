@@ -20,6 +20,9 @@ pub enum MapItemType {
     Unknown,
     Npc,
     DroppedItem,
+    Pet,
+    Homunculus,
+    Mercenary,
 }
 
 impl Display for MapItemType {
@@ -37,6 +40,9 @@ impl MapItemType {
             MapItemType::Npc => 6,
             MapItemType::Unknown => 0,
             MapItemType::DroppedItem => 0,
+            MapItemType::Pet => 7,
+            MapItemType::Homunculus => 8,
+            MapItemType::Mercenary => 9,
         }
     }
 }

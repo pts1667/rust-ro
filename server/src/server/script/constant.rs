@@ -5,9 +5,9 @@ use models::enums::look::LookType;
 use models::enums::mob::{MobClass, MobGroup, MobRace};
 use models::enums::size::Size;
 use models::enums::status::StatusEffect;
-use models::enums::trigger::EffectTrigger;
-use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue, EnumWithStringValue};
-use rathena_script_lang_interpreter::lang::value::Value;
+use models::status_bonus::{AutoEffectFlag, BattleFlag};
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue, EnumWithStringValue};
+use script_sdk::Value;
 
 use crate::util::string::StringUtil;
 
@@ -16,7 +16,25 @@ use crate::util::string::StringUtil;
 "$1" => Value::new_number($2),
  */
 pub fn load_constant(constant_name: &String) -> Option<Value> {
-    let char = &constant_name[0..1];
+    if constant_name.starts_with("MF_") {
+        return crate::server::model::map_flags::MapFlag::from_name(constant_name).ok().map(|flag| Value::Number(flag as i32));
+    }
+    if constant_name.starts_with("BL_") {
+        use models::enums::map::MapActorType;
+        let mask=match constant_name.as_str() {
+            "BL_PC"=>MapActorType::Player.as_flag(),"BL_MOB"=>MapActorType::Monster.as_flag(),"BL_PET"=>MapActorType::Pet.as_flag(),
+            "BL_HOM"=>MapActorType::Homunculus.as_flag(),"BL_MER"=>MapActorType::Mercenary.as_flag(),"BL_ITEM"=>MapActorType::Item.as_flag(),
+            "BL_SKILL"=>MapActorType::Skill.as_flag(),"BL_NPC"=>MapActorType::Npc.as_flag(),"BL_CHAT"=>MapActorType::Chat.as_flag(),
+            "BL_ELEM"=>MapActorType::Elemental.as_flag(),"BL_ALL"=>MapActorType::All.as_flag(),
+            "BL_CHAR"=>MapActorType::Player.as_flag()|MapActorType::Monster.as_flag()|MapActorType::Homunculus.as_flag()|MapActorType::Mercenary.as_flag()|MapActorType::Elemental.as_flag(),
+            _=>return None,
+        };
+        return Some(Value::Number(i32::from(mask)));
+    }
+    if constant_name.starts_with("SKILLDMG_") {
+        return Some(Value::Number(match constant_name.as_str() {"SKILLDMG_PC"=>0,"SKILLDMG_MOB"=>1,"SKILLDMG_BOSS"=>2,"SKILLDMG_OTHER"=>3,"SKILLDMG_CASTER"=>5,_=>return None}));
+    }
+    let char = constant_name.get(0..1)?;
     let constant_value = if char == "1" || char == "2" || char == "4" || char == "8" {
         match constant_name.as_ref() {
             "1_ETC_01" => Value::new_number(46),
@@ -1169,7 +1187,7 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
             "4_RAGFES_16" => Value::new_number(10506),
             "4_RAGFES_16_M" => Value::new_number(10507),
             "4_EXJOB_NINJA2" => Value::new_number(10508),
-            &_ => Value::Reference(None),
+            &_ => Value::Null,
         }
     } else {
         match constant_name.as_ref() {
@@ -1275,6 +1293,8 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
             "Class_Normal" => Value::new_number(MobClass::Normal.value() as i32),
             "Class_Boss" => Value::new_number(MobClass::Boss.value() as i32),
             "Class_Guardian" => Value::new_number(MobClass::Guardian.value() as i32),
+            "Class_Battlefield" => Value::new_number(MobClass::Battlefield.value() as i32),
+            "Class_Event" => Value::new_number(MobClass::Event.value() as i32),
             "Class_All" => Value::new_number(MobClass::All.value() as i32),
             "RC2_Goblin" => Value::new_number(MobGroup::Goblin.value() as i32),
             "RC2_Kobold" => Value::new_number(MobGroup::Kobold.value() as i32),
@@ -1355,21 +1375,26 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
             "Size_Medium" => Value::new_number(Size::Medium.value() as i32),
             "Size_Small" => Value::new_number(Size::Small.value() as i32),
             "Size_Large" => Value::new_number(Size::Large.value() as i32),
-            "ATF_SELF" => Value::new_number(EffectTrigger::TargetMySelf.as_flag() as i32),
-            "ATF_TARGET" => Value::new_number(EffectTrigger::TargetAttacked.as_flag() as i32),
-            "ATF_SHORT" | "BF_SHORT" => Value::new_number(EffectTrigger::MeleeAttack.as_flag() as i32),
-            "ATF_LONG" | "BF_LONG" => Value::new_number(EffectTrigger::RangedAttack.as_flag() as i32),
-            "ATF_SKILL" => Value::new_number(EffectTrigger::MagicOrMisckSkillAttack.as_flag() as i32),
-            "ATF_WEAPON" | "BF_WEAPON" => Value::new_number(EffectTrigger::PhysicalAttack.as_flag() as i32),
-            "ATF_MAGIC" | "BF_MAGIC" => Value::new_number(EffectTrigger::MagicSkillAttack.as_flag() as i32),
-            "ATF_MISC" | "BF_MISC" => Value::new_number(EffectTrigger::MiscSkillAttack.as_flag() as i32),
-            "BF_NORMAL" => Value::new_number(EffectTrigger::BfNormal.as_flag() as i32),
-            "BF_SKILL" => Value::new_number(EffectTrigger::BfSkill.as_flag() as i32),
-            &_ => Value::Reference(None),
+            "ATF_SELF" => Value::new_number(AutoEffectFlag::SelfTarget.as_flag() as i32),
+            "ATF_TARGET" => Value::new_number(AutoEffectFlag::OtherTarget.as_flag() as i32),
+            "ATF_SHORT" => Value::new_number(AutoEffectFlag::Short.as_flag() as i32),
+            "BF_SHORT" => Value::new_number(BattleFlag::Short.as_flag() as i32),
+            "ATF_LONG" => Value::new_number(AutoEffectFlag::Long.as_flag() as i32),
+            "BF_LONG" => Value::new_number(BattleFlag::Long.as_flag() as i32),
+            "ATF_SKILL" => Value::new_number((AutoEffectFlag::Magic.as_flag() | AutoEffectFlag::Misc.as_flag()) as i32),
+            "ATF_WEAPON" => Value::new_number(AutoEffectFlag::Weapon.as_flag() as i32),
+            "BF_WEAPON" => Value::new_number(BattleFlag::Weapon.as_flag() as i32),
+            "ATF_MAGIC" => Value::new_number(AutoEffectFlag::Magic.as_flag() as i32),
+            "BF_MAGIC" => Value::new_number(BattleFlag::Magic.as_flag() as i32),
+            "ATF_MISC" => Value::new_number(AutoEffectFlag::Misc.as_flag() as i32),
+            "BF_MISC" => Value::new_number(BattleFlag::Misc.as_flag() as i32),
+            "BF_NORMAL" => Value::new_number(BattleFlag::Normal.as_flag() as i32),
+            "BF_SKILL" => Value::new_number(BattleFlag::Skill.as_flag() as i32),
+            &_ => Value::Null,
         }
     };
 
-    if constant_value.is_reference() {
+    if matches!(constant_value, Value::Null) {
         if constant_name.starts_with("Job_Swordman") {
             // yeah in addition to lack of consistency, there are typo in job name
             return Some(Value::new_number(JobName::Swordsman.value() as i32));

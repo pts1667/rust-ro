@@ -33,6 +33,11 @@ impl MapInstanceLoop {
                     }
                     let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
                     let now = Instant::now();
+                    map_instance_service_clone.tick_mob_statuses(
+                        map_instance.state_mut().as_mut(),
+                        map_instance.task_queue().as_ref(),
+                        tick,
+                    );
                     if !map_instance.state().mob_movement_paused()
                         && last_mobs_action.elapsed().as_millis()
                             >= (GlobalConfigService::instance().config().game.mob_action_refresh_frequency * 1000.0) as u128
@@ -51,9 +56,54 @@ impl MapInstanceLoop {
                     if let Some(tasks) = map_instance.pop_task() {
                         for task in tasks {
                             match task {
+                                MapEvent::ActorSkillCast(request) => {
+                                    if let Err(error) = map_instance_service_clone.start_actor_skill(map_instance.state_mut().as_mut(), request, tick) {
+                                        error!("Actor skill cast failed on {}: {}", map_instance.name(), error);
+                                    }
+                                }
+                                MapEvent::SetMapFlags(flags) => {
+                                    map_instance.state_mut().flags = flags;
+                                }
+                                MapEvent::CaptureMob(id) => {
+                                    map_instance_service_clone.capture_mob(map_instance.state_mut().as_mut(), id);
+                                }
+                                MapEvent::ClaimPetCapture(request) => {
+                                    map_instance_service_clone.claim_pet_capture(map_instance.state_mut().as_mut(), request, tick);
+                                }
+                                MapEvent::MobStatusAlternatives(request) => {
+                                    map_instance_service_clone.start_mob_status_alternatives(
+                                        map_instance.state_mut().as_mut(),
+                                        request,
+                                        tick,
+                                    );
+                                }
+                                MapEvent::MobProvoke(request) => {
+                                    map_instance_service_clone.provoke_mob(map_instance.state_mut().as_mut(), request, tick);
+                                }
+                                MapEvent::MobDispel(request) => {
+                                    map_instance_service_clone.dispel_mob(map_instance.state_mut().as_mut(), request.mob_id);
+                                }
+                                MapEvent::FinalizePetCapture(request) => {
+                                    map_instance_service_clone.finalize_pet_capture(map_instance.state_mut().as_mut(), request);
+                                }
+                                MapEvent::ClaimPetLoot(request) => {
+                                    map_instance_service_clone.claim_pet_loot(map_instance.state_mut().as_mut(), request, tick);
+                                }
+                                MapEvent::FinalizePetLoot(request) => {
+                                    map_instance_service_clone.finalize_pet_loot(map_instance.state_mut().as_mut(), request);
+                                }
+                                MapEvent::PreparePetLootDrop(request) => {
+                                    map_instance_service_clone.prepare_pet_loot_drop(map_instance.state_mut().as_mut(), request);
+                                }
+                                MapEvent::FinalizePetLootDrop(request) => {
+                                    map_instance_service_clone.finalize_pet_loot_drop(map_instance.state_mut().as_mut(), request);
+                                }
                                 MapEvent::UpdateMobsFov(characters) => {
                                     let map_instance_state = map_instance.state_mut().as_mut();
                                     map_instance_service_clone.update_mobs_fov(map_instance_state, characters);
+                                }
+                                MapEvent::UpdateActorVisibility(actors) => {
+                                    map_instance.state_mut().actor_visibility = actors.into_iter().collect();
                                 }
                                 MapEvent::MobDamage(damage) => {
                                     let mut map_instance_state = map_instance.state_mut();
@@ -63,6 +113,84 @@ impl MapInstanceLoop {
                                         map_instance.task_queue(),
                                         tick,
                                     );
+                                }
+                                MapEvent::MobStatusChange { mob_id, request } => {
+                                    map_instance_service_clone.start_mob_status(map_instance.state_mut().as_mut(), mob_id, request, tick);
+                                }
+                                MapEvent::MobEndStatus { mob_id, kind } => {
+                                    map_instance_service_clone.end_mob_status(map_instance.state_mut().as_mut(), mob_id, kind);
+                                }
+                                MapEvent::MobHeal { mob_id, hp, sp } => {
+                                    map_instance_service_clone.heal_mob(map_instance.state_mut().as_mut(), mob_id, hp, sp);
+                                }
+                                MapEvent::MobRandomWarp { mob_id } => {
+                                    map_instance_service_clone.random_warp_mob(map_instance.state_mut().as_mut(), mob_id);
+                                }
+                                MapEvent::MobFace(request) => {
+                                    map_instance_service_clone.face_mob(map_instance.state_mut().as_mut(), request.mob_id, request.dir);
+                                }
+                                MapEvent::MobWarpTo(request) => {
+                                    map_instance_service_clone.warp_mob_to(
+                                        map_instance.state_mut().as_mut(),
+                                        request.mob_id,
+                                        request.x,
+                                        request.y,
+                                    );
+                                }
+                                MapEvent::MobKnockback {
+                                    mob_id,
+                                    source_x,
+                                    source_y,
+                                    cells,
+                                } => {
+                                    map_instance_service_clone.mob_knockback(
+                                        map_instance.state_mut().as_mut(),
+                                        mob_id,
+                                        source_x,
+                                        source_y,
+                                        cells,
+                                    );
+                                }
+                                MapEvent::MobLoseTarget { mob_id } => {
+                                    if let Some(mob) = map_instance.state_mut().mobs_mut().get_mut(&mob_id) {
+                                        mob.lose_target();
+                                    }
+                                }
+                                MapEvent::ScriptMobCombat {
+                                    source_id,
+                                    target_id,
+                                    effect,
+                                } => {
+                                    map_instance_service_clone.script_mob_combat(
+                                        map_instance.state_mut().as_mut(),
+                                        source_id,
+                                        target_id,
+                                        effect,
+                                        map_instance.task_queue(),
+                                        tick,
+                                    );
+                                }
+                                MapEvent::ScriptDropItem {
+                                    owner_id,
+                                    item_id,
+                                    amount,
+                                    x,
+                                    y,
+                                } => {
+                                    map_instance_service_clone.script_drop_item(
+                                        map_instance.state_mut().as_mut(),
+                                        owner_id,
+                                        item_id,
+                                        amount,
+                                        x,
+                                        y,
+                                    );
+                                }
+                                MapEvent::ScriptSpawn(request) => {
+                                    if let Err(error) = map_instance_service_clone.script_spawn(map_instance.state_mut().as_mut(), request)
+                                    {
+                                        error!("Script monster spawn failed on {}: {}", map_instance.name(), error);
+                                    }
                                 }
                                 MapEvent::MobDeathClientNotification(mob_location) => {
                                     let map_instance_state = map_instance.state();
@@ -99,11 +227,17 @@ impl MapInstanceLoop {
                                 }
                                 MapEvent::MobAttackCharacter(attack) => {
                                     let map_instance_state = map_instance.state();
-                                    map_instance_service_clone.mob_attack_character(map_instance_state.as_ref(), attack, tick);
+                                    map_instance_service_clone.mob_attack_character(
+                                        map_instance_state.as_ref(),
+                                        attack,
+                                        map_instance.task_queue().as_ref(),
+                                        tick,
+                                    );
                                 }
                             }
                         }
                     }
+                    map_instance_service_clone.tick_actor_skills(map_instance.state_mut().as_mut(), tick);
                     let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
                     let sleep_duration = (MAP_LOOP_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
                     if sleep_duration < 5 {

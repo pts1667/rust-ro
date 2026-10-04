@@ -4,9 +4,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use async_trait::async_trait;
 use database::{abort, character_slot_key, read, required, tx_read, tx_required, tx_write};
 use models::enums::EnumWithMaskValueU64;
+use models::enums::EnumWithNumberValue;
 use models::enums::skill_enums::SkillEnum;
 use models::status::{KnownSkill, Status, StatusSnapshot};
-use models::status_bonus::{BonusExpiry, StatusBonusFlag, StatusBonusSource, TemporaryStatusBonus, TemporaryStatusBonuses};
+use models::status_bonus::{BonusExpiry, StatusBonusFlag, StatusBonusSource, StructuredBonus, TemporaryStatusBonus, TemporaryStatusBonuses};
 use serde::{Deserialize, Serialize};
 use sled::transaction::Transactional;
 
@@ -22,6 +23,55 @@ struct StoredBonus {
     source: Option<(String, i32)>,
     val1: i32,
     val2: i32,
+    #[serde(default)]
+    structured: Option<StructuredBonus>,
+}
+
+#[cfg(test)]
+mod structured_bonus_persistence_tests {
+    use super::*;
+    use models::enums::bonus::BonusType;
+    use models::enums::EnumWithMaskValueU32;
+    use models::status_bonus::{AutoBonus,BattleFlag,CombatProc,CombatProcKind,CombatTrigger};
+
+    #[test]
+    fn structured_proc_and_autobonus_roundtrip_all_fields_with_account_isolation() {
+        let repository=SledRepository::temporary().unwrap();
+        let mut proc=CombatProc::new(CombatTrigger::Skill,CombatProcKind::Spell,10000);
+        proc.value=SkillEnum::MgFirebolt.id(); proc.level=10; proc.trigger_skill=SkillEnum::SmBash.id(); proc.duration=1234;
+        proc.battle_flags=BattleFlag::Magic.as_flag()|BattleFlag::Long.as_flag()|BattleFlag::Skill.as_flag();
+        proc.flags=models::status_bonus::AutoSpellFlag::OtherTarget.as_flag()|models::status_bonus::AutoSpellFlag::RandomLevel.as_flag();
+        let auto=AutoBonus {trigger:CombatTrigger::Hit,rate:1500,duration:5000,battle_flags:BattleFlag::Weapon.as_flag()|BattleFlag::Short.as_flag()|BattleFlag::Normal.as_flag(),
+            trigger_skill:0,program_id:42001,visual_program_id:42002,source_item_id:4001,source_location:models::enums::item::EquipmentLocation::HandRight.as_flag()};
+        let types=[BonusType::CombatProc(proc,2),BonusType::AutoBonus(auto,1)];
+        let flags=StatusBonusFlag::Persist.as_flag()|StatusBonusFlag::Unique.as_flag(); let now=get_tick();
+        let bonuses=TemporaryStatusBonuses::new(types.iter().map(|bonus| TemporaryStatusBonus::with_duration_and_source(*bonus,flags,now,60000,Some(StatusBonusSource::Item(4001)))).collect());
+        futures::executor::block_on(repository.character_save_temporary_bonus(150000,2000000,&bonuses)).unwrap();
+        let stored: Vec<StoredBonus> = required(&repository.database.bonuses, &bonus_key(150000,2000000)).unwrap();
+        assert!(stored.iter().all(|bonus| bonus.remaining_ms > 0 && bonus.remaining_ms <= 60000));
+        assert!(futures::executor::block_on(repository.character_load_temporary_bonus(150000,2000001)).unwrap().iter().next().is_none());
+        let before_load = get_tick();
+        let loaded=futures::executor::block_on(repository.character_load_temporary_bonus(150000,2000000)).unwrap();
+        let after_load = get_tick();
+        assert_eq!(loaded.iter().map(|bonus|*bonus.bonus()).collect::<Vec<_>>(),types);
+        for (loaded, stored) in loaded.iter().zip(stored) {
+            assert_eq!(loaded.flags(), flags);
+            assert_eq!(loaded.source(), &Some(StatusBonusSource::Item(4001)));
+            assert!(matches!(loaded.expirency(),BonusExpiry::Time(until)
+                if *until >= before_load + u128::from(stored.remaining_ms) && *until <= after_load + u128::from(stored.remaining_ms)));
+        }
+        assert!(futures::executor::block_on(repository.character_load_temporary_bonus(150000,2000000)).unwrap().iter().next().is_none());
+    }
+
+    #[test]
+    fn legacy_scalar_bonuses_load_without_structured_payload() {
+        let repository=SledRepository::temporary().unwrap();
+        let (bonus_type,val1,val2)=BonusType::Str(7).serialize_to_sc_data();
+        repository.database.bonuses.insert(bonus_key(150000,2000000),serde_json::to_vec(&serde_json::json!([{"remaining_ms":60000,"bonus_type":bonus_type,"flags":StatusBonusFlag::Persist.as_flag(),"source":["Skill",SkillEnum::AlBlessing.id()],"val1":val1,"val2":val2}])).unwrap()).unwrap();
+        let loaded=futures::executor::block_on(repository.character_load_temporary_bonus(150000,2000000)).unwrap();
+        assert_eq!(*loaded.iter().next().unwrap().bonus(),BonusType::Str(7));
+        assert_eq!(*loaded.iter().next().unwrap().source(),Some(StatusBonusSource::Skill(SkillEnum::AlBlessing.id() as u16)));
+    }
 }
 
 fn bonus_key(char_id: u32, account_id: u32) -> [u8; 8] {
@@ -33,6 +83,34 @@ fn bonus_key(char_id: u32, account_id: u32) -> [u8; 8] {
 
 #[async_trait]
 impl CharacterRepository for SledRepository {
+    fn character_commit_skill_reset(&self, char_id: u32, account_id: u32, plan: &crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(), Error> {
+        (&self.database.characters, &self.database.skills, &self.database.game_systems).transaction(|(characters, skills, systems)| {
+            let mut character: CharSelectModel = tx_required(characters, &char_id.to_be_bytes())?;
+            if character.account_id as u32 != account_id { return abort("Character belongs to another account"); }
+            crate::repository::script_character_repository::apply_skill_reset_tx(&mut character, skills, systems, char_id, plan)?;
+            tx_write(characters, &char_id.to_be_bytes(), &character)
+        })?;
+        Ok(())
+    }
+
+    fn character_commit_skill_allocation(&self, char_id: u32, account_id: u32, skill_id: u32, expected_level: u8, expected_points: u32, max_level: u8) -> Result<u8, Error> {
+        Ok((&self.database.characters, &self.database.skills, &self.database.game_systems).transaction(|(characters, skills, systems)| {
+            let mut character: CharSelectModel = tx_required(characters, &char_id.to_be_bytes())?;
+            let mut known: BTreeMap<u32, u8> = tx_read(skills, &char_id.to_be_bytes())?.unwrap_or_default();
+            let state: crate::server::model::game_systems::CharacterGameSystems = tx_read(systems, &crate::repository::game_system_repository::character_key(char_id))?.unwrap_or_default();
+            if character.account_id as u32 != account_id || character.skill_point as u32 != expected_points || expected_points == 0
+                || known.get(&skill_id).copied().unwrap_or(0) != expected_level || state.permanent_skill_grants.contains_key(&skill_id) {
+                return abort("Character skill allocation is stale or unauthorized");
+            }
+            let level = expected_level.checked_add(1).filter(|level| *level <= max_level)
+                .ok_or_else(|| sled::transaction::ConflictableTransactionError::Abort(Error::InvalidInput("Skill has reached its maximum level".into())))?;
+            known.insert(skill_id, level);
+            character.skill_point -= 1;
+            tx_write(skills, &char_id.to_be_bytes(), &known)?;
+            tx_write(characters, &char_id.to_be_bytes(), &character)?;
+            Ok(level)
+        })?)
+    }
     async fn character_insert(&self, char_model: &CharInsertModel) -> Result<(), Error> {
         self.database.insert_character(&CharSelectModel::try_from(char_model)?)?;
         Ok(())
@@ -163,8 +241,12 @@ impl CharacterRepository for SledRepository {
     }
 
     async fn character_allocated_skill_points(&self, char_id: u32) -> Result<i32, Error> {
-        let skills: BTreeMap<u32, u8> = read(&self.database.skills, &char_id.to_be_bytes())?.unwrap_or_default();
-        Ok(skills.values().map(|level| *level as i32).sum())
+        Ok((&self.database.skills, &self.database.game_systems).transaction(|(skills, systems)| {
+            let known: BTreeMap<u32, u8> = tx_read(skills, &char_id.to_be_bytes())?.unwrap_or_default();
+            let state: crate::server::model::game_systems::CharacterGameSystems = tx_read(systems, &crate::repository::game_system_repository::character_key(char_id))?.unwrap_or_default();
+            Ok(known.iter().filter(|(id, _)| !state.permanent_skill_grants.contains_key(id)
+                && SkillEnum::try_from_value(**id).map_or(false, |skill| !skill.is_platinium())).map(|(_, level)| i32::from(*level)).sum())
+        })?)
     }
 
     async fn character_skills(&self, char_id: u32) -> Result<Vec<KnownSkill>, Error> {
@@ -192,10 +274,11 @@ impl CharacterRepository for SledRepository {
     }
 
     async fn character_reset_skills(&self, char_id: i32, skills: Vec<i32>) -> Result<(), Error> {
-        self.database.skills.transaction(|tree| {
+        (&self.database.skills, &self.database.game_systems).transaction(|(tree, systems)| {
             let mut known: BTreeMap<u32, u8> = tx_read(tree, &char_id.to_be_bytes())?.unwrap_or_default();
+            let state: crate::server::model::game_systems::CharacterGameSystems = tx_read(systems, &crate::repository::game_system_repository::character_key(char_id as u32))?.unwrap_or_default();
             for id in &skills {
-                known.remove(&(*id as u32));
+                if !state.permanent_skill_grants.contains_key(&(*id as u32)) { known.remove(&(*id as u32)); }
             }
             tx_write(tree, &char_id.to_be_bytes(), &known)
         })?;
@@ -320,6 +403,7 @@ impl CharacterRepository for SledRepository {
                 val2,
                 flags: bonus.flags(),
                 source,
+                structured: bonus.bonus().structured_payload(),
             });
         }
         self.database
@@ -341,7 +425,9 @@ impl CharacterRepository for SledRepository {
             let source = stored
                 .source
                 .and_then(|(name, value)| StatusBonusSource::deserialize_sc_data(&name, value));
-            if let Some(bonus) = models::enums::bonus::BonusType::deserialize_from_sc_data(stored.bonus_type, stored.val1, stored.val2) {
+            let bonus = stored.structured.map(models::enums::bonus::BonusType::from_structured_payload)
+                .or_else(|| models::enums::bonus::BonusType::deserialize_from_sc_data(stored.bonus_type, stored.val1, stored.val2));
+            if let Some(bonus) = bonus {
                 bonuses.add(TemporaryStatusBonus::with_duration_and_source(
                     bonus,
                     stored.flags,

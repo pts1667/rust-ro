@@ -17,6 +17,7 @@ fn before_each() -> SkillTreeServiceTestContext {
 
 fn before_each_with_latch(latch_size: usize) -> SkillTreeServiceTestContext {
     common::before_all();
+    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_script_vm());
     let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
     let count_down_latch = CountDownLatch::new(latch_size);
@@ -42,6 +43,51 @@ mod tests {
 
     use crate::tests::common::character_helper::create_character;
     use crate::tests::skill_tree_service_test::before_each;
+
+    #[test]
+    fn skill_tree_packet_uses_effective_eye_passives_for_attack_ranges() {
+        use packets::packets::{Packet, PacketZcSkillinfoList};
+
+        use crate::server::service::global_config_service::GlobalConfigService;
+        let context = before_each();
+        let mut character = create_character();
+        character.status.job = JobName::Archer.value() as u32;
+        character.status.job_level = 50;
+        character.status.known_skills = vec![
+            KnownSkill {
+                value: SkillEnum::NvBasic,
+                level: 9,
+            },
+            KnownSkill {
+                value: SkillEnum::AcDouble,
+                level: 1,
+            },
+            KnownSkill {
+                value: SkillEnum::AcOwl,
+                level: 10,
+            },
+            KnownSkill {
+                value: SkillEnum::AcVulture,
+                level: 7,
+            },
+        ];
+        context.skill_tree_service.send_skill_tree(&character);
+        context
+            .test_context
+            .increment_latch()
+            .wait_expected_count_with_timeout(1, std::time::Duration::from_millis(200));
+        let packets = context.test_context.get_sent_packet(
+            vec![PacketZcSkillinfoList::packet_id(GlobalConfigService::instance().packetver())],
+            GlobalConfigService::instance().packetver(),
+        );
+        let list = packets[0].as_any().downcast_ref::<PacketZcSkillinfoList>().unwrap();
+        let double = list
+            .skill_list
+            .iter()
+            .find(|skill| skill.skid as u32 == SkillEnum::AcDouble.id())
+            .unwrap();
+        assert_eq!(double.attack_range, 16);
+    }
 
     #[test]
     fn test_skilllist_should_return_list_of_skill_for_character_job() {

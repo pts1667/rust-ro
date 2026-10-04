@@ -17,6 +17,7 @@ pub mod size;
 pub mod skill;
 pub mod skill_enums;
 pub mod status;
+pub mod script;
 pub mod trigger;
 pub mod unit;
 pub mod vanish;

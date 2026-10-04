@@ -9,6 +9,7 @@ use crate::enums::status::StatusEffect;
 use crate::enums::weapon::WeaponType;
 use crate::enums::{EnumStackable, EnumWithNumberValue};
 use crate::status::StatusSnapshot;
+use crate::status_bonus::{AutoBonus, CombatProc, StructuredBonus};
 
 #[derive(Debug, Clone, Copy, WithEq, WithStackable)]
 pub enum BonusType {
@@ -52,17 +53,20 @@ pub enum BonusType {
     NaturalSpRecoveryPercentage(i8),
     HpRecoveryMaxSpPercentage(f32),
     SpRecoveryMaxSpPercentage(f32),
-    HpRegenFromItemPercentage(i8),
-    SpRegenFromItemPercentage(i8),
-    HpRegenFromItemIDPercentage(u32, i8),
-    HpRegenFromHerbPercentage(i8),
-    HpRegenFromFruitPercentage(i8),
-    HpRegenFromMeatPercentage(i8),
-    HpRegenFromCandyPercentage(i8),
-    HpRegenFromJuicePercentage(i8),
-    HpRegenFromFishPercentage(i8),
-    HpRegenFromFoodPercentage(i8),
-    HpRegenFromPotionPercentage(i8),
+    HpRegenFromItemPercentage(i16),
+    SpRegenFromItemPercentage(i16),
+    HpRegenFromItemIDPercentage(u32, i16),
+    HpRegenFromHerbPercentage(i16),
+    HpRegenFromFruitPercentage(i16),
+    HpRegenFromMeatPercentage(i16),
+    HpRegenFromCandyPercentage(i16),
+    HpRegenFromJuicePercentage(i16),
+    HpRegenFromFishPercentage(i16),
+    HpRegenFromFoodPercentage(i16),
+    HpRegenFromPotionPercentage(i16),
+    SpRegenFromItemIDPercentage(u32, i16),
+    HpRegenFromItemGroupPercentage(i32, i16),
+    SpRegenFromItemGroupPercentage(i32, i16),
     GainHpWhenKillingEnemy(i8),
     GainHpWhenKillingEnemyWithMagicAttack(i8),
     GainSpWhenKillingEnemyWithMagicAttack(i8),
@@ -142,6 +146,11 @@ pub enum BonusType {
     UnbreakableShield,
     UnbreakableShoes,
     UnbreakableWeapon,
+    UnstripableWeapon,
+    UnstripableArmor,
+    UnstripableHelm,
+    UnstripableShield,
+    Unstripable,
     ResistancePhysicalAttackFromMobIdPercentage(u32, i8),
     DropChanceItemIdPercentage(u32, i8),
     DropChanceJewelPercentage(i8),
@@ -159,12 +168,20 @@ pub enum BonusType {
     // percentage, chance
     SpBurnOnTargetWhenAttackingPercentage(i8, u16),
     //amount, every ms
+    #[value_comparison_offset = 1]
+    #[value_offset = 0]
     HpLossEveryMs(u16, u16),
     //amount, every ms
+    #[value_comparison_offset = 1]
+    #[value_offset = 0]
     HpRegenEveryMs(u16, u16),
     //amount, every ms
+    #[value_comparison_offset = 1]
+    #[value_offset = 0]
     SpLossEveryMs(u16, u16),
     //amount, every ms
+    #[value_comparison_offset = 1]
+    #[value_offset = 0]
     SpRegenEveryMs(u16, u16),
     SkillIdDamagePercentage(u32, i8),
     EnableSkillId(u32, u8),
@@ -174,10 +191,46 @@ pub enum BonusType {
     SkillIdSuccessPercentage(u32, f32),
     AutospellSkillIdChancePercentage(u32, f32),
     DoubleCastSkillIdChancePercentage(u32, i8),
+    CombatProc(CombatProc, u16),
+    AutoBonus(AutoBonus, u16),
+    GainExpWhenKillingClassPercentage(MobClass, i8),
+    ResistanceDamageFromMobGroupPercentage(MobGroup, i8),
+    ResistanceDamageFromElementWithFlags((Element, u32), i16),
+    PhysicalDamageAgainstElementWithFlags((Element, u32), i16),
+    ResistanceDamageFromRaceWithFlags((MobRace, u32), i16),
+    GainHpWhenHittingEnemy(i16),
+    MagicalDamageUsingElementPercentage(Element, i16),
+    WeaponAtk(i32),
+    WeaponRefineAtk(i32),
+    WeaponComaAgainstElement(Element, i32),
+    WeaponComaAgainstClass(MobClass, i32),
+    WeaponComaAgainstRace(MobRace, i32),
+    EnableNoCancelCast2,
+    DoubleAttackAdditionalChancePercentage(i16),
+    FleePercentage(i32),
+    ResistanceSkillIdPercentage(u32, i32),
+    ConditionalWeaponAtk(WeaponType, i32),
+    ConditionalWeaponDamagePercentage(WeaponType, i32),
+    ResistanceMiscAttackPercentage(i32),
 }
 
 impl Eq for BonusType {}
 impl BonusType {
+    pub fn structured_payload(&self) -> Option<StructuredBonus> {
+        match self {
+            Self::CombatProc(proc, count) => Some(StructuredBonus::CombatProc(*proc, *count)),
+            Self::AutoBonus(bonus, count) => Some(StructuredBonus::AutoBonus(*bonus, *count)),
+            _ => None,
+        }
+    }
+
+    pub fn from_structured_payload(payload: StructuredBonus) -> Self {
+        match payload {
+            StructuredBonus::CombatProc(proc, count) => Self::CombatProc(proc, count),
+            StructuredBonus::AutoBonus(bonus, count) => Self::AutoBonus(bonus, count),
+        }
+    }
+
     pub fn add_bonus_to_status(&self, status_snapshot: &mut StatusSnapshot) {
         match self {
             BonusType::Str(str) => status_snapshot.set_bonus_str(status_snapshot.bonus_str() + *str as i16),
@@ -198,17 +251,28 @@ impl BonusType {
             BonusType::Flee(flee) => status_snapshot.set_flee(status_snapshot.flee() + { *flee }),
             BonusType::Crit(crit) => status_snapshot.set_crit(status_snapshot.crit() + { *crit }),
             BonusType::Aspd(aspd) => status_snapshot.set_aspd(status_snapshot.aspd() + *aspd as f32),
-            BonusType::Maxhp(hp) => status_snapshot.set_hp(status_snapshot.hp() + *hp as u32),
-            BonusType::Maxsp(sp) => status_snapshot.set_sp(status_snapshot.sp() + *sp as u32),
+            BonusType::Maxhp(hp) => {
+                status_snapshot.set_max_hp((status_snapshot.max_hp() as i64 + *hp as i64).clamp(1, u32::MAX as i64) as u32)
+            }
+            BonusType::Maxsp(sp) => {
+                status_snapshot.set_max_sp((status_snapshot.max_sp() as i64 + *sp as i64).clamp(0, u32::MAX as i64) as u32)
+            }
             BonusType::MatkPercentage(matk_percentage) => {
                 status_snapshot.set_matk_item_modifier(status_snapshot.matk_item_modifier() + (*matk_percentage as f32 / 100.0))
             }
-            BonusType::Atk(atk) => status_snapshot.set_bonus_atk(status_snapshot.bonus_atk() + *atk as u16),
+            BonusType::Atk(atk) => status_snapshot.set_bonus_atk(status_snapshot.bonus_atk().saturating_add(*atk)),
+            BonusType::ConditionalWeaponAtk(weapon, value)
+                if status_snapshot.combined_weapon_type() == *weapon && weapon.value() < WeaponType::MaxWeaponType.value() =>
+            {
+                status_snapshot.set_bonus_atk(
+                    (i64::from(status_snapshot.bonus_atk()) + i64::from(*value)).clamp(i16::MIN as i64, i16::MAX as i64) as i16,
+                );
+            }
             BonusType::Def(def) => status_snapshot.set_def(status_snapshot.def() + { *def }),
             BonusType::Mdef(mdef) => status_snapshot.set_mdef(status_snapshot.mdef() + { *mdef }),
             BonusType::Matk(matk) => {
-                status_snapshot.set_matk_min(status_snapshot.matk_min() + *matk as u16);
-                status_snapshot.set_matk_max(status_snapshot.matk_max() + *matk as u16);
+                status_snapshot.set_matk_min((status_snapshot.matk_min() as i32 + *matk as i32).clamp(0, u16::MAX as i32) as u16);
+                status_snapshot.set_matk_max((status_snapshot.matk_max() as i32 + *matk as i32).clamp(0, u16::MAX as i32) as u16);
             }
             BonusType::ElementDefense(element) => status_snapshot.set_element(*element),
             BonusType::SpeedPercentage(speed_percentage) => {
@@ -226,6 +290,11 @@ impl BonusType {
             BonusType::HitPercentage(value) => {
                 status_snapshot.set_hit((status_snapshot.hit() as f32 * (1.0 + *value as f32 / 100.0)).floor() as i16);
             }
+            BonusType::FleePercentage(value) => {
+                status_snapshot.set_flee(
+                    (i64::from(status_snapshot.flee().max(0)) * (100_i64 + i64::from(*value)).max(0) / 100).min(i16::MAX as i64) as i16,
+                );
+            }
             BonusType::AspdPercentage(value) => {
                 status_snapshot.set_aspd(status_snapshot.aspd() + ((200.0 - status_snapshot.aspd()) * ({ *value } / 100.0)));
             }
@@ -240,13 +309,9 @@ impl BonusType {
                 status_snapshot.set_def((status_snapshot.def() as f32 * (1.0 + *value as f32 / 100.0)).floor() as i16);
             }
             BonusType::MatkBasedOnStaffPercentage(_) => {}
-            BonusType::AtkPercentage(value) => {
-                status_snapshot.set_bonus_atk((status_snapshot.bonus_atk() as f32 * (1.0 + *value as f32 / 100.0)).floor() as u16);
-            }
+            BonusType::AtkPercentage(_) => {}
             BonusType::PerfectHitPercentage(_) => {}
-            BonusType::CriticalDamagePercentage(value) => {
-                status_snapshot.set_bonus_atk((status_snapshot.bonus_atk() as f32 * (1.0 + *value as f32 / 100.0)).floor() as u16);
-            }
+            BonusType::CriticalDamagePercentage(_) => {}
             BonusType::CastTimePercentage(value) => status_snapshot.set_cast_time(status_snapshot.cast_time() + *value as f32 / 100.0),
             BonusType::CastTimeWhenUsingSkillIdPercentage(..) => {}
             BonusType::AfterCastDelayPercentage(_) => {}
@@ -404,14 +469,51 @@ impl BonusType {
             BonusType::SkillIdSuccessPercentage(..) => 142usize,
             BonusType::AutospellSkillIdChancePercentage(..) => 143usize,
             BonusType::DoubleCastSkillIdChancePercentage(..) => 144usize,
-            _ => {
-                panic!("Value can\'t be found for enum {:?}", self);
-            }
+            BonusType::CombatProc(..) => 145usize,
+            BonusType::AutoBonus(..) => 146usize,
+            BonusType::GainExpWhenKillingClassPercentage(..) => 147usize,
+            BonusType::ResistanceDamageFromMobGroupPercentage(..) => 148usize,
+            BonusType::ResistanceDamageFromElementWithFlags(..) => 149usize,
+            BonusType::PhysicalDamageAgainstElementWithFlags(..) => 150usize,
+            BonusType::ResistanceDamageFromRaceWithFlags(..) => 151usize,
+            BonusType::GainHpWhenHittingEnemy(..) => 152usize,
+            BonusType::SpRegenFromItemIDPercentage(..) => 153usize,
+            BonusType::HpRegenFromItemGroupPercentage(..) => 154usize,
+            BonusType::SpRegenFromItemGroupPercentage(..) => 155usize,
+            BonusType::UnstripableWeapon => 156usize,
+            BonusType::UnstripableArmor => 157usize,
+            BonusType::UnstripableHelm => 158usize,
+            BonusType::UnstripableShield => 159usize,
+            BonusType::Unstripable => 160usize,
+            BonusType::MagicalDamageUsingElementPercentage(..) => 161usize,
+            BonusType::WeaponAtk(..) => 162usize,
+            BonusType::WeaponRefineAtk(..) => 163usize,
+            BonusType::WeaponComaAgainstElement(..) => 164usize,
+            BonusType::WeaponComaAgainstClass(..) => 165usize,
+            BonusType::WeaponComaAgainstRace(..) => 166usize,
+            BonusType::EnableNoCancelCast2 => 167usize,
+            BonusType::DoubleAttackAdditionalChancePercentage(..) => 168usize,
+            BonusType::FleePercentage(..) => 169usize,
+            BonusType::ResistanceSkillIdPercentage(..) => 170usize,
+            BonusType::ConditionalWeaponAtk(..) => 171usize,
+            BonusType::ConditionalWeaponDamagePercentage(..) => 172usize,
+            BonusType::ResistanceMiscAttackPercentage(..) => 173usize,
         }
     }
 
     pub fn serialize_to_sc_data(&self) -> (i32, i32, i32) {
         match self {
+            BonusType::FleePercentage(value) | BonusType::ResistanceMiscAttackPercentage(value) => (self.id() as i32, *value, 0),
+            BonusType::ResistanceSkillIdPercentage(skill, value) => (self.id() as i32, *skill as i32, *value),
+            BonusType::ConditionalWeaponAtk(weapon, value) | BonusType::ConditionalWeaponDamagePercentage(weapon, value) => {
+                (self.id() as i32, weapon.value() as i32, *value)
+            }
+            BonusType::WeaponAtk(value) | BonusType::WeaponRefineAtk(value) => (self.id() as i32, *value, 0),
+            BonusType::WeaponComaAgainstElement(element, rate) => (self.id() as i32, element.value() as i32, *rate),
+            BonusType::WeaponComaAgainstClass(class, rate) => (self.id() as i32, class.value() as i32, *rate),
+            BonusType::WeaponComaAgainstRace(race, rate) => (self.id() as i32, race.value() as i32, *rate),
+            BonusType::EnableNoCancelCast2 => (self.id() as i32, 0, 0),
+            BonusType::DoubleAttackAdditionalChancePercentage(value) => (self.id() as i32, i32::from(*value), 0),
             BonusType::Str(val) => (self.id() as i32, *val as i32, 0),
             BonusType::Agi(val) => (self.id() as i32, *val as i32, 0),
             BonusType::Vit(val) => (self.id() as i32, *val as i32, 0),
@@ -455,6 +557,10 @@ impl BonusType {
             BonusType::HpRegenFromItemPercentage(val) => (self.id() as i32, *val as i32, 0),
             BonusType::SpRegenFromItemPercentage(val) => (self.id() as i32, *val as i32, 0),
             BonusType::HpRegenFromItemIDPercentage(item_id, val) => (self.id() as i32, *item_id as i32, *val as i32),
+            BonusType::SpRegenFromItemIDPercentage(item_id, val) => (self.id() as i32, *item_id as i32, *val as i32),
+            BonusType::HpRegenFromItemGroupPercentage(group, val) | BonusType::SpRegenFromItemGroupPercentage(group, val) => {
+                (self.id() as i32, *group, *val as i32)
+            }
             BonusType::HpRegenFromHerbPercentage(val) => (self.id() as i32, *val as i32, 0),
             BonusType::HpRegenFromFruitPercentage(val) => (self.id() as i32, *val as i32, 0),
             BonusType::HpRegenFromMeatPercentage(val) => (self.id() as i32, *val as i32, 0),
@@ -545,6 +651,12 @@ impl BonusType {
             BonusType::UnbreakableShield => (self.id() as i32, 0, 0),
             BonusType::UnbreakableShoes => (self.id() as i32, 0, 0),
             BonusType::UnbreakableWeapon => (self.id() as i32, 0, 0),
+            BonusType::UnstripableWeapon
+            | BonusType::UnstripableArmor
+            | BonusType::UnstripableHelm
+            | BonusType::UnstripableShield
+            | BonusType::Unstripable => (self.id() as i32, 0, 0),
+            BonusType::MagicalDamageUsingElementPercentage(element, value) => (self.id() as i32, element.value() as i32, i32::from(*value)),
             BonusType::ResistancePhysicalAttackFromMobIdPercentage(mob_id, val) => (self.id() as i32, *mob_id as i32, *val as i32),
             BonusType::DropChanceItemIdPercentage(item_id, val) => (self.id() as i32, *item_id as i32, *val as i32),
             BonusType::DropChanceJewelPercentage(val) => (self.id() as i32, *val as i32, 0),
@@ -566,11 +678,82 @@ impl BonusType {
             BonusType::SkillIdSuccessPercentage(skill_id, val) => (self.id() as i32, *skill_id as i32, (*val * 100.0) as i32),
             BonusType::AutospellSkillIdChancePercentage(skill_id, val) => (self.id() as i32, *skill_id as i32, (*val * 100.0) as i32),
             BonusType::DoubleCastSkillIdChancePercentage(skill_id, val) => (self.id() as i32, *skill_id as i32, *val as i32),
+            BonusType::CombatProc(_, count) | BonusType::AutoBonus(_, count) => (self.id() as i32, *count as i32, 0),
+            BonusType::GainExpWhenKillingClassPercentage(class, val) => (self.id() as i32, class.value() as i32, *val as i32),
+            BonusType::ResistanceDamageFromMobGroupPercentage(group, val) => (self.id() as i32, group.value() as i32, *val as i32),
+            BonusType::ResistanceDamageFromElementWithFlags((element, flags), val)
+            | BonusType::PhysicalDamageAgainstElementWithFlags((element, flags), val) => {
+                (self.id() as i32, element.value() as i32 | ((*flags as i32) << 8), *val as i32)
+            }
+            BonusType::ResistanceDamageFromRaceWithFlags((race, flags), val) => {
+                (self.id() as i32, race.value() as i32 | ((*flags as i32) << 8), *val as i32)
+            }
+            BonusType::GainHpWhenHittingEnemy(val) => (self.id() as i32, *val as i32, 0),
         }
     }
 
     pub fn deserialize_from_sc_data(bonus_type: i32, val1: i32, val2: i32) -> Option<BonusType> {
         match bonus_type {
+            169 => Some(BonusType::FleePercentage(val1)),
+            170 => Some(BonusType::ResistanceSkillIdPercentage(val1 as u32, val2)),
+            171 => Some(BonusType::ConditionalWeaponAtk(
+                WeaponType::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            172 => Some(BonusType::ConditionalWeaponDamagePercentage(
+                WeaponType::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            173 => Some(BonusType::ResistanceMiscAttackPercentage(val1)),
+            162 => Some(BonusType::WeaponAtk(val1)),
+            163 => Some(BonusType::WeaponRefineAtk(val1)),
+            164 => Some(BonusType::WeaponComaAgainstElement(
+                Element::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            165 => Some(BonusType::WeaponComaAgainstClass(
+                MobClass::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            166 => Some(BonusType::WeaponComaAgainstRace(
+                MobRace::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            167 => Some(BonusType::EnableNoCancelCast2),
+            168 => Some(BonusType::DoubleAttackAdditionalChancePercentage(val1 as i16)),
+            147 => Some(BonusType::GainExpWhenKillingClassPercentage(
+                MobClass::try_from_value(val1 as usize).ok()?,
+                val2 as i8,
+            )),
+            148 => Some(BonusType::ResistanceDamageFromMobGroupPercentage(
+                MobGroup::try_from_value(val1 as usize).ok()?,
+                val2 as i8,
+            )),
+            149 => Some(BonusType::ResistanceDamageFromElementWithFlags(
+                (Element::try_from_value((val1 & 255) as usize).ok()?, (val1 as u32) >> 8),
+                val2 as i16,
+            )),
+            150 => Some(BonusType::PhysicalDamageAgainstElementWithFlags(
+                (Element::try_from_value((val1 & 255) as usize).ok()?, (val1 as u32) >> 8),
+                val2 as i16,
+            )),
+            151 => Some(BonusType::ResistanceDamageFromRaceWithFlags(
+                (MobRace::try_from_value((val1 & 255) as usize).ok()?, (val1 as u32) >> 8),
+                val2 as i16,
+            )),
+            152 => Some(BonusType::GainHpWhenHittingEnemy(val1 as i16)),
+            153 => Some(BonusType::SpRegenFromItemIDPercentage(val1 as u32, val2 as i16)),
+            154 => Some(BonusType::HpRegenFromItemGroupPercentage(val1, val2 as i16)),
+            155 => Some(BonusType::SpRegenFromItemGroupPercentage(val1, val2 as i16)),
+            156 => Some(BonusType::UnstripableWeapon),
+            157 => Some(BonusType::UnstripableArmor),
+            158 => Some(BonusType::UnstripableHelm),
+            159 => Some(BonusType::UnstripableShield),
+            160 => Some(BonusType::Unstripable),
+            161 => Some(BonusType::MagicalDamageUsingElementPercentage(
+                Element::from_value(val1 as usize),
+                val2 as i16,
+            )),
             1 => Some(BonusType::Str(val1 as i8)),
             2 => Some(BonusType::Agi(val1 as i8)),
             3 => Some(BonusType::Vit(val1 as i8)),
@@ -611,17 +794,17 @@ impl BonusType {
             38 => Some(BonusType::NaturalSpRecoveryPercentage(val1 as i8)),
             39 => Some(BonusType::HpRecoveryMaxSpPercentage(val1 as f32 / 100.0)),
             40 => Some(BonusType::SpRecoveryMaxSpPercentage(val1 as f32 / 100.0)),
-            41 => Some(BonusType::HpRegenFromItemPercentage(val1 as i8)),
-            42 => Some(BonusType::SpRegenFromItemPercentage(val1 as i8)),
-            43 => Some(BonusType::HpRegenFromItemIDPercentage(val1 as u32, val2 as i8)),
-            44 => Some(BonusType::HpRegenFromHerbPercentage(val1 as i8)),
-            45 => Some(BonusType::HpRegenFromFruitPercentage(val1 as i8)),
-            46 => Some(BonusType::HpRegenFromMeatPercentage(val1 as i8)),
-            47 => Some(BonusType::HpRegenFromCandyPercentage(val1 as i8)),
-            48 => Some(BonusType::HpRegenFromJuicePercentage(val1 as i8)),
-            49 => Some(BonusType::HpRegenFromFishPercentage(val1 as i8)),
-            50 => Some(BonusType::HpRegenFromFoodPercentage(val1 as i8)),
-            51 => Some(BonusType::HpRegenFromPotionPercentage(val1 as i8)),
+            41 => Some(BonusType::HpRegenFromItemPercentage(val1 as i16)),
+            42 => Some(BonusType::SpRegenFromItemPercentage(val1 as i16)),
+            43 => Some(BonusType::HpRegenFromItemIDPercentage(val1 as u32, val2 as i16)),
+            44 => Some(BonusType::HpRegenFromHerbPercentage(val1 as i16)),
+            45 => Some(BonusType::HpRegenFromFruitPercentage(val1 as i16)),
+            46 => Some(BonusType::HpRegenFromMeatPercentage(val1 as i16)),
+            47 => Some(BonusType::HpRegenFromCandyPercentage(val1 as i16)),
+            48 => Some(BonusType::HpRegenFromJuicePercentage(val1 as i16)),
+            49 => Some(BonusType::HpRegenFromFishPercentage(val1 as i16)),
+            50 => Some(BonusType::HpRegenFromFoodPercentage(val1 as i16)),
+            51 => Some(BonusType::HpRegenFromPotionPercentage(val1 as i16)),
             52 => Some(BonusType::GainHpWhenKillingEnemy(val1 as i8)),
             53 => Some(BonusType::GainHpWhenKillingEnemyWithMagicAttack(val1 as i8)),
             54 => Some(BonusType::GainSpWhenKillingEnemyWithMagicAttack(val1 as i8)),

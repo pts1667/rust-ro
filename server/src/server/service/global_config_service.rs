@@ -16,6 +16,7 @@ pub struct GlobalConfigService {
     configuration: Config,
     items: HashMap<u32, ItemModel>,
     items_name_id: HashMap<String, u32>,
+    item_max_chance: HashMap<u32, u16>,
     mobs: HashMap<u32, MobModel>,
     mobs_name_id: HashMap<String, u32>,
     jobs: Vec<JobConfig>,
@@ -48,6 +49,13 @@ impl GlobalConfigService {
             items.iter().for_each(|item| {
                 items_name_id.insert(item.name_aegis.clone(), item.id as u32);
             });
+            let mut item_max_chance = HashMap::<u32, u16>::new();
+            for mob in &mobs {
+                for drop in mob.drops.iter().chain(&mob.mvp_drops) {
+                    let chance = item_max_chance.entry(drop.item_id as u32).or_default();
+                    *chance = (*chance).max(drop.rate);
+                }
+            }
 
             let mut mobs_name_id: HashMap<String, u32> = Default::default();
             mobs.iter().for_each(|mob| {
@@ -61,6 +69,7 @@ impl GlobalConfigService {
                 configuration,
                 items: items.into_iter().map(|item| (item.id as u32, item)).collect(),
                 items_name_id,
+                item_max_chance,
                 mobs: mobs.into_iter().map(|mob| (mob.id as u32, mob)).collect(),
                 mobs_name_id,
                 jobs,
@@ -113,6 +122,29 @@ impl GlobalConfigService {
             .unwrap_or_else(|| panic!("Expected to find item for id {id} but found none"))
     }
 
+    pub fn find_skill_config(&self, value: &script_sdk::Value) -> Option<&SkillConfig> {
+        let id = match value {
+            script_sdk::Value::Number(id) => *id as u32,
+            script_sdk::Value::String(name) => *self.skills_name_id.get(name)?,
+            _ => return None,
+        };
+        self.skills.get(&id)
+    }
+
+    pub fn find_item(&self, id: i32) -> Option<&ItemModel> {
+        self.items.get(&(id as u32))
+    }
+
+    pub fn find_item_by_name(&self, name: &str) -> Option<&ItemModel> {
+        self.items_name_id.get(name).and_then(|id| self.items.get(id)).or_else(|| {
+            self.items.values().find(|item| item.name_aegis.eq_ignore_ascii_case(name) || item.name_english.eq_ignore_ascii_case(name))
+        })
+    }
+
+    pub fn item_max_drop_chance(&self, id: i32) -> i32 {
+        i32::from(self.item_max_chance.get(&(id as u32)).copied().unwrap_or(0))
+    }
+
     pub fn get_item_by_name(&self, name: &str) -> &ItemModel {
         let id = &self.get_item_id_from_name(name);
         self.items
@@ -157,6 +189,10 @@ impl GlobalConfigService {
 
     pub fn get_map(&self, name: &str) -> &Map {
         self.maps.get(name).unwrap_or_else(|| panic!("Can't find map with name {name}"))
+    }
+
+    pub fn find_map(&self, name: &str) -> Option<&Map> {
+        self.maps.get(name)
     }
 
     pub fn get_job_skilltree(&self, job: JobName) -> &JobSkillTree {

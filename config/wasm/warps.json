@@ -1,0 +1,2914 @@
+[
+  {
+    "category": "Towns",
+    "group": "Prontera",
+    "name": "Prontera",
+    "map": "prontera",
+    "x": 155,
+    "y": 183
+  },
+  {
+    "category": "Towns",
+    "group": "Alberta",
+    "name": "Alberta",
+    "map": "alberta",
+    "x": 28,
+    "y": 234
+  },
+  {
+    "category": "Towns",
+    "group": "Aldebaran",
+    "name": "Aldebaran",
+    "map": "aldebaran",
+    "x": 140,
+    "y": 131
+  },
+  {
+    "category": "Towns",
+    "group": "Amatsu",
+    "name": "Amatsu",
+    "map": "amatsu",
+    "x": 198,
+    "y": 84
+  },
+  {
+    "category": "Towns",
+    "group": "Ayothaya",
+    "name": "Ayothaya",
+    "map": "ayothaya",
+    "x": 208,
+    "y": 166
+  },
+  {
+    "category": "Towns",
+    "group": "Comodo",
+    "name": "Comodo",
+    "map": "comodo",
+    "x": 209,
+    "y": 143
+  },
+  {
+    "category": "Towns",
+    "group": "Einbech",
+    "name": "Einbech",
+    "map": "einbech",
+    "x": 63,
+    "y": 35
+  },
+  {
+    "category": "Towns",
+    "group": "Einbroch",
+    "name": "Einbroch",
+    "map": "einbroch",
+    "x": 64,
+    "y": 200
+  },
+  {
+    "category": "Towns",
+    "group": "Geffen",
+    "name": "Geffen",
+    "map": "geffen",
+    "x": 119,
+    "y": 59
+  },
+  {
+    "category": "Towns",
+    "group": "Gonryun",
+    "name": "Gonryun",
+    "map": "gonryun",
+    "x": 160,
+    "y": 120
+  },
+  {
+    "category": "Towns",
+    "group": "Hugel",
+    "name": "Hugel",
+    "map": "hugel",
+    "x": 96,
+    "y": 145
+  },
+  {
+    "category": "Towns",
+    "group": "Izlude",
+    "name": "Izlude",
+    "map": "izlude",
+    "x": 128,
+    "y": 114
+  },
+  {
+    "category": "Towns",
+    "group": "Jawaii",
+    "name": "Jawaii",
+    "map": "jawaii",
+    "x": 251,
+    "y": 132
+  },
+  {
+    "category": "Towns",
+    "group": "Lighthalzen",
+    "name": "Lighthalzen",
+    "map": "lighthalzen",
+    "x": 158,
+    "y": 92
+  },
+  {
+    "category": "Towns",
+    "group": "Louyang",
+    "name": "Louyang",
+    "map": "louyang",
+    "x": 217,
+    "y": 100
+  },
+  {
+    "category": "Towns",
+    "group": "Lutie",
+    "name": "Lutie",
+    "map": "xmas",
+    "x": 147,
+    "y": 134
+  },
+  {
+    "category": "Towns",
+    "group": "Manuk",
+    "name": "Manuk",
+    "map": "manuk",
+    "x": 282,
+    "y": 138
+  },
+  {
+    "category": "Towns",
+    "group": "Midgarts Expedition Camp",
+    "name": "Midgarts Expedition Camp",
+    "map": "mid_camp",
+    "x": 210,
+    "y": 288
+  },
+  {
+    "category": "Towns",
+    "group": "Morroc",
+    "name": "Morroc",
+    "map": "morocc",
+    "x": 156,
+    "y": 93
+  },
+  {
+    "category": "Towns",
+    "group": "Moscovia",
+    "name": "Moscovia",
+    "map": "moscovia",
+    "x": 223,
+    "y": 184
+  },
+  {
+    "category": "Towns",
+    "group": "Nameless Island",
+    "name": "Nameless Island",
+    "map": "nameless_n",
+    "x": 256,
+    "y": 215
+  },
+  {
+    "category": "Towns",
+    "group": "Niflheim",
+    "name": "Niflheim",
+    "map": "niflheim",
+    "x": 202,
+    "y": 174
+  },
+  {
+    "category": "Towns",
+    "group": "Payon",
+    "name": "Payon",
+    "map": "payon",
+    "x": 179,
+    "y": 100
+  },
+  {
+    "category": "Towns",
+    "group": "Rachel",
+    "name": "Rachel",
+    "map": "rachel",
+    "x": 130,
+    "y": 110
+  },
+  {
+    "category": "Towns",
+    "group": "Splendide",
+    "name": "Splendide",
+    "map": "splendide",
+    "x": 201,
+    "y": 147
+  },
+  {
+    "category": "Towns",
+    "group": "Thor Camp",
+    "name": "Thor Camp",
+    "map": "thor_camp",
+    "x": 246,
+    "y": 68
+  },
+  {
+    "category": "Towns",
+    "group": "Umbala",
+    "name": "Umbala",
+    "map": "umbala",
+    "x": 97,
+    "y": 153
+  },
+  {
+    "category": "Towns",
+    "group": "Veins",
+    "name": "Veins",
+    "map": "veins",
+    "x": 216,
+    "y": 123
+  },
+  {
+    "category": "Towns",
+    "group": "Yuno",
+    "name": "Yuno",
+    "map": "yuno",
+    "x": 157,
+    "y": 51
+  },
+  {
+    "category": "Fields",
+    "group": "Amatsu Fields",
+    "name": "Amatsu Field 1",
+    "map": "ama_fild01",
+    "x": 190,
+    "y": 197
+  },
+  {
+    "category": "Fields",
+    "group": "Ayothaya Fields",
+    "name": "Ayothaya Field 1",
+    "map": "ayo_fild01",
+    "x": 173,
+    "y": 134
+  },
+  {
+    "category": "Fields",
+    "group": "Ayothaya Fields",
+    "name": "Ayothaya Field 2",
+    "map": "ayo_fild02",
+    "x": 212,
+    "y": 150
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 1",
+    "map": "cmd_fild01",
+    "x": 180,
+    "y": 178
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 2",
+    "map": "cmd_fild02",
+    "x": 231,
+    "y": 160
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 3",
+    "map": "cmd_fild03",
+    "x": 191,
+    "y": 172
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 4",
+    "map": "cmd_fild04",
+    "x": 228,
+    "y": 194
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 5",
+    "map": "cmd_fild05",
+    "x": 224,
+    "y": 203
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 6",
+    "map": "cmd_fild06",
+    "x": 190,
+    "y": 223
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 7",
+    "map": "cmd_fild07",
+    "x": 234,
+    "y": 177
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 8",
+    "map": "cmd_fild08",
+    "x": 194,
+    "y": 175
+  },
+  {
+    "category": "Fields",
+    "group": "Comodo Fields",
+    "name": "Comodo Field 9",
+    "map": "cmd_fild09",
+    "x": 172,
+    "y": 172
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 1",
+    "map": "ein_fild01",
+    "x": 142,
+    "y": 225
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 2",
+    "map": "ein_fild02",
+    "x": 182,
+    "y": 141
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 3",
+    "map": "ein_fild03",
+    "x": 187,
+    "y": 228
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 4",
+    "map": "ein_fild04",
+    "x": 185,
+    "y": 173
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 5",
+    "map": "ein_fild05",
+    "x": 216,
+    "y": 173
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 6",
+    "map": "ein_fild06",
+    "x": 195,
+    "y": 148
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 7",
+    "map": "ein_fild07",
+    "x": 272,
+    "y": 220
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 8",
+    "map": "ein_fild08",
+    "x": 173,
+    "y": 214
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 9",
+    "map": "ein_fild09",
+    "x": 207,
+    "y": 174
+  },
+  {
+    "category": "Fields",
+    "group": "Einbroch Fields",
+    "name": "Einbroch Field 10",
+    "map": "ein_fild10",
+    "x": 196,
+    "y": 200
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 0",
+    "map": "gef_fild00",
+    "x": 46,
+    "y": 199
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 1",
+    "map": "gef_fild01",
+    "x": 213,
+    "y": 204
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 2",
+    "map": "gef_fild02",
+    "x": 195,
+    "y": 212
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 3",
+    "map": "gef_fild03",
+    "x": 257,
+    "y": 192
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 4",
+    "map": "gef_fild04",
+    "x": 188,
+    "y": 171
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 5",
+    "map": "gef_fild05",
+    "x": 166,
+    "y": 263
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 6",
+    "map": "gef_fild06",
+    "x": 248,
+    "y": 158
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 7",
+    "map": "gef_fild07",
+    "x": 195,
+    "y": 191
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 8",
+    "map": "gef_fild08",
+    "x": 186,
+    "y": 183
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 9",
+    "map": "gef_fild09",
+    "x": 221,
+    "y": 117
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 10",
+    "map": "gef_fild10",
+    "x": 178,
+    "y": 218
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 11",
+    "map": "gef_fild11",
+    "x": 136,
+    "y": 328
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 12",
+    "map": "gef_fild12",
+    "x": 240,
+    "y": 181
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 13",
+    "map": "gef_fild13",
+    "x": 235,
+    "y": 235
+  },
+  {
+    "category": "Fields",
+    "group": "Geffen Fields",
+    "name": "Geffen Field 14",
+    "map": "gef_fild14",
+    "x": 211,
+    "y": 185
+  },
+  {
+    "category": "Fields",
+    "group": "Gonryun Fields",
+    "name": "Gonryun Field 1",
+    "map": "gon_fild01",
+    "x": 220,
+    "y": 227
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 1",
+    "map": "hu_fild01",
+    "x": 268,
+    "y": 101
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 2",
+    "map": "hu_fild02",
+    "x": 222,
+    "y": 193
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 3",
+    "map": "hu_fild03",
+    "x": 232,
+    "y": 185
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 4",
+    "map": "hu_fild04",
+    "x": 252,
+    "y": 189
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 5",
+    "map": "hu_fild05",
+    "x": 196,
+    "y": 106
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 6",
+    "map": "hu_fild06",
+    "x": 216,
+    "y": 220
+  },
+  {
+    "category": "Fields",
+    "group": "Hugel Fields",
+    "name": "Hugel Field 7",
+    "map": "hu_fild07",
+    "x": 227,
+    "y": 197
+  },
+  {
+    "category": "Fields",
+    "group": "Lighthalzen Fields",
+    "name": "Lighthalzen Field 1",
+    "map": "lhz_fild01",
+    "x": 240,
+    "y": 179
+  },
+  {
+    "category": "Fields",
+    "group": "Lighthalzen Fields",
+    "name": "Lighthalzen Field 2",
+    "map": "lhz_fild02",
+    "x": 185,
+    "y": 235
+  },
+  {
+    "category": "Fields",
+    "group": "Lighthalzen Fields",
+    "name": "Lighthalzen Field 3",
+    "map": "lhz_fild03",
+    "x": 240,
+    "y": 226
+  },
+  {
+    "category": "Fields",
+    "group": "Louyang Field",
+    "name": "Louyang Field 1",
+    "map": "lou_fild01",
+    "x": 229,
+    "y": 187
+  },
+  {
+    "category": "Fields",
+    "group": "Lutie Field",
+    "name": "Lutie Field 1",
+    "map": "xmas_fild01",
+    "x": 115,
+    "y": 145
+  },
+  {
+    "category": "Fields",
+    "group": "Manuk Fields",
+    "name": "Manuk Field 1",
+    "map": "man_fild01",
+    "x": 35,
+    "y": 236
+  },
+  {
+    "category": "Fields",
+    "group": "Manuk Fields",
+    "name": "Manuk Field 2",
+    "map": "man_fild02",
+    "x": 35,
+    "y": 262
+  },
+  {
+    "category": "Fields",
+    "group": "Manuk Fields",
+    "name": "Manuk Field 3",
+    "map": "man_fild03",
+    "x": 84,
+    "y": 365
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 1",
+    "map": "mjolnir_01",
+    "x": 204,
+    "y": 120
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 2",
+    "map": "mjolnir_02",
+    "x": 175,
+    "y": 193
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 3",
+    "map": "mjolnir_03",
+    "x": 208,
+    "y": 213
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 4",
+    "map": "mjolnir_04",
+    "x": 179,
+    "y": 180
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 5",
+    "map": "mjolnir_05",
+    "x": 181,
+    "y": 240
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 6",
+    "map": "mjolnir_06",
+    "x": 195,
+    "y": 270
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 7",
+    "map": "mjolnir_07",
+    "x": 235,
+    "y": 202
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 8",
+    "map": "mjolnir_08",
+    "x": 188,
+    "y": 215
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 9",
+    "map": "mjolnir_09",
+    "x": 205,
+    "y": 144
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 10",
+    "map": "mjolnir_10",
+    "x": 245,
+    "y": 223
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 11",
+    "map": "mjolnir_11",
+    "x": 180,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Mjolnir Fields",
+    "name": "Mjolnir Field 12",
+    "map": "mjolnir_12",
+    "x": 196,
+    "y": 208
+  },
+  {
+    "category": "Fields",
+    "group": "Moscovia Fields",
+    "name": "Moscovia Field 1",
+    "map": "mosk_fild01",
+    "x": 82,
+    "y": 104
+  },
+  {
+    "category": "Fields",
+    "group": "Moscovia Fields",
+    "name": "Moscovia Field 2",
+    "map": "mosk_fild02",
+    "x": 131,
+    "y": 147
+  },
+  {
+    "category": "Fields",
+    "group": "Niflheim Fields",
+    "name": "Niflheim Field 1",
+    "map": "nif_fild01",
+    "x": 215,
+    "y": 229
+  },
+  {
+    "category": "Fields",
+    "group": "Niflheim Fields",
+    "name": "Niflheim Field 2",
+    "map": "nif_fild02",
+    "x": 167,
+    "y": 234
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 1",
+    "map": "pay_fild01",
+    "x": 158,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 2",
+    "map": "pay_fild02",
+    "x": 151,
+    "y": 219
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 3",
+    "map": "pay_fild03",
+    "x": 205,
+    "y": 148
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 4",
+    "map": "pay_fild04",
+    "x": 186,
+    "y": 247
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 5",
+    "map": "pay_fild05",
+    "x": 134,
+    "y": 204
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 6",
+    "map": "pay_fild06",
+    "x": 193,
+    "y": 235
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 7",
+    "map": "pay_fild07",
+    "x": 200,
+    "y": 177
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 8",
+    "map": "pay_fild08",
+    "x": 137,
+    "y": 189
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 9",
+    "map": "pay_fild09",
+    "x": 201,
+    "y": 224
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 10",
+    "map": "pay_fild10",
+    "x": 160,
+    "y": 205
+  },
+  {
+    "category": "Fields",
+    "group": "Payon Forests",
+    "name": "Payon Forest 11",
+    "map": "pay_fild11",
+    "x": 194,
+    "y": 150
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 0",
+    "map": "prt_fild00",
+    "x": 208,
+    "y": 227
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 1",
+    "map": "prt_fild01",
+    "x": 190,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 2",
+    "map": "prt_fild02",
+    "x": 240,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 3",
+    "map": "prt_fild03",
+    "x": 190,
+    "y": 143
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 4",
+    "map": "prt_fild04",
+    "x": 307,
+    "y": 252
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 5",
+    "map": "prt_fild05",
+    "x": 239,
+    "y": 213
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 6",
+    "map": "prt_fild06",
+    "x": 185,
+    "y": 188
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 7",
+    "map": "prt_fild07",
+    "x": 193,
+    "y": 194
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 8",
+    "map": "prt_fild08",
+    "x": 187,
+    "y": 218
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 9",
+    "map": "prt_fild09",
+    "x": 210,
+    "y": 183
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 10",
+    "map": "prt_fild10",
+    "x": 195,
+    "y": 149
+  },
+  {
+    "category": "Fields",
+    "group": "Prontera Fields",
+    "name": "Prontera Field 11",
+    "map": "prt_fild11",
+    "x": 198,
+    "y": 164
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 1",
+    "map": "ra_fild01",
+    "x": 192,
+    "y": 162
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 2",
+    "map": "ra_fild02",
+    "x": 235,
+    "y": 166
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 3",
+    "map": "ra_fild03",
+    "x": 202,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 4",
+    "map": "ra_fild04",
+    "x": 202,
+    "y": 208
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 5",
+    "map": "ra_fild05",
+    "x": 225,
+    "y": 202
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 6",
+    "map": "ra_fild06",
+    "x": 202,
+    "y": 214
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 7",
+    "map": "ra_fild07",
+    "x": 263,
+    "y": 196
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 8",
+    "map": "ra_fild08",
+    "x": 217,
+    "y": 201
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 9",
+    "map": "ra_fild09",
+    "x": 87,
+    "y": 121
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 10",
+    "map": "ra_fild10",
+    "x": 277,
+    "y": 181
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 11",
+    "map": "ra_fild11",
+    "x": 221,
+    "y": 185
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 12",
+    "map": "ra_fild12",
+    "x": 175,
+    "y": 200
+  },
+  {
+    "category": "Fields",
+    "group": "Rachel Fields",
+    "name": "Rachel Field 13",
+    "map": "ra_fild13",
+    "x": 174,
+    "y": 197
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 1",
+    "map": "moc_fild01",
+    "x": 219,
+    "y": 205
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 2",
+    "map": "moc_fild02",
+    "x": 177,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 3",
+    "map": "moc_fild03",
+    "x": 194,
+    "y": 182
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 7",
+    "map": "moc_fild07",
+    "x": 224,
+    "y": 170
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 11",
+    "map": "moc_fild11",
+    "x": 198,
+    "y": 216
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 12",
+    "map": "moc_fild12",
+    "x": 156,
+    "y": 187
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 13",
+    "map": "moc_fild13",
+    "x": 185,
+    "y": 263
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 16",
+    "map": "moc_fild16",
+    "x": 206,
+    "y": 228
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 17",
+    "map": "moc_fild17",
+    "x": 208,
+    "y": 238
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 18",
+    "map": "moc_fild18",
+    "x": 209,
+    "y": 223
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 19",
+    "map": "moc_fild19",
+    "x": 85,
+    "y": 97
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 20",
+    "map": "moc_fild20",
+    "x": 207,
+    "y": 202
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 21",
+    "map": "moc_fild21",
+    "x": 31,
+    "y": 195
+  },
+  {
+    "category": "Fields",
+    "group": "Sograt Deserts",
+    "name": "Sograt Desert 22",
+    "map": "moc_fild22",
+    "x": 38,
+    "y": 195
+  },
+  {
+    "category": "Fields",
+    "group": "Splendide Fields",
+    "name": "Splendide Field 1",
+    "map": "spl_fild01",
+    "x": 175,
+    "y": 186
+  },
+  {
+    "category": "Fields",
+    "group": "Splendide Fields",
+    "name": "Splendide Field 2",
+    "map": "spl_fild02",
+    "x": 236,
+    "y": 184
+  },
+  {
+    "category": "Fields",
+    "group": "Splendide Fields",
+    "name": "Splendide Field 3",
+    "map": "spl_fild03",
+    "x": 188,
+    "y": 204
+  },
+  {
+    "category": "Fields",
+    "group": "Umbala Fields",
+    "name": "Umbala Field 1",
+    "map": "um_fild01",
+    "x": 217,
+    "y": 206
+  },
+  {
+    "category": "Fields",
+    "group": "Umbala Fields",
+    "name": "Umbala Field 2",
+    "map": "um_fild02",
+    "x": 223,
+    "y": 221
+  },
+  {
+    "category": "Fields",
+    "group": "Umbala Fields",
+    "name": "Umbala Field 3",
+    "map": "um_fild03",
+    "x": 237,
+    "y": 215
+  },
+  {
+    "category": "Fields",
+    "group": "Umbala Fields",
+    "name": "Umbala Field 4",
+    "map": "um_fild04",
+    "x": 202,
+    "y": 197
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 1",
+    "map": "ve_fild01",
+    "x": 186,
+    "y": 175
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 2",
+    "map": "ve_fild02",
+    "x": 196,
+    "y": 370
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 3",
+    "map": "ve_fild03",
+    "x": 222,
+    "y": 45
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 4",
+    "map": "ve_fild04",
+    "x": 51,
+    "y": 250
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 5",
+    "map": "ve_fild05",
+    "x": 202,
+    "y": 324
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 6",
+    "map": "ve_fild06",
+    "x": 150,
+    "y": 223
+  },
+  {
+    "category": "Fields",
+    "group": "Veins Fields",
+    "name": "Veins Field 7",
+    "map": "ve_fild07",
+    "x": 149,
+    "y": 307
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 1",
+    "map": "yuno_fild01",
+    "x": 189,
+    "y": 224
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 2",
+    "map": "yuno_fild02",
+    "x": 192,
+    "y": 207
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 3",
+    "map": "yuno_fild03",
+    "x": 221,
+    "y": 157
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 4",
+    "map": "yuno_fild04",
+    "x": 226,
+    "y": 199
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 5",
+    "map": "yuno_fild05",
+    "x": 223,
+    "y": 177
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 6",
+    "map": "yuno_fild06",
+    "x": 187,
+    "y": 232
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 7",
+    "map": "yuno_fild07",
+    "x": 231,
+    "y": 174
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 8",
+    "map": "yuno_fild08",
+    "x": 196,
+    "y": 203
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 9",
+    "map": "yuno_fild09",
+    "x": 183,
+    "y": 214
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 10",
+    "map": "yuno_fild10",
+    "x": 200,
+    "y": 124
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 11",
+    "map": "yuno_fild11",
+    "x": 195,
+    "y": 226
+  },
+  {
+    "category": "Fields",
+    "group": "Yuno Fields",
+    "name": "Yuno Field 12",
+    "map": "yuno_fild12",
+    "x": 210,
+    "y": 304
+  },
+  {
+    "category": "Dungeons",
+    "group": "Abyss Lakes",
+    "name": "Abyss Lakes 1",
+    "map": "abyss_01",
+    "x": 261,
+    "y": 272
+  },
+  {
+    "category": "Dungeons",
+    "group": "Abyss Lakes",
+    "name": "Abyss Lakes 2",
+    "map": "abyss_02",
+    "x": 275,
+    "y": 270
+  },
+  {
+    "category": "Dungeons",
+    "group": "Abyss Lakes",
+    "name": "Abyss Lakes 3",
+    "map": "abyss_03",
+    "x": 116,
+    "y": 27
+  },
+  {
+    "category": "Dungeons",
+    "group": "Amatsu Dungeon",
+    "name": "Amatsu Dungeon 1",
+    "map": "ama_dun01",
+    "x": 228,
+    "y": 11
+  },
+  {
+    "category": "Dungeons",
+    "group": "Amatsu Dungeon",
+    "name": "Amatsu Dungeon 2",
+    "map": "ama_dun02",
+    "x": 34,
+    "y": 41
+  },
+  {
+    "category": "Dungeons",
+    "group": "Amatsu Dungeon",
+    "name": "Amatsu Dungeon 3",
+    "map": "ama_dun03",
+    "x": 119,
+    "y": 14
+  },
+  {
+    "category": "Dungeons",
+    "group": "Anthell",
+    "name": "Anthell 1",
+    "map": "anthell01",
+    "x": 35,
+    "y": 262
+  },
+  {
+    "category": "Dungeons",
+    "group": "Anthell",
+    "name": "Anthell 2",
+    "map": "anthell02",
+    "x": 168,
+    "y": 170
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ayothaya Dungeon",
+    "name": "Ancient Shrine Maze",
+    "map": "ayo_dun01",
+    "x": 275,
+    "y": 19
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ayothaya Dungeon",
+    "name": "Inside Ancient Shrine",
+    "map": "ayo_dun02",
+    "x": 24,
+    "y": 26
+  },
+  {
+    "category": "Dungeons",
+    "group": "Beach Dungeon",
+    "name": "Beach Dungeon 1",
+    "map": "beach_dun",
+    "x": 266,
+    "y": 67
+  },
+  {
+    "category": "Dungeons",
+    "group": "Beach Dungeon",
+    "name": "Beach Dungeon 2",
+    "map": "beach_dun2",
+    "x": 255,
+    "y": 244
+  },
+  {
+    "category": "Dungeons",
+    "group": "Beach Dungeon",
+    "name": "Beach Dungeon 3",
+    "map": "beach_dun3",
+    "x": 23,
+    "y": 260
+  },
+  {
+    "category": "Dungeons",
+    "group": "Bio Labs",
+    "name": "Bio Lab 1",
+    "map": "lhz_dun01",
+    "x": 150,
+    "y": 288
+  },
+  {
+    "category": "Dungeons",
+    "group": "Bio Labs",
+    "name": "Bio Lab 2",
+    "map": "lhz_dun02",
+    "x": 150,
+    "y": 18
+  },
+  {
+    "category": "Dungeons",
+    "group": "Bio Labs",
+    "name": "Bio Lab 3",
+    "map": "lhz_dun03",
+    "x": 140,
+    "y": 134
+  },
+  {
+    "category": "Dungeons",
+    "group": "Byalan Dungeon",
+    "name": "Byalan Dungeon 1",
+    "map": "iz_dun00",
+    "x": 168,
+    "y": 168
+  },
+  {
+    "category": "Dungeons",
+    "group": "Byalan Dungeon",
+    "name": "Byalan Dungeon 2",
+    "map": "iz_dun01",
+    "x": 253,
+    "y": 252
+  },
+  {
+    "category": "Dungeons",
+    "group": "Byalan Dungeon",
+    "name": "Byalan Dungeon 3",
+    "map": "iz_dun02",
+    "x": 236,
+    "y": 204
+  },
+  {
+    "category": "Dungeons",
+    "group": "Byalan Dungeon",
+    "name": "Byalan Dungeon 4",
+    "map": "iz_dun03",
+    "x": 32,
+    "y": 63
+  },
+  {
+    "category": "Dungeons",
+    "group": "Byalan Dungeon",
+    "name": "Byalan Dungeon 5",
+    "map": "iz_dun04",
+    "x": 26,
+    "y": 27
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Clock Tower 1",
+    "map": "c_tower1",
+    "x": 199,
+    "y": 159
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Clock Tower 2",
+    "map": "c_tower2",
+    "x": 148,
+    "y": 283
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Clock Tower 3",
+    "map": "c_tower3",
+    "x": 65,
+    "y": 147
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Clock Tower 4",
+    "map": "c_tower4",
+    "x": 56,
+    "y": 155
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Basement 1",
+    "map": "alde_dun01",
+    "x": 297,
+    "y": 25
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Basement 2",
+    "map": "alde_dun02",
+    "x": 127,
+    "y": 169
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Basement 3",
+    "map": "alde_dun03",
+    "x": 277,
+    "y": 178
+  },
+  {
+    "category": "Dungeons",
+    "group": "Clock Tower",
+    "name": "Basement 4",
+    "map": "alde_dun04",
+    "x": 268,
+    "y": 74
+  },
+  {
+    "category": "Dungeons",
+    "group": "Coal Mines",
+    "name": "Coal Mines 1",
+    "map": "mjo_dun01",
+    "x": 52,
+    "y": 17
+  },
+  {
+    "category": "Dungeons",
+    "group": "Coal Mines",
+    "name": "Coal Mines 2",
+    "map": "mjo_dun02",
+    "x": 381,
+    "y": 343
+  },
+  {
+    "category": "Dungeons",
+    "group": "Coal Mines",
+    "name": "Coal Mines 3",
+    "map": "mjo_dun03",
+    "x": 302,
+    "y": 262
+  },
+  {
+    "category": "Dungeons",
+    "group": "Culvert",
+    "name": "Culvert 1",
+    "map": "prt_sewb1",
+    "x": 131,
+    "y": 247
+  },
+  {
+    "category": "Dungeons",
+    "group": "Culvert",
+    "name": "Culvert 2",
+    "map": "prt_sewb2",
+    "x": 19,
+    "y": 19
+  },
+  {
+    "category": "Dungeons",
+    "group": "Culvert",
+    "name": "Culvert 3",
+    "map": "prt_sewb3",
+    "x": 180,
+    "y": 169
+  },
+  {
+    "category": "Dungeons",
+    "group": "Culvert",
+    "name": "Culvert 4",
+    "map": "prt_sewb4",
+    "x": 100,
+    "y": 92
+  },
+  {
+    "category": "Dungeons",
+    "group": "Cursed Abbey",
+    "name": "Cursed Abbey 1",
+    "map": "abbey01",
+    "x": 51,
+    "y": 14
+  },
+  {
+    "category": "Dungeons",
+    "group": "Cursed Abbey",
+    "name": "Cursed Abbey 2",
+    "map": "abbey02",
+    "x": 150,
+    "y": 11
+  },
+  {
+    "category": "Dungeons",
+    "group": "Cursed Abbey",
+    "name": "Cursed Abbey 3",
+    "map": "abbey03",
+    "x": 120,
+    "y": 10
+  },
+  {
+    "category": "Dungeons",
+    "group": "Einbroch Dungeon",
+    "name": "Einbroch Dungeon 1",
+    "map": "ein_dun01",
+    "x": 22,
+    "y": 14
+  },
+  {
+    "category": "Dungeons",
+    "group": "Einbroch Dungeon",
+    "name": "Einbroch Dungeon 2",
+    "map": "ein_dun02",
+    "x": 292,
+    "y": 290
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gefenia",
+    "name": "Gefenia 1",
+    "map": "gefenia01",
+    "x": 40,
+    "y": 103
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gefenia",
+    "name": "Gefenia 2",
+    "map": "gefenia02",
+    "x": 203,
+    "y": 34
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gefenia",
+    "name": "Gefenia 3",
+    "map": "gefenia03",
+    "x": 266,
+    "y": 168
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gefenia",
+    "name": "Gefenia 4",
+    "map": "gefenia04",
+    "x": 130,
+    "y": 272
+  },
+  {
+    "category": "Dungeons",
+    "group": "Geffen Dungeon",
+    "name": "Geffen Dungeon 1",
+    "map": "gef_dun00",
+    "x": 104,
+    "y": 99
+  },
+  {
+    "category": "Dungeons",
+    "group": "Geffen Dungeon",
+    "name": "Geffen Dungeon 2",
+    "map": "gef_dun01",
+    "x": 115,
+    "y": 236
+  },
+  {
+    "category": "Dungeons",
+    "group": "Geffen Dungeon",
+    "name": "Geffen Dungeon 3",
+    "map": "gef_dun02",
+    "x": 106,
+    "y": 132
+  },
+  {
+    "category": "Dungeons",
+    "group": "Geffen Dungeon",
+    "name": "Geffen Dungeon 4",
+    "map": "gef_dun03",
+    "x": 203,
+    "y": 200
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Entrance",
+    "map": "glast_01",
+    "x": 370,
+    "y": 304
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Castle 1",
+    "map": "gl_cas01",
+    "x": 199,
+    "y": 29
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Castle 2",
+    "map": "gl_cas02",
+    "x": 104,
+    "y": 25
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Chivalry 1",
+    "map": "gl_knt01",
+    "x": 150,
+    "y": 15
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Chivalry 2",
+    "map": "gl_knt02",
+    "x": 157,
+    "y": 287
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Churchyard",
+    "map": "gl_chyard",
+    "x": 147,
+    "y": 15
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Culvert 1",
+    "map": "gl_sew01",
+    "x": 258,
+    "y": 255
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Culvert 2",
+    "map": "gl_sew02",
+    "x": 108,
+    "y": 291
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Culvert 3",
+    "map": "gl_sew03",
+    "x": 171,
+    "y": 283
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Culvert 4",
+    "map": "gl_sew04",
+    "x": 68,
+    "y": 277
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "St. Abbey",
+    "map": "gl_church",
+    "x": 156,
+    "y": 7
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Staircase Dungeon",
+    "map": "gl_step",
+    "x": 12,
+    "y": 7
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Underground Cave 1",
+    "map": "gl_dun01",
+    "x": 133,
+    "y": 271
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Underground Cave 2",
+    "map": "gl_dun02",
+    "x": 224,
+    "y": 274
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Underground Prison 1",
+    "map": "gl_prison",
+    "x": 14,
+    "y": 70
+  },
+  {
+    "category": "Dungeons",
+    "group": "Glast Heim",
+    "name": "Underground Prison 2",
+    "map": "gl_prison1",
+    "x": 150,
+    "y": 14
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gonryun Dungeon",
+    "name": "Gonryun Dungeon 1",
+    "map": "gon_dun01",
+    "x": 153,
+    "y": 53
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gonryun Dungeon",
+    "name": "Gonryun Dungeon 2",
+    "map": "gon_dun02",
+    "x": 28,
+    "y": 113
+  },
+  {
+    "category": "Dungeons",
+    "group": "Gonryun Dungeon",
+    "name": "Gonryun Dungeon 3",
+    "map": "gon_dun03",
+    "x": 68,
+    "y": 16
+  },
+  {
+    "category": "Dungeons",
+    "group": "Hidden Dungeon",
+    "name": "Hidden Dungeon 1",
+    "map": "prt_maze01",
+    "x": 176,
+    "y": 7
+  },
+  {
+    "category": "Dungeons",
+    "group": "Hidden Dungeon",
+    "name": "Hidden Dungeon 2",
+    "map": "prt_maze02",
+    "x": 93,
+    "y": 20
+  },
+  {
+    "category": "Dungeons",
+    "group": "Hidden Dungeon",
+    "name": "Hidden Dungeon 3",
+    "map": "prt_maze03",
+    "x": 23,
+    "y": 8
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ice Dungeon",
+    "name": "Ice Dungeon 1",
+    "map": "ice_dun01",
+    "x": 157,
+    "y": 14
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ice Dungeon",
+    "name": "Ice Dungeon 2",
+    "map": "ice_dun02",
+    "x": 151,
+    "y": 155
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ice Dungeon",
+    "name": "Ice Dungeon 3",
+    "map": "ice_dun03",
+    "x": 149,
+    "y": 22
+  },
+  {
+    "category": "Dungeons",
+    "group": "Ice Dungeon",
+    "name": "Ice Dungeon 4",
+    "map": "ice_dun04",
+    "x": 33,
+    "y": 158
+  },
+  {
+    "category": "Dungeons",
+    "group": "Juperos",
+    "name": "Entrance",
+    "map": "jupe_cave",
+    "x": 140,
+    "y": 51
+  },
+  {
+    "category": "Dungeons",
+    "group": "Juperos",
+    "name": "Juperos 1",
+    "map": "juperos_01",
+    "x": 53,
+    "y": 247
+  },
+  {
+    "category": "Dungeons",
+    "group": "Juperos",
+    "name": "Juperos 2",
+    "map": "juperos_02",
+    "x": 37,
+    "y": 63
+  },
+  {
+    "category": "Dungeons",
+    "group": "Juperos",
+    "name": "Core",
+    "map": "jupe_core",
+    "x": 150,
+    "y": 285
+  },
+  {
+    "category": "Dungeons",
+    "group": "Kiel Dungeon",
+    "name": "Kiel Dungeon 1",
+    "map": "kh_dun01",
+    "x": 28,
+    "y": 226
+  },
+  {
+    "category": "Dungeons",
+    "group": "Kiel Dungeon",
+    "name": "Kiel Dungeon 2",
+    "map": "kh_dun02",
+    "x": 41,
+    "y": 198
+  },
+  {
+    "category": "Dungeons",
+    "group": "Louyang Dungeon",
+    "name": "The Royal Tomb",
+    "map": "lou_dun01",
+    "x": 218,
+    "y": 196
+  },
+  {
+    "category": "Dungeons",
+    "group": "Louyang Dungeon",
+    "name": "Inside the Royal Tomb",
+    "map": "lou_dun02",
+    "x": 282,
+    "y": 20
+  },
+  {
+    "category": "Dungeons",
+    "group": "Louyang Dungeon",
+    "name": "Suei Long Gon",
+    "map": "lou_dun03",
+    "x": 165,
+    "y": 38
+  },
+  {
+    "category": "Dungeons",
+    "group": "Magma Dungeon",
+    "name": "Magma Dungeon 1",
+    "map": "mag_dun01",
+    "x": 126,
+    "y": 68
+  },
+  {
+    "category": "Dungeons",
+    "group": "Magma Dungeon",
+    "name": "Magma Dungeon 2",
+    "map": "mag_dun02",
+    "x": 47,
+    "y": 30
+  },
+  {
+    "category": "Dungeons",
+    "group": "Moscovia Dungeon",
+    "name": "Moscovia Dungeon 1",
+    "map": "mosk_dun01",
+    "x": 189,
+    "y": 48
+  },
+  {
+    "category": "Dungeons",
+    "group": "Moscovia Dungeon",
+    "name": "Moscovia Dungeon 2",
+    "map": "mosk_dun02",
+    "x": 165,
+    "y": 30
+  },
+  {
+    "category": "Dungeons",
+    "group": "Moscovia Dungeon",
+    "name": "Moscovia Dungeon 3",
+    "map": "mosk_dun03",
+    "x": 32,
+    "y": 135
+  },
+  {
+    "category": "Dungeons",
+    "group": "Nidhogg's Dungeon",
+    "name": "Nidhogg's Dungeon 1",
+    "map": "nyd_dun01",
+    "x": 61,
+    "y": 239
+  },
+  {
+    "category": "Dungeons",
+    "group": "Nidhogg's Dungeon",
+    "name": "Nidhogg's Dungeon 2",
+    "map": "nyd_dun02",
+    "x": 60,
+    "y": 271
+  },
+  {
+    "category": "Dungeons",
+    "group": "Odin Temple",
+    "name": "Odin Temple 1",
+    "map": "odin_tem01",
+    "x": 96,
+    "y": 145
+  },
+  {
+    "category": "Dungeons",
+    "group": "Odin Temple",
+    "name": "Odin Temple 2",
+    "map": "odin_tem02",
+    "x": 224,
+    "y": 149
+  },
+  {
+    "category": "Dungeons",
+    "group": "Odin Temple",
+    "name": "Odin Temple 3",
+    "map": "odin_tem03",
+    "x": 266,
+    "y": 280
+  },
+  {
+    "category": "Dungeons",
+    "group": "Orc Dungeon",
+    "name": "Orc Dungeon 1",
+    "map": "orcsdun01",
+    "x": 32,
+    "y": 170
+  },
+  {
+    "category": "Dungeons",
+    "group": "Orc Dungeon",
+    "name": "Orc Dungeon 2",
+    "map": "orcsdun02",
+    "x": 21,
+    "y": 185
+  },
+  {
+    "category": "Dungeons",
+    "group": "Payon Dungeon",
+    "name": "Payon Dungeon 1",
+    "map": "pay_dun00",
+    "x": 21,
+    "y": 183
+  },
+  {
+    "category": "Dungeons",
+    "group": "Payon Dungeon",
+    "name": "Payon Dungeon 2",
+    "map": "pay_dun01",
+    "x": 19,
+    "y": 33
+  },
+  {
+    "category": "Dungeons",
+    "group": "Payon Dungeon",
+    "name": "Payon Dungeon 3",
+    "map": "pay_dun02",
+    "x": 19,
+    "y": 63
+  },
+  {
+    "category": "Dungeons",
+    "group": "Payon Dungeon",
+    "name": "Payon Dungeon 4",
+    "map": "pay_dun03",
+    "x": 155,
+    "y": 159
+  },
+  {
+    "category": "Dungeons",
+    "group": "Payon Dungeon",
+    "name": "Payon Dungeon 5",
+    "map": "pay_dun04",
+    "x": 201,
+    "y": 204
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Pyramids 1",
+    "map": "moc_pryd01",
+    "x": 192,
+    "y": 9
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Pyramids 2",
+    "map": "moc_pryd02",
+    "x": 10,
+    "y": 192
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Pyramids 3",
+    "map": "moc_pryd03",
+    "x": 100,
+    "y": 92
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Pyramids 4",
+    "map": "moc_pryd04",
+    "x": 181,
+    "y": 11
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Basement 1",
+    "map": "moc_pryd05",
+    "x": 94,
+    "y": 96
+  },
+  {
+    "category": "Dungeons",
+    "group": "Pyramids",
+    "name": "Basement 2",
+    "map": "moc_pryd06",
+    "x": 192,
+    "y": 8
+  },
+  {
+    "category": "Dungeons",
+    "group": "Rachel Sanctuary",
+    "name": "Rachel Sanctuary 1",
+    "map": "ra_san01",
+    "x": 140,
+    "y": 11
+  },
+  {
+    "category": "Dungeons",
+    "group": "Rachel Sanctuary",
+    "name": "Rachel Sanctuary 2",
+    "map": "ra_san02",
+    "x": 32,
+    "y": 21
+  },
+  {
+    "category": "Dungeons",
+    "group": "Rachel Sanctuary",
+    "name": "Rachel Sanctuary 3",
+    "map": "ra_san03",
+    "x": 8,
+    "y": 149
+  },
+  {
+    "category": "Dungeons",
+    "group": "Rachel Sanctuary",
+    "name": "Rachel Sanctuary 4",
+    "map": "ra_san04",
+    "x": 204,
+    "y": 218
+  },
+  {
+    "category": "Dungeons",
+    "group": "Rachel Sanctuary",
+    "name": "Rachel Sanctuary 5",
+    "map": "ra_san05",
+    "x": 150,
+    "y": 9
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sphinx",
+    "name": "Sphinx 1",
+    "map": "in_sphinx1",
+    "x": 288,
+    "y": 9
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sphinx",
+    "name": "Sphinx 2",
+    "map": "in_sphinx2",
+    "x": 149,
+    "y": 81
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sphinx",
+    "name": "Sphinx 3",
+    "map": "in_sphinx3",
+    "x": 210,
+    "y": 54
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sphinx",
+    "name": "Sphinx 4",
+    "map": "in_sphinx4",
+    "x": 10,
+    "y": 222
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sphinx",
+    "name": "Sphinx 5",
+    "map": "in_sphinx5",
+    "x": 100,
+    "y": 99
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sunken Ship",
+    "name": "Sunken Ship 1",
+    "map": "treasure01",
+    "x": 69,
+    "y": 24
+  },
+  {
+    "category": "Dungeons",
+    "group": "Sunken Ship",
+    "name": "Sunken Ship 2",
+    "map": "treasure02",
+    "x": 102,
+    "y": 27
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 1",
+    "map": "tha_t01",
+    "x": 150,
+    "y": 39
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 2",
+    "map": "tha_t02",
+    "x": 150,
+    "y": 136
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 3",
+    "map": "tha_t03",
+    "x": 220,
+    "y": 158
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 4",
+    "map": "tha_t04",
+    "x": 59,
+    "y": 143
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 5",
+    "map": "tha_t05",
+    "x": 62,
+    "y": 11
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 6",
+    "map": "tha_t06",
+    "x": 89,
+    "y": 221
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 7",
+    "map": "tha_t07",
+    "x": 35,
+    "y": 166
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 8",
+    "map": "tha_t08",
+    "x": 93,
+    "y": 148
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 9",
+    "map": "tha_t09",
+    "x": 29,
+    "y": 107
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 10",
+    "map": "tha_t10",
+    "x": 159,
+    "y": 138
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 11",
+    "map": "tha_t11",
+    "x": 19,
+    "y": 20
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thanatos Tower",
+    "name": "Thanatos Tower 12",
+    "map": "tha_t12",
+    "x": 130,
+    "y": 52
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thor Volcano",
+    "name": "Thor Volcano 1",
+    "map": "thor_v01",
+    "x": 21,
+    "y": 228
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thor Volcano",
+    "name": "Thor Volcano 2",
+    "map": "thor_v02",
+    "x": 75,
+    "y": 205
+  },
+  {
+    "category": "Dungeons",
+    "group": "Thor Volcano",
+    "name": "Thor Volcano 3",
+    "map": "thor_v03",
+    "x": 34,
+    "y": 272
+  },
+  {
+    "category": "Dungeons",
+    "group": "Toy Factory",
+    "name": "Toy Factory 1",
+    "map": "xmas_dun01",
+    "x": 205,
+    "y": 15
+  },
+  {
+    "category": "Dungeons",
+    "group": "Toy Factory",
+    "name": "Toy Factory 2",
+    "map": "xmas_dun02",
+    "x": 129,
+    "y": 133
+  },
+  {
+    "category": "Dungeons",
+    "group": "Turtle Dungeon",
+    "name": "Entrance",
+    "map": "tur_dun01",
+    "x": 154,
+    "y": 49
+  },
+  {
+    "category": "Dungeons",
+    "group": "Turtle Dungeon",
+    "name": "Turtle Dungeon 1",
+    "map": "tur_dun02",
+    "x": 148,
+    "y": 261
+  },
+  {
+    "category": "Dungeons",
+    "group": "Turtle Dungeon",
+    "name": "Turtle Dungeon 2",
+    "map": "tur_dun03",
+    "x": 132,
+    "y": 189
+  },
+  {
+    "category": "Dungeons",
+    "group": "Turtle Dungeon",
+    "name": "Turtle Dungeon 3",
+    "map": "tur_dun04",
+    "x": 100,
+    "y": 192
+  },
+  {
+    "category": "Dungeons",
+    "group": "Umbala Dungeon",
+    "name": "Carpenter's Shop in the Tree",
+    "map": "um_dun01",
+    "x": 42,
+    "y": 31
+  },
+  {
+    "category": "Dungeons",
+    "group": "Umbala Dungeon",
+    "name": "Passage to a Foreign World",
+    "map": "um_dun02",
+    "x": 48,
+    "y": 30
+  },
+  {
+    "category": "Dungeons",
+    "group": "Umbala Dungeon",
+    "name": "Hvergermil's Fountain",
+    "map": "yggdrasil01",
+    "x": 204,
+    "y": 78
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Aldebaran Castles",
+    "name": "Neuschwanstein",
+    "map": "alde_gld",
+    "x": 48,
+    "y": 83
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Aldebaran Castles",
+    "name": "Hohenschwangau",
+    "map": "alde_gld",
+    "x": 95,
+    "y": 249
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Aldebaran Castles",
+    "name": "Nuenberg",
+    "map": "alde_gld",
+    "x": 142,
+    "y": 85
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Aldebaran Castles",
+    "name": "Wuerzburg",
+    "map": "alde_gld",
+    "x": 239,
+    "y": 242
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Aldebaran Castles",
+    "name": "Rothenburg",
+    "map": "alde_gld",
+    "x": 264,
+    "y": 90
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Geffen Castles",
+    "name": "Repherion",
+    "map": "gef_fild13",
+    "x": 214,
+    "y": 75
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Geffen Castles",
+    "name": "Eeyolbriggar",
+    "map": "gef_fild13",
+    "x": 308,
+    "y": 240
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Geffen Castles",
+    "name": "Yesnelph",
+    "map": "gef_fild13",
+    "x": 143,
+    "y": 240
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Geffen Castles",
+    "name": "Bergel",
+    "map": "gef_fild13",
+    "x": 193,
+    "y": 278
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Geffen Castles",
+    "name": "Mersetzdeitz",
+    "map": "gef_fild13",
+    "x": 305,
+    "y": 87
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Payon Castles",
+    "name": "Bright Arbor",
+    "map": "pay_gld",
+    "x": 121,
+    "y": 233
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Payon Castles",
+    "name": "Scarlet Palace",
+    "map": "pay_gld",
+    "x": 295,
+    "y": 116
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Payon Castles",
+    "name": "Holy Shadow",
+    "map": "pay_gld",
+    "x": 317,
+    "y": 293
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Payon Castles",
+    "name": "Sacred Altar",
+    "map": "pay_gld",
+    "x": 140,
+    "y": 160
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Payon Castles",
+    "name": "Bamboo Grove Hill",
+    "map": "pay_gld",
+    "x": 204,
+    "y": 266
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Prontera Castles",
+    "name": "Kriemhild",
+    "map": "prt_gld",
+    "x": 134,
+    "y": 65
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Prontera Castles",
+    "name": "Swanhild",
+    "map": "prt_gld",
+    "x": 240,
+    "y": 128
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Prontera Castles",
+    "name": "Fadhgridh",
+    "map": "prt_gld",
+    "x": 153,
+    "y": 137
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Prontera Castles",
+    "name": "Skoegul",
+    "map": "prt_gld",
+    "x": 111,
+    "y": 240
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Prontera Castles",
+    "name": "Gondul",
+    "map": "prt_gld",
+    "x": 208,
+    "y": 240
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Arunafeltz Castles",
+    "name": "Mardol",
+    "map": "aru_gld",
+    "x": 158,
+    "y": 272
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Arunafeltz Castles",
+    "name": "Cyr",
+    "map": "aru_gld",
+    "x": 83,
+    "y": 47
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Arunafeltz Castles",
+    "name": "Horn",
+    "map": "aru_gld",
+    "x": 68,
+    "y": 155
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Arunafeltz Castles",
+    "name": "Gefn",
+    "map": "aru_gld",
+    "x": 299,
+    "y": 345
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Arunafeltz Castles",
+    "name": "Banadis",
+    "map": "aru_gld",
+    "x": 292,
+    "y": 107
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Schwaltzvalt Castles",
+    "name": "Himinn",
+    "map": "sch_gld",
+    "x": 293,
+    "y": 100
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Schwaltzvalt Castles",
+    "name": "Andlangr",
+    "map": "sch_gld",
+    "x": 288,
+    "y": 252
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Schwaltzvalt Castles",
+    "name": "Viblainn",
+    "map": "sch_gld",
+    "x": 97,
+    "y": 196
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Schwaltzvalt Castles",
+    "name": "Hljod",
+    "map": "sch_gld",
+    "x": 137,
+    "y": 90
+  },
+  {
+    "category": "Guild Castles",
+    "group": "Schwaltzvalt Castles",
+    "name": "Skidbladnir",
+    "map": "sch_gld",
+    "x": 71,
+    "y": 315
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Baldur",
+    "name": "Baldur F1",
+    "map": "gld_dun01",
+    "x": 119,
+    "y": 93
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Luina",
+    "name": "Luina F1",
+    "map": "gld_dun02",
+    "x": 39,
+    "y": 161
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Valkyrie",
+    "name": "Valkyrie F1",
+    "map": "gld_dun03",
+    "x": 50,
+    "y": 44
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Britoniah",
+    "name": "Britoniah F1",
+    "map": "gld_dun04",
+    "x": 116,
+    "y": 45
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Arunafeltz",
+    "name": "Arunafeltz",
+    "map": "arug_dun01",
+    "x": 199,
+    "y": 195
+  },
+  {
+    "category": "Guild Dungeons",
+    "group": "Schwaltzvalt",
+    "name": "Schwaltzvalt",
+    "map": "schg_dun01",
+    "x": 200,
+    "y": 124
+  },
+  {
+    "category": "Instances",
+    "group": "Endless Tower",
+    "name": "Endless Tower",
+    "map": "e_tower",
+    "x": 72,
+    "y": 112
+  },
+  {
+    "category": "Instances",
+    "group": "Nidhoggur's Nest",
+    "name": "Nidhoggur's Nest",
+    "map": "nyd_dun02",
+    "x": 95,
+    "y": 193
+  },
+  {
+    "category": "Instances",
+    "group": "Orc's Memory",
+    "name": "Orc's Memory",
+    "map": "gef_fild10",
+    "x": 240,
+    "y": 198
+  },
+  {
+    "category": "Instances",
+    "group": "Sealed Shrine",
+    "name": "Sealed Shrine",
+    "map": "monk_test",
+    "x": 306,
+    "y": 143
+  },
+  {
+    "category": "Special Areas",
+    "group": "Auction Hall",
+    "name": "Auction Hall",
+    "map": "auction_01",
+    "x": 22,
+    "y": 68
+  },
+  {
+    "category": "Special Areas",
+    "group": "Battlegrounds",
+    "name": "Battlegrounds",
+    "map": "bat_room",
+    "x": 154,
+    "y": 150
+  },
+  {
+    "category": "Special Areas",
+    "group": "Casino",
+    "name": "Casino",
+    "map": "cmd_in02",
+    "x": 179,
+    "y": 129
+  },
+  {
+    "category": "Special Areas",
+    "group": "Gonryun Arena",
+    "name": "Gonryun Arena",
+    "map": "gon_test",
+    "x": 48,
+    "y": 10
+  },
+  {
+    "category": "Special Areas",
+    "group": "Izlude Arena",
+    "name": "Izlude Arena",
+    "map": "arena_room",
+    "x": 100,
+    "y": 88
+  },
+  {
+    "category": "Special Areas",
+    "group": "Monster Race Arena",
+    "name": "Monster Race Arena",
+    "map": "p_track01",
+    "x": 62,
+    "y": 41
+  },
+  {
+    "category": "Special Areas",
+    "group": "Turbo Track",
+    "name": "Turbo Track",
+    "map": "turbo_room",
+    "x": 99,
+    "y": 114
+  }
+]

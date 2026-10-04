@@ -1,4 +1,7 @@
 # Script lang
+
+Superseded by [compiled WebAssembly scripts](3-wasmtime.md). This document records the original language decision.
+
 **Date**: 2022-01-16
 
 # Context

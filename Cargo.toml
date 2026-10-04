@@ -3,12 +3,12 @@ resolver = "2"
 members = [
     "server",
     "tools",
-    "lib/database"
+    "lib/database",
+    "lib/script-sdk",
+    "lib/script-runtime"
 ]
 
-[patch."https://github.com/nmeylan/rathena-script-lang-interpreter"]
-#rathena_script_lang_interpreter = {path = "C:\\dev\\ragnarok\\ragnarok-script-interpreter"}
-#rathena_script_lang_interpreter = {path = "/home/nmeylan/dev/ragnarok/ragnarok-script-interpreter"}
+exclude = ["scripts"]
 
 [profile.dev]
 opt-level = 0
@@ -31,6 +31,7 @@ fastmurmur3 = "0.2.0"
 regex-lite = "0.1.6"
 tokio = { version = "1.33.0", features = ["full", "tracing"] }
 futures = "0.3"
+wasmtime = { version = "43.0.2", default-features = false, features = ["async", "cranelift", "runtime", "std", "wat", "anyhow"] }
 sled = "0.34.7"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["chrono", "fmt"] }
@@ -40,4 +41,5 @@ flate2 = "1.0.28"
 md5 = "0.7.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = { version = "1.0.142", features = ["raw_value"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 json-flat-parser = "0.1.0"

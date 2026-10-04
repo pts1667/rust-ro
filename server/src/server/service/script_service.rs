@@ -1,7 +1,8 @@
-use std::sync::Arc;
+use std::collections::HashMap;
 use std::sync::mpsc::SyncSender;
+use std::sync::{Arc, Mutex};
 
-use rathena_script_lang_interpreter::lang::vm::Vm;
+use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
 
 use crate::repository::ItemRepository;
@@ -15,19 +16,36 @@ use crate::server::service::global_config_service::GlobalConfigService;
 #[allow(dead_code)]
 pub struct ScriptService {
     client_notification_sender: SyncSender<Notification>,
-    configuration_service: &'static GlobalConfigService,
+    pub(crate) configuration_service: &'static GlobalConfigService,
     repository: Arc<dyn ItemRepository>,
     server_task_queue: Arc<TasksQueue<GameEvent>>,
-    pub vm: Arc<Vm>,
+    pub vm: Arc<WasmRuntime>,
+    pub(crate) npc_variables: Mutex<HashMap<(u32, u8, u32, String, u32), Value>>,
 }
 
 impl ScriptService {
+    pub fn event_entry(label: &str) -> Option<u32> {
+        static EVENTS: std::sync::OnceLock<HashMap<String, u32>> = std::sync::OnceLock::new();
+        EVENTS.get_or_init(|| serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry")).get(label).copied()
+    }
+
+    pub(crate) fn install_temporary_variables(&self, char_id: u32, variables: &[script_sdk::Variable]) {
+        let mut stored = self.npc_variables.lock().unwrap();
+        for variable in variables {
+            if variable.scope == script_sdk::VariableScope::CharacterTemporary {
+                stored.insert((2, 0, char_id, variable.name.clone(), variable.index), variable.value.clone());
+            } else if variable.scope == script_sdk::VariableScope::ServerTemporary {
+                stored.insert((3, 0, 0, variable.name.clone(), variable.index), variable.value.clone());
+            }
+        }
+    }
+
     pub(crate) fn new(
         client_notification_sender: SyncSender<Notification>,
         configuration_service: &'static GlobalConfigService,
         repository: Arc<dyn ItemRepository>,
         server_task_queue: Arc<TasksQueue<GameEvent>>,
-        vm: Arc<Vm>,
+        vm: Arc<WasmRuntime>,
     ) -> Self {
         ScriptService {
             client_notification_sender,
@@ -35,6 +53,7 @@ impl ScriptService {
             repository,
             server_task_queue,
             vm,
+            npc_variables: Mutex::new(HashMap::new()),
         }
     }
 
@@ -52,6 +71,7 @@ impl ScriptService {
                 .find(|(id, _amount)| match id {
                     Value::Number(v) => *v == item.id,
                     Value::String(v) => v.to_lowercase() == item.name_aegis.to_lowercase(),
+                    _ => false,
                 })
                 .unwrap()
                 .1

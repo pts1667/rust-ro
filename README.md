@@ -10,7 +10,9 @@ This project does **not** aim to compete with [herculesWS](https://github.com/He
 
 Although the architecture and technical decision of this project are very different than **rathena** or **hercules**, both projects are still a source of inspiration and remain source of truth for game behavior.
 
-In addition, this project kept some concept of existing implementations: for example this project support same scripting language for NPC meaning that existing scripts should work on this implementation and keeps familiar game data names while storing persistent state in sled.
+The project keeps familiar game data names while storing persistent state in sled. NPC and item behavior runs as Rust code compiled to WebAssembly with Wasmtime. Existing repository script content has been converted to compiled Rust modules.
+
+[Completed work and remaining operations](docs/operations-checkpoint.md) records the current checkpoint, its gameplay limits, and validation commands.
 
 Architecture and technical decision are documented [here](/doc/adr)
 
@@ -94,7 +96,7 @@ The database configuration specifies local paths:
 }
 ```
 
-Paths are relative to the working directory. On the first start, the server creates the database, imports the item and monster catalogs, and imports the account, character, inventory, and skill records from `db/seed.json`. Catalog and account seeding runs once for each database directory. Set `seed_path` to `null` to create a database without the example account. Item script source and compiled bytecode are stored together.
+Paths are relative to the working directory. On the first start, the server creates the database, imports the item and monster catalogs, and imports the account, character, inventory, and skill records from `db/seed.json`. Catalog and account seeding runs once for each database directory. Set `seed_path` to `null` to create a database without the example account. Executable scripts are loaded from the Wasm bundle separately from persistent data.
 
 The example account is `admin/qwertz`, with account ID `2000000`. Its inventory and skills are included in the seed file.
 
@@ -116,6 +118,17 @@ Add the resulting account ID to `server.accounts` in `config.json`. The tool als
 
 ### 5.3 Running the Server
 
+NPC and item scripts use the checked-in `config/wasm/game_scripts.wasm` module. To edit and rebuild their Rust sources:
+
+```shell
+rustup target add wasm32-unknown-unknown
+cargo run --package tools --bin scripts-build
+```
+
+The `scripting` configuration specifies `module_path`, `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. Restart after rebuilding executable script code. [Script architecture and migration details](docs/adr/3-wasmtime.md).
+
+The legacy NPC text files are offline import inputs. New behavior is written in `scripts/src/npcs.rs`; item implementations are in `scripts/src/items.rs`. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
+
 Run from the repository root:
 
 ```shell
@@ -133,8 +146,6 @@ cargo test --package database
 If everything goes right, you should receive something like this output:
 
 ```
-2024-02-11 13:45:53.695168 +01:00 [main] [INFO]: Compiled 0 item scripts compiled, skipped 2492 item scripts compilation (already compiled) in 73ms
-2024-02-11 13:45:54.976721 +01:00 [main] [INFO]: load 39 scripts in 1104ms
 2024-02-11 13:45:55.110070 +01:00 [tokio-runtime-worker] [WARN]: Not able to load boot script: pre-re/warps/other/sign.txt, due to No such file or directory (os error 2)
 2024-02-11 13:45:55.113409 +01:00 [main] [INFO]: load 2782 warps in 6ms
 2024-02-11 13:45:55.134622 +01:00 [<unnamed>] [INFO]: load 3392 mob spawns in 19ms
@@ -253,7 +264,7 @@ Some list of features that was developed so far:
 - status point allocation
 - atcommand: @go, @warp
 - mob move
-- NPC scripts (partially: see https://github.com/nmeylan/rust-ro/issues/3) via [rathena script lang interpreter](https://github.com/nmeylan/rathena-script-lang-interpreter)
+- NPC and item scripts compiled from Rust to WebAssembly and executed with [Wasmtime](https://wasmtime.dev/)
 - basis for inventory management
 - basis for skills
 - basis for consumable item usage

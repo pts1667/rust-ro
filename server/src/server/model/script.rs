@@ -1,4 +1,4 @@
-use rathena_script_lang_interpreter::lang::value::Value;
+use script_sdk::Value;
 
 #[derive(Setters, Clone, Debug)]
 pub struct Script {
@@ -14,11 +14,8 @@ pub struct Script {
     pub x_size: u16,
     #[allow(dead_code)]
     pub y_size: u16,
-    pub class_name: String,
-    pub class_reference: u64,
+    pub entry_id: u32,
     pub constructor_args: Vec<Value>,
-    #[set]
-    pub instance_reference: u64,
 }
 
 impl Script {

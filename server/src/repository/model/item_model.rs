@@ -1,4 +1,5 @@
 use configuration::serde_helper::*;
+use models::enums::EnumWithNumberValue;
 use models::enums::bonus::BonusType;
 use models::enums::element::Element;
 use models::enums::item::ItemType;
@@ -105,10 +106,6 @@ pub struct ItemModel {
     pub trade_flags: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub script: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub script_compilation: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub script_compilation_hash: Option<u128>,
     #[serde(skip)]
     pub bonuses: Vec<BonusType>,
     #[serde(skip)]
@@ -116,19 +113,42 @@ pub struct ItemModel {
 }
 
 impl ItemModel {
+    fn attack_element(&self) -> Element {
+        self.bonuses
+            .iter()
+            .rev()
+            .find_map(|bonus| match bonus {
+                BonusType::ElementWeapon(element) => Some(*element),
+                _ => None,
+            })
+            .or(self.element)
+            .unwrap_or(Element::Neutral)
+    }
+
     pub fn to_wear_weapon(&self, inventory_index: usize, location: u64, inventory_model: &InventoryItemModel) -> WearWeapon {
+        let element = if inventory_model.card0 == 255 && self.attack_element() == Element::Neutral {
+            let value = inventory_model.card1 as u16 % 16;
+            if value <= 9 {
+                Element::from_value(value as usize)
+            } else {
+                Element::Neutral
+            }
+        } else {
+            self.attack_element()
+        };
         WearWeapon {
             item_id: self.id,
             attack: self.attack.unwrap_or(0) as u32,
             level: self.weapon_level.unwrap_or(0) as u8,
             weapon_type: self.weapon_type.unwrap_or(WeaponType::Fist),
             location,
-            element: self.element.unwrap_or(Element::Neutral),
+            element,
             refine: inventory_model.refine as u8,
             card0: inventory_model.card0,
             card1: inventory_model.card1,
             card2: inventory_model.card2,
             card3: inventory_model.card3,
+            ranked_forged: false,
             inventory_index,
             range: self.range.unwrap_or(1) as u8,
         }
@@ -141,6 +161,9 @@ impl ItemModel {
             location,
             refine: inventory_model.refine as u8,
             card0: inventory_model.card0,
+            card1: inventory_model.card1,
+            card2: inventory_model.card2,
+            card3: inventory_model.card3,
             def: self.defense.unwrap_or(0),
             inventory_index,
         }
@@ -150,7 +173,7 @@ impl ItemModel {
         WearAmmo {
             item_id: self.id,
             inventory_index,
-            element: self.element.unwrap_or(Element::Neutral),
+            element: self.attack_element(),
             attack: self.attack.unwrap_or(0) as u8,
             ammo_type: self.ammo_type.unwrap(),
         }
@@ -198,6 +221,7 @@ impl DBItemType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct InventoryItemModel {
+    pub shop_price: Option<i32>,
     // Come from inventory table
     pub id: i32,
     pub unique_id: i64,
@@ -234,6 +258,7 @@ impl InventoryItemModel {
 
     pub fn from_item_model(item: &ItemModel, amount: i16, is_identified: bool) -> Self {
         Self {
+            shop_price: None,
             id: 0,
             unique_id: 0,
             item_id: item.id,

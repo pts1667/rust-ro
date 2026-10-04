@@ -3,7 +3,6 @@ use std::sync::{Arc, Once};
 
 use models::enums::EnumWithMaskValueU16;
 use models::enums::cell::CellType;
-use rathena_script_lang_interpreter::lang::vm::{DebugFlag, Vm};
 
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::map_event::MapEvent;
@@ -48,7 +47,7 @@ pub fn create_empty_map_instance(
 ) -> MapInstance {
     let cells: Vec<u16> = vec![CellType::Walkable.as_flag(); 100 * 100 + 1];
     MapInstance::from_map(
-        Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value())),
+        crate::tests::common::test_script_vm(),
         create_empty_map(),
         0,
         cells,

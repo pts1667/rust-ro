@@ -4,6 +4,8 @@ use std::sync::mpsc::SyncSender;
 use models::enums::class::{EquipClassFlag, JobName};
 use models::enums::item::{EquipmentLocation, ItemType};
 use models::enums::look::LookType;
+use models::enums::skill_enums::SkillEnum;
+use models::enums::weapon::WeaponType;
 use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
 use models::item::{EquippedItem, Wearable};
 use packets::packets::{
@@ -29,6 +31,8 @@ use crate::server::model::events::persistence_event::{InventoryItemUpdate, Persi
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::service::status_effect_service::StatusEffectService;
+use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::util::packet::{chain_packets, chain_packets_raws_by_value};
 
@@ -58,6 +62,15 @@ impl InventoryService {
     }
 
     pub fn add_items_in_inventory(&self, runtime: &Runtime, add_items: CharacterAddItems, character: &mut Character) {
+        let _ = self.try_add_items_in_inventory(runtime, add_items, character);
+    }
+
+    pub(crate) fn try_add_items_in_inventory(
+        &self,
+        runtime: &Runtime,
+        add_items: CharacterAddItems,
+        character: &mut Character,
+    ) -> Result<(), String> {
         let mut rng = rand::thread_rng();
         let inventory_item_updates: Vec<InventoryItemUpdate> = add_items
             .items
@@ -81,6 +94,7 @@ impl InventoryService {
                     refine: item.refine,
                     damaged: item.is_damaged,
                     cards: [item.card0, item.card1, item.card2, item.card3],
+                    price: if add_items.buy { item.shop_price } else { None },
                 }
             })
             .collect();
@@ -125,6 +139,7 @@ impl InventoryService {
                     packets_raws_by_value,
                 )))
                 .unwrap_or_else(|_| error!("Failed to send notification packet_zc_pc_purchase_result to client"));
+            Ok(())
         } else {
             if add_items.buy {
                 let mut packet_zc_pc_purchase_result = PacketZcPcPurchaseResult::new(self.configuration_service.packetver());
@@ -137,7 +152,9 @@ impl InventoryService {
                     )))
                     .unwrap_or_else(|_| error!("Failed to send notification packet_zc_pc_purchase_result to client"));
             }
-            error!("{:?}", result.err());
+            let error = format!("{:?}", result.err());
+            error!("{error}");
+            Err(error)
         }
     }
 
@@ -151,15 +168,15 @@ impl InventoryService {
         character: &mut Character,
         remove_items: CharacterRemoveItems,
         map_instance: &MapInstance,
-    ) {
-        if let Ok(inventory_items) = self.remove_item_from_inventory(runtime, remove_items, character) {
-            map_instance.add_to_next_tick(MapEvent::CharDropItems(CharacterDropItems {
-                owner_id: character.char_id,
-                char_x: character.x,
-                char_y: character.y,
-                item_removal_info: inventory_items,
-            }));
-        }
+    ) -> Result<(),String> {
+        let inventory_items=self.remove_item_from_inventory(runtime, remove_items, character)?;
+        map_instance.add_to_next_tick(MapEvent::CharDropItems(CharacterDropItems {
+            owner_id: character.char_id,
+            char_x: character.x,
+            char_y: character.y,
+            item_removal_info: inventory_items,
+        }));
+        Ok(())
     }
 
     pub fn remove_single_item_from_inventory(
@@ -359,7 +376,7 @@ impl InventoryService {
 
     fn packet_attack_range(&self, character: &mut Character) -> PacketZcAttackRange {
         let mut packet_zc_attack_range = PacketZcAttackRange::new(self.configuration_service.packetver());
-        packet_zc_attack_range.set_current_att_range(character.status.attack_range() as i16);
+        packet_zc_attack_range.set_current_att_range(StatusService::instance().to_snapshot(&character.status).attack_range() as i16);
         packet_zc_attack_range.fill_raw();
         packet_zc_attack_range
     }
@@ -421,6 +438,7 @@ impl InventoryService {
     }
 
     pub fn equip_item(&self, character: &mut Character, character_equip_item: CharacterEquipItem) -> Option<EquippedItem> {
+        if character.game_systems.is_trading() { return None; }
         let mut packet_zc_req_wear_equip_ack = PacketZcReqWearEquipAck2::new(self.configuration_service.packetver());
         let mut packet_zc_equip_arrow = PacketZcEquipArrow::new(self.configuration_service.packetver());
         let index = character_equip_item.index;
@@ -435,7 +453,9 @@ impl InventoryService {
         let mut equipped_item = None;
         if let Some(inventory_item) = character.get_item_from_inventory(index) {
             let item_to_equip_model = self.configuration_service.get_item(inventory_item.item_id);
-            let location = item_to_equip_model.location as i32; // it won't work for shadow gear
+            let location = self
+                .equipment_location(character, item_to_equip_model, character_equip_item.requested_location)
+                .unwrap_or(0) as i32;
             let item_id = item_to_equip_model.id;
             let mut equipped_take_off_items: Vec<EquippedItem> = vec![];
             if !item_to_equip_model.item_type.is_wearable() {
@@ -444,9 +464,13 @@ impl InventoryService {
             // TODO check if can carry (< 90% weight)
             if self.check_base_level_requirement(character, item_to_equip_model)
                 && self.check_job_requirement(character, item_to_equip_model)
+                && location != 0
+                && !inventory_item.is_damaged
+                && StatusEffectService::permits_equipment(&character.status, item_to_equip_model.item_type, item_to_equip_model.location)
             {
-                if location & EquipmentLocation::AccessoryLeft.as_flag() as i32 != 0
-                    || location & EquipmentLocation::AccessoryRight.as_flag() as i32 != 0
+                if character_equip_item.requested_location.is_none()
+                    && (location & EquipmentLocation::AccessoryLeft.as_flag() as i32 != 0
+                        || location & EquipmentLocation::AccessoryRight.as_flag() as i32 != 0)
                 {
                     // Remove equipped accessory if both(right and left) slots are occupied,
                     // otherwise just equip the item in the free slot (right or left)
@@ -603,6 +627,55 @@ impl InventoryService {
         equipped_item
     }
 
+    pub fn equipment_location(&self, character: &Character, item: &ItemModel, requested: Option<u64>) -> Option<u64> {
+        let right = EquipmentLocation::HandRight.as_flag();
+        let left = EquipmentLocation::HandLeft.as_flag();
+        let dual_capable = item.item_type == ItemType::Weapon
+            && item.location == right
+            && matches!(
+                item.weapon_type,
+                Some(WeaponType::Dagger | WeaponType::Sword1H | WeaponType::Axe1H)
+            )
+            && (matches!(
+                JobName::try_from_value(character.status.job as usize),
+                Ok(JobName::Assassin | JobName::BabyAssassin | JobName::AssassinCross)
+            ) || StatusService::instance()
+                .to_snapshot(&character.status)
+                .known_skills()
+                .iter()
+                .any(|skill| skill.value == SkillEnum::AsLeft && skill.level > 0));
+        let allowed = if dual_capable { right | left } else { item.location };
+        let requested_mask = requested.unwrap_or(allowed);
+        let permitted = requested_mask & allowed;
+        if permitted == 0 {
+            return None;
+        }
+        if dual_capable {
+            return Some(if permitted == right | left {
+                if character.status.right_hand_weapon().is_some() {
+                    left
+                } else {
+                    right
+                }
+            } else {
+                permitted
+            });
+        }
+        let accessories = EquipmentLocation::AccessoryLeft.as_flag() | EquipmentLocation::AccessoryRight.as_flag();
+        if item.location == accessories && requested.is_some() {
+            return Some(if permitted == accessories {
+                if character.status.accessory_right().is_some() && character.status.accessory_left().is_none() {
+                    EquipmentLocation::AccessoryLeft.as_flag()
+                } else {
+                    EquipmentLocation::AccessoryRight.as_flag()
+                }
+            } else {
+                permitted
+            });
+        }
+        Some(item.location)
+    }
+
     pub fn check_base_level_requirement(&self, character: &Character, equip_item: &ItemModel) -> bool {
         character.status.base_level >= (equip_item.equip_level_min.unwrap_or(0) as u32)
     }
@@ -613,6 +686,7 @@ impl InventoryService {
     }
 
     pub fn takeoff_equip_item(&self, character: &mut Character, index: usize) -> Option<EquippedItem> {
+        if character.game_systems.is_trading() { return None; }
         let mut packet_zc_req_takeoff_equip_ack2 = PacketZcReqTakeoffEquipAck2::new(self.configuration_service.packetver());
         packet_zc_req_takeoff_equip_ack2.set_index(index as u16);
         let takeoff_equipement = character.takeoff_equip_item(index);
@@ -657,6 +731,7 @@ impl InventoryService {
     }
 
     pub fn send_card_composition_list(&self, character: &mut Character, char_equip_item: CharacterEquipItem) {
+        if character.game_systems.is_trading() { return; }
         let mut packet_zc_item_composition_list = PacketZcItemcompositionList::new(self.configuration_service.packetver());
 
         let mut slotable_items: Vec<u16> = vec![];
@@ -694,6 +769,7 @@ impl InventoryService {
     }
 
     pub fn slot_card(&self, runtime: &Runtime, character: &mut Character, slot_card_args: CharacterSlotCard) {
+        if character.game_systems.is_trading() { return; }
         // Get card and equipment items from character inventory
         let mut card_inventory_item = None;
         let mut equipment_inventory_item = None;

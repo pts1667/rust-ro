@@ -3,8 +3,8 @@ use std::net::TcpStream;
 use std::sync::atomic::AtomicI8;
 use std::sync::{Arc, RwLock};
 
-use movement::position::Position;
 use models::status::StatusSnapshot;
+use movement::position::Position;
 
 use crate::server::model::map::MAP_EXT;
 use crate::server::model::map_instance::MapInstance;
@@ -12,6 +12,7 @@ use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, MapI
 use crate::server::model::request::Request;
 use crate::server::model::script::Script;
 use crate::server::model::session::Session;
+use crate::server::service::script_world_service::{companion_name, companion_snapshots, companion_status_snapshot};
 use crate::server::state::character::Character;
 use crate::util::hasher::NoopHasherU32;
 
@@ -23,6 +24,87 @@ pub struct ServerState {
     characters: HashMap<u32, Character, NoopHasherU32>,
     locked_map_item: HashSet<u32, NoopHasherU32>, /* map item that should be removed from map instance, in next tick, avoid to use them
                                                    * meanwhile. */
+    pub runtime_map_flags: HashMap<(String, u8), crate::server::model::map_flags::MapFlags>,
+    pub siege_active: bool,
+    pub pending_map_notifications: std::collections::VecDeque<crate::server::model::events::client_notification::Notification>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::server::model::game_systems::{CompanionPosition, HomunculusRecord};
+    use crate::server::model::map_instance::MapInstanceKey;
+    use crate::server::service::script_world_service::{homunculus_world_id, world_data};
+
+    #[test]
+    fn companion_lookup_returns_actual_actor_and_rejects_inactive_or_other_map_actors() {
+        let mut state = ServerState::new(MapItems::default());
+        let mut owner = Character::new(
+            "Owner".into(),
+            150_000,
+            2_000_000,
+            models::status::Status::default(),
+            50,
+            60,
+            0,
+            "prontera".into(),
+            1,
+            vec![],
+        );
+        owner.loaded_from_client_side = true;
+        owner.map_instance_key = MapInstanceKey::new("prontera".into(), 2);
+        let homunculus = HomunculusRecord {
+            id: 3,
+            class_id: world_data().homunculi[0].class_id,
+            name: "Owned Homunculus".into(),
+            active: true,
+            hp: 100,
+            max_hp: 100,
+            max_sp: 20,
+            base_max_hp: 100,
+            base_max_sp: 20,
+            level: 12,
+            stats: [10; 6],
+            ..HomunculusRecord::default()
+        };
+        let id = homunculus_world_id(&homunculus);
+        owner.game_systems.homunculus = Some(homunculus);
+        owner.game_systems.rendered_companions.insert(id, CompanionPosition {
+            x: 51,
+            y: 62,
+            map_instance: 2,
+        });
+        state.insert_character(owner);
+        let map = "prontera".to_string();
+        let item = state.map_item(id, &map, 2).unwrap();
+        assert_eq!((item.id(), *item.object_type()), (id, MapItemType::Homunculus));
+        let snapshot = state.map_item_snapshot(id, &map, 2).unwrap();
+        assert_eq!((snapshot.x(), snapshot.y()), (51, 62));
+        assert_eq!(state.map_item_x_y(&item, &"prontera.gat".into(), 2).unwrap().x, 51);
+        assert_eq!(state.map_item_name(&item, &map, 2).as_deref(), Some("Owned Homunculus"));
+        assert_eq!(state.map_item_mob_status(&item, &map, 2).unwrap().hp(), 100);
+        assert_eq!(state.companion_owner(id, &map, 2).unwrap().char_id, 150_000);
+        assert!(state.map_item(id, &"geffen".into(), 2).is_none());
+        assert!(state.map_item_snapshot(id, &map, 0).is_none());
+        assert!(state.map_item_mob_status(&item, &map, 0).is_none());
+        state
+            .characters_mut()
+            .get_mut(&150_000)
+            .unwrap()
+            .game_systems
+            .homunculus
+            .as_mut()
+            .unwrap()
+            .active = false;
+        assert!(state.map_item(id, &map, 2).is_none());
+        assert!(state.map_item_snapshot(id, &map, 2).is_none());
+        assert!(state.map_item_mob_status(&item, &map, 2).is_none());
+        assert!(
+            state
+                .map_item_character(&MapItem::new(150_001, 0, MapItemType::Character))
+                .is_none()
+        );
+    }
 }
 
 unsafe impl Sync for ServerState {}
@@ -37,12 +119,17 @@ impl ServerState {
             sessions: Arc::new(RwLock::new(HashMap::<u32, Arc<Session>>::new())),
             characters: Default::default(),
             locked_map_item: Default::default(),
+            runtime_map_flags: Default::default(),
+            siege_active: false,
+            pending_map_notifications: Default::default(),
         }
     }
 
     pub fn remove_session(&self, session_id: u32) {
         let mut sessions = self.sessions.write().unwrap();
-        sessions.remove(&session_id);
+        if let Some(session) = sessions.remove(&session_id) {
+            session.cancel_script();
+        }
     }
 
     pub fn add_session(&self, session_id: u32, session: Arc<Session>) {
@@ -54,6 +141,10 @@ impl ServerState {
         let sessions = self.sessions.read().unwrap();
         let session_ref = sessions.get(&session_id).unwrap();
         session_ref.clone()
+    }
+
+    pub fn find_session(&self, session_id: u32) -> Option<Arc<Session>> {
+        self.sessions.read().unwrap().get(&session_id).cloned()
     }
 
     pub fn get_character_unsafe(&self, char_id: u32) -> &Character {
@@ -75,15 +166,12 @@ impl ServerState {
     }
 
     pub fn get_map_socket_for_char_id(&self, char_id: u32) -> Option<Arc<RwLock<TcpStream>>> {
-        if let Some(character) = self.get_character(char_id) {
-            let account_id = character.account_id;
-            let sessions = self.sessions.read().unwrap();
-            let maybe_session = sessions.get(&account_id);
-            if let Some(session) = maybe_session {
-                return session.map_server_socket.clone();
-            }
-        }
-        None
+        self.sessions
+            .read()
+            .unwrap()
+            .values()
+            .find(|session| session.char_id == Some(char_id))
+            .and_then(|session| session.map_server_socket.clone())
     }
 
     pub fn insert_map_item(&mut self, id: u32, map_item: MapItem) {
@@ -140,8 +228,8 @@ impl ServerState {
         };
 
         if let Some(instances) = self.map_instances().get(map_name) {
-            for (id, map_instance) in instances.iter().enumerate() {
-                if map_instance_id == id as u8 {
+            for map_instance in instances {
+                if map_instance_id == map_instance.key().map_instance() {
                     return Some(map_instance.clone());
                 }
             }
@@ -149,9 +237,30 @@ impl ServerState {
         None
     }
 
+    pub fn companion_owner(&self, actor_id: u32, map_name: &String, map_instance_id: u8) -> Option<&Character> {
+        self.characters.values().find(|owner| {
+            owner.loaded_from_client_side
+                && owner.current_map_instance() == map_instance_id
+                && owner.current_map_name().trim_end_matches(MAP_EXT) == map_name.trim_end_matches(MAP_EXT)
+                && companion_snapshots(owner)
+                    .iter()
+                    .any(|snapshot| snapshot.map_item().id() == actor_id)
+        })
+    }
+
+    fn companion_snapshot(&self, actor_id: u32, map_name: &String, map_instance_id: u8) -> Option<MapItemSnapshot> {
+        let owner = self.companion_owner(actor_id, map_name, map_instance_id)?;
+        companion_snapshots(owner)
+            .into_iter()
+            .find(|snapshot| snapshot.map_item().id() == actor_id)
+    }
+
     #[inline]
     pub fn map_item_x_y(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<Position> {
         match map_item.object_type() {
+            MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary => self
+                .companion_snapshot(map_item.id(), map_name, map_instance_id)
+                .map(|snapshot| snapshot.position()),
             MapItemType::Character => {
                 let characters = self.characters();
                 if let Some(character) = characters.get(&map_item.id()) {
@@ -218,6 +327,9 @@ impl ServerState {
     #[inline]
     pub fn map_item_name(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<String> {
         match map_item.object_type() {
+            MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary => self
+                .companion_owner(map_item.id(), map_name, map_instance_id)
+                .and_then(|owner| companion_name(owner, map_item.id())),
             MapItemType::Character => {
                 let characters = self.characters();
                 if let Some(character) = characters.get(&map_item.id()) {
@@ -267,6 +379,9 @@ impl ServerState {
         if let Some(character) = characters.get(&map_item_id) {
             return Some(character.to_map_item());
         }
+        if let Some(companion) = self.companion_snapshot(map_item_id, map_name, map_instance_id) {
+            return Some(companion.map_item());
+        }
         if let Some(map_instance) = self.get_map_instance(map_name, map_instance_id) {
             if let Some(mob) = map_instance.state().get_mob(map_item_id) {
                 return Some(mob.to_map_item());
@@ -297,13 +412,23 @@ impl ServerState {
 
     pub fn map_item_character(&self, map_item: &MapItem) -> Option<&Character> {
         match map_item.object_type() {
-            MapItemType::Character => return Some(self.get_character_unsafe(map_item.id())),
+            MapItemType::Character => self.get_character(map_item.id()),
             _ => None,
         }
     }
 
     pub fn map_item_mob_status(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<StatusSnapshot> {
         match map_item.object_type() {
+            MapItemType::Homunculus | MapItemType::Mercenary => self
+                .companion_owner(map_item.id(), map_name, map_instance_id)
+                .and_then(|owner| companion_status_snapshot(owner, map_item.id())),
+            MapItemType::Npc => {
+                let instance = self.get_map_instance(map_name, map_instance_id)?;
+                let state = instance.state();
+                state.script_skill_state.npcs.get(&map_item.id())
+                    .map(crate::server::script::skill::actor::NpcSkillState::snapshot)
+                    .or_else(|| instance.get_script(map_item.id()).map(|script| crate::server::script::skill::actor::NpcSkillState::new(script.as_ref()).snapshot()))
+            }
             MapItemType::Mob => {
                 if let Some(map_instance) = self.get_map_instance(map_name, map_instance_id) {
                     if let Some(mob) = map_instance.state().get_mob(map_item.id()) {
@@ -321,6 +446,9 @@ impl ServerState {
         if let Some(character) = characters.get(&map_item_id) {
             return Some(character.to_map_item_snapshot());
         }
+        if let Some(companion) = self.companion_snapshot(map_item_id, map_name, map_instance_id) {
+            return Some(companion);
+        }
         if let Some(map_instance) = self.get_map_instance(map_name, map_instance_id) {
             if let Some(mob) = map_instance.state().get_mob(map_item_id) {
                 return Some(mob.to_map_item_snapshot());
@@ -328,8 +456,9 @@ impl ServerState {
             if let Some(_warp) = map_instance.get_warp(map_item_id) {
                 return None;
             }
-            if let Some(_script) = map_instance.get_script(map_item_id) {
-                return None;
+            if let Some(script) = map_instance.get_script(map_item_id) {
+                return Some(MapItemSnapshot::new(MapItem::new(script.id, script.sprite as i16, MapItemType::Npc),
+                    movement::position::Position { x: script.x, y: script.y, dir: script.dir }));
             }
         }
         None

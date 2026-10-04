@@ -5,6 +5,7 @@ use std::thread::sleep;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use models::enums::skill_enums::SkillEnum;
+use models::enums::EnumWithNumberValue;
 use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
 
 use crate::PersistenceEvent;
@@ -24,6 +25,7 @@ pub const GAME_TICK_RATE: u128 = 40;
 
 impl Server {
     pub(crate) fn game_loop(server_ref: Arc<Server>) {
+        server_ref.bind_shared();
         loop {
             if !server_ref.is_alive() {
                 break;
@@ -44,19 +46,69 @@ impl Server {
 
     pub(crate) fn game_loop_iteration(server_ref: &Server, tick: u128) {
         let mut server_state_mut = server_ref.state_mut();
+        server_ref.drain_map_notifications(server_state_mut.as_mut());
 
-        for (_, character) in server_state_mut
-            .characters_mut()
-            .iter_mut()
-            .filter(|(_, character)| character.loaded_from_client_side)
-        {
-            server_ref.server_service.character_remove_expired_bonuses(character, tick);
+        let actor_ids: Vec<_> = server_state_mut.characters().values().filter(|character| character.loaded_from_client_side).map(|character| character.char_id).collect();
+        let sender = server_ref.server_service().notification_sender();
+        for char_id in &actor_ids {
+            if let Some(mut character) = server_state_mut.characters_mut().remove(char_id) {
+                character.refresh_script_context();
+                server_ref.server_service.character_remove_expired_bonuses(&mut character, tick);
+                crate::server::service::status_effect_service::StatusEffectService::tick(server_ref, &mut character, tick, &sender);
+                server_ref.script_skill_service().tick_character_state(&mut character, tick);
+                server_ref.script_skill_service().tick_revealing_statuses(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                server_ref.script_skill_service().tick_devotion_links(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                server_ref.script_skill_service().tick_stealth(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                crate::server::service::script_combat_service::tick_character(server_ref, &mut character, tick);
+                if let Err(error) = server_ref.script_world_service().tick_in_state(server_ref, server_state_mut.as_mut(), &mut character, tick as u64) { warn!("World tick failed: {error}"); }
+                server_state_mut.insert_character(character);
+            }
         }
+        server_ref.script_skill_service().tick_ground_skills(server_ref, server_state_mut.as_mut(), tick);
         if let Some(tasks) = server_ref.pop_task() {
             for task in tasks {
                 match task {
+                    GameEvent::ReleaseScriptCapture(id) => { server_state_mut.remove_locked_map_item(id); }
+                    GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld { char_id, request }) => {
+                        if let Err(error) = server_ref.script_world_service().handle_request(server_ref, server_state_mut.as_mut(), char_id, request, tick as u64) {
+                            warn!("Script world request failed: {error}");
+                        }
+                    }
+                    GameEvent::ScriptWarp(warp) => {
+                        if server_state_mut.characters().contains_key(&warp.char_id) {
+                            server_ref.server_service().schedule_warp_to_walkable_cell_in_instance(server_state_mut.as_mut(), &warp.map, warp.x, warp.y, warp.char_id, warp.destination_instance.unwrap_or(0));
+                        }
+                    }
+                    event @ (GameEvent::CharacterScriptSkill(_) | GameEvent::ScriptCombat(_) | GameEvent::MobAttack(_)
+                        | GameEvent::NpcContact(_)
+                        | GameEvent::ReflectMagic(_) | GameEvent::ScriptSpawned(crate::server::model::events::game_event::ScriptSpawned { .. }) | GameEvent::ScriptEvent(_) | GameEvent::ScriptSpawn(_)
+                        | GameEvent::ScriptUnitSkill(_) | GameEvent::ScriptActorSkillComplete(_) | GameEvent::ScriptPartyWarp(_) | GameEvent::ScriptBroadcast(_) | GameEvent::ScriptCraft(_)
+                        | GameEvent::ScriptIdentify(_) | GameEvent::ScriptTeleportSelection(_) | GameEvent::CharacterStatusAlternatives(_) | GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange { .. }) | GameEvent::CharacterEndStatus(crate::server::model::events::game_event::CharacterEndStatus { .. })
+                        | GameEvent::CharacterUseGroundSkill(_) | GameEvent::ScriptSkillHit(_) | GameEvent::FameChanged(_) | GameEvent::TaekwonMissionKill(_) | GameEvent::ItemScriptComplete(_) | GameEvent::ScriptReveal(_) | GameEvent::CharacterKnockback(_)) => {
+                        if let Err(error) = server_ref.handle_script_event(server_state_mut.as_mut(), event, tick) { warn!("Script game event failed: {error}"); }
+                    }
+                    GameEvent::ScriptRequest(request) => {
+                        server_ref
+                            .script_service()
+                            .handle_request(server_ref, server_state_mut.as_mut(), request);
+                    }
+                    GameEvent::PetCaptureClaimResult(result) => {
+                        if let Err(error) = server_ref.script_world_service().complete_pet_capture(server_ref, server_state_mut.as_mut(), result, tick as u64) {
+                            warn!("Pet capture completion failed: {error}");
+                        }
+                    }
+                    GameEvent::PetLootClaimResult(result) => {
+                        if let Err(error) = server_ref.script_world_service().complete_pet_loot(server_ref, server_state_mut.as_mut(), result, tick as u64) {
+                            warn!("Pet loot completion failed: {error}");
+                        }
+                    }
+                    GameEvent::PetLootDropResult(result) => {
+                        if let Err(error) = server_ref.script_world_service().complete_pet_loot_drop(server_ref, server_state_mut.as_mut(), result, tick as u64) {
+                            warn!("Pet loot delivery failed: {error}");
+                        }
+                    }
                     GameEvent::CharacterLeaveGame((char_id, _atype)) => {
-                        server_ref.disconnect_character(char_id);
+                        server_ref.disconnect_character_in_state(server_state_mut.as_mut(), char_id);
                     }
                     GameEvent::CharacterJoinGame(char_id) => {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
@@ -107,6 +159,7 @@ impl Server {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
                         character.loaded_from_client_side = true;
                         character.clear_map_view();
+                        server_ref.notify_map_property(server_state_mut.as_mut(), char_id);
                     }
                     GameEvent::CharacterMove(_) => {
                         // handled by dedicated thread
@@ -133,21 +186,30 @@ impl Server {
                             .inventory_service()
                             .reload_inventory(server_ref.runtime.as_ref(), char_id, character);
                         server_ref.inventory_service().reload_equipped_item_sprites(character);
+                        server_ref.refresh_forged_rank(character);
+                        server_ref.refresh_taekwon_rank(character);
                         server_ref.character_service().reload_client_side_status(character);
                         server_ref.character_service().reload_client_side_hotkeys(character);
+                        if let Err(error) = server_ref.script_world_service().initialize_cart(character) { warn!("Cart initialization failed: {error}"); }
+                        if let Err(error) = server_ref.script_world_service().initialize_guild(server_ref, character) { warn!("Guild initialization failed: {error}"); }
+                        if let Err(error) = server_ref.script_world_service().initialize_party(server_ref, character) { warn!("Party initialization failed: {error}"); }
+                        character.refresh_script_context();
                     }
                     GameEvent::CharacterUpdateWeight(char_id) => {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
                         server_ref.character_service().notify_weight(character);
                     }
-                    GameEvent::CharacterUseItem(character_user_item) => {
-                        let character = server_state_mut.characters_mut().get_mut(&character_user_item.char_id).unwrap();
-                        server_ref
-                            .item_service()
-                            .use_item(server_ref, server_ref.runtime.as_ref(), character_user_item, character);
+                    GameEvent::CharacterUseItem(character_use_item) => {
+                        if let Some(mut character) = server_state_mut.characters_mut().remove(&character_use_item.char_id) {
+                            server_ref.item_service().use_item_in_state(server_ref, &server_state_mut, server_ref.runtime.as_ref(), character_use_item, &mut character);
+                            server_state_mut.insert_character(character);
+                        }
                     }
                     GameEvent::CharacterAttack(character_attack) => {
+                        let Some(source) = server_state_mut.characters().get(&character_attack.char_id) else { continue; };
+                        if !server_ref.player_target_allowed(&server_state_mut, source, character_attack.target_id, crate::server::service::visibility_service::TargetingMode::Direct) { continue; }
                         let character = server_state_mut.characters_mut().get_mut(&character_attack.char_id).unwrap();
+                        if character.is_dead() || character.status.blocks_attack() || character.game_systems.is_trading() || character.game_systems.buying_store.is_some() || character.game_systems.vending_store.is_some() { continue; }
                         if !character.is_attacking() {
                             // last_attack_tick = 0 allows first attack to happen immediately
                             // canmove_tick is set in basic_attack() when attack animation starts
@@ -156,6 +218,10 @@ impl Server {
                     }
                     GameEvent::CharacterEquipItem(character_equip_item) => {
                         let character = server_state_mut.characters_mut().get_mut(&character_equip_item.char_id).unwrap();
+                        if character.get_item_from_inventory(character_equip_item.index).is_some_and(|item| item.item_type() == models::enums::item::ItemType::PetArmor) {
+                            server_ref.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld { char_id: character.char_id, request: crate::server::model::game_systems::ScriptWorldRequest::EquipPetAccessory(character_equip_item.index as u16) }));
+                            continue;
+                        }
                         let equipped_item = server_ref.inventory_service().equip_item(character, character_equip_item);
                         equipped_item.map(|item| {
                             server_ref
@@ -187,6 +253,8 @@ impl Server {
                     }
                     GameEvent::CharacterUpdateClientSideStats(char_id) => {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
+                        server_ref.refresh_forged_rank(character);
+                        server_ref.refresh_taekwon_rank(character);
                         server_ref.character_service().reload_client_side_status(character);
                     }
                     GameEvent::CharacterChangeLevel(character_change_level) => {
@@ -213,40 +281,35 @@ impl Server {
                     }
                     GameEvent::CharacterChangeJob(character_change_job) => {
                         let character = server_state_mut.characters_mut().get_mut(&character_change_job.char_id).unwrap();
+                        match server_ref.repository.character_change_fame_class(character.char_id, character.account_id, character_change_job.job.value() as u32) {
+                            Ok(updates) => for update in updates {
+                                server_ref.add_to_next_tick(GameEvent::FameChanged(crate::server::model::events::game_event::FameChanged {
+                                    category: update.category, ranked_creators: update.rankings.iter().map(|entry| entry.char_id).collect() }));
+                            },
+                            Err(error) => { warn!("Job transaction failed: {error}"); continue; }
+                        }
                         server_ref.character_service().change_job(
                             character,
                             character_change_job.job,
                             character_change_job.should_reset_skills,
                         );
+                        server_ref.refresh_taekwon_rank(character);
+                        server_ref.character_service().reload_client_side_status(character);
                         // TODO ensure equip required class
                     }
-                    GameEvent::CharacterKillMonster(character_kill_monster) => {
-                        if let Some(character) = server_state_mut.characters_mut().get_mut(&character_kill_monster.char_id) {
-                            let map_instance = server_ref
-                                .state()
-                                .get_map_instance(
-                                    character_kill_monster.map_instance_key.map_name(),
-                                    character_kill_monster.map_instance_key.map_instance(),
-                                )
-                                .unwrap();
-                            server_ref
-                                .character_service()
-                                .character_kill_monster(character, character_kill_monster, map_instance.as_ref());
-                        }
+                    GameEvent::CharacterKillMonster(kill) => {
+                        if let Err(error) = server_ref.reward_monster_kill(server_state_mut.as_mut(), kill, tick) { warn!("Monster reward failed: {error}"); }
                     }
                     GameEvent::CharacterPickUpItem(character_pickup_item) => {
-                        let character = server_state_mut.characters_mut().get_mut(&character_pickup_item.char_id).unwrap();
-                        let map_instance = server_ref
-                            .state()
-                            .get_map_instance(character.current_map_name(), character.current_map_instance())
-                            .unwrap();
-                        server_ref.server_service.character_pickup_item(
-                            server_ref.state_mut().as_mut(),
-                            character,
-                            character_pickup_item.map_item_id,
-                            map_instance.as_ref(),
-                            server_ref.runtime.as_ref(),
-                        );
+                        if let Some(mut character) = server_state_mut.characters_mut().remove(&character_pickup_item.char_id) {
+                            if let Some(map_instance) = server_state_mut.get_map_instance_from_character(&character) {
+                                if let Err(error) = server_ref.server_service.character_pickup_item(server_ref,
+                                    server_state_mut.as_mut(), &mut character, character_pickup_item.map_item_id, map_instance.as_ref()) {
+                                    warn!("Floor item transfer failed: {error}");
+                                }
+                            }
+                            server_state_mut.insert_character(character);
+                        }
                     }
                     GameEvent::MapNotifyItemRemoved(map_item_id) => {
                         server_state_mut.remove_locked_map_item(map_item_id);
@@ -259,28 +322,16 @@ impl Server {
                     }
                     GameEvent::CharacterSkillUpgrade(character_skill_upgrade) => {
                         let character = server_state_mut.characters_mut().get_mut(&character_skill_upgrade.char_id).unwrap();
+                        if (8001..=8016).contains(&(character_skill_upgrade.skill_id as u32)) {
+                            if let Err(error) = server_ref.script_world_service().learn_homunculus_skill(character, character_skill_upgrade.skill_id as u32) { warn!("Homunculus skill learning failed: {error}"); }
+                            continue;
+                        }
                         server_ref
                             .character_service()
                             .allocate_skill_point(character, SkillEnum::from_id(character_skill_upgrade.skill_id as u32));
                     }
                     GameEvent::CharacterDropItem(character_drop_item) => {
-                        let character = server_state_mut.characters_mut().get_mut(&character_drop_item.char_id).unwrap();
-                        let map_instance = server_ref
-                            .state()
-                            .get_map_instance(character.current_map_name(), character.current_map_instance())
-                            .unwrap();
-                        let character_remove_items = CharacterRemoveItems {
-                            char_id: character.char_id,
-                            sell: false,
-                            items: vec![character_drop_item],
-                            notify_client: true,
-                        };
-                        server_ref.inventory_service().character_drop_items(
-                            server_ref.runtime.as_ref(),
-                            character,
-                            character_remove_items,
-                            map_instance.as_ref(),
-                        );
+                        if let Err(error)=server_ref.server_service().character_drop_item(server_ref,server_state_mut.as_mut(),character_drop_item) {warn!("Item drop failed: {error}");}
                     }
                     GameEvent::CharacterSellItems(character_remove_items) => {
                         let character = server_state_mut.characters_mut().get_mut(&character_remove_items.char_id).unwrap();
@@ -297,23 +348,10 @@ impl Server {
                         server_ref.character_service().reset_stats(character);
                     }
                     GameEvent::CharacterUseSkill(character_use_skill) => {
-                        let character = server_state_mut.characters_mut().get_mut(&character_use_skill.char_id).unwrap();
-                        server_ref
-                            .server_service
-                            .character_start_use_skill(server_ref.state(), character, character_use_skill, tick);
+                        if let Err(error) = server_ref.handle_character_skill(server_state_mut.as_mut(), character_use_skill, tick) { warn!("Skill use failed: {error}"); }
                     }
                     GameEvent::CharacterDamage(damage) => {
-                        if let Some(character) = server_state_mut.characters_mut().get_mut(&damage.target_id) {
-                            if character.is_moving() {
-                                server_ref.character_service().cancel_movement(character, tick);
-                            }
-                            character.clear_pending_skill();
-                            character.timing.set_canmove_tick(tick + damage.damage_motion as u128);
-                            let died = server_ref.character_service().take_damage(character, damage.damage);
-                            if died {
-                                // TODO: Handle character death - respawn logic, etc.
-                            }
-                        }
+                        if let Err(error) = server_ref.admit_character_damage(server_state_mut.as_mut(), damage, tick) { warn!("Character damage failed: {error}"); }
                     }
                     GameEvent::CharacterUpdateSpeed(char_id, speed) => {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
@@ -365,38 +403,49 @@ impl Server {
                 }
             }
         }
-        for (_, character) in server_state_mut
-            .characters_mut()
-            .iter_mut()
-            .filter(|(_, character)| character.loaded_from_client_side)
-        {
-            let map_instance = server_ref
-                .state()
-                .get_map_instance(character.current_map_name(), character.current_map_instance());
-            if let Some(map_instance) = map_instance {
-                server_ref
-                    .character_service()
-                    .load_units_in_fov(server_ref.state(), character, map_instance.state().borrow().as_ref());
+        let actor_ids: Vec<_> = server_state_mut.characters().values().filter(|character| character.loaded_from_client_side).map(|character| character.char_id).collect();
+        for char_id in actor_ids {
+            if let Some(mut character) = server_state_mut.characters_mut().remove(&char_id) {
+                let map_instance = server_state_mut.get_map_instance_from_character(&character);
+                if let Some(map_instance) = map_instance {
+                    server_ref.character_service().load_units_in_fov(server_state_mut.as_mut(), &mut character, map_instance.state().borrow().as_ref());
+                }
+                let target_visible = !character.is_attacking() || server_ref.player_target_allowed(server_state_mut.as_mut(), &character, character.attack().target,
+                    crate::server::service::visibility_service::TargetingMode::Direct);
+                if target_visible && !character.status.blocks_attack() && character.game_systems.buying_store.is_none() && character.game_systems.vending_store.is_none() {
+                    server_ref.server_service.character_attack(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                } else { character.clear_attack(); }
+                server_ref.server_service.character_pending_skill(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                server_ref.server_service.character_use_skill(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                server_ref.character_service().regen_hp(&mut character, tick);
+                server_ref.character_service().regen_sp(&mut character, tick);
+                character.refresh_script_context();
+                server_state_mut.insert_character(character);
             }
-            server_ref.server_service.character_attack(server_ref.state(), tick, character);
-            server_ref.server_service.character_pending_skill(server_ref.state(), tick, character);
-            server_ref.server_service.character_use_skill(server_ref.state(), tick, character);
-            server_ref.character_service().regen_hp(character, tick);
-            server_ref.character_service().regen_sp(character, tick);
         }
-        for (_, map) in server_ref.state().map_instances().iter() {
+        for (_, map) in server_state_mut.map_instances().iter() {
             for instance in map.iter() {
                 let map_name = instance.key().map_name();
                 let instance_id = instance.key().map_instance();
+                instance.add_to_next_tick(MapEvent::UpdateActorVisibility(server_state_mut.characters().values()
+                    .filter(|character| character.current_map_name() == map_name && character.current_map_instance() == instance_id)
+                    .flat_map(|character| {
+                        use crate::server::service::visibility_service::StealthState;
+                        let mut visibility = vec![(character.char_id, StealthState::from_status_options(&character.status, character.options))];
+                        for companion in crate::server::service::script_world_service::companion_snapshots(character) {
+                            let id = companion.map_item().id();
+                            if let Some(status) = crate::server::service::script_world_service::companion_status_snapshot(character, id) { visibility.push((id, StealthState::from_snapshot(&status))); }
+                        }
+                        visibility
+                    }).collect()));
                 instance.add_to_next_tick(MapEvent::UpdateMobsFov(
                     server_state_mut
-                        .characters_mut()
+                        .characters()
                         .iter()
                         .filter(|(_, character)| {
-                            character.current_map_name() == map_name
-                                && character.current_map_instance() == instance_id
+                            character.status.hp > 0 && character.current_map_name() == map_name && character.current_map_instance() == instance_id
                         })
-                        .map(|(_, character)| character.to_map_item_snapshot())
+                        .flat_map(|(_, character)| { let mut actors = vec![character.to_map_item_snapshot()]; actors.extend(crate::server::service::script_world_service::companion_snapshots(character)); actors })
                         .collect(),
                 ));
             }
@@ -418,6 +467,7 @@ impl Server {
                 for task in tasks {
                     if let GameEvent::CharacterMove(character_movement) = task {
                         let character = server_state_mut.characters_mut().get_mut(&character_movement.char_id).unwrap();
+                        if character.status.blocks_movement() || character.game_systems.is_trading() || character.game_systems.buying_store.is_some() || character.game_systems.vending_store.is_some() { continue; }
                         if character_movement.cancel_attack {
                             character.clear_attack();
                             character.clear_pending_skill();

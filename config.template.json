@@ -16,6 +16,13 @@
     "mobs_path": "config/mobs.json",
     "seed_path": "db/seed.json"
   },
+  "scripting": {
+    "module_path": "config/wasm/game_scripts.wasm",
+    "npcs_path": "config/wasm/npcs.json",
+    "items_path": "config/wasm/items.json",
+    "map_flags_path": "config/wasm/map_flags.json",
+    "conversation_timeout_secs": 120
+  },
   "game": {
     "default_char_speed": 150,
     "drop_rate": 1.0,
@@ -31,6 +38,22 @@
     "max_stat_level": 99,
     "base_exp_rate": 1.0,
     "job_exp_rate": 1.0,
+    "pvp_exp": false,
+    "party_even_share_bonus": 0,
+    "gvg_damage_rates": {
+      "weapon_skill": 60,
+      "magic_skill": 60,
+      "misc_skill": 60,
+      "normal_short": 80,
+      "normal_long": 80
+    },
+    "battleground_damage_rates": {
+      "weapon_skill": 60,
+      "magic_skill": 60,
+      "misc_skill": 60,
+      "normal_short": 80,
+      "normal_long": 80
+    },
     "mob_dropped_item_locked_to_owner_duration_in_secs": 30,
     "player_dropped_item_locked_to_owner_duration_in_secs": 60
   },

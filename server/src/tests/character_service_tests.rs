@@ -108,6 +108,41 @@ mod tests {
         assert_task_queue_contains_event_at_tick,
     };
 
+    #[derive(Default)]
+    struct SkillTransactionRepository {
+        allocations: std::sync::atomic::AtomicUsize,
+        resets: std::sync::atomic::AtomicUsize,
+        fail: AtomicBool,
+    }
+
+    #[async_trait]
+    impl CharacterRepository for SkillTransactionRepository {
+        fn character_commit_skill_reset(&self, _char_id:u32, _account_id:u32, _plan:&crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(),Error> {
+            self.resets.fetch_add(1, Relaxed);
+            if self.fail.load(Relaxed) { Err(Error::InvalidInput("Injected transaction failure".into())) } else { Ok(()) }
+        }
+        fn character_commit_skill_allocation(&self, _char_id:u32, _account_id:u32, _skill_id:u32, old:u8, _points:u32, _max:u8) -> Result<u8,Error> {
+            self.allocations.fetch_add(1, Relaxed);
+            if self.fail.load(Relaxed) { Err(Error::InvalidInput("Injected transaction failure".into())) } else { Ok(old+1) }
+        }
+    }
+
+    #[test]
+    fn skill_transaction_failures_preserve_runtime_points_and_levels() {
+        let repository = Arc::new(SkillTransactionRepository::default());
+        repository.fail.store(true, Relaxed);
+        let context = before_each(repository.clone());
+        let mut character = create_character();
+        character.status.skill_point = 5;
+        character.status.known_skills = vec![KnownSkill { value: SkillEnum::NvBasic, level: 2 }];
+        assert!(!context.character_service.allocate_skill_point(&mut character, SkillEnum::NvBasic));
+        context.character_service.reset_skills(&mut character, true);
+        assert_eq!(character.status.skill_point, 5);
+        assert_eq!(character.status.known_skills, vec![KnownSkill { value: SkillEnum::NvBasic, level: 2 }]);
+        assert_eq!(repository.allocations.load(Relaxed), 1);
+        assert_eq!(repository.resets.load(Relaxed), 1);
+    }
+
     #[test]
     fn test_max_weight() {
         // Given
@@ -959,7 +994,7 @@ mod tests {
             // When
             let actual = context.character_service.get_allocated_skills_point(&character);
             // Then
-            assert_eq!(actual, scenarii.expected_allocated_points);
+            assert_eq!(actual, u32::from(scenarii.expected_allocated_points));
         }
     }
 
@@ -1301,13 +1336,6 @@ mod tests {
                     char_id: character.char_id,
                     field: "skill_point".to_string(),
                     value: character.status.skill_point,
-                })
-            );
-            assert_sent_persistence_event!(
-                context,
-                PersistenceEvent::ResetSkills(ResetSkills {
-                    char_id: character.char_id as i32,
-                    skills: vec![],
                 })
             );
             // Platinium skill are not reset
@@ -2080,9 +2108,10 @@ mod tests {
     }
 
     #[test]
-    fn test_reset_skills_defer_update_in_db_and_send_packet() {
+    fn test_reset_skills_commits_points_and_learned_skills_together() {
         // Given
-        let context = before_each(mocked_repository());
+        let repository = Arc::new(SkillTransactionRepository::default());
+        let context = before_each(repository.clone());
         let mut character = create_character();
         character.status.known_skills = vec![
             KnownSkill {
@@ -2146,36 +2175,15 @@ mod tests {
                 level: 5,
             },
         ];
-        let skills_to_reset: Vec<i32> = character
-            .status
-            .known_skills
-            .iter()
-            .filter(|s| s.value != SkillEnum::from_name("SM_FATALBLOW"))
-            .map(|s| s.value.id() as i32)
-            .collect();
         // When
         context.character_service.reset_skills(&mut character, true);
         // Then
         assert_eq!(character.status.skill_point, 84);
+        assert_eq!(repository.resets.load(std::sync::atomic::Ordering::Relaxed), 1);
         context
             .test_context
             .increment_latch()
-            .wait_expected_count_with_timeout(4, Duration::from_millis(200));
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
-                char_id: character.char_id,
-                field: "skill_point".to_string(),
-                value: character.status.skill_point,
-            })
-        );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::ResetSkills(ResetSkills {
-                char_id: character.char_id as i32,
-                skills: skills_to_reset,
-            })
-        );
+            .wait_expected_count_with_timeout(2, Duration::from_millis(200));
         // Platinium skill are not reset
         assert_sent_packet_in_current_packetver!(
             context,
@@ -2418,7 +2426,8 @@ mod tests {
     #[test]
     fn test_allocate_skill_point_should_put_point_on_skill_and_decrease_available_skill_point_trigger_skill_list_packet_send() {
         // Given
-        let context = before_each(mocked_repository());
+        let repository = Arc::new(SkillTransactionRepository::default());
+        let context = before_each(repository.clone());
         let mut character = create_character();
         character.status.job_level = 2;
         character.status.skill_point = 1;
@@ -2436,26 +2445,11 @@ mod tests {
             1
         );
         assert_eq!(character.status.skill_point, 0);
+        assert_eq!(repository.allocations.load(std::sync::atomic::Ordering::Relaxed), 1);
         context
             .test_context
             .increment_latch()
-            .wait_expected_count_with_timeout(4, Duration::from_millis(200));
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::IncreaseSkillLevel(IncreaseSkillLevel {
-                char_id: character.char_id as i32,
-                skill: SkillEnum::NvBasic,
-                increment: 1,
-            })
-        );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
-                char_id: character.char_id as u32,
-                field: "skill_point".to_string(),
-                value: 0,
-            })
-        );
+            .wait_expected_count_with_timeout(2, Duration::from_millis(200));
         assert_sent_packet_in_current_packetver!(
             context,
             NotificationExpectation::of_char(character.char_id, vec![SentPacket::with_count(
@@ -2944,6 +2938,9 @@ mod tests {
         context.character_service.character_kill_monster(
             &mut character_state,
             CharacterKillMonster {
+                attacker_id: 0,
+                mob_max_hp: 100,
+                contributions: vec![],
                 char_id,
                 mob_id: 1001,
                 mob_x: 54,
@@ -3018,6 +3015,7 @@ mod tests {
         // Given
         let context = before_each(mocked_repository());
         let mut character_state = create_character();
+        character_state.status.hp = 1;
         character_state.status.max_sp = 100;
         character_state.status.sp = 1;
         // When, Stand, last moved is before 8sec, should not regen

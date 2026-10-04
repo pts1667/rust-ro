@@ -1,13 +1,12 @@
 #![allow(dead_code)]
 
-use crate::create_script_vm;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{create_mpsc, TestContext};
+use crate::tests::common::{TestContext, create_mpsc};
 
 pub struct StatusServiceTestContext {
     test_context: TestContext,
@@ -31,10 +30,7 @@ fn before_each_with_latch(latch_size: usize) -> StatusServiceTestContext {
             persistence_event_receiver,
             count_down_latch,
         ),
-        status_service: StatusService::new(
-            GlobalConfigService::instance(),
-            create_script_vm("../native_functions_list.txt"),
-        ),
+        status_service: StatusService::new(GlobalConfigService::instance(), crate::tests::common::test_script_vm()),
     }
 }
 
@@ -63,8 +59,8 @@ mod tests {
         create_character, equip_item_from_id_with_cards, equip_item_from_name, equip_item_from_name_with_cards,
         equip_item_with_cards_and_refinement,
     };
-    use crate::tests::common::fixtures::battle_fixture::{BattleFixture, Equipment};
     use crate::tests::common::fixtures::TestResult;
+    use crate::tests::common::fixtures::battle_fixture::{BattleFixture, Equipment};
     use crate::{eq_with_variance, status_snapshot};
 
     #[test]
@@ -422,37 +418,37 @@ mod tests {
                 weapon: "Combat_Knife",
                 refine: 5,
                 expected_status_atk: 5 * 7,
-                expected_overupgrade_bonus: 14,
+                expected_overupgrade_bonus: 13,
             },
             Stats {
                 weapon: "Combat_Knife",
                 refine: 6,
                 expected_status_atk: 6 * 7,
-                expected_overupgrade_bonus: 28,
+                expected_overupgrade_bonus: 26,
             },
             Stats {
                 weapon: "Combat_Knife",
                 refine: 7,
                 expected_status_atk: 7 * 7,
-                expected_overupgrade_bonus: 42,
+                expected_overupgrade_bonus: 39,
             },
             Stats {
                 weapon: "Combat_Knife",
                 refine: 8,
                 expected_status_atk: 8 * 7,
-                expected_overupgrade_bonus: 56,
+                expected_overupgrade_bonus: 52,
             },
             Stats {
                 weapon: "Combat_Knife",
                 refine: 9,
                 expected_status_atk: 9 * 7,
-                expected_overupgrade_bonus: 70,
+                expected_overupgrade_bonus: 65,
             },
             Stats {
                 weapon: "Combat_Knife",
                 refine: 10,
                 expected_status_atk: 10 * 7,
-                expected_overupgrade_bonus: 84,
+                expected_overupgrade_bonus: 78,
             },
         ];
 
@@ -527,6 +523,98 @@ mod tests {
         // Then
         assert_eq!(status_snapshot.bonus_agi(), 10);
         assert_eq!(status_snapshot.speed(), 112);
+    }
+
+    #[test]
+    fn passive_grants_change_attributes_derived_hit_and_flee_without_changing_learned_skills() {
+        let context = before_each();
+        for (job, improved_dodge) in [(JobName::Thief, 30), (JobName::Assassin, 40), (JobName::Stalker, 40)] {
+            let mut character = create_character();
+            character.status.job = job.value() as u32;
+            character.status.base_level = 99;
+            let baseline = context.status_service.to_snapshot(&character.status);
+            for (skill, level) in [(SkillEnum::BsHiltbinding, 1), (SkillEnum::AcOwl, 10), (SkillEnum::SaDragonology, 5), (SkillEnum::TfMiss, 10), (SkillEnum::MoDodge, 5)] {
+                character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::EnableSkillId(skill.id(), level), 0, 0));
+            }
+            let granted = context.status_service.to_snapshot(&character.status);
+            assert_eq!(granted.str(), baseline.str() + 1);
+            assert_eq!(granted.dex(), baseline.dex() + 10);
+            assert_eq!(granted.int(), baseline.int() + 3);
+            assert_eq!(granted.hit(), baseline.hit() + 10);
+            assert_eq!(granted.flee(), baseline.flee() + improved_dodge + 7);
+            assert!(granted.matk_min() > baseline.matk_min());
+            assert!(granted.max_sp() > baseline.max_sp());
+            assert!(character.status.known_skills.is_empty());
+        }
+    }
+
+    #[test]
+    fn passive_weapon_range_and_firearm_hit_use_effective_grants_and_weapon_conditions() {
+        let context = before_each();
+        for (weapon, extra_range, extra_hit) in [("Bow", 10, 10), ("Six_Shooter", 10, 40), ("Knife", 0, 10)] {
+            let mut character = create_character();
+            equip_item_from_name(&mut character, weapon);
+            let baseline = context.status_service.to_snapshot(&character.status);
+            for (skill, level) in [(SkillEnum::AcVulture, 10), (SkillEnum::GsSnakeeye, 10), (SkillEnum::GsSingleaction, 10)] {
+                character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::EnableSkillId(skill.id(), level), 0, 0));
+            }
+            let granted = context.status_service.to_snapshot(&character.status);
+            assert_eq!(granted.attack_range(), baseline.attack_range() + extra_range);
+            assert_eq!(granted.hit(), baseline.hit() + extra_hit);
+        }
+    }
+
+    #[test]
+    fn passive_hit_is_added_after_equipment_hit_rate_modifiers() {
+        let context = before_each();
+        let mut character = create_character();
+        for bonus in [BonusType::HitPercentage(-50)] {
+            character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(bonus, 0, 0));
+        }
+        let baseline = context.status_service.to_snapshot(&character.status);
+        for (skill, level) in [(SkillEnum::BsWeaponresearch, 10), (SkillEnum::TfMiss, 10)] {
+            character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::EnableSkillId(skill.id(), level), 0, 0));
+        }
+        let granted = context.status_service.to_snapshot(&character.status);
+        assert_eq!(granted.hit(), baseline.hit() + 20);
+        assert_eq!(granted.flee(), baseline.flee() + 30);
+    }
+
+    #[test]
+    fn single_action_changes_firearm_attack_delay_and_adds_to_equipment_aspd_rate() {
+        let context = before_each();
+        for (weapon, level, equipment_rate, expected_rate) in [("Six_Shooter", 1, 0.0, 1.0), ("Six_Shooter", 2, 0.0, 1.0), ("Six_Shooter", 3, 0.0, 2.0), ("Six_Shooter", 10, 10.0, 15.0), ("Knife", 10, 10.0, 10.0)] {
+            let mut character = create_character();
+            equip_item_from_name(&mut character, weapon);
+            let baseline = context.status_service.to_snapshot(&character.status);
+            character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::EnableSkillId(SkillEnum::GsSingleaction.id(), level), 0, 0));
+            character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::AspdPercentage(equipment_rate), 0, 0));
+            let granted = context.status_service.to_snapshot(&character.status);
+            let expected_delay = (200.0 - baseline.aspd()) * (1.0 - expected_rate / 100.0);
+            let actual_rate = granted.bonuses_raw().iter().filter_map(|bonus| if let BonusType::AspdPercentage(value) = bonus { Some(*value) } else { None }).sum::<f32>();
+            assert_eq!(actual_rate, expected_rate);
+            assert!(((200.0 - granted.aspd()) - expected_delay).abs() < 0.001,
+                "{weapon}, level {level}: baseline {}, granted {}, expected delay {}, bonuses {:?}", baseline.aspd(), granted.aspd(), expected_delay, granted.bonuses_raw());
+        }
+    }
+
+    #[test]
+    fn single_action_and_equipment_stack_additively_with_quicken_and_an_attack_speed_potion() {
+        use models::status_change::{StatusChangeKind, StatusChangeRequest};
+        use crate::server::service::status_effect_service::StatusEffectService;
+        let context = before_each();
+        let mut character = create_character();
+        character.status.hp = 1000;
+        equip_item_from_name(&mut character, "Six_Shooter");
+        let baseline = context.status_service.to_snapshot(&character.status);
+        character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::EnableSkillId(SkillEnum::GsSingleaction.id(), 10), 0, 0));
+        character.status.temporary_bonuses.add(TemporaryStatusBonus::with_passive_skill(BonusType::AspdPercentage(10.0), 0, 0));
+        for kind in [StatusChangeKind::TwoHandQuicken, StatusChangeKind::AspdPotion0] {
+            StatusEffectService::apply_status(&mut character.status, StatusChangeRequest::guaranteed(kind, 60000, 1), 0, 0).unwrap();
+        }
+        let granted = context.status_service.to_snapshot(&character.status);
+        assert!(((200.0 - granted.aspd()) - (200.0 - baseline.aspd()) * 0.45).abs() < 0.001,
+            "baseline {}, granted {}, bonuses {:?}", baseline.aspd(), granted.aspd(), granted.bonuses_raw());
     }
 
     #[test]

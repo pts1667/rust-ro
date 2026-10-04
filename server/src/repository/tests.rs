@@ -328,32 +328,6 @@ fn fresh_repository_seeds_catalogs_item_sources_and_accounts_once() {
 }
 
 #[test]
-fn compilation_updates_roll_back_when_any_source_hash_is_wrong() {
-    let repository = repository();
-    let mut first = catalog_item(1001, "Etc", None);
-    first.script = Some("bonus bStr,1;".into());
-    let mut second = catalog_item(1002, "Etc", None);
-    second.script = Some("bonus bStr,2;".into());
-    repository
-        .database
-        .items
-        .transaction(|tree| {
-            tx_write(tree, &first.id.to_be_bytes(), &first)?;
-            tx_write(tree, &second.id.to_be_bytes(), &second)
-        })
-        .unwrap();
-    Runtime::new().unwrap().block_on(async {
-        let updates = vec![
-            (1001, vec![1], fastmurmur3::hash(first.script.as_ref().unwrap().as_bytes())),
-            (1002, vec![2], 0),
-        ];
-        assert!(repository.update_script_compilation(updates).await.is_err());
-        let stored: ItemModel = required(&repository.database.items, &1001_i32.to_be_bytes()).unwrap();
-        assert!(stored.script_compilation.is_none());
-    });
-}
-
-#[test]
 fn hotkey_replacement_is_atomic_and_empty_save_removes_old_keys() {
     let repository = repository();
     Runtime::new().unwrap().block_on(async {
@@ -368,6 +342,55 @@ fn hotkey_replacement_is_atomic_and_empty_save_removes_old_keys() {
         repository.save_hotkeys(150_000, &Vec::new()).await.unwrap();
         assert!(repository.load_hotkeys(150_000).await.unwrap().is_empty());
     });
+}
+
+#[test]
+fn script_variable_batch_commits_across_scopes_and_types_and_rolls_back_invalid_values() {
+    use script_sdk::{Value, Variable, VariableScope};
+    let repository = repository();
+    let variables = vec![
+        Variable {
+            scope: VariableScope::Character,
+            name: "quest".into(),
+            index: 0,
+            value: Value::Number(7),
+        },
+        Variable {
+            scope: VariableScope::Account,
+            name: "quest$".into(),
+            index: 3,
+            value: Value::String("done".into()),
+        },
+        Variable {
+            scope: VariableScope::Server,
+            name: "quests".into(),
+            index: 0,
+            value: Value::Number(1),
+        },
+    ];
+    repository.script_variables_save_batch(150_000, 2_000_000, &variables).unwrap();
+    assert_eq!(repository.script_variable_char_num_fetch_one(150_000, "quest".into(), 0), 7);
+    assert_eq!(
+        repository.script_variable_account_str_fetch_one(2_000_000, "quest$".into(), 3),
+        "done"
+    );
+    assert_eq!(repository.script_variable_server_num_fetch_one("quests".into(), 0), 1);
+    let invalid = vec![
+        Variable {
+            scope: VariableScope::Character,
+            name: "quest".into(),
+            index: 0,
+            value: Value::Number(8),
+        },
+        Variable {
+            scope: VariableScope::Server,
+            name: "bad".into(),
+            index: 0,
+            value: Value::Array(vec![]),
+        },
+    ];
+    assert!(repository.script_variables_save_batch(150_000, 2_000_000, &invalid).is_err());
+    assert_eq!(repository.script_variable_char_num_fetch_one(150_000, "quest".into(), 0), 7);
 }
 
 #[test]

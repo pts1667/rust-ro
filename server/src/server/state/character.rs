@@ -95,6 +95,17 @@ pub struct Character {
     /// map_instance_key is the key of the map instance on which character is
     /// currently assigned.
     pub map_instance_key: MapInstanceKey,
+    pub save_map: String,
+    pub save_x: u16,
+    pub save_y: u16,
+    pub options: u64,
+    pub pending_item_skill: Option<crate::server::script::skill::PendingItemSkill>,
+    pub pending_craft: Option<crate::server::service::script_crafting_service::CraftSession>,
+    pub game_systems: crate::server::model::game_systems::CharacterGameSystems,
+    pub account_game_systems: crate::server::model::game_systems::AccountGameSystems,
+    pub guild_name: String,
+    pub karma: i32,
+    pub manner: i32,
     pub loaded_from_client_side: bool,
     /// x position of the character on the map
     pub x: u16,
@@ -116,6 +127,7 @@ pub struct Character {
     /// When a character wants to use a skill but is out of range, store the
     /// skill info here and walk toward target first.
     pub pending_skill: Option<PendingSkill>,
+    pub script_skill_state: crate::server::script::skill::ScriptSkillState,
     /// Character inventory is a list of item. Their index in the Vec below is
     /// sent to client, client side inventory items identifier is the index in
     /// this Vec. When action are made in inventory in client side, client
@@ -175,6 +187,17 @@ impl Character {
             char_id,
             account_id,
             status,
+            save_map: last_map.clone(),
+            save_x: x,
+            save_y: y,
+            options: 0,
+            pending_item_skill: None,
+            pending_craft: None,
+            game_systems: Default::default(),
+            account_game_systems: Default::default(),
+            guild_name: String::new(),
+            karma: 0,
+            manner: 0,
             map_instance_key: MapInstanceKey::new(last_map, 0),
             loaded_from_client_side: false,
             x,
@@ -184,6 +207,7 @@ impl Character {
             attack: None,
             skill_in_use: None,
             pending_skill: None,
+            script_skill_state: Default::default(),
             inventory: vec![],
             map_view: Default::default(),
             script_variable_store: Default::default(),
@@ -199,6 +223,37 @@ impl Character {
 
     pub fn x(&self) -> u16 {
         self.x
+    }
+
+    pub fn refresh_script_context(&mut self) {
+        self.status.spirit_sphere_count = u8::try_from(self.script_skill_state.spirit_spheres.len()).unwrap_or(u8::MAX);
+        self.status.script_context = Some(std::sync::Arc::new(self.script_character_state()));
+    }
+
+    pub fn script_character_state(&self) -> models::script_context::ScriptCharacterState {
+        let mut inventory = std::collections::HashMap::<i32, i32>::new();
+        for (_, item) in self.inventory_iter() {
+            *inventory.entry(item.item_id).or_default() += i32::from(item.amount);
+        }
+        models::script_context::ScriptCharacterState {
+            char_id: self.char_id,
+            account_id: self.account_id,
+            party_id: self.game_systems.party_id,
+            guild_id: self.game_systems.guild_id,
+            name: self.name.clone(),
+            map: crate::server::model::map::Map::name_without_ext(self.current_map_name()).to_string(),
+            party_name: self.game_systems.party_name.clone(),
+            guild_name: self.guild_name.clone(),
+            partner_id: self.game_systems.partner_id,
+            vip_expires_at: self.account_game_systems.vip_expires_at,
+            options: self.options,
+            mounting: self.game_systems.mounting,
+            inventory,
+            weight: self.weight(),
+            karma: self.karma,
+            manner: self.manner,
+            pet: crate::server::service::script_world_service::pet_bonus_state(self),
+        }
     }
 
     pub fn y(&self) -> u16 {
@@ -584,7 +639,7 @@ impl Character {
         None
     }
 
-    fn get_item_from_inventory_mut(&mut self, index: usize) -> Option<&mut InventoryItemModel> {
+    pub(crate) fn get_item_from_inventory_mut(&mut self, index: usize) -> Option<&mut InventoryItemModel> {
         if let Some(inventory_slot) = self.inventory.get_mut(index) {
             if inventory_slot.is_some() {
                 return Some(inventory_slot.as_mut().unwrap());

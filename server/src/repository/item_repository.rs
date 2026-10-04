@@ -2,11 +2,9 @@ use std::collections::HashSet;
 use std::fs;
 
 use async_trait::async_trait;
-use base64::Engine;
-use base64::engine::general_purpose;
 use configuration::configuration::DatabaseConfig;
 use database::model::SeedData;
-use database::{abort, required, tx_read, tx_required, tx_write};
+use database::{required, tx_read, tx_write};
 use models::enums::EnumWithStringValue;
 use sled::transaction::Transactional;
 
@@ -137,6 +135,7 @@ impl ItemRepository for SledRepository {
                     pattern.push('$');
                     patterns.push(regex_lite::Regex::new(&pattern).map_err(|error| Error::new(error.to_string()))?);
                 }
+                _ => return Err(Error::new("Item lookup requires an ID or name".into())),
             }
         }
         if !patterns.is_empty() {
@@ -193,21 +192,5 @@ impl ItemRepository for SledRepository {
             result.push(item);
         }
         Ok(result)
-    }
-
-    async fn update_script_compilation(&self, to_update: Vec<(i32, Vec<u8>, u128)>) -> Result<(), Error> {
-        self.database.items.transaction(|tree| {
-            for (id, bytes, hash) in &to_update {
-                let mut item: ItemModel = tx_required(tree, &id.to_be_bytes())?;
-                if item.script.as_ref().map(|script| fastmurmur3::hash(script.as_bytes())) != Some(*hash) {
-                    return abort("Compiled item script does not match its source");
-                }
-                item.script_compilation = Some(general_purpose::STANDARD.encode(bytes));
-                item.script_compilation_hash = Some(*hash);
-                tx_write(tree, &id.to_be_bytes(), &item)?;
-            }
-            Ok(())
-        })?;
-        Ok(())
     }
 }

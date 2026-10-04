@@ -1,238 +1,125 @@
-use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
 
-use base64::Engine;
-use base64::engine::general_purpose;
 use models::enums::bonus::BonusType;
-use packets::packets::{Packet, PacketZcUseItemAck2};
-use rathena_script_lang_interpreter::lang::chunk::ClassFile;
-use rathena_script_lang_interpreter::lang::chunk::OpCode::{CallNative, LoadConstant, LoadGlobal, LoadValue};
-use rathena_script_lang_interpreter::lang::compiler::{Compiler, DebugFlag};
-use rathena_script_lang_interpreter::lang::vm::Vm;
-use tokio::runtime::Runtime;
-use tokio::sync::mpsc;
+use models::status::Status;
+use script_runtime::WasmRuntime;
+use serde::Deserialize;
 
 use crate::repository::ItemRepository;
 use crate::repository::model::item_model::ItemModel;
-use crate::server::Server;
-use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::events::game_event::CharacterUseItem;
-use crate::server::model::events::persistence_event::{DeleteItems, PersistenceEvent};
-use crate::server::script::PlayerScriptHandler;
+use crate::server::model::events::client_notification::Notification;
+use crate::server::model::events::persistence_event::PersistenceEvent;
+use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::service::global_config_service::GlobalConfigService;
-use crate::server::state::character::Character;
-use crate::util::cell::{MyRef, MyUnsafeCell};
 
 #[allow(dead_code)]
 pub struct ItemService {
-    client_notification_sender: SyncSender<Notification>,
-    persistence_event_sender: SyncSender<PersistenceEvent>,
-    repository: Arc<dyn ItemRepository>,
-    configuration_service: &'static GlobalConfigService,
-    item_script_cache: MyUnsafeCell<HashMap<u32, ClassFile>>,
-    item_script_vm: Arc<Vm>,
+    pub(crate) client_notification_sender: SyncSender<Notification>,
+    pub(crate) persistence_event_sender: SyncSender<PersistenceEvent>,
+    pub(crate) repository: Arc<dyn ItemRepository>,
+    pub(crate) configuration_service: &'static GlobalConfigService,
+    pub(crate) item_script_vm: Arc<WasmRuntime>,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct ItemScript {
+    id: u32,
+    dynamic: bool,
+    source_hash: String,
+    #[serde(default)]
+    pub reads: Vec<String>,
+    #[serde(default)]
+    pub calls: Vec<String>,
+    #[serde(default)]
+    pub interactive: bool,
 }
 
 impl ItemService {
+    pub(crate) fn script_metadata(item_id: u32) -> Option<&'static ItemScript> {
+        static METADATA: std::sync::OnceLock<std::collections::HashMap<u32, ItemScript>> = std::sync::OnceLock::new();
+        METADATA.get_or_init(|| serde_json::from_str::<Vec<ItemScript>>(include_str!("../../../../config/wasm/items.json"))
+            .expect("Invalid compiled item manifest").into_iter().map(|entry| (entry.id, entry)).collect()).get(&item_id)
+    }
+
     pub fn new(
         client_notification_sender: SyncSender<Notification>,
         persistence_event_sender: SyncSender<PersistenceEvent>,
         repository: Arc<dyn ItemRepository>,
-        item_script_vm: Arc<Vm>,
+        item_script_vm: Arc<WasmRuntime>,
         configuration_service: &'static GlobalConfigService,
     ) -> Self {
-        ItemService {
+        Self {
             client_notification_sender,
             persistence_event_sender,
             repository,
-            configuration_service,
-            item_script_cache: Default::default(),
             item_script_vm,
+            configuration_service,
         }
     }
 
-    pub fn get_item_script(&self, item_id: i32, runtime: &Runtime) -> Option<MyRef<ClassFile>> {
-        if !self.item_script_cache.borrow().contains_key(&(item_id as u32)) {
-            if let Ok(script) = runtime.block_on(async { self.repository.get_item_script(item_id).await }) {
-                let compilation_result = Compiler::compile_script(
-                    format!("item_script_{item_id}"),
-                    script.as_str(),
-                    "native_functions_list.txt",
-                    DebugFlag::None.value(),
-                );
-                if compilation_result.is_err() {
-                    error!("Failed to compile item script for item id: {}, due to", item_id);
-                    compilation_result.err().unwrap().iter().for_each(|e| error!("{}", e));
-                    return None;
+    pub fn convert_script_into_bonuses(items: &mut Vec<ItemModel>, vm: Arc<WasmRuntime>) -> (i32, i32) {
+        Self::load_item_scripts(
+            items,
+            vm,
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/items.json"),
+        )
+    }
+
+    pub fn load_item_scripts(items: &mut Vec<ItemModel>, vm: Arc<WasmRuntime>, path: impl AsRef<std::path::Path>) -> (i32, i32) {
+        let metadata_bytes: Vec<u8> = std::fs::read(path)
+            .expect("Cannot load item script manifest")
+            .into_iter()
+            .filter(|byte| *byte != b'\r')
+            .collect();
+        let digest = md5::compute(&metadata_bytes);
+        let fingerprint = u64::from_le_bytes(digest.0[..8].try_into().unwrap());
+        assert_eq!(
+            vm.catalog_hash().expect("Wasm module has no item catalog fingerprint"),
+            fingerprint,
+            "Wasm module and item manifest do not match; rebuild scripts"
+        );
+        let metadata: Vec<ItemScript> = serde_json::from_slice(&metadata_bytes).expect("Invalid item script manifest");
+        let metadata: std::collections::HashMap<_, _> = metadata.into_iter().map(|entry| (entry.id, entry)).collect();
+        let mut cached = 0;
+        let mut dynamic = 0;
+        for item in items {
+            let Some(script) = metadata.get(&(item.id as u32)) else {
+                if item.script.as_ref().is_some_and(|source| !source.is_empty()) {
+                    panic!("Item {} has no compiled Wasm script", item.id);
                 }
-                self.item_script_cache
-                    .borrow_mut()
-                    .insert(item_id as u32, compilation_result.unwrap().pop().unwrap());
+                continue;
+            };
+            assert_eq!(
+                item.script
+                    .as_ref()
+                    .map(|source| format!("{:x}", md5::compute(source.as_bytes())))
+                    .as_ref(),
+                Some(&script.source_hash),
+                "Item {} does not match the compiled script manifest",
+                item.id
+            );
+            item.item_bonuses_are_dynamic = script.dynamic;
+            if script.dynamic {
+                dynamic += 1;
+                continue;
             }
-        }
-        if self.item_script_cache.borrow().contains_key(&(item_id as u32)) {
-            return Some(MyRef::map(self.item_script_cache.borrow(), |scripts| {
-                scripts.get(&(item_id as u32)).unwrap()
-            }));
-        }
-        None
-    }
-
-    #[metrics::elapsed]
-    pub fn use_item(&self, server_ref: &Server, runtime: &Runtime, character_user_item: CharacterUseItem, character: &mut Character) {
-        if let Some(item) = character.get_item_from_inventory(character_user_item.index) {
-            if item.item_type().is_consumable() {
-                // TODO check if char can use (class restriction, level restriction)
-                //TODO rework, this is deprecated, items script are now compiled. In addition
-                // it is not efficient to instantiate PlayerScriptHandler each time
-                let maybe_script_ref = self.get_item_script(item.item_id, runtime);
-                if maybe_script_ref.is_some() {
-                    let script = maybe_script_ref.as_ref().unwrap();
-                    let (tx, _rx) = mpsc::channel(1);
-                    let session = server_ref.state().get_session(character.account_id);
-                    session.set_script_handler_channel_sender(tx);
-                    let script_result = Vm::repl(
-                        self.item_script_vm.clone(),
-                        script,
-                        Box::new(PlayerScriptHandler::instance()),
-                        vec![0, character.char_id, character.account_id],
-                    );
-                    let mut packet_zc_use_item_ack = PacketZcUseItemAck2::new(self.configuration_service.packetver());
-                    packet_zc_use_item_ack.set_aid(character_user_item.char_id);
-                    packet_zc_use_item_ack.set_index(character_user_item.index as u16);
-                    let item_inventory_id = item.id;
-                    let item_unique_id = item.unique_id;
-                    if script_result.is_ok() {
-                        // TODO call delete item from inventory service
-                        let remaining_item = character.del_item_from_inventory(character_user_item.index, 1);
-                        self.persistence_event_sender
-                            .send(PersistenceEvent::DeleteItemsFromInventory(DeleteItems {
-                                char_id: character.char_id as i32,
-                                item_inventory_id,
-                                unique_id: item_unique_id,
-                                amount_to_remove: 1,
-                            }))
-                            .expect("Failed to send delete item event");
-                        packet_zc_use_item_ack.set_count(remaining_item as i16);
-                        packet_zc_use_item_ack.set_result(true);
-                    } else {
-                        error!(
-                            "Fail to execute script for item: {} reason: {}",
-                            item.item_id,
-                            script_result.err().unwrap()
-                        );
-                        packet_zc_use_item_ack.set_result(false);
-                    }
-                    packet_zc_use_item_ack.fill_raw();
-                    self.client_notification_sender
-                        .send(Notification::Char(CharNotification::new(
-                            character.char_id,
-                            packet_zc_use_item_ack.raw,
-                        )))
-                        .unwrap_or_else(|_| error!("Failed to send notification packet_zc_use_item_ack to client"));
+            let (host, result) = futures::executor::block_on(vm.execute(
+                ItemScriptHost::bonuses(Status::default(), item.id as u32),
+                "run_item",
+                item.id as u32,
+            ));
+            if let Err(error) = result {
+                panic!("Cannot load static item bonuses {}: {}", item.id, host.error.unwrap_or(error));
+            }
+            item.bonuses = host.bonuses.drain();
+            for bonus in &item.bonuses {
+                if let BonusType::ElementWeapon(element) = bonus {
+                    item.element = Some(*element);
                 }
             }
+            cached += 1;
         }
-        // check if can use
-        // check if potion has been created by famous (ranked) alch/creator,
-        // bonus + 50%
-    }
-
-    pub fn convert_script_into_bonuses(items: &mut Vec<ItemModel>, native_function_file_path: &str) -> (i32, i32) {
-        let vm = Arc::new(Vm::new(
-            native_function_file_path,
-            rathena_script_lang_interpreter::lang::vm::DebugFlag::None.value(),
-        ));
-        let script_handler = crate::server::script::bonus::BonusScriptHandler::new();
-        let mut count_script_executed = 0;
-        let mut count_script_skipped = 0;
-        for item in items.iter_mut() {
-            if let Some(script_compilation) = &item.script_compilation {
-                let script = general_purpose::STANDARD.decode(script_compilation).unwrap();
-                let maybe_class = Compiler::from_binary(&script).unwrap().pop();
-                let class_file = maybe_class.as_ref().unwrap();
-                let script_main = class_file
-                    .functions()
-                    .iter()
-                    .find(|f| f.name == "_main")
-                    .map(|f| f.chunk.clone())
-                    .unwrap();
-                let mut complex_script = false;
-                for op_code in script_main.op_codes.borrow().iter() {
-                    match op_code {
-                        LoadConstant(_) | LoadValue | LoadGlobal => {}
-                        CallNative { reference, .. } => {
-                            let native = vm.get_from_native_pool(*reference).unwrap();
-                            if !(native.name == "bonus"
-                                || native.name == "bonus2"
-                                || native.name == "bonus3"
-                                || native.name == "bonus4"
-                                || native.name == "bonus5"
-                                || native.name == "skill")
-                            {
-                                complex_script = true;
-                                break;
-                            }
-                        }
-                        // When script contains those op code, it means script need to be executed each time the item is used
-                        // E.g Gibbet_card          Rybio_Card
-                        // if (getrefine()<6)       bonus2 bAddEffWhenHit,Eff_Stun,300+600*(readparam(bDex)>=77);
-                        //    bonus bMdef,5;
-                        _ => {
-                            complex_script = true;
-                            break;
-                        }
-                    }
-                }
-
-                let _ = Vm::repl(vm.clone(), class_file, Box::new(&script_handler), vec![]);
-                item.bonuses = script_handler.drain();
-
-                item.bonuses
-                    .iter()
-                    .filter_map(|b| {
-                        if let BonusType::ElementWeapon(element) = b {
-                            Some(*element)
-                        } else {
-                            None
-                        }
-                    })
-                    .for_each(|element| {
-                        item.element = Some(element);
-                    });
-                if !complex_script {
-                    item.script_compilation = None;
-                    count_script_executed += 1;
-                } else {
-                    count_script_skipped += 1;
-                    item.item_bonuses_are_dynamic = true;
-                }
-            }
-        }
-        (count_script_executed, count_script_skipped)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::fs;
-
-    use models::enums::bonus::BonusType;
-
-    use crate::repository::model::item_model::ItemModels;
-    use crate::server::service::item_service::ItemService;
-
-    #[test]
-    fn test_initialize_items_with_static_bonus() {
-        // Given
-        let mut item_models = serde_json::from_str::<ItemModels>(&fs::read_to_string("../config/items.json").unwrap())
-            .unwrap()
-            .items;
-        // When
-        ItemService::convert_script_into_bonuses(&mut item_models, "../native_functions_list.txt");
-        // Then
-        let mantis_card = item_models.iter().find(|i| i.name_aegis == "Mantis_Card").unwrap();
-        assert!(matches!(mantis_card.bonuses[0], BonusType::Str(3)));
+        (cached, dynamic)
     }
 }

@@ -36,6 +36,7 @@ pub fn handle_player_equip_item(server: &Server, context: Request) {
     server.add_to_next_tick(GameEvent::CharacterEquipItem(CharacterEquipItem {
         char_id: context.session().char_id(),
         index: packet_cz_wear_equip.index as usize,
+        requested_location: Some(u64::from(packet_cz_wear_equip.wear_location)),
     }));
 }
 
@@ -62,6 +63,7 @@ pub fn handle_player_card_composition_list(server: &Server, context: Request) {
     server.add_to_next_tick(GameEvent::CharacterRequestCardCompositionList(CharacterEquipItem {
         char_id: context.session().char_id(),
         index: packet_cz_req_item_composition_list.card_index as usize,
+        requested_location: None,
     }));
 }
 

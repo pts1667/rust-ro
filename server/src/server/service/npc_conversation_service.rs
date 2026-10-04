@@ -1,0 +1,49 @@
+use std::sync::atomic::Ordering;
+
+use packets::packets::{Packet, PacketZcCloseDialog};
+use tokio::sync::mpsc;
+
+use crate::server::model::events::client_notification::{CharNotification, Notification};
+use crate::server::model::events::game_event::NpcContact;
+use crate::server::script::NpcScriptHost;
+use crate::server::state::server::ServerState;
+use crate::server::Server;
+
+impl Server {
+    pub(crate) fn start_npc_conversation(&self, state: &ServerState, contact: NpcContact) -> Result<(), String> {
+        let character = state.characters().get(&contact.char_id).filter(|character| character.account_id == contact.account_id && !character.is_dead() && character.status.hp > 0 && !character.game_systems.is_trading())
+            .ok_or("NPC visitor is unavailable")?;
+        let session = state.find_session(contact.account_id).filter(|session| session.char_id == Some(contact.char_id)).ok_or("NPC session expired")?;
+        let map_name = character.current_map_name();
+        let map_instance = character.current_map_instance();
+        let map_item = state.map_item(contact.npc_id, map_name, map_instance).ok_or("NPC is not on this map")?;
+        let script = state.map_item_script(&map_item, map_name, map_instance).ok_or("NPC has no compiled program")?;
+        if character.x.abs_diff(script.x).max(character.y.abs_diff(script.y)) > crate::server::PLAYER_FOV { return Err("NPC is out of range".into()); }
+        let server = self.shared().ok_or("NPC runtime is not bound")?;
+        let (sender, receiver) = mpsc::channel(4);
+        let generation = session.set_script_handler_channel_sender(sender);
+        let notifications = self.server_service().notification_sender();
+        let host = NpcScriptHost { server, session: session.clone(), script: script.clone(), inputs: receiver,
+            notifications: notifications.clone(), generation, background: false, map_instance, error: None };
+        let vm = self.script_service().vm.clone();
+        let entry = script.entry_id;
+        let npc_id = script.id;
+        let packetver = self.packetver();
+        let timeout = std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1));
+        self.runtime().spawn(async move {
+            let error = match tokio::time::timeout(timeout, vm.execute(host, "run_npc", entry)).await {
+                Ok((host, result)) => result.err().map(|error| host.error.unwrap_or(error)),
+                Err(_) => Some("NPC conversation timed out".into()),
+            };
+            if let Some(error) = error {
+                debug!("NPC conversation ended: {error}");
+                if session.script_generation.load(Ordering::Acquire) == generation {
+                    let mut packet = PacketZcCloseDialog::new(packetver); packet.naid = npc_id; packet.fill_raw();
+                    let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));
+                }
+            }
+            session.finish_script(generation);
+        });
+        Ok(())
+    }
+}

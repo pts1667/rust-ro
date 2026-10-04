@@ -14,6 +14,11 @@ pub struct MockedRepository;
 
 impl Repository for MockedRepository {}
 
+impl crate::repository::GameSystemRepository for MockedRepository {}
+impl crate::repository::ScriptInventoryRepository for MockedRepository {}
+impl crate::repository::ScriptCharacterRepository for MockedRepository {}
+impl crate::repository::FameRepository for MockedRepository {}
+
 impl HotKeyRepository for MockedRepository {}
 
 impl ItemRepository for MockedRepository {}
@@ -57,6 +62,11 @@ impl InventoryRepository for MockedRepository {
 
 #[async_trait]
 impl CharacterRepository for MockedRepository {
+    fn character_commit_skill_reset(&self, _char_id: u32, _account_id: u32, _plan: &crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(), Error> { Ok(()) }
+    fn character_commit_skill_allocation(&self, _char_id: u32, _account_id: u32, _skill_id: u32, expected_level: u8, expected_points: u32, max_level: u8) -> Result<u8, Error> {
+        expected_level.checked_add(1).filter(|level| *level <= max_level && expected_points > 0)
+            .ok_or_else(|| Error::InvalidInput("Invalid mocked skill allocation".into()))
+    }
     async fn character_save_position(&self, _char_id: u32, _map_name: String, _x: u16, _y: u16) -> Result<(), Error> {
         Ok(())
     }

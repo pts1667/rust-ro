@@ -3,7 +3,6 @@ use std::{fs, thread};
 
 use configuration::configuration::DatabaseConfig;
 use models::status::KnownSkill;
-use rathena_script_lang_interpreter::lang::vm::{DebugFlag, Vm};
 use tokio::runtime::Runtime;
 
 use crate::MAP_DIR;
@@ -32,8 +31,8 @@ pub async fn before_all() -> Arc<Server> {
         MAP_DIR = "../config/maps/pre-re";
         let runtime = Arc::new(Runtime::new().unwrap());
 
-        let npc_script_vm = Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value()));
-        let item_script_vm = Arc::new(Vm::new("../native_functions_list.txt", DebugFlag::None.value()));
+        let npc_script_vm = crate::tests::common::test_script_vm();
+        let item_script_vm = crate::tests::common::test_script_vm();
 
         let database_config = DatabaseConfig {
             items_path: "../config/items.json".into(),

@@ -12,8 +12,63 @@ use crate::repository::{Error, InventoryRepository, SledRepository};
 use crate::server::model::events::game_event::CharacterRemoveItem;
 use crate::server::model::events::persistence_event::{DeleteItems, InventoryItemUpdate};
 
+#[cfg(test)]
+mod damaged_equipment_tests {
+    use super::*;
+    use database::model::{AccountRecord,CharacterInventory,CharacterRecord,SeedData};
+
+    #[test]
+    fn equipment_breaking_validates_owner_and_identity_then_commits_damage_and_takeoff_together() {
+        let repository=SledRepository::temporary().unwrap();
+        let record=InventoryRecord {id:10,item_id:1201,amount:1,equip:2,unique_id:400,card0:255,card1:15*256+3,card2:1,card3:2,..Default::default()};
+        repository.database.seed(&SeedData {accounts:vec![AccountRecord {account_id:2000000,username:"Player".into(),password:"password".into()}],
+            characters:vec![CharacterRecord {char_id:150000,account_id:2000000,name:"Player".into(),inventory_slots:100,..Default::default()}],
+            inventories:vec![CharacterInventory {char_id:150000,items:vec![record.clone()]}],..Default::default()},false).unwrap();
+        let item:ItemModel=serde_json::from_value(serde_json::json!({"id":1201,"name_aegis":"Knife","name_english":"Knife","weight":10,"item_type":"Weapon","job_flags":0,"class_flags":0,"location":0,"flags":0,"trade_flags":0})).unwrap();
+        let model=InventoryItemModel::from_record(&record,&item);
+        let before=repository.database.inventories.get(150000_i32.to_be_bytes()).unwrap().unwrap();
+        assert!(futures::executor::block_on(repository.character_set_item_damaged(150001,model.clone())).is_err());
+        let mut stale=model.clone(); stale.unique_id+=1;
+        assert!(futures::executor::block_on(repository.character_set_item_damaged(150000,stale)).is_err());
+        assert_eq!(repository.database.inventories.get(150000_i32.to_be_bytes()).unwrap().unwrap(),before);
+        futures::executor::block_on(repository.character_set_item_damaged(150000,model)).unwrap();
+        let saved:Vec<InventoryRecord>=database::required(&repository.database.inventories,&150000_i32.to_be_bytes()).unwrap();
+        assert_eq!(saved.len(),1); assert!(saved[0].is_damaged); assert_eq!(saved[0].equip,0);
+        assert_eq!((saved[0].unique_id,saved[0].card0,saved[0].card1,saved[0].card2,saved[0].card3),(400,255,15*256+3,1,2));
+        assert_eq!(database::required::<i32>(&repository.database.inventory_owners,&10_i32.to_be_bytes()).unwrap(),150000);
+    }
+}
+
 #[async_trait]
 impl InventoryRepository for SledRepository {
+    async fn character_set_item_damaged(&self, char_id: u32, item: InventoryItemModel) -> Result<(), Error> {
+        (&self.database.inventories, &self.database.inventory_owners).transaction(|(inventories, owners)| {
+            let owner: i32 = tx_required(owners, &item.id.to_be_bytes())?;
+            if owner != char_id as i32 { return abort("Equipment belongs to another character"); }
+            let mut records: Vec<InventoryRecord> = tx_required(inventories, &owner.to_be_bytes())?;
+            let record = records.iter_mut().find(|record| record.id == item.id && record.item_id == item.item_id && record.unique_id == item.unique_id)
+                .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
+            record.is_damaged = true;
+            record.equip = 0;
+            tx_write(inventories, &owner.to_be_bytes(), &records)?;
+            Ok(())
+        })?;
+        Ok(())
+    }
+    async fn character_identify_item(&self, char_id: u32, item: InventoryItemModel) -> Result<(), Error> {
+        (&self.database.inventories, &self.database.inventory_owners).transaction(|(inventories, owners)| {
+            let owner: i32 = tx_required(owners, &item.id.to_be_bytes())?;
+            if owner != char_id as i32 { return abort("Item identification belongs to another character"); }
+            let mut records: Vec<InventoryRecord> = tx_required(inventories, &owner.to_be_bytes())?;
+            let record = records.iter_mut().find(|record| record.id == item.id && record.item_id == item.item_id && record.unique_id == item.unique_id)
+                .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
+            if record.is_identified { return abort("Item is already identified"); }
+            record.is_identified = true;
+            tx_write(inventories, &owner.to_be_bytes(), &records)?;
+            Ok(())
+        })?;
+        Ok(())
+    }
     async fn character_inventory_update_add(&self, updates: &[InventoryItemUpdate], buy: bool) -> Result<Vec<InventoryItemModel>, Error> {
         Ok((
             &self.database.inventories,
@@ -76,7 +131,7 @@ impl InventoryRepository for SledRepository {
                         return abort("Character inventory is full");
                     }
                     if buy {
-                        let cost = i64::from(item.price_buy.unwrap_or(0)) * i64::from(update.amount);
+                        let cost = i64::from(update.price.or(item.price_buy).unwrap_or(0)) * i64::from(update.amount);
                         if cost < 0 || cost > i64::from(character.zeny) {
                             return abort("Not enough zeny");
                         }

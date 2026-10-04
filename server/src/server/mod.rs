@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, RwLock, mpsc};
+use std::sync::{Arc, OnceLock, RwLock, Weak, mpsc};
 use std::thread;
 use std::thread::Scope;
 use std::time::Duration;
@@ -13,8 +13,8 @@ use model::events::client_notification::{AreaNotificationRangeType, Notification
 use model::events::game_event::GameEvent;
 use model::events::persistence_event::PersistenceEvent;
 use packets::packets_parser::parse;
-use rathena_script_lang_interpreter::lang::vm::Vm;
 use script::skill::ScriptSkillService;
+use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
 
 use crate::repository::Repository;
@@ -35,6 +35,7 @@ use crate::server::service::script_service::ScriptService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
+use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::state::server::ServerState;
 use crate::util::cell::{MyRefMut, MyUnsafeCell};
 use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
@@ -65,6 +66,8 @@ pub struct Server {
     shutdown: AtomicBool,
     runtime: Arc<Runtime>,
     recording_sessions: MyUnsafeCell<Vec<SessionRecord>>,
+    shared: OnceLock<Weak<Server>>,
+    script_world_service: ScriptWorldService,
 }
 
 unsafe impl Sync for Server {}
@@ -92,17 +95,30 @@ impl Server {
         self.configuration.server.packetver
     }
 
+    pub fn bind_shared(self: &Arc<Self>) {
+        let _ = self.shared.set(Arc::downgrade(self));
+    }
+
+    pub(crate) fn shared(&self) -> Option<Arc<Self>> {
+        self.shared.get().and_then(Weak::upgrade)
+    }
+
+    pub(crate) fn script_world_service(&self) -> &ScriptWorldService {
+        &self.script_world_service
+    }
+
     pub fn new(
         configuration: &'static Config,
         repository: Arc<dyn Repository>,
         map_items: MapItems,
-        npc_script_vm: Arc<Vm>,
-        item_script_vm: Arc<Vm>,
+        npc_script_vm: Arc<WasmRuntime>,
+        item_script_vm: Arc<WasmRuntime>,
         client_notification_sender: SyncSender<Notification>,
         persistence_event_sender: SyncSender<PersistenceEvent>,
         runtime: Arc<Runtime>,
     ) -> Server {
         let tasks_queue = Arc::new(TasksQueue::new());
+        let script_world_service = ScriptWorldService::new(client_notification_sender.clone(), repository.clone(), GlobalConfigService::instance());
         let movement_tasks_queue = Arc::new(TasksQueue::new());
         StatusService::init(GlobalConfigService::instance(), item_script_vm.clone());
 
@@ -178,6 +194,8 @@ impl Server {
             server_service,
             shutdown: AtomicBool::new(false),
             recording_sessions: MyUnsafeCell::new(vec![]),
+            shared: OnceLock::new(),
+            script_world_service,
             runtime,
         }
     }
@@ -190,6 +208,7 @@ impl Server {
         server_service: ServerService,
         runtime: Arc<Runtime>,
     ) -> Server {
+        let script_world_service = ScriptWorldService::new(server_service.notification_sender(), repository.clone(), GlobalConfigService::instance());
         Server {
             configuration,
             repository,
@@ -199,6 +218,8 @@ impl Server {
             server_service,
             shutdown: AtomicBool::new(false),
             recording_sessions: MyUnsafeCell::new(vec![]),
+            shared: OnceLock::new(),
+            script_world_service,
             runtime,
         }
     }
@@ -328,16 +349,21 @@ impl Server {
     }
 
     pub fn disconnect_character(&self, char_id: u32) {
-        {
-            let character = self.state().get_character(char_id);
-            if let Some(character) = character {
-                self.runtime.block_on(async {
-                    self.character_service().save_characters_state(vec![character], get_tick()).await;
-                    self.repository.save_hotkeys(char_id, &character.hotkeys).await.unwrap();
-                });
-            }
-        }
-        self.state_mut().characters_mut().remove(&char_id);
+        self.disconnect_character_in_state(self.state_mut().as_mut(), char_id);
+    }
+
+    pub(crate) fn disconnect_character_in_state(&self, state: &mut ServerState, char_id: u32) {
+        let Some(mut character) = state.characters_mut().remove(&char_id) else { return; };
+        if let Some(session) = state.find_session(character.account_id) { session.cancel_script(); }
+        self.script_world_service().cancel_pet_capture_in_state(self, state, &mut character);
+        if let Err(error) = self.script_world_service().return_pet_loot_in_state(self, state, &mut character, get_tick() as u64) { warn!("Pet loot return deferred on disconnect: {error}"); }
+        if let Err(error) = self.script_world_service().disconnect_party(self, &mut character) { warn!("Party disconnect failed: {error}"); }
+        if let Err(error) = self.script_world_service().disconnect(&mut character) { warn!("World disconnect failed: {error}"); }
+        self.script_service().npc_variables.lock().unwrap().retain(|(scope, _, owner, ..), _| *scope != 2 || *owner != char_id);
+        self.runtime.block_on(async {
+            self.character_service().save_characters_state(vec![&character], get_tick()).await;
+            if let Err(error) = self.repository.save_hotkeys(char_id, &character.hotkeys).await { warn!("Hotkey save failed: {error}"); }
+        });
     }
 
     #[allow(unused_lifetimes)]
@@ -350,6 +376,7 @@ impl Server {
         enable_client_interfaces: bool,
     ) {
         let port = server_ref.configuration.server.port;
+        server_ref.bind_shared();
 
         let (response_sender, single_response_receiver) = std::sync::mpsc::sync_channel::<Response>(0);
         let client_notification_sender_clone = client_notification_sender.clone();
@@ -379,7 +406,8 @@ impl Server {
 
                                     let tcp_stream_arc = Arc::new(RwLock::new(tcp_stream.try_clone().unwrap())); // todo remove this clone
                                     let mut buffer = [0; 2048];
-                                    loop {
+                                    let mut frames = request_handler::framing::ClientFrames::new(server_shared_ref.packetver());
+                                    'connection: loop {
                                         if !server_shared_ref.is_alive() {
                                             let _ = tcp_stream.shutdown(Shutdown::Both);
                                             break;
@@ -394,20 +422,36 @@ impl Server {
                                                     );
                                                     break;
                                                 }
-                                                let packet = parse(&buffer[..bytes_read], server_shared_ref.packetver());
-                                                if GlobalConfigService::instance().config().server.trace_packet {
-                                                    print_packet(&None, None, PacketDirection::Forward, &packet);
+                                                let incoming = match frames.push(&buffer[..bytes_read]) {
+                                                    Ok(incoming) => incoming,
+                                                    Err(error) => {
+                                                        warn!("Invalid client packet stream: {}", error);
+                                                        let _ = tcp_stream.shutdown(Shutdown::Both);
+                                                        break 'connection;
+                                                    }
+                                                };
+                                                for frame in incoming {
+                                                    let id = u16::from_le_bytes([frame[0], frame[1]]);
+                                                    let packet: Box<dyn packets::packets::Packet> = if service::script_world_service::world_frame_length(id, server_shared_ref.packetver()).is_some()
+                                                        || request_handler::script_operations::frame_length(id, server_shared_ref.packetver()).is_some() {
+                                                        Box::new(packets::packets::PacketUnknown { raw: frame, packet_id: format!("0x{id:04x}") })
+                                                    } else {
+                                                        parse(&frame, server_shared_ref.packetver())
+                                                    };
+                                                    if GlobalConfigService::instance().config().server.trace_packet {
+                                                        print_packet(&None, None, PacketDirection::Forward, &packet);
+                                                    }
+                                                    let context = Request::new(
+                                                        server_shared_ref.configuration,
+                                                        None,
+                                                        server_shared_ref.packetver(),
+                                                        tcp_stream_arc.clone(),
+                                                        packet.as_ref(),
+                                                        response_sender_clone.clone(),
+                                                        client_notification_sender_clone.clone(),
+                                                    );
+                                                    request_handler::handle(server_shared_ref.clone(), context);
                                                 }
-                                                let context = Request::new(
-                                                    server_shared_ref.configuration,
-                                                    None,
-                                                    server_shared_ref.packetver(),
-                                                    tcp_stream_arc.clone(),
-                                                    packet.as_ref(),
-                                                    response_sender_clone.clone(),
-                                                    client_notification_sender_clone.clone(),
-                                                );
-                                                request_handler::handle(server_shared_ref.clone(), context);
                                             }
                                             Err(err) => {
                                                 error!("{}", err);

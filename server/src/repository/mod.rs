@@ -1,4 +1,6 @@
 pub mod character_repository;
+pub mod game_system_repository;
+pub use game_system_repository::GameSystemRepository;
 mod hotkey_repository;
 pub mod inventory_repository;
 pub mod item_repository;
@@ -6,6 +8,12 @@ mod login_repository;
 pub mod mob_repository;
 pub mod model;
 pub mod script_variable_repository;
+pub mod script_inventory_repository;
+pub use script_inventory_repository::ScriptInventoryRepository;
+pub mod script_character_repository;
+pub use script_character_repository::ScriptCharacterRepository;
+pub mod fame_repository;
+pub use fame_repository::FameRepository;
 #[cfg(test)]
 mod tests;
 
@@ -33,6 +41,8 @@ impl SledRepository {
             database: Database::open(&configuration.path)?,
         };
         repository.seed_assets(configuration)?;
+        repository.reset_item_group_pools()?;
+        repository.reset_guild_storage_locks()?;
         Ok(repository)
     }
 
@@ -54,6 +64,10 @@ pub trait Repository:
     + ScriptVariableRepository
     + LoginRepository
     + HotKeyRepository
+    + GameSystemRepository
+    + ScriptInventoryRepository
+    + ScriptCharacterRepository
+    + FameRepository
 {
 }
 
@@ -68,6 +82,12 @@ pub trait LoginRepository {
 
 #[async_trait]
 pub trait CharacterRepository {
+    fn character_commit_skill_reset(&self, _char_id: u32, _account_id: u32, _plan: &crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(), Error> {
+        Err(Error::InvalidInput("Character skill transactions are unavailable".into()))
+    }
+    fn character_commit_skill_allocation(&self, _char_id: u32, _account_id: u32, _skill_id: u32, _expected_level: u8, _expected_points: u32, _max_level: u8) -> Result<u8, Error> {
+        Err(Error::InvalidInput("Character skill transactions are unavailable".into()))
+    }
     async fn characters_list_for_simulator(&self) -> Result<Vec<CharSelectModel>, Error> {
         todo!()
     }
@@ -140,6 +160,12 @@ pub trait CharacterRepository {
 
 #[async_trait]
 pub trait InventoryRepository {
+    async fn character_set_item_damaged(&self, _char_id: u32, _item: InventoryItemModel) -> Result<(), Error> {
+        Err(Error::InvalidInput("Equipment damage persistence is unavailable".into()))
+    }
+    async fn character_identify_item(&self, _char_id: u32, _item: InventoryItemModel) -> Result<(), Error> {
+        Err(Error::InvalidInput("Item identification is unavailable".into()))
+    }
     async fn character_inventory_update_add(
         &self,
         _inventory_update_items: &[InventoryItemUpdate],
@@ -200,9 +226,6 @@ pub trait ItemRepository: Sync + Send {
     async fn get_all_items(&self) -> Result<Vec<ItemModel>, Error> {
         todo!()
     }
-    async fn update_script_compilation(&self, _to_update: Vec<(i32, Vec<u8>, u128)>) -> Result<(), Error> {
-        todo!()
-    }
 }
 
 #[async_trait]
@@ -213,6 +236,12 @@ pub trait MobRepository {
 }
 
 pub trait ScriptVariableRepository {
+    fn script_variables_increment_batch(&self, _char_id: u32, _account_id: u32, _variables: &[script_sdk::Variable]) -> Result<Vec<i32>, Error> {
+        Err(Error::InvalidInput("Atomic script counters are unavailable".into()))
+    }
+    fn script_variables_save_batch(&self, _char_id: u32, _account_id: u32, _variables: &[script_sdk::Variable]) -> Result<(), Error> {
+        Err(Error::InvalidInput("Batch script variables are unavailable".into()))
+    }
     fn script_variable_char_num_save(&self, _char_id: u32, _key: String, _index: u32, _value: i32) {
         todo!()
     }

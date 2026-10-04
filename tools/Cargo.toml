@@ -41,6 +41,10 @@ path = "skills/main.rs"
 name = "account-setup"
 path = "account-setup/main.rs"
 
+[[bin]]
+name = "scripts-build"
+path = "scripts-build/main.rs"
+
 
 [features]
 generate_override_stub = []

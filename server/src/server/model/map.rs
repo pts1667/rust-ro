@@ -20,9 +20,13 @@ pub struct Map {
     warps: Vec<Warp>,
     mob_spawns: Vec<MobSpawn>,
     scripts: Vec<Script>,
+    flags: crate::server::model::map_flags::MapFlags,
 }
 
 impl Map {
+    pub fn flags(&self) -> &crate::server::model::map_flags::MapFlags { &self.flags }
+    pub fn set_flags(&mut self, flags: crate::server::model::map_flags::MapFlags) { self.flags = flags; }
+
     pub fn new(
         x_size: u16,
         y_size: u16,
@@ -42,6 +46,7 @@ impl Map {
             warps,
             mob_spawns,
             scripts,
+            flags: Default::default(),
         }
     }
 

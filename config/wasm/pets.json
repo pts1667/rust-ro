@@ -1,0 +1,839 @@
+[
+  {
+    "class_id": 1002,
+    "kind": "bonus",
+    "source_hash": "7b5ed4920f1a1ee6f19e67a964e09ba7",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1002,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1113,
+    "kind": "bonus",
+    "source_hash": "608244042d90f8d7d4e1efa67596ee42",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1113,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1031,
+    "kind": "bonus",
+    "source_hash": "03b76f55d56a4c027f53c5117cd3bc72",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1031,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1063,
+    "kind": "bonus",
+    "source_hash": "e5e05f16b5666aa3ba90436eb49b5711",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1063,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1049,
+    "kind": "bonus",
+    "source_hash": "df84b0d07b6a5ea52049f538a11e2467",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1049,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1011,
+    "kind": "bonus",
+    "source_hash": "c8b0ab894b9976ff172a0b8aab493550",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1011,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1042,
+    "kind": "bonus",
+    "source_hash": "8877d7d2d4b4edcd4779af215979d5b2",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1042,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1035,
+    "kind": "bonus",
+    "source_hash": "c24ebb9b0f67a77757ec9a3423bc56b6",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1035,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1167,
+    "kind": "bonus",
+    "source_hash": "78fd76db5c421699f0c0232e1c239750",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1167,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1107,
+    "kind": "bonus",
+    "source_hash": "890a6e8b2b73613a6bb23ca687d9cf60",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1107,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1052,
+    "kind": "bonus",
+    "source_hash": "43b3210c67af497e09244ff3335614df",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1052,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1014,
+    "kind": "bonus",
+    "source_hash": "e43be03f29326ac07bc2f08e1f0cee87",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1014,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1077,
+    "kind": "bonus",
+    "source_hash": "a04dc165c2f5fd424e0a687035876355",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1077,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1019,
+    "kind": "bonus",
+    "source_hash": "6309674ced5e540b543de71456f4781f",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1019,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1056,
+    "kind": "bonus",
+    "source_hash": "adee70fedff89b22d08f16edd063562c",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1056,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1057,
+    "kind": "bonus",
+    "source_hash": "29717eaeb52be26e86badc0ca5b92fcb",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1057,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1023,
+    "kind": "bonus",
+    "source_hash": "77fa70f38bde9986d8d1e3bbd54347d5",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1023,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1026,
+    "kind": "bonus",
+    "source_hash": "1d582cf266fd58688cb57b0dd7476743",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1026,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1110,
+    "kind": "bonus",
+    "source_hash": "c437970cb49174e2a427612ae98eefb6",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1110,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1170,
+    "kind": "bonus",
+    "source_hash": "2b973df97376c3b8b57cc20a8c044797",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1170,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1029,
+    "kind": "bonus",
+    "source_hash": "1c0c6876f02483fc9e24944f735ead68",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1029,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1155,
+    "kind": "bonus",
+    "source_hash": "7705d1cbd2d6bf7c1c1288969588e510",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1155,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1109,
+    "kind": "bonus",
+    "source_hash": "69694adbddd5ddd389acd66da95ce4a8",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1109,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1101,
+    "kind": "bonus",
+    "source_hash": "c6a51c1cf58a03cd0156726f6cb35fda",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1101,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1188,
+    "kind": "bonus",
+    "source_hash": "7d1d52093256a199b5732ffacc03a04c",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1188,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1200,
+    "kind": "bonus",
+    "source_hash": "49f7abe2fd44df02733941e08c5c0ed8",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1200,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1275,
+    "kind": "bonus",
+    "source_hash": "e8aed0aee5c2d776328b5a11861fbab4",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1275,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1815,
+    "kind": "bonus",
+    "source_hash": "748e07bf992a8f09d32b1b9416bd02d5",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1815,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1245,
+    "kind": "bonus",
+    "source_hash": "e75daf3c384e4c59645855c98a248585",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1245,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1519,
+    "kind": "bonus",
+    "source_hash": "ba10a8369d38fe9cb8d80f57a3cb09d6",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1519,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1879,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1879,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1122,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1122,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1123,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1123,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1125,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1125,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1385,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1385,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1382,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1382,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1208,
+    "kind": "bonus",
+    "source_hash": "0bfdcfd8bfe2b86a7c74e8cc53613d8e",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1208,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1963,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1963,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1040,
+    "kind": "bonus",
+    "source_hash": "22ce372dcde6e7217576f62a158dfb0d",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1040,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1143,
+    "kind": "bonus",
+    "source_hash": "6c3fc1d929695d82ede6efbe0f8cda9d",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1143,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1148,
+    "kind": "bonus",
+    "source_hash": "d52db11157177e55ce78bf936aa86102",
+    "calls": [
+      "bonus",
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1148,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1179,
+    "kind": "bonus",
+    "source_hash": "4c6d0a3b0ff6dc1bb98bdd0e64f6875f",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1179,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1299,
+    "kind": "bonus",
+    "source_hash": "b8f4b390b6dc1ce95ff3766146178864",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1299,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1370,
+    "kind": "bonus",
+    "source_hash": "7835afca52ec6f97ef6a33397ee823fb",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1370,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1374,
+    "kind": "bonus",
+    "source_hash": "2212dcb58120fb476de5e726611423a4",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1374,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1379,
+    "kind": "bonus",
+    "source_hash": "b6a0c5bbc60e4bd0f4f51fb0bc82c1a5",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1379,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1401,
+    "kind": "bonus",
+    "source_hash": "60260a51841e9d850a747e71a507476f",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1401,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1404,
+    "kind": "bonus",
+    "source_hash": "f880d95d8c08fc5dbd8741f221d8cad1",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1404,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1416,
+    "kind": "bonus",
+    "source_hash": "09412d23144d3c38e9d2e2702f623fe2",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1416,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1495,
+    "kind": "bonus",
+    "source_hash": "2140d67dc2b57ff4b41b47c1aadd642a",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1495,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1504,
+    "kind": "bonus",
+    "source_hash": "6bded36a9936693187b67c3a5f329a5e",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1504,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1505,
+    "kind": "bonus",
+    "source_hash": "4e08d5f73a7712ef94d5fd70798800c2",
+    "calls": [
+      "bonus",
+      "bonus3",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1505,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1513,
+    "kind": "bonus",
+    "source_hash": "ba7e882fa05d5fc5536f8891d751c757",
+    "calls": [
+      "bonus",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1513,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1586,
+    "kind": "bonus",
+    "source_hash": "c1295b169ae1c6f22d4db0caf27328af",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1586,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1630,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1630,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 1837,
+    "kind": "bonus",
+    "source_hash": "4d2a5195709cf68309e06da18ea2e10b",
+    "calls": [
+      "bonus2",
+      "getpetinfo"
+    ]
+  },
+  {
+    "class_id": 1837,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 2081,
+    "kind": "bonus",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  },
+  {
+    "class_id": 2081,
+    "kind": "support",
+    "source_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "calls": []
+  }
+]

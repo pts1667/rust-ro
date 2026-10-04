@@ -1,162 +1,60 @@
-use std::sync::{Arc, RwLock};
-use std::thread;
+use std::sync::Arc;
 
 use packets::packets::{
     PacketCzAckSelectDealtype, PacketCzChooseMenu, PacketCzContactnpc, PacketCzInputEditdlg, PacketCzInputEditdlgstr,
     PacketCzPcPurchaseItemlist, PacketCzPcSellItemlist,
 };
-use rathena_script_lang_interpreter::lang::vm::Vm;
-use tokio::sync::mpsc;
 
 use crate::server::Server;
 use crate::server::model::request::Request;
-use crate::server::script::{
-    PlayerInteractionScriptHandler, VM_THREAD_CONSTANT_INDEX_ACCOUNT_ID, VM_THREAD_CONSTANT_INDEX_CHAR_ID, VM_THREAD_CONSTANT_INDEX_NPC_ID,
-};
-use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::script::PlayerInput;
+use crate::server::model::events::game_event::{GameEvent, NpcContact};
 
 pub fn handle_contact_npc(server: Arc<Server>, context: Request) {
-    let packet_cz_contact_npc = cast!(context.packet(), PacketCzContactnpc);
-    let npc_id = packet_cz_contact_npc.naid;
-    let character = server.state().get_character_from_context_unsafe(&context);
-    let maybe_map_item = server
-        .state()
-        .map_item(npc_id, character.current_map_name(), character.current_map_instance());
-    if maybe_map_item.is_none() {
-        error!("Can't find map item with id: {}", npc_id);
-        return;
-    }
-    let map_item = maybe_map_item.unwrap();
-    let server_clone = server.clone();
-    let (tx, rx) = mpsc::channel(1);
+    let packet = cast!(context.packet(), PacketCzContactnpc);
     let session = context.session();
-    session.set_script_handler_channel_sender(tx);
-    let client_notification_channel = context.client_notification_channel();
-    let character = server.state().get_character_from_context_unsafe(&context);
-    let map_name = character.current_map_name().clone();
-    let map_instance = character.current_map_instance();
-    thread::Builder::new()
-        .name(format!("script-player-{}-thread", session.account_id))
-        .spawn(move || {
-            let script = server_clone
-                .state()
-                .map_item_script(&map_item, &map_name, map_instance)
-                .expect("Expect to retrieve script from map instance");
-            let mut thread_constants = vec![];
-            thread_constants.insert(VM_THREAD_CONSTANT_INDEX_NPC_ID, npc_id);
-            thread_constants.insert(VM_THREAD_CONSTANT_INDEX_CHAR_ID, session.char_id.unwrap());
-            thread_constants.insert(VM_THREAD_CONSTANT_INDEX_ACCOUNT_ID, session.account_id);
-            Vm::run_main_function(
-                server.script_service().vm.clone(),
-                script.class_reference,
-                script.instance_reference,
-                Box::new(&PlayerInteractionScriptHandler::new(
-                    client_notification_channel,
-                    server_clone.clone(),
-                    RwLock::new(rx),
-                    server.runtime.clone(),
-                    GlobalConfigService::instance(),
-                )),
-                thread_constants,
-            )
-            .unwrap()
-        })
-        .unwrap();
+    server.add_to_next_tick(GameEvent::NpcContact(NpcContact { char_id: session.char_id(), account_id: session.account_id, npc_id: packet.naid }));
+}
+
+fn send(context: Request, input: PlayerInput) {
+    let session = context.session();
+    let sender = session.script_handler_channel_sender.lock().unwrap().clone();
+    if let Some(sender) = sender {
+        let _ = sender.try_send(input);
+    }
 }
 
 pub fn handle_player_next(context: Request) {
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(vec![0])
-        .unwrap();
+    send(context, PlayerInput::Next);
 }
-
 pub fn handle_player_choose_menu(context: Request) {
-    let packet_cz_choose_menu = cast!(context.packet(), PacketCzChooseMenu);
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(Vec::from(packet_cz_choose_menu.num_raw))
-        .unwrap();
+    let packet = cast!(context.packet(), PacketCzChooseMenu);
+    let option = packet.num;
+    send(context, PlayerInput::Selection(option));
 }
 pub fn handle_player_input_number(context: Request) {
-    let packet_cz_input_editlg = cast!(context.packet(), PacketCzInputEditdlg);
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(Vec::from(packet_cz_input_editlg.value_raw))
-        .unwrap();
+    let packet = cast!(context.packet(), PacketCzInputEditdlg);
+    let number = packet.value;
+    send(context, PlayerInput::Number(number));
 }
 pub fn handle_player_input_string(context: Request) {
-    let packet_cz_input_editlgstr = cast!(context.packet(), PacketCzInputEditdlgstr);
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(packet_cz_input_editlgstr.msg_raw.clone())
-        .unwrap();
-}
-
-pub fn handle_player_select_deal_type(context: Request) {
-    let packet_cz_ack_select_deal_type = cast!(context.packet(), PacketCzAckSelectDealtype);
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(vec![packet_cz_ack_select_deal_type.atype])
-        .unwrap();
-}
-
-pub fn handle_player_purchase_items(context: Request) {
-    let packet_cz_pc_purchase_item_list = cast!(context.packet(), PacketCzPcPurchaseItemlist);
-    let mut bytes = Vec::<u8>::new();
-    bytes.push(packet_cz_pc_purchase_item_list.item_list.len() as u8);
-    for item_raw in packet_cz_pc_purchase_item_list.item_list_raw.iter() {
-        bytes.extend(item_raw.clone());
+    let packet = cast!(context.packet(), PacketCzInputEditdlgstr);
+    if let Ok(text) = String::from_utf8(packet.msg_raw.clone()) {
+        send(context, PlayerInput::Text(text.trim_end_matches(char::from(0)).to_string()));
     }
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(bytes)
-        .unwrap();
+}
+pub fn handle_player_select_deal_type(context: Request) {
+    let packet = cast!(context.packet(), PacketCzAckSelectDealtype);
+    let kind = packet.atype;
+    send(context, PlayerInput::DealType(kind));
+}
+pub fn handle_player_purchase_items(context: Request) {
+    let packet = cast!(context.packet(), PacketCzPcPurchaseItemlist);
+    let items = packet.item_list.iter().map(|item| (item.itid as u32, item.count)).collect();
+    send(context, PlayerInput::Purchases(items));
 }
 pub fn handle_player_sell_items(context: Request) {
-    let packet_cz_pc_sell_item_list = cast!(context.packet(), PacketCzPcSellItemlist);
-    let mut bytes = Vec::<u8>::new();
-    bytes.push(packet_cz_pc_sell_item_list.item_list.len() as u8);
-    for item_raw in packet_cz_pc_sell_item_list.item_list_raw.iter() {
-        bytes.extend(item_raw.clone());
-    }
-    context
-        .session()
-        .script_handler_channel_sender
-        .lock()
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .blocking_send(bytes)
-        .unwrap();
+    let packet = cast!(context.packet(), PacketCzPcSellItemlist);
+    let items = packet.item_list.iter().map(|item| (item.index as usize, item.count)).collect();
+    send(context, PlayerInput::Sales(items));
 }

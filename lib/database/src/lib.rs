@@ -30,6 +30,7 @@ pub struct Database {
     pub items: sled::Tree,
     pub item_names: sled::Tree,
     pub mobs: sled::Tree,
+    pub game_systems: sled::Tree,
     _db: sled::Db,
 }
 
@@ -71,6 +72,7 @@ impl Database {
             items: db.open_tree("items")?,
             item_names: db.open_tree("item_names")?,
             mobs: db.open_tree("mobs")?,
+            game_systems: db.open_tree("game_systems")?,
             _db: db,
         })
     }

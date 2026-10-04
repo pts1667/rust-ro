@@ -1,7 +1,7 @@
 use configuration::configuration::GameConfig;
 use models::enums::EnumWithStringValue;
 use models::enums::element::Element;
-use models::enums::mob::MobRace;
+use models::enums::mob::{MobRace, MobGroup};
 use models::enums::size::Size;
 use models::status::{KnownSkill, Look, Status, StatusSnapshot};
 use models::status_bonus::{StatusBonuses, TemporaryStatusBonuses};
@@ -13,6 +13,8 @@ pub struct StatusFromDb;
 impl StatusFromDb {
     pub fn from_char_model(char_model: &CharSelectModel, configuration: &GameConfig, known_skills: Vec<KnownSkill>) -> Status {
         Status {
+            taekwon_ranked: false,
+            spirit_sphere_count: 0,
             job: char_model.class as u32,
             hp: char_model.hp as u32,
             sp: char_model.sp as u32,
@@ -54,11 +56,17 @@ impl StatusFromDb {
             effects: vec![],
             equipment_bonuses: StatusBonuses::default(),
             temporary_bonuses: TemporaryStatusBonuses::default(),
+            active_statuses: vec![],
+            active_auto_bonuses: vec![],
+            bonus_periodic_ticks: Default::default(),
+            script_context: None,
+            script_skill_grants: Default::default(),
+            mob_class: Default::default(),
         }
     }
 
     pub fn from_mob_model(mob_model: &MobModel) -> StatusSnapshot {
-        StatusSnapshot::new_for_mob(
+        let mut snapshot = StatusSnapshot::new_for_mob(
             mob_model.id as u32,
             mob_model.hp as u32,
             mob_model.sp as u32,
@@ -72,8 +80,8 @@ impl StatusFromDb {
             mob_model.luk as u16,
             mob_model.atk1 as u16,
             mob_model.atk2 as u16,
-            mob_model.atk1 as u16,
-            mob_model.atk2 as u16,
+            (mob_model.int + (mob_model.int / 7).pow(2)).clamp(0, u16::MAX as i32) as u16,
+            (mob_model.int + (mob_model.int / 5).pow(2)).clamp(0, u16::MAX as i32) as u16,
             mob_model.speed as u16,
             mob_model.def as u16,
             mob_model.mdef as u16,
@@ -81,6 +89,12 @@ impl StatusFromDb {
             Element::from_string(mob_model.element.as_str()),
             MobRace::from_string(mob_model.race.as_str()),
             mob_model.element_level as u8,
-        )
+        );
+        snapshot.set_hit((mob_model.level + mob_model.dex).clamp(0, i16::MAX as i32) as i16);
+        snapshot.set_base_level(mob_model.level.max(1) as u32);
+        snapshot.set_mob_class(mob_model.battle_class());
+        snapshot.set_flee((mob_model.level + mob_model.agi).clamp(0, i16::MAX as i32) as i16);
+        snapshot.set_mob_groups(mob_model.race_groups.iter().filter_map(|name| MobGroup::try_from_string_ignore_case(name).or_else(|_| MobGroup::try_from_string_ignore_case(&format!("RC2_{name}"))).ok()).collect());
+        snapshot
     }
 }

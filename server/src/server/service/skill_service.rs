@@ -4,7 +4,8 @@ use std::sync::mpsc::SyncSender;
 use models::enums::client_effect_icon::ClientEffectIcon;
 use models::enums::skill::{SkillType, UseSkillFailure, UseSkillFailureClientSideType};
 use models::enums::skill_enums::SkillEnum;
-use models::enums::EnumWithNumberValue;
+use models::enums::{EnumWithNumberValue, EnumWithMaskValueU32};
+use models::status_bonus::BattleFlag;
 use models::item::NormalInventoryItem;
 use models::status::StatusSnapshot;
 use packets::packets::{PacketZcAckTouseskill, PacketZcActionFailure, PacketZcMsgStateChange2, PacketZcNotifySkill2, PacketZcUseSkill, PacketZcUseskillAck2};
@@ -63,13 +64,43 @@ impl SkillService {
         skill_level: u8,
         tick: u128,
     ) -> SkillCasted {
+        self.start_skill(character, target, source_status, target_status, skill_id, skill_level, tick, true)
+    }
+
+    pub fn start_item_skill(
+        &self,
+        character: &mut Character,
+        target: Option<MapItemSnapshot>,
+        source_status: &StatusSnapshot,
+        target_status: Option<&StatusSnapshot>,
+        skill_id: u32,
+        skill_level: u8,
+        tick: u128,
+        keep_requirements: bool,
+    ) -> SkillCasted {
+        self.start_skill(character, target, source_status, target_status, skill_id, skill_level, tick, keep_requirements)
+    }
+
+    fn start_skill(
+        &self,
+        character: &mut Character,
+        target: Option<MapItemSnapshot>,
+        source_status: &StatusSnapshot,
+        target_status: Option<&StatusSnapshot>,
+        skill_id: u32,
+        skill_level: u8,
+        tick: u128,
+        keep_requirements: bool,
+    ) -> SkillCasted {
+        if character.status.blocks_casting() { return SkillCasted::invalid(); }
         if target.is_none() || target_status.is_none() {
             return SkillCasted::invalid();
         }
         let target_snapshot = target.unwrap();
         let skill = SkillEnum::from_id(skill_id);
-        let mut skill = skills::skill_enums::to_object(skill, skill_level).unwrap();
+        let Some(mut skill) = skills::skill_enums::to_object(skill, skill_level) else { return SkillCasted::invalid(); };
 
+        if keep_requirements {
         let validate_sp = skill.validate_sp(source_status);
         if validate_sp.is_err() {
             self.send_skill_fail_packet(character, UseSkillFailure::SpInsufficient);
@@ -124,11 +155,16 @@ impl SkillService {
             self.send_skill_fail_packet(character, validate_items.err().unwrap());
             return SkillCasted::invalid();
         }
+        }
 
         // TODO use char stats
-        skill.update_cast_time((skill.base_cast_time() as f32 * self.status_service.cast_time_reduction(source_status)).ceil() as u32);
-        skill.update_after_cast_act_delay(skill.base_after_cast_act_delay());
+        skill.update_cast_time((skill.base_cast_time() as f32 * StatusService::skill_cast_modifier(source_status, skill_id)).ceil() as u32);
+        skill.update_after_cast_act_delay(StatusService::skill_after_cast_delay(source_status, skill_id, skill.base_after_cast_act_delay()));
         skill.update_after_cast_walk_delay(skill.base_after_cast_walk_delay());
+        if character.status.has_status_change(models::status_change::StatusChangeKind::Suffragium) {
+            crate::server::service::status_effect_service::StatusEffectService::end_status_at(&mut character.status, Some(models::status_change::StatusChangeKind::Suffragium), tick);
+            crate::server::service::status_effect_service::StatusEffectService::send_icon(character, models::status_change::StatusChangeKind::Suffragium, false, tick, &self.client_notification_sender);
+        }
         let mut packet_zc_useskill_ack2 = PacketZcUseskillAck2::new(self.configuration_service.packetver());
         packet_zc_useskill_ack2.set_target_id(target_snapshot.map_item().id());
         packet_zc_useskill_ack2.set_skid(skill_id as u16);
@@ -171,21 +207,30 @@ impl SkillService {
             return None;
         }
 
-        if !self.force_no_delay && tick < character.skill_in_use().start_skill_tick + character.skill_in_use().skill.cast_time() as u128 {
+        if !self.cast_is_ready(character, tick) {
             return None;
         }
         let skill = &character.skill_in_use().skill;
         let skill_type = skill.skill_type();
         let mut damage: i32 = 0;
+        let mut magic_context = None;
+        let mut landed = true;
         let mut packets: Vec<u8> = vec![];
         let mut attack_motion: i32 = 0;
         let mut target_id = character.char_id;
         let mut target_damage_motion: u32 = 0;
         let mut bonuses = Default::default();
+        let offensive = skill.as_offensive_skill();
+        let battle_flags = (if offensive.is_some_and(BattleService::is_weapon_skill) { BattleFlag::Weapon } else if offensive.is_some_and(|skill| skill.is_magic()) { BattleFlag::Magic } else { BattleFlag::Misc }).as_flag()
+            | (if offensive.is_some_and(|skill| skill.is_ranged() || skill.is_magic()) { BattleFlag::Long } else { BattleFlag::Short }).as_flag() | BattleFlag::Skill.as_flag()
+            | if skill.id() == SkillEnum::TfThrowstone.id() { BattleFlag::Weapon.as_flag() } else { 0 };
+        let skill_id = skill.id();
+        let skill_level = skill.level();
         match skill.skill_type() {
             SkillType::Offensive => {
                 let skill = skill.as_offensive_skill().unwrap();
-                damage = self.calculate_damage(source_status, target_status.as_ref().unwrap(), skill);
+                landed = skill.id() == SkillEnum::ChPalmstrike.id() || !BattleService::is_weapon_skill(skill) || self.battle_service.skill_hits(source_status, target_status.as_ref().unwrap(), skill.id(), skill.level());
+                if landed && skill.id() != SkillEnum::WzWaterball.id() && skill.id() != SkillEnum::ChPalmstrike.id() { (damage, magic_context) = self.battle_service.calculate_damage_with_context(source_status, target_status.as_ref().unwrap(), Some(skill)); }
                 let mut packet_zc_notify_skill2 = PacketZcNotifySkill2::new(self.configuration_service.packetver());
                 packet_zc_notify_skill2.set_skid(skill.id() as u16);
                 let target = target.as_ref().unwrap();
@@ -212,6 +257,7 @@ impl SkillService {
                 packet_zc_notify_skill2.set_action(6); // TODO
                 packet_zc_notify_skill2.fill_raw();
                 packets = mem::take(packet_zc_notify_skill2.raw_mut());
+                if skill.id() == SkillEnum::WzWaterball.id() || skill.id() == SkillEnum::ChPalmstrike.id() { packets.clear(); }
             }
             SkillType::Interactive => {}
             SkillType::Performance => {}
@@ -262,6 +308,12 @@ impl SkillService {
         }
 
         Some(SkillUsed {
+            proc_depth: 0,
+            credit_id: character.char_id,
+            battle_flags,
+            skill_id,
+            skill_level,
+            landed,
             skill_type,
             source_id: character.char_id,
             target_id,
@@ -271,6 +323,7 @@ impl SkillService {
             bonuses,
             attacked_at: tick + attack_motion as u128,
             damage_motion: target_damage_motion,
+            magic_context,
         })
     }
 
@@ -282,7 +335,7 @@ impl SkillService {
         character.clear_skill_in_use();
     }
 
-    fn send_skill_fail_packet(&self, character: &mut Character, cause: UseSkillFailure) {
+    pub(crate) fn send_skill_fail_packet(&self, character: &mut Character, cause: UseSkillFailure) {
         let mut packet_zc_ack_touseskill = PacketZcAckTouseskill::new(self.configuration_service.packetver());
         packet_zc_ack_touseskill.set_cause(cause.value() as u8);
         packet_zc_ack_touseskill.set_num(UseSkillFailureClientSideType::SkillFailed.value() as u32);
@@ -294,6 +347,10 @@ impl SkillService {
                 mem::take(packet_zc_ack_touseskill.raw_mut()),
             )))
             .unwrap_or_else(|_| error!("Failed to send notification packet_zc_ack_touseskill to client"));
+    }
+
+    pub fn cast_is_ready(&self, character: &Character, tick: u128) -> bool {
+        character.skill_in_use.as_ref().is_some_and(|cast| self.force_no_delay || tick >= cast.start_skill_tick + cast.skill.cast_time() as u128)
     }
 
     pub fn calculate_damage(&self, source_status: &StatusSnapshot, target_status: &StatusSnapshot, skill: &dyn OffensiveSkill) -> i32 {

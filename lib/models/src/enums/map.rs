@@ -1,6 +1,76 @@
 #![allow(dead_code)]
 use crate::enums::*;
 
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum MapRestrictionZone {
+    #[mask_value = 16]
+    Zone0,
+    Zone1,
+    Zone2,
+    Zone3,
+    Zone4,
+    Zone5,
+    Zone6,
+    Zone7,
+    Zone8,
+    Zone9,
+    Zone10,
+    Zone11,
+    Zone12,
+    Zone13,
+    Zone14,
+    Zone15,
+    Zone16,
+    Zone17,
+    Zone18,
+    Zone19,
+    Zone20,
+    Zone21,
+    Zone22,
+    Zone23,
+    Zone24,
+    Zone25,
+    Zone26,
+    Zone27,
+}
+
+impl MapRestrictionZone {
+    pub fn from_zone(zone: i32) -> Option<Self> {
+        let zones = [Self::Zone0, Self::Zone1, Self::Zone2, Self::Zone3, Self::Zone4, Self::Zone5,
+            Self::Zone6, Self::Zone7, Self::Zone8, Self::Zone9, Self::Zone10, Self::Zone11,
+            Self::Zone12, Self::Zone13, Self::Zone14, Self::Zone15, Self::Zone16, Self::Zone17,
+            Self::Zone18, Self::Zone19, Self::Zone20, Self::Zone21, Self::Zone22, Self::Zone23,
+            Self::Zone24, Self::Zone25, Self::Zone26, Self::Zone27];
+        usize::try_from(zone).ok().and_then(|index| zones.get(index)).copied()
+    }
+}
+
+#[derive(WithMaskValueU16, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum MapActorType {
+    #[mask_value = 1]
+    Player,
+    Monster,
+    Pet,
+    Homunculus,
+    Mercenary,
+    Item,
+    Skill,
+    Npc,
+    Chat,
+    Elemental,
+    #[mask_value = 4095]
+    All,
+}
+
+#[derive(WithMaskValueU8, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum NightmareDropLocation {
+    #[mask_value = 1]
+    Inventory,
+    Equipped,
+    #[mask_all]
+    All,
+}
+
 #[derive(WithMaskValueU64, Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MapPropertyFlags {
     // PARTY - Show attack cursor on non-party members (PvP)

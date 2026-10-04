@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 use models::enums::EnumWithMaskValueU16;
 use models::enums::cell::CellType;
 use models::item::DroppedItem;
 
 use crate::server::model::map_instance::MapInstanceKey;
-use crate::server::model::map_item::{MapItem, MapItems, MapItemSnapshot, ToMapItem};
+use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItems, ToMapItem};
 use crate::server::state::mob::Mob;
 use crate::util::coordinate;
 use crate::util::hasher::NoopHasherU32;
@@ -13,6 +13,7 @@ use crate::util::hasher::NoopHasherU32;
 #[derive(SettersAll)]
 pub struct MapInstanceState {
     key: MapInstanceKey,
+    pub flags: crate::server::model::map_flags::MapFlags,
     x_size: u16,
     y_size: u16,
     // index in this array will give x and y position of the cell.
@@ -23,8 +24,49 @@ pub struct MapInstanceState {
     mob_spawns_tracks: HashMap<u32, MobSpawnTrack>,
     /// Character snapshots for mob AI targeting (updated via UpdateMobsFov)
     characters: Vec<MapItemSnapshot>,
+    pub actor_visibility: HashMap<u32, crate::server::service::visibility_service::StealthState>,
+    pub script_skill_state: crate::server::script::skill::actor::MapSkillState,
+    pub pending_pet_captures: HashMap<u64, PendingPetCapture>,
+    pub pending_pet_loot: HashMap<u64, PendingPetLoot>,
+    pub pending_pet_loot_drops: HashMap<u64, PendingPetLootDrop>,
+    pub completed_pet_loot: HashMap<u64, CompletedPetLoot>,
+    pub completed_pet_loot_order: VecDeque<u64>,
+    pub completed_pet_loot_drops: HashMap<u64, CompletedPetLootDrop>,
+    pub completed_pet_loot_drop_order: VecDeque<u64>,
 
     mob_movement_paused: bool,
+}
+
+pub struct PendingPetCapture {
+    pub char_id: u32,
+    pub mob: Mob,
+}
+
+pub struct PendingPetLoot {
+    pub char_id: u32,
+    pub pet_id: u32,
+    pub item: DroppedItem,
+}
+
+pub struct PendingPetLootDrop {
+    pub char_id: u32,
+    pub x: u16,
+    pub y: u16,
+    pub fingerprint: u64,
+    pub items: Vec<DroppedItem>,
+}
+
+pub struct CompletedPetLoot {
+    pub char_id: u32,
+    pub pet_id: u32,
+    pub target_id: u32,
+    pub item: Option<DroppedItem>,
+}
+
+pub struct CompletedPetLootDrop {
+    pub char_id: u32,
+    pub fingerprint: u64,
+    pub accepted: bool,
 }
 
 pub struct MobSpawnTrack {
@@ -62,6 +104,7 @@ impl MapInstanceState {
     ) -> MapInstanceState {
         Self {
             key,
+            flags: Default::default(),
             x_size,
             y_size,
             cells,
@@ -70,6 +113,15 @@ impl MapInstanceState {
             dropped_items: Default::default(),
             mob_spawns_tracks,
             characters: Vec::new(),
+            actor_visibility: Default::default(),
+            script_skill_state: Default::default(),
+            pending_pet_captures: Default::default(),
+            pending_pet_loot: Default::default(),
+            pending_pet_loot_drops: Default::default(),
+            completed_pet_loot: Default::default(),
+            completed_pet_loot_order: Default::default(),
+            completed_pet_loot_drops: Default::default(),
+            completed_pet_loot_drop_order: Default::default(),
             mob_movement_paused: false,
         }
     }
@@ -148,12 +200,33 @@ impl MapInstanceState {
     }
 
     pub fn remove_dropped_item(&mut self, id: u32) -> Option<DroppedItem> {
+        if self.is_pet_loot_reserved(id) {
+            return None;
+        }
         if let Some(dropped_item) = self.dropped_items_mut().remove(&id) {
             self.remove_item(dropped_item.to_map_item());
             Some(dropped_item)
         } else {
             None
         }
+    }
+
+    pub fn is_pet_loot_reserved(&self, id: u32) -> bool {
+        self.pending_pet_loot.values().any(|claim| claim.item.map_item_id == id)
+            || self
+                .pending_pet_loot_drops
+                .values()
+                .any(|claim| claim.items.iter().any(|item| item.map_item_id == id))
+    }
+
+    pub fn reserve_pet_loot(&mut self, claim_id: u64, char_id: u32, pet_id: u32, target_id: u32) -> Option<DroppedItem> {
+        let item = self.dropped_items_mut().remove(&target_id)?;
+        self.pending_pet_loot.insert(claim_id, PendingPetLoot { char_id, pet_id, item });
+        Some(item)
+    }
+
+    pub fn restore_pet_loot(&mut self, item: DroppedItem) {
+        self.dropped_items_mut().insert_unique_unchecked(item.map_item_id, item);
     }
 
     pub fn map_items(&self) -> &hashbrown::HashMap<u32, MapItem, NoopHasherU32> {

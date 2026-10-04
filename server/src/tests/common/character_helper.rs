@@ -11,6 +11,8 @@ use crate::server::state::character::Character;
 
 pub fn create_character() -> Character {
     let status = Status {
+        taekwon_ranked: false,
+        spirit_sphere_count: 0,
         job: JobName::Novice.value() as u32,
         hp: 0,
         sp: 0,
@@ -41,6 +43,12 @@ pub fn create_character() -> Character {
         effects: vec![],
         equipment_bonuses: StatusBonuses::default(),
         temporary_bonuses: TemporaryStatusBonuses::default(),
+        active_statuses: vec![],
+        active_auto_bonuses: vec![],
+        bonus_periodic_ticks: Default::default(),
+        script_context: None,
+        script_skill_grants: Default::default(),
+        mob_class: Default::default(),
     };
     let mut character = Character::new(
         "Walkiry".to_string(),
@@ -88,6 +96,7 @@ pub fn equip_item(character: &mut Character, item: &ItemModel) -> usize {
 pub fn equip_item_with_cards_and_refinement(character: &mut Character, item: &ItemModel, cards: Vec<i16>, refinement: u8) -> usize {
     let mut rng = rand::thread_rng();
     let inventory_item = InventoryItemModel {
+        shop_price: None,
         id: rng.next_u32() as i32,
         unique_id: rng.next_u32() as i64,
         item_id: item.id,
@@ -118,6 +127,7 @@ pub fn add_item_in_inventory(character: &mut Character, aegis_name: &str) -> usi
     let mut rng = rand::thread_rng();
     let item = GlobalConfigService::instance().get_item_by_name(aegis_name);
     let inventory_item = InventoryItemModel {
+        shop_price: None,
         id: rng.next_u32() as i32,
         unique_id: rng.next_u32() as i64,
         item_id: item.id,
@@ -141,6 +151,7 @@ pub fn add_items_in_inventory(character: &mut Character, aegis_name: &str, amoun
     let mut rng = rand::thread_rng();
     let item = GlobalConfigService::instance().get_item_by_name(aegis_name);
     let inventory_item = InventoryItemModel {
+        shop_price: None,
         id: rng.next_u32() as i32,
         unique_id: rng.next_u32() as i64,
         item_id: item.id,

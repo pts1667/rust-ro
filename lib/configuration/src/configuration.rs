@@ -29,6 +29,30 @@ pub struct Config {
     pub database: DatabaseConfig,
     pub proxy: ProxyConfig,
     pub maps: MapConfig,
+    #[serde(default)]
+    pub scripting: ScriptingConfig,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct ScriptingConfig {
+    pub module_path: String,
+    pub npcs_path: String,
+    pub items_path: String,
+    pub conversation_timeout_secs: u64,
+    pub map_flags_path: String,
+}
+
+impl Default for ScriptingConfig {
+    fn default() -> Self {
+        Self {
+            module_path: "config/wasm/game_scripts.wasm".into(),
+            npcs_path: "config/wasm/npcs.json".into(),
+            items_path: "config/wasm/items.json".into(),
+            conversation_timeout_secs: 120,
+            map_flags_path: "config/wasm/map_flags.json".into(),
+        }
+    }
 }
 
 #[derive(Deserialize, Debug, Setters, Clone)]
@@ -60,6 +84,16 @@ pub struct GameConfig {
     pub drop_rate_card: f32,
     pub base_exp_rate: f32,
     pub job_exp_rate: f32,
+    #[serde(default)]
+    pub pvp_exp: bool,
+    #[serde(default)]
+    pub party_even_share_bonus: u16,
+    #[serde(default)]
+    pub pet_support: PetSupportConfig,
+    #[serde(default)]
+    pub gvg_damage_rates: MapCombatDamageRates,
+    #[serde(default)]
+    pub battleground_damage_rates: MapCombatDamageRates,
     pub max_stat_level: u16,
     pub mob_dropped_item_locked_to_owner_duration_in_secs: u16,
     pub player_dropped_item_locked_to_owner_duration_in_secs: u16,
@@ -69,6 +103,43 @@ pub struct GameConfig {
     pub status_point_raising_cost: Vec<StatusPointRaisingCost>,
     #[serde(skip)]
     pub exp_requirements: ExpRequirement,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct MapCombatDamageRates {
+    pub weapon_skill: u32,
+    pub magic_skill: u32,
+    pub misc_skill: u32,
+    pub normal_short: u32,
+    pub normal_long: u32,
+}
+
+impl Default for MapCombatDamageRates {
+    fn default() -> Self {
+        Self { weapon_skill: 60, magic_skill: 60, misc_skill: 60, normal_short: 80, normal_long: 80 }
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct PetSupportConfig {
+    pub status_support: bool,
+    pub require_accessory: bool,
+    pub attack_support: bool,
+    pub damage_support: bool,
+    pub attack_exp_to_master: bool,
+    pub attack_exp_rate: u16,
+    pub ignore_infinite_defense: bool,
+    pub minimum_intimacy: u16,
+    pub support_rate: u16,
+}
+
+impl Default for PetSupportConfig {
+    fn default() -> Self {
+        Self { status_support: false, require_accessory: true, attack_support: false, damage_support: false,
+            attack_exp_to_master: false, attack_exp_rate: 100, ignore_infinite_defense: true, minimum_intimacy: 900, support_rate: 100 }
+    }
 }
 
 #[derive(Deserialize, Default, Debug, SettersAll, Clone)]

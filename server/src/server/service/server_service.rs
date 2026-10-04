@@ -9,11 +9,11 @@ use models::enums::EnumWithNumberValue;
 use models::enums::action::ActionType;
 use models::enums::skill::SkillType;
 use models::enums::skill_enums::SkillEnum;
-use movement::position::Position;
 use models::status::{Status, StatusSnapshot};
 use models::status_bonus::BonusExpiry;
+use movement::position::Position;
 use packets::packets::{Packet, PacketZcMsgStateChange, PacketZcNotifyAct};
-use rathena_script_lang_interpreter::lang::vm::Vm;
+use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
 
 use crate::MAP_DIR;
@@ -28,7 +28,7 @@ use crate::server::model::events::game_event::{
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_instance::MapInstance;
-use crate::server::model::map_item::{CHARACTER_MAX_MAP_ITEM_ID, MAP_INSTANCE_MAX_MAP_ITEM_ID, MapItemSnapshot, MapItemType, MapItems};
+use crate::server::model::map_item::{CHARACTER_MAX_MAP_ITEM_ID, MAP_INSTANCE_MAX_MAP_ITEM_ID, MapItemSnapshot, MapItemType, MapItems, ToMapItemSnapshot};
 use crate::server::model::movement::{Movable, Movement};
 use crate::server::model::path::{manhattan_distance, path_search_client_side_algorithm};
 use crate::server::model::tasks_queue::TasksQueue;
@@ -46,6 +46,7 @@ use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
+use crate::server::Server;
 use crate::util::tick::get_tick;
 
 #[allow(dead_code)]
@@ -54,7 +55,7 @@ pub struct ServerService {
     configuration_service: &'static GlobalConfigService,
     server_task_queue: Arc<TasksQueue<GameEvent>>,
     movement_task_queue: Arc<TasksQueue<GameEvent>>,
-    vm: Arc<Vm>,
+    vm: Arc<WasmRuntime>,
     character_service: CharacterService,
     inventory_service: InventoryService,
     item_service: ItemService,
@@ -67,12 +68,31 @@ pub struct ServerService {
 }
 
 impl ServerService {
+    pub(crate) fn notification_sender(&self) -> SyncSender<Notification> {
+        self.client_notification_sender.clone()
+    }
+
+    pub fn schedule_warp_to_walkable_cell_by_character(&self, map: &str, x: u16, y: u16, char_id: u32) {
+        self.server_task_queue.add_to_first_index(GameEvent::ScriptWarp(crate::server::model::events::game_event::ScriptWarp {
+            char_id,
+            map: map.to_string(),
+            x,
+            y,
+            destination_instance: None,
+        }));
+    }
+
+    pub fn schedule_warp_to_walkable_cell_by_character_in_instance(&self, map: &str, x: u16, y: u16, char_id: u32, instance_id: u8) {
+        self.server_task_queue.add_to_first_index(GameEvent::ScriptWarp(crate::server::model::events::game_event::ScriptWarp {
+            char_id, map: map.to_string(), x, y, destination_instance: Some(instance_id),
+        }));
+    }
     pub(crate) fn new(
         client_notification_sender: SyncSender<Notification>,
         configuration_service: &'static GlobalConfigService,
         server_task_queue: Arc<TasksQueue<GameEvent>>,
         movement_task_queue: Arc<TasksQueue<GameEvent>>,
-        vm: Arc<Vm>,
+        vm: Arc<WasmRuntime>,
         inventory_service: InventoryService,
         battle_service: BattleService,
         skill_service: SkillService,
@@ -164,6 +184,7 @@ impl ServerService {
             map_items,
             Arc::new(TasksQueue::new()),
         );
+        map_instance.state_mut().flags = server_state.map_flags_for(map.name(), instance_id);
         server_state.map_instances_count().fetch_add(1, Relaxed);
         let map_instance_ref = Arc::new(map_instance);
         let entry = server_state.map_instances_mut().entry(map.name().to_string()).or_default();
@@ -179,22 +200,27 @@ impl ServerService {
     }
 
     pub fn schedule_warp_to_walkable_cell(&self, server_state: &mut ServerState, destination_map: &str, x: u16, y: u16, char_id: u32) {
+        self.schedule_warp_to_walkable_cell_in_instance(server_state, destination_map, x, y, char_id, 0);
+    }
+
+    pub fn schedule_warp_to_walkable_cell_in_instance(&self, server_state: &mut ServerState, destination_map: &str, x: u16, y: u16, char_id: u32, instance_id: u8) {
+        let Some(character) = server_state.characters().get(&char_id) else { return; };
+        let origin = character.map_instance_key.clone();
+        let map_name = Map::name_without_ext(destination_map);
+        let map_instance = if let Some(instance) = server_state.get_map_instance(&map_name, instance_id) { instance }
+            else if let Some(map) = self.configuration_service.find_map(&map_name) { self.create_map_instance(server_state, map, instance_id) }
+            else { return; };
         self.server_task_queue.add_to_first_index(GameEvent::CharacterClearFov(char_id));
-        let character_ref = server_state.get_character_unsafe(char_id);
         self.server_task_queue.add_to_index(
             GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
                 char_id,
-                map_name: character_ref.current_map_name().clone(),
-                instance_id: character_ref.current_map_instance(),
+                map_name: origin.map_name().clone(),
+                instance_id: origin.map_instance(),
             }),
             0,
         );
 
-        let map_name: String = Map::name_without_ext(destination_map);
         debug!("Char enter on map {}", map_name);
-        let map_instance = server_state
-            .get_map_instance(&map_name, 0)
-            .unwrap_or_else(|| self.create_map_instance(server_state, self.configuration_service.get_map(map_name.as_str()), 0));
         let (x, y) = if x == RANDOM_CELL.0 && y == RANDOM_CELL.1 {
             let walkable_cell = Map::find_random_walkable_cell(map_instance.state().cells(), map_instance.x_size());
             (walkable_cell.0, walkable_cell.1)
@@ -205,7 +231,7 @@ impl ServerService {
         self.server_task_queue.add_to_index(
             GameEvent::CharacterChangeMap(CharacterChangeMap {
                 char_id,
-                new_map_name: destination_map.to_owned(),
+                new_map_name: map_name,
                 new_instance_id: map_instance.id(),
                 new_position: Some(Position { x, y, dir: 3 }),
             }),
@@ -213,8 +239,13 @@ impl ServerService {
         );
     }
 
-    pub fn character_attack(&self, server_state: &ServerState, tick: u128, character: &mut Character) {
+    pub fn character_attack(&self, server: &Server, server_state: &ServerState, tick: u128, character: &mut Character) {
         if !character.is_attacking() {
+            return;
+        }
+        if !server.player_combat_target_allowed(server_state, character, character.attack().target)
+            || !server.player_target_allowed(server_state, character, character.attack().target, super::visibility_service::TargetingMode::Direct) {
+            character.clear_attack();
             return;
         }
 
@@ -224,7 +255,7 @@ impl ServerService {
             character.current_map_instance(),
         );
         if let Some(map_item) = map_item {
-            let range = character.status.attack_range();
+            let range = self.get_status_snapshot(&character.status, tick).attack_range();
             let target_position = server_state
                 .map_item_x_y(&map_item, character.current_map_name(), character.current_map_instance())
                 .unwrap();
@@ -268,25 +299,55 @@ impl ServerService {
                     .map_item_snapshot(map_item.id(), character.current_map_name(), character.current_map_instance())
                     .unwrap();
                 let mut maybe_damage = None;
-                if matches!(*map_item.object_type(), MapItemType::Mob) {
-                    let mob_status = server_state
-                        .map_item_mob_status(&map_item, character.current_map_name(), character.current_map_instance())
-                        .unwrap();
+                if matches!(*map_item.object_type(), MapItemType::Mob | MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
+                    let source = self.get_status_snapshot(&character.status, tick);
+                    let attack_motion = self.status_service.attack_motion(&source) as u128;
+                    if tick < character.attack().last_attack_tick.saturating_add(attack_motion) || tick < character.timing.get_canact_tick() { return; }
+                    if !self.script_skill_service.admit_normal_attack(server, character, tick) { character.clear_attack(); return; }
+                    let Some(target_status) = self.get_target_status(server_state, character, Some(map_item.id()), tick) else { character.clear_attack(); return; };
                     maybe_damage = self.battle_service.basic_attack(
                         character,
                         snapshot,
                         &self.get_status_snapshot(&character.status, tick),
-                        &mob_status,
+                        &target_status,
                         tick,
                     );
                 }
                 if let Some(damage) = maybe_damage {
+                    if self.configuration_service.config().game.pet_support.attack_support && character.game_systems.pet.as_ref().is_some_and(|pet|!pet.incubating&&pet.intimacy>0) {
+                        server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
+                            char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false},
+                        }));
+                    }
                     self.apply_damage(*map_item.object_type(), map_instance, damage);
                 }
             }
         } else {
             character.clear_attack();
         }
+    }
+
+    pub(crate) fn character_drop_item(&self,server:&Server,state:&mut ServerState,drop:crate::server::model::events::game_event::CharacterRemoveItem)->Result<bool,String> {
+        use models::enums::item::ItemTradeFlag;
+        use models::enums::EnumWithMaskValueU64;
+        let Some(mut character)=state.characters_mut().remove(&drop.char_id) else {return Ok(false);};
+        let result=(|| {
+            let flags=state.map_flags(&character.map_instance_key);
+            let Some(item)=character.get_item_from_inventory(drop.index) else {return Err("Drop item is unavailable".into());};
+            if character.status.hp==0||character.is_dead()||drop.amount<=0||item.equip!=0||item.amount<drop.amount
+                ||flags.enabled(crate::server::model::map_flags::MapFlag::NoDrop)
+                ||character.game_systems.is_trading()||character.game_systems.buying_store.is_some()||character.game_systems.vending_store.is_some()
+                ||self.configuration_service.get_item(item.item_id).trade_flags as u64&ItemTradeFlag::NoDrop.as_flag()!=0 {
+                return Ok(false);
+            }
+            let instance=state.get_map_instance_from_character(&character).ok_or("Drop map is unavailable")?;
+            server.inventory_service().character_drop_items(server.runtime(),&mut character,
+                crate::server::model::events::game_event::CharacterRemoveItems {char_id:drop.char_id,sell:false,items:vec![drop.clone()],notify_client:true},&instance)?;
+            Ok(true)
+        })();
+        if !result.as_ref().is_ok_and(|success|*success) {server.item_service().notify_removed(character.char_id,drop.index,0);}
+        state.insert_character(character);
+        result
     }
 
     pub fn character_remove_expired_bonuses(&self, character: &mut Character, tick: u128) {
@@ -336,6 +397,8 @@ impl ServerService {
     fn apply_damage(&self, map_item_type: MapItemType, map_instance: &Arc<MapInstance>, damage: Damage) {
         if matches!(map_item_type, MapItemType::Mob) {
             map_instance.add_to_next_tick(MapEvent::MobDamage(damage));
+        } else if matches!(map_item_type, MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
+            self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage));
         }
     }
 
@@ -345,14 +408,16 @@ impl ServerService {
 
     pub fn character_start_use_skill(
         &self,
+        server: &Server,
         server_state: &ServerState,
         character: &mut Character,
         character_use_skill: CharacterUseSkill,
         tick: u128,
     ) {
-        if character.is_using_skill() {
+        if character.status.hp == 0 || character.is_using_skill() || character.status.blocks_casting() || character.timing.get_canact_tick() > tick {
             return;
         }
+        if !server.player_skill_target_allowed(server_state, character, character_use_skill.target_id, character_use_skill.skill_id, false) { return; }
         let target = Self::get_target(server_state, character, Some(character_use_skill.target_id));
         if target.is_none() {
             return;
@@ -365,15 +430,9 @@ impl ServerService {
             return;
         }
         let skill = skill.unwrap();
-        let skill_range = skill.range();
-        let effective_range = if skill_range < 0 {
-            character.status.attack_range() as i8
-        } else {
-            skill_range
-        };
+        let effective_range = self.script_skill_service.player_skill_range(&self.get_status_snapshot(&character.status, tick), character_use_skill.skill_id, character_use_skill.skill_level);
 
-        let is_in_range = effective_range as i16
-            >= manhattan_distance(character.x, character.y, target_snapshot.position.x, target_snapshot.position.y) as i16 - 1;
+        let is_in_range = character.x.abs_diff(target_snapshot.position.x).max(character.y.abs_diff(target_snapshot.position.y)) <= effective_range.max(1);
 
         if !is_in_range {
             if character.is_moving() {
@@ -416,7 +475,15 @@ impl ServerService {
         if character.is_moving() {
             self.character_service.cancel_movement(character, tick);
         }
-        let skill_use_response = self.skill_service.start_use_skill(
+        if let Err(error) = self.script_skill_service.validate_native_environment(server_state, character, character_use_skill.skill_id, character_use_skill.skill_level, tick) { warn!("Skill environment failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+        if self.script_skill_service.validate_damage_target(server_state, character, character_use_skill.skill_id, character_use_skill.target_id).is_err() { self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+        let requirements = match self.script_skill_service.requirements_plan(character, character_use_skill.skill_id, character_use_skill.skill_level, tick) {
+            Ok(plan) => plan,
+            Err(error) => { warn!("Skill requirements failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+        };
+        character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: character_use_skill.skill_id, level: character_use_skill.skill_level, requirements, source_index: None, source_item: None });
+        self.script_skill_service.end_cloaking_on_skill(server, character, character_use_skill.skill_id, tick);
+        let skill_use_response = self.skill_service.start_item_skill(
             character,
             target,
             &self.get_status_snapshot(&character.status, tick),
@@ -425,17 +492,21 @@ impl ServerService {
             character_use_skill.skill_id,
             character_use_skill.skill_level,
             tick,
+            false,
         );
+        if !skill_use_response.is_valid() { character.script_skill_state.native_requirements = None; }
         if skill_use_response.is_valid() && skill_use_response.has_no_delay() {
-            self.character_use_skill(server_state, tick, character);
+            self.character_use_skill(server, server_state, tick, character);
         }
     }
 
-    pub fn character_pending_skill(&self, server_state: &ServerState, tick: u128, character: &mut Character) {
+    pub fn character_pending_skill(&self, server: &Server, server_state: &ServerState, tick: u128, character: &mut Character) {
+        if character.status.hp == 0 { character.clear_pending_skill(); return; }
         if !character.has_pending_skill() {
             return;
         }
         let pending = *character.pending_skill();
+        if !server.player_skill_target_allowed(server_state, character, pending.target_id, pending.skill_id, false) { character.clear_pending_skill(); return; }
         let target = Self::get_target(server_state, character, Some(pending.target_id));
         if target.is_none() {
             character.clear_pending_skill();
@@ -450,22 +521,24 @@ impl ServerService {
             return;
         }
         let skill = skill.unwrap();
-        let skill_range = skill.range();
-        let effective_range = if skill_range < 0 {
-            character.status.attack_range() as i8
-        } else {
-            skill_range
-        };
+        let effective_range = self.script_skill_service.player_skill_range(&self.get_status_snapshot(&character.status, tick), pending.skill_id, pending.skill_level);
 
-        let is_in_range = effective_range as i16
-            >= manhattan_distance(character.x, character.y, target_snapshot.position.x, target_snapshot.position.y) as i16 - 1;
+        let is_in_range = character.x.abs_diff(target_snapshot.position.x).max(character.y.abs_diff(target_snapshot.position.y)) <= effective_range.max(1);
 
         if is_in_range {
             character.clear_pending_skill();
             if character.is_moving() {
                 self.character_service.cancel_movement(character, tick);
             }
-            let skill_use_response = self.skill_service.start_use_skill(
+            if let Err(error) = self.script_skill_service.validate_native_environment(server_state, character, pending.skill_id, pending.skill_level, tick) { warn!("Pending skill environment failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+            if self.script_skill_service.validate_damage_target(server_state, character, pending.skill_id, pending.target_id).is_err() { self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+            let requirements = match self.script_skill_service.requirements_plan(character, pending.skill_id, pending.skill_level, tick) {
+                Ok(plan) => plan,
+                Err(error) => { warn!("Pending skill requirements failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+            };
+            character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: pending.skill_id, level: pending.skill_level, requirements, source_index: None, source_item: None });
+            self.script_skill_service.end_cloaking_on_skill(server, character, pending.skill_id, tick);
+            let skill_use_response = self.skill_service.start_item_skill(
                 character,
                 target,
                 &self.get_status_snapshot(&character.status, tick),
@@ -474,39 +547,60 @@ impl ServerService {
                 pending.skill_id,
                 pending.skill_level,
                 tick,
+                false,
             );
+            if !skill_use_response.is_valid() { character.script_skill_state.native_requirements = None; }
             if skill_use_response.is_valid() && skill_use_response.has_no_delay() {
-                self.character_use_skill(server_state, tick, character);
+                self.character_use_skill(server, server_state, tick, character);
             }
         }
     }
 
-    pub fn character_use_skill(&self, server_state: &ServerState, tick: u128, character: &mut Character) {
+    pub fn character_use_skill(&self, server: &Server, server_state: &ServerState, tick: u128, character: &mut Character) {
         if !character.is_using_skill() {
             return;
         }
         if character.skill_has_been_used() {
             self.skill_service.after_skill_used(character, tick);
         } else {
+            if !self.skill_service.cast_is_ready(character, tick) { return; }
+            if let Some(target_id) = character.skill_in_use().target { if !server.player_skill_target_allowed(server_state, character, target_id, character.skill_in_use().skill.id(), true) { character.clear_skill_in_use(); self.script_skill_service.cancel_queued_cast(character); return; } }
             let target = Self::get_target(server_state, character, character.skill_in_use().target);
+            let target_status = self.get_target_status(server_state, character, character.skill_in_use().target, tick);
+            if target.is_none() || target_status.as_ref().is_none_or(|target| target.hp() == 0) || character.status.hp == 0 {
+                character.clear_skill_in_use(); self.script_skill_service.cancel_queued_cast(character); return;
+            }
+            if character.skill_in_use().target.is_some_and(|target| self.script_skill_service.validate_damage_target(server_state, character, character.skill_in_use().skill.id(), target).is_err()) { character.clear_skill_in_use(); self.script_skill_service.cancel_queued_cast(character); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+            if let Some(payment) = character.script_skill_state.native_requirements.take() {
+                if payment.requirements.sp > 0 && self.script_skill_service.validate_native_environment(server_state, character, payment.skill_id, payment.level, tick).is_err() { character.clear_skill_in_use(); self.script_skill_service.cancel_queued_cast(character); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+                let identity_valid = payment.source_index.zip(payment.source_item).is_none_or(|(index, identity)| character.get_item_from_inventory(index).is_some_and(|item| (item.id, item.item_id, item.unique_id) == identity));
+                let result = if identity_valid { self.item_service.pay_requirement_plan_in_state(server, server_state, character, &payment.requirements, payment.source_index, tick) } else { Err("Delayed item source changed during casting".into()) };
+                if let Err(error) = result { warn!("Skill completion payment failed: {}", error); character.clear_skill_in_use(); self.script_skill_service.cancel_queued_cast(character); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
+            }
             let skill_use_response = self.skill_service.do_use_skill(
                 character,
                 target,
                 &self.get_status_snapshot(&character.status, tick),
-                self.get_target_status(server_state, character, character.skill_in_use().target, tick)
-                    .as_ref(),
+                target_status.as_ref(),
                 tick,
             );
             if let Some(skill_use_response) = skill_use_response {
                 if skill_use_response.skill_type == SkillType::Offensive {
                     let maybe_map_instance = server_state.get_map_instance(character.current_map_name(), character.current_map_instance());
                     let map_instance = maybe_map_instance.as_ref().unwrap();
-                    self.apply_damage(
-                        *target.unwrap().map_item.object_type(),
-                        map_instance,
-                        skill_use_response.to_damage(),
-                    );
+                    match self.script_skill_service.complete_damage_skill(server, server_state, character, skill_use_response.to_damage(), &self.battle_service, tick) {
+                        Ok(damages) => for (kind, damage) in damages {
+                            if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(damage)); }
+                            else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage)); }
+                        },
+                        Err(error) => warn!("Unable to complete area damage for skill {}: {}", skill_use_response.skill_id, error),
+                    }
                 }
+                self.server_task_queue.add_to_first_index(GameEvent::ScriptCombat(crate::server::service::script_combat_service::ScriptCombatRequest {
+                    source_id: character.char_id, target_id: skill_use_response.target_id, trigger: models::status_bonus::CombatTrigger::Skill,
+                    battle_flags: skill_use_response.battle_flags, skill_id: skill_use_response.skill_id, damage: skill_use_response.damage_to_target.max(0) as u32,
+                    other_mob_id: None, depth: skill_use_response.proc_depth, drop_position: None, origin_map: Some(character.map_instance_key.clone()), right_hand_damage: None,
+                }));
                 if !skill_use_response.bonuses.is_empty() {
                     character.status.temporary_bonuses.merge(skill_use_response.bonuses);
                     self.server_task_queue
@@ -519,6 +613,7 @@ impl ServerService {
     // TODO cache per tick
     fn get_target(server_state: &ServerState, character: &Character, target_id: Option<u32>) -> Option<MapItemSnapshot> {
         if let Some(target_id) = target_id {
+            if target_id == character.char_id { return Some(character.to_map_item_snapshot()); }
             server_state.map_item_snapshot(target_id, character.current_map_name(), character.current_map_instance())
         } else {
             None
@@ -526,7 +621,7 @@ impl ServerService {
     }
 
     // TODO cache per tick
-    fn get_target_status(
+    pub(crate) fn get_target_status(
         &self,
         server_state: &ServerState,
         character: &Character,
@@ -534,13 +629,14 @@ impl ServerService {
         tick: u128,
     ) -> Option<StatusSnapshot> {
         if let Some(target_id) = target_id {
+            if target_id == character.char_id { return Some(self.get_status_snapshot(&character.status, tick)); }
             let map_item = server_state.map_item(target_id, character.current_map_name(), character.current_map_instance());
             if let Some(map_item) = map_item {
                 match map_item.object_type() {
                     MapItemType::Character => {
                         return Some(self.get_status_snapshot(&server_state.get_character_unsafe(target_id).status, tick));
                     }
-                    MapItemType::Mob => {
+                    MapItemType::Mob | MapItemType::Homunculus | MapItemType::Mercenary => {
                         return Some(
                             server_state
                                 .map_item_mob_status(&map_item, character.current_map_name(), character.current_map_instance())
@@ -560,75 +656,74 @@ impl ServerService {
 
     pub fn character_pickup_item(
         &self,
+        server: &Server,
         server_state: &mut ServerState,
         character: &mut Character,
         map_item_id: u32,
         map_instance: &MapInstance,
-        runtime: &Runtime,
-    ) {
-        // Avoid item to be pickup twice
-        if server_state.contains_locked_map_item(map_item_id) {
-            warn!(
-                "Map item {} is planned to be removed from map instance, can't pick it",
-                map_item_id
-            );
-            return;
+    ) -> Result<bool, String> {
+        use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
+        use super::script_world_service::{party_can_pick_up, party_loot_candidates};
+        if server_state.contains_locked_map_item(map_item_id) || character.is_dead() || character.status.hp == 0
+            || character.map_instance_key != *map_instance.key() || !character.is_map_item_in_fov(map_item_id) {
+            return Ok(false);
         }
-        // Limit pickable item on items present in player fov
-        if character.is_map_item_in_fov(map_item_id) {
-            if let Some(dropped_item) = map_instance.state().get_dropped_item(map_item_id) {
-                if let Some(owner) = dropped_item.owner_id {
-                    if owner != character.char_id
-                        && (get_tick() - dropped_item.dropped_at)
-                            < (self
-                                .configuration_service
-                                .config()
-                                .game
-                                .mob_dropped_item_locked_to_owner_duration_in_secs as u128
-                                * 1000)
-                    {
-                        return;
-                    }
-                }
-                server_state.insert_locked_map_item(map_item_id);
-                let item = self.configuration_service.get_item(dropped_item.item_id);
-                self.inventory_service.add_items_in_inventory(
-                    runtime,
-                    CharacterAddItems {
-                        char_id: character.char_id,
-                        should_perform_check: true,
-                        buy: false,
-                        items: vec![InventoryItemModel::from_item_model(
-                            item,
-                            dropped_item.amount as i16,
-                            dropped_item.is_identified,
-                        )],
-                    },
-                    character,
-                );
-                let mut packet_zc_notify_act = PacketZcNotifyAct::new(self.configuration_service.packetver());
-                packet_zc_notify_act.set_gid(character.char_id);
-                packet_zc_notify_act.set_action(ActionType::Itempickup.value() as u8);
-                packet_zc_notify_act.fill_raw();
-                self.client_notification_sender
-                    .send(Notification::Area(AreaNotification::new(
-                        map_instance.key().map_name().clone(),
-                        map_instance.key().map_instance(),
-                        AreaNotificationRangeType::Fov {
-                            x: dropped_item.x(),
-                            y: dropped_item.y(),
-                            exclude_id: None,
-                        },
-                        packet_zc_notify_act.raw,
-                    )))
-                    .unwrap_or_else(|_| error!("Failed to send notification packet_zc_notify_act to client"));
-                map_instance.add_to_next_tick(MapEvent::RemoveDroppedItemFromMap(map_item_id));
+        let Some(dropped_item) = map_instance.state().get_dropped_item(map_item_id).copied() else { return Ok(false); };
+        if character.x.abs_diff(dropped_item.x()).max(character.y.abs_diff(dropped_item.y())) > 2 {
+            return Ok(false);
+        }
+        let config = &self.configuration_service.config().game;
+        let lock_seconds = if dropped_item.player_dropped { config.player_dropped_item_locked_to_owner_duration_in_secs }
+            else { config.mob_dropped_item_locked_to_owner_duration_in_secs };
+        if dropped_item.owner_id.is_some_and(|owner| !party_can_pick_up(character, owner)
+            && get_tick().saturating_sub(dropped_item.dropped_at) < u128::from(lock_seconds) * 1000) {
+            return Ok(false);
+        }
+        let amount = i16::try_from(dropped_item.amount).map_err(|_| "Floor item amount is out of bounds")?;
+        let transfer = |recipient: &mut Character| -> Result<(), String> {
+            let result = server.repository.script_inventory_transaction(&ScriptInventoryTransaction {
+                char_id: recipient.char_id, account_id: recipient.account_id,
+                consumption: None, exact_removals: vec![], removals: vec![], identifications: vec![],
+                grants: vec![ScriptItemGrant {
+                    item_id: dropped_item.item_id, amount, identified: dropped_item.is_identified,
+                    refine: dropped_item.attributes.refine, cards: dropped_item.attributes.cards,
+                    unique_id: Some(dropped_item.attributes.unique_id), damaged: dropped_item.attributes.damaged,
+                }],
+                variables: vec![], zeny: None, hp: None, sp: None,
+                max_weight: server.character_service().max_weight(recipient), max_slots: usize::from(config.max_inventory),
+                world: None, reset_skills: None, fame: None, character_changes: vec![], pool_draws: vec![],
+            }).map_err(|error| error.to_string())?;
+            server.item_service().install_inventory(server, recipient, result.inventory, None);
+            Ok(())
+        };
+        let mut candidates = party_loot_candidates(server_state, character);
+        fastrand::shuffle(&mut candidates);
+        let mut committed = false;
+        let mut last_error = None;
+        for id in candidates {
+            let result = if id == character.char_id {
+                transfer(character)
+            } else if let Some(mut recipient) = server_state.characters_mut().remove(&id) {
+                let result = transfer(&mut recipient);
+                server_state.insert_character(recipient);
+                result
+            } else { continue; };
+            match result {
+                Ok(()) => { committed = true; break; }
+                Err(error) => { last_error = Some(error); }
             }
-        } else {
-            warn!(
-                "Character {} tried to loot item with map item id {} not in his fov",
-                character.char_id, map_item_id
-            );
         }
+        if !committed { return Err(last_error.unwrap_or_else(|| "No party member could receive the floor item".into())); }
+        server_state.insert_locked_map_item(map_item_id);
+        let mut packet = PacketZcNotifyAct::new(self.configuration_service.packetver());
+        packet.set_gid(character.char_id);
+        packet.set_action(ActionType::Itempickup.value() as u8);
+        packet.fill_raw();
+        self.client_notification_sender.send(Notification::Area(AreaNotification::new(
+            map_instance.key().map_name().clone(), map_instance.key().map_instance(),
+            AreaNotificationRangeType::Fov { x: dropped_item.x(), y: dropped_item.y(), exclude_id: None }, packet.raw,
+        ))).unwrap_or_else(|_| error!("Failed to send pickup animation"));
+        map_instance.add_to_next_tick(MapEvent::RemoveDroppedItemFromMap(map_item_id));
+        Ok(true)
     }
 }

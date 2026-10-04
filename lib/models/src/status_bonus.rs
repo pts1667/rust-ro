@@ -3,11 +3,218 @@ use std::slice::{Iter, IterMut};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use accessor::GettersAll;
-use enum_macro::{WithMaskValueU64, WithStringValue};
+use enum_macro::{WithMaskValueU32, WithMaskValueU64, WithStringValue};
+use serde::{Deserialize, Serialize};
 
 use crate::enums::bonus::BonusType;
 use crate::enums::skill_enums::SkillEnum;
-use crate::enums::{EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
+use crate::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
+
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum BattleFlag {
+    #[mask_value = 1]
+    Weapon,
+    Magic,
+    Misc,
+    #[mask_value = 16]
+    Short,
+    #[mask_value = 64]
+    Long,
+    #[mask_value = 256]
+    Skill,
+    Normal,
+}
+
+impl BattleFlag {
+    pub fn normalize(flags: u32, normal_only: bool) -> u32 {
+        let mut flags = flags;
+        let kind = Self::Weapon.as_flag() | Self::Magic.as_flag() | Self::Misc.as_flag();
+        let range = Self::Short.as_flag() | Self::Long.as_flag();
+        let action = Self::Normal.as_flag() | Self::Skill.as_flag();
+        if flags & kind == 0 {
+            flags |= Self::Weapon.as_flag();
+        }
+        if flags & range == 0 {
+            flags |= range;
+        }
+        if flags & action == 0 {
+            if flags & Self::Weapon.as_flag() != 0 {
+                flags |= if normal_only { Self::Normal.as_flag() } else { action };
+            }
+            if flags & (Self::Magic.as_flag() | Self::Misc.as_flag()) != 0 {
+                flags |= Self::Skill.as_flag();
+            }
+        }
+        flags
+    }
+
+    pub fn matches(required: u32, actual: u32) -> bool {
+        [
+            Self::Weapon.as_flag() | Self::Magic.as_flag() | Self::Misc.as_flag(),
+            Self::Short.as_flag() | Self::Long.as_flag(),
+            Self::Normal.as_flag() | Self::Skill.as_flag(),
+        ]
+        .into_iter()
+        .all(|mask| required & mask == 0 || required & actual & mask != 0)
+    }
+}
+
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum AutoEffectFlag {
+    #[mask_value = 1]
+    SelfTarget,
+    OtherTarget,
+    Short,
+    Long,
+    Weapon,
+    Magic,
+    Misc,
+}
+
+impl AutoEffectFlag {
+    pub fn normalize(flags: u32) -> u32 {
+        let mut flags = flags;
+        if flags & (Self::SelfTarget.as_flag() | Self::OtherTarget.as_flag()) == 0 {
+            flags |= Self::OtherTarget.as_flag();
+        }
+        if flags & (Self::Short.as_flag() | Self::Long.as_flag()) == 0 {
+            flags |= Self::Short.as_flag() | Self::Long.as_flag();
+        }
+        if flags & (Self::Weapon.as_flag() | Self::Magic.as_flag() | Self::Misc.as_flag()) == 0 {
+            flags |= Self::Weapon.as_flag();
+        }
+        flags
+    }
+
+    pub fn battle_flags(flags: u32) -> u32 {
+        let pairs = [
+            (Self::Short, BattleFlag::Short),
+            (Self::Long, BattleFlag::Long),
+            (Self::Weapon, BattleFlag::Weapon),
+            (Self::Magic, BattleFlag::Magic),
+            (Self::Misc, BattleFlag::Misc),
+        ];
+        pairs
+            .into_iter()
+            .filter(|(flag, _)| flags & flag.as_flag() != 0)
+            .fold(0, |combined, (_, flag)| combined | flag.as_flag())
+    }
+}
+
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum AutoSpellFlag {
+    #[mask_value = 1]
+    OtherTarget,
+    RandomLevel,
+}
+
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ZenyProcFlag {
+    #[mask_value = 1]
+    Additive,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CombatTrigger {
+    Attack,
+    Hit,
+    Skill,
+    Kill,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CombatProcKind {
+    Spell,
+    Status,
+    ItemDrop,
+    GroupDrop,
+    HpDrain,
+    SpDrain,
+    HpVanish,
+    SpVanish,
+    NoRecovery,
+    SetDef,
+    SetMdef,
+    BreakWeapon,
+    BreakArmor,
+    ClassChange,
+    Zeny,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum CombatTargetFilter {
+    #[default]
+    Any,
+    Race(u16),
+    Class(u16),
+    Monster(u32),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CombatProc {
+    pub trigger: CombatTrigger,
+    pub kind: CombatProcKind,
+    pub rate: i32,
+    pub battle_flags: u32,
+    pub trigger_skill: u32,
+    pub value: u32,
+    pub level: i16,
+    pub flags: u32,
+    pub duration: u32,
+    pub target_filter: CombatTargetFilter,
+}
+
+impl CombatProc {
+    pub fn new(trigger: CombatTrigger, kind: CombatProcKind, rate: i32) -> Self {
+        Self {
+            trigger,
+            kind,
+            rate,
+            battle_flags: 0,
+            trigger_skill: 0,
+            value: 0,
+            level: 0,
+            flags: 0,
+            duration: 0,
+            target_filter: CombatTargetFilter::Any,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AutoBonus {
+    pub trigger: CombatTrigger,
+    pub rate: i32,
+    pub duration: u32,
+    pub battle_flags: u32,
+    pub trigger_skill: u32,
+    pub program_id: u32,
+    pub visual_program_id: u32,
+    pub source_item_id: u32,
+    #[serde(default)]
+    pub source_location: u64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ActiveAutoBonus {
+    pub definition: AutoBonus,
+    pub expires_at: u128,
+    pub bonuses: Vec<BonusType>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum StructuredBonus {
+    CombatProc(CombatProc, u16),
+    AutoBonus(AutoBonus, u16),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PeriodicBonusKind {
+    HpLoss,
+    HpRegen,
+    SpLoss,
+    SpRegen,
+}
 
 #[derive(Default, Debug, Clone)]
 pub struct StatusBonuses(Vec<StatusBonus>);
@@ -102,6 +309,10 @@ impl TemporaryStatusBonus {
                 }
                 StatusBonusSource::PassiveSkill(_) => {}
                 StatusBonusSource::Item(_) => {}
+                StatusBonusSource::StatusChange(status_id) => {
+                    return crate::status_change::StatusChangeKind::from_id(*status_id as i32).and_then(|kind| kind.icon());
+                }
+                StatusBonusSource::AutoBonus(_) => {}
             }
         }
         None
@@ -149,6 +360,8 @@ impl Display for TemporaryStatusBonus {
                 StatusBonusSource::Item(item) => {
                     write!(f, ", Source: item {:?}", item)?;
                 }
+                StatusBonusSource::StatusChange(status) => write!(f, ", Source: status {}", status)?,
+                StatusBonusSource::AutoBonus(program) => write!(f, ", Source: auto bonus {}", program)?,
             }
         }
         write!(f, ", flags: [")?;
@@ -232,6 +445,8 @@ pub enum StatusBonusSource {
     Skill(u16),
     PassiveSkill(u16),
     Item(u32),
+    StatusChange(u16),
+    AutoBonus(u32),
 }
 
 impl StatusBonusSource {
@@ -240,6 +455,8 @@ impl StatusBonusSource {
             StatusBonusSource::Skill(v) => ("Skill", *v as i32),
             StatusBonusSource::PassiveSkill(v) => ("PassiveSkill", *v as i32),
             StatusBonusSource::Item(v) => ("Item", *v as i32),
+            StatusBonusSource::StatusChange(v) => ("StatusChange", *v as i32),
+            StatusBonusSource::AutoBonus(v) => ("AutoBonus", *v as i32),
         }
     }
 
@@ -248,6 +465,8 @@ impl StatusBonusSource {
             "Skill" => Some(StatusBonusSource::Skill(value as u16)),
             "PassiveSkill" => Some(StatusBonusSource::PassiveSkill(value as u16)),
             "Item" => Some(StatusBonusSource::Item(value as u32)),
+            "StatusChange" => Some(StatusBonusSource::StatusChange(value as u16)),
+            "AutoBonus" => Some(StatusBonusSource::AutoBonus(value as u32)),
             _ => None,
         }
     }
@@ -288,6 +507,51 @@ mod tests {
     use crate::enums::EnumWithMaskValueU64;
     use crate::enums::bonus::BonusType;
     use crate::status_bonus::{StatusBonus, StatusBonusFlag, StatusBonusSource, TemporaryStatusBonus, TemporaryStatusBonuses};
+
+    #[test]
+    fn battle_defaults_keep_magic_skills_separate_from_normal_weapon_attacks() {
+        use crate::enums::EnumWithMaskValueU32;
+        let required = super::BattleFlag::normalize(super::BattleFlag::Magic.as_flag(), true);
+        assert!(super::BattleFlag::matches(
+            required,
+            super::BattleFlag::Magic.as_flag() | super::BattleFlag::Long.as_flag() | super::BattleFlag::Skill.as_flag()
+        ));
+        assert!(!super::BattleFlag::matches(
+            required,
+            super::BattleFlag::Weapon.as_flag() | super::BattleFlag::Long.as_flag() | super::BattleFlag::Normal.as_flag()
+        ));
+    }
+
+    #[test]
+    fn periodic_bonuses_merge_amounts_only_when_periods_match() {
+        use crate::enums::EnumStackable;
+        let values = vec![
+            BonusType::HpRegenEveryMs(20, 3000),
+            BonusType::HpRegenEveryMs(30, 3000),
+            BonusType::HpRegenEveryMs(20, 5000),
+        ];
+        let merged = BonusType::merge_enums(&values);
+        assert!(matches!(merged.as_slice(), [
+            BonusType::HpRegenEveryMs(50, 3000),
+            BonusType::HpRegenEveryMs(20, 5000)
+        ]));
+    }
+
+    #[test]
+    fn structured_bonus_retains_trigger_details_and_count() {
+        let mut proc = super::CombatProc::new(super::CombatTrigger::Skill, super::CombatProcKind::Spell, 125);
+        proc.trigger_skill = 19;
+        proc.value = 20;
+        proc.level = 5;
+        proc.duration = 3000;
+        let bonus = BonusType::CombatProc(proc, 2);
+        let recovered = BonusType::from_structured_payload(bonus.structured_payload().unwrap());
+        let BonusType::CombatProc(recovered, count) = recovered else {
+            panic!("Expected structured proc");
+        };
+        assert_eq!(recovered, proc);
+        assert_eq!(count, 2);
+    }
 
     #[test]
     fn size_of_status_bonus() {

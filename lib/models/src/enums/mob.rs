@@ -2,10 +2,19 @@ use enum_macro::{WithMaskValueU32, WithNumberValue, WithStringValue};
 
 use crate::enums::{EnumWithMaskValueU32, EnumWithNumberValue, EnumWithStringValue};
 
-#[derive(WithStringValue, WithNumberValue, Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum MobDamageMode {
+    IgnoreMelee,
+    IgnoreRanged,
+    IgnoreMagic,
+    IgnoreMisc,
+}
+
+#[derive(WithStringValue, WithNumberValue, Debug, Copy, Clone, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub enum MobClass {
     #[value = 0]
     #[value_string = "Class_Normal"]
+    #[default]
     Normal,
     #[value_string = "Class_Boss"]
     Boss,
@@ -13,6 +22,12 @@ pub enum MobClass {
     Guardian,
     #[value_string = "Class_All"]
     All,
+    #[value = 4]
+    #[value_string = "Class_Battlefield"]
+    Battlefield,
+    #[value = 5]
+    #[value_string = "Class_Event"]
+    Event,
 }
 
 #[derive(WithStringValue, WithNumberValue, Debug, Copy, Clone, PartialEq, Eq)]
@@ -143,7 +158,8 @@ pub enum MobMode {
     /// Chase characters who start casting on them (while chasing)
     #[mask_value = 0x0200]
     CastSensorChase,
-    /// Allows chasing mobs to switch targets if another player is in attack range
+    /// Allows chasing mobs to switch targets if another player is in attack
+    /// range
     #[mask_value = 0x0400]
     ChangeChase,
     /// Hyper-active mob that auto-switches to closest target
@@ -179,7 +195,14 @@ impl MobMode {
             // AI 03 (0x1089): Passive, assist, change-target melee
             3 => CanMove.as_flag() | Assist.as_flag() | CanAttack.as_flag() | ChangeTargetMelee.as_flag(),
             // AI 04 (0x3885): Angry, change-target melee/chase
-            4 => CanMove.as_flag() | Aggressive.as_flag() | CanAttack.as_flag() | Angry.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            4 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CanAttack.as_flag()
+                    | Angry.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 05 (0x2085): Aggressive, change-target chase
             5 => CanMove.as_flag() | Aggressive.as_flag() | CanAttack.as_flag() | ChangeTargetChase.as_flag(),
             // AI 06 (0x0000): Passive, immobile, can't attack (plants)
@@ -189,7 +212,14 @@ impl MobMode {
             // AI 08 (0x6085): Aggressive, change-target chase, target weak
             8 => CanMove.as_flag() | Aggressive.as_flag() | CanAttack.as_flag() | ChangeTargetChase.as_flag() | TargetWeak.as_flag(),
             // AI 09 (0x3095): Aggressive, change-target melee/chase, cast sensor idle (Guardian)
-            9 => CanMove.as_flag() | Aggressive.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            9 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CastSensorIdle.as_flag()
+                    | CanAttack.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 10 (0x0084): Aggressive, immobile (e.g. Hydra)
             10 => Aggressive.as_flag() | CanAttack.as_flag(),
             // AI 11 (0x0084): Aggressive, immobile (Guardian)
@@ -197,19 +227,60 @@ impl MobMode {
             // AI 12 (0x2085): Aggressive, change-target chase (Guardian)
             12 => CanMove.as_flag() | Aggressive.as_flag() | CanAttack.as_flag() | ChangeTargetChase.as_flag(),
             // AI 13 (0x308D): Aggressive, change-target melee/chase, assist
-            13 => CanMove.as_flag() | Aggressive.as_flag() | Assist.as_flag() | CanAttack.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            13 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | Assist.as_flag()
+                    | CanAttack.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 17 (0x0091): Passive, cast sensor idle
             17 => CanMove.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag(),
             // AI 19 (0x3095): Aggressive, change-target melee/chase, cast sensor idle
-            19 => CanMove.as_flag() | Aggressive.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            19 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CastSensorIdle.as_flag()
+                    | CanAttack.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 20 (0x3295): Aggressive, change-target melee/chase, cast sensor idle/chase
-            20 => CanMove.as_flag() | Aggressive.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag() | CastSensorChase.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            20 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CastSensorIdle.as_flag()
+                    | CanAttack.as_flag()
+                    | CastSensorChase.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 21 (0x3695): Aggressive, change-target melee/chase, cast sensor idle/chase, change-chase
-            21 => CanMove.as_flag() | Aggressive.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag() | CastSensorChase.as_flag() | ChangeChase.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag(),
+            21 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CastSensorIdle.as_flag()
+                    | CanAttack.as_flag()
+                    | CastSensorChase.as_flag()
+                    | ChangeChase.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+            }
             // AI 25 (0x0001): Passive, can't attack (pet)
             25 => CanMove.as_flag(),
             // AI 26 (0xB695): Aggressive, change-target melee/chase, cast sensor idle/chase, change-chase, random target
-            26 => CanMove.as_flag() | Aggressive.as_flag() | CastSensorIdle.as_flag() | CanAttack.as_flag() | CastSensorChase.as_flag() | ChangeChase.as_flag() | ChangeTargetMelee.as_flag() | ChangeTargetChase.as_flag() | RandomTarget.as_flag(),
+            26 => {
+                CanMove.as_flag()
+                    | Aggressive.as_flag()
+                    | CastSensorIdle.as_flag()
+                    | CanAttack.as_flag()
+                    | CastSensorChase.as_flag()
+                    | ChangeChase.as_flag()
+                    | ChangeTargetMelee.as_flag()
+                    | ChangeTargetChase.as_flag()
+                    | RandomTarget.as_flag()
+            }
             // AI 27 (0x8084): Aggressive, immobile, random target
             27 => Aggressive.as_flag() | CanAttack.as_flag() | RandomTarget.as_flag(),
             // Default: Passive (CanMove + CanAttack)

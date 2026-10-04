@@ -1,8 +1,10 @@
 pub mod action;
 pub mod events;
+pub mod game_systems;
 pub mod hotkey;
 pub mod item;
 pub mod map;
+pub mod map_flags;
 pub mod map_instance;
 pub mod map_item;
 pub mod mob_spawn;

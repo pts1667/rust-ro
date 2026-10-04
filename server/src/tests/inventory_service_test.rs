@@ -34,6 +34,7 @@ fn before_each(inventory_repository: Arc<dyn InventoryRepository + Sync>) -> Inv
 
 fn before_each_with_latch(inventory_repository: Arc<dyn InventoryRepository + Sync>, latch_size: usize) -> InventoryServiceTestContext {
     common::before_all();
+    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_script_vm());
     let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
     let server_task_queue = Arc::new(TasksQueue::new());
@@ -358,9 +359,11 @@ mod tests {
         let mut character = create_character();
         let char_id = character.char_id;
         // When
-        context
-            .inventory_service
-            .equip_item(&mut character, CharacterEquipItem { char_id, index: 0 });
+        context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
+            char_id,
+            index: 0,
+        });
         // Then
         context.test_context.countdown_latch().wait_with_timeout(Duration::from_millis(200));
         assert!(character.inventory.is_empty());
@@ -383,6 +386,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -412,6 +416,98 @@ mod tests {
     }
 
     #[test]
+    fn dual_wield_equips_a_real_left_weapon_and_two_hand_weapons_remove_both() {
+        let context = before_each(mocked_repository());
+        let mut character = create_character();
+        character.status.job = JobName::Assassin.value() as u32;
+        character.status.base_level = 99;
+        let right = EquipmentLocation::HandRight.as_flag();
+        let left = EquipmentLocation::HandLeft.as_flag();
+        let first = add_item_in_inventory(&mut character, "Knife");
+        let second = add_item_in_inventory(&mut character, "Knife");
+        let char_id = character.char_id;
+        for index in [first, second] {
+            assert!(
+                context
+                    .inventory_service
+                    .equip_item(&mut character, CharacterEquipItem {
+                        char_id,
+                        index,
+                        requested_location: None
+                    })
+                    .is_some()
+            );
+        }
+        assert_eq!(character.inventory[first].as_ref().unwrap().equip as u64, right);
+        assert_eq!(character.inventory[second].as_ref().unwrap().equip as u64, left);
+        assert_eq!(character.status.left_hand_weapon().unwrap().inventory_index(), second);
+        let third = add_item_in_inventory(&mut character, "Knife");
+        assert!(
+            context
+                .inventory_service
+                .equip_item(&mut character, CharacterEquipItem {
+                    char_id,
+                    index: third,
+                    requested_location: Some(right)
+                })
+                .is_some()
+        );
+        assert_eq!(character.inventory[first].as_ref().unwrap().equip, 0);
+        assert_eq!(character.inventory[second].as_ref().unwrap().equip as u64, left);
+        let katar = add_item_in_inventory(&mut character, "Katar");
+        assert!(
+            context
+                .inventory_service
+                .equip_item(&mut character, CharacterEquipItem {
+                    char_id,
+                    index: katar,
+                    requested_location: None
+                })
+                .is_some()
+        );
+        assert_eq!(character.inventory[second].as_ref().unwrap().equip, 0);
+        assert_eq!(character.inventory[third].as_ref().unwrap().equip, 0);
+        assert_eq!(character.status.weapons.len(), 1);
+        assert!(character.status.left_hand_weapon().is_none());
+    }
+
+    #[test]
+    fn requested_left_weapon_requires_the_class_or_effective_left_hand_skill() {
+        let context = before_each(mocked_repository());
+        let mut character = create_character();
+        character.status.job = JobName::Novice.value() as u32;
+        let index = add_item_in_inventory(&mut character, "Knife");
+        let char_id = character.char_id;
+        let left = EquipmentLocation::HandLeft.as_flag();
+        assert!(
+            context
+                .inventory_service
+                .equip_item(&mut character, CharacterEquipItem {
+                    char_id,
+                    index,
+                    requested_location: Some(left)
+                })
+                .is_none()
+        );
+        assert_eq!(character.inventory[index].as_ref().unwrap().equip, 0);
+        character.status.known_skills.push(models::status::KnownSkill {
+            value: models::enums::skill_enums::SkillEnum::AsLeft,
+            level: 1,
+        });
+        assert!(
+            context
+                .inventory_service
+                .equip_item(&mut character, CharacterEquipItem {
+                    char_id,
+                    index,
+                    requested_location: Some(left)
+                })
+                .is_some()
+        );
+        assert_eq!(character.inventory[index].as_ref().unwrap().equip as u64, left);
+    }
+
+    #[test]
     fn test_equip_item_should_not_equip_item_if_base_level_requirements_is_not_met() {
         // Given
         let context = before_each_with_latch(mocked_repository(), 2);
@@ -422,6 +518,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -521,6 +618,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -566,6 +664,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -595,6 +694,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -645,6 +745,7 @@ mod tests {
         let two_h_sword_index = add_item_in_inventory(&mut character, "Two_Hand_Sword");
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: knife_index,
         });
@@ -678,6 +779,7 @@ mod tests {
 
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: sword_index,
         });
@@ -712,6 +814,7 @@ mod tests {
 
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: guard_index,
         });
@@ -755,6 +858,7 @@ mod tests {
 
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: two_h_sword_index,
         });
@@ -800,10 +904,12 @@ mod tests {
         let rosary_index = add_item_in_inventory(&mut character, "Rosary");
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: glove_index,
         });
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: rosary_index,
         });
@@ -843,14 +949,17 @@ mod tests {
         let belt_index = add_item_in_inventory(&mut character, "Belt");
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: glove_index,
         });
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: rosary_index,
         });
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: belt_index,
         });
@@ -887,6 +996,7 @@ mod tests {
         let char_id = character.char_id;
         // When
         context.inventory_service.equip_item(&mut character, CharacterEquipItem {
+            requested_location: None,
             char_id,
             index: inventory_index,
         });
@@ -1251,6 +1361,7 @@ mod tests {
         add_items_in_inventory(&mut character, "Marionette_Doll", 1);
 
         let request = CharacterEquipItem {
+            requested_location: None,
             char_id: character.char_id,
             index: 0,
         };

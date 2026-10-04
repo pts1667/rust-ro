@@ -1,0 +1,2078 @@
+{
+  "ADRENALINE": {
+    "DurationLookup": "BS_ADRENALINE",
+    "Fail": {
+      "Decreaseagi": true,
+      "Quagmire": true
+    },
+    "Flags": {
+      "MadoCancel": true,
+      "RemoveOnHermode": true,
+      "RequireWeapon": true
+    },
+    "Icon": "EFST_ADRENALINE"
+  },
+  "AETERNA": {
+    "DurationLookup": "PR_LEXAETERNA",
+    "Fail": {
+      "Freeze": true,
+      "Stone": true
+    },
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_LEXAETERNA"
+  },
+  "AGIFOOD": {
+    "EndOnStart": {
+      "Food_Agi_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_AGI"
+  },
+  "ANGELUS": {
+    "DurationLookup": "AL_ANGELUS",
+    "Flags": {
+      "RemoveOnHermode": true,
+      "SendOption": true
+    },
+    "Icon": "EFST_ANGELUS",
+    "Opt2": {
+      "Angelus": true
+    }
+  },
+  "ANKLE": {
+    "DurationLookup": "HT_ANKLESNARE",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "RemoveOnChangeMap": true,
+      "StopWalking": true
+    },
+    "Icon": "EFST_ANKLESNARE",
+    "States": {
+      "NoMove": true
+    }
+  },
+  "ARMORCHANGE": {
+    "DurationLookup": "NPC_STONESKIN"
+  },
+  "ARMOR_ELEMENT_EARTH": {
+    "Flags": {
+      "NoDispell": true,
+      "OverlapIgnoreLevel": true
+    },
+    "Icon": "EFST_RESIST_PROPERTY_GROUND"
+  },
+  "ARMOR_ELEMENT_FIRE": {
+    "Flags": {
+      "NoDispell": true,
+      "OverlapIgnoreLevel": true
+    },
+    "Icon": "EFST_RESIST_PROPERTY_FIRE"
+  },
+  "ARMOR_ELEMENT_WATER": {
+    "Flags": {
+      "NoDispell": true,
+      "OverlapIgnoreLevel": true
+    },
+    "Icon": "EFST_RESIST_PROPERTY_WATER"
+  },
+  "ARMOR_ELEMENT_WIND": {
+    "Flags": {
+      "NoDispell": true,
+      "OverlapIgnoreLevel": true
+    },
+    "Icon": "EFST_RESIST_PROPERTY_WIND"
+  },
+  "ARMOR_RESIST": {
+    "Flags": {
+      "OverlapIgnoreLevel": true,
+      "RemoveOnUnequipArmor": true
+    }
+  },
+  "ASPDPOTION0": {
+    "Flags": {
+      "NoClearance": true,
+      "OverlapIgnoreLevel": true
+    },
+    "Icon": "EFST_ATTHASTE_POTION1"
+  },
+  "ASPDPOTION1": {
+    "Flags": {
+      "NoClearance": true,
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_ATTHASTE_POTION2"
+  },
+  "ASPDPOTION2": {
+    "Flags": {
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_ATTHASTE_POTION3"
+  },
+  "ASPDPOTION3": {
+    "Flags": {
+      "NoClearance": true,
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_ATTHASTE_INFINITY"
+  },
+  "ASPERSIO": {
+    "DurationLookup": "PR_ASPERSIO",
+    "EndOnStart": {
+      "Earthweapon": true,
+      "Enchantarms": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true,
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_ASPERSIO"
+  },
+  "ASSUMPTIO": {
+    "DurationLookup": "HP_ASSUMPTIO",
+    "EndOnStart": {
+      "Kaite": true,
+      "Kyrie": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_ASSUMPTIO"
+  },
+  "ATKPOTION": {
+    "Flags": {
+      "NoClearance": true,
+      "NoRemoveOnDead": true,
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PLUSATTACKPOWER"
+  },
+  "AURABLADE": {
+    "DurationLookup": "LK_AURABLADE",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "RemoveOnUnequipWeapon": true,
+      "RequireWeapon": true
+    },
+    "Icon": "EFST_AURABLADE"
+  },
+  "AUTOBERSERK": {
+    "DurationLookup": "SM_AUTOBERSERK",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_AUTOBERSERK"
+  },
+  "AUTOGUARD": {
+    "DurationLookup": "CR_AUTOGUARD",
+    "Flags": {
+      "NoClearance": true,
+      "RemoveOnHermode": true,
+      "RequireShield": true
+    },
+    "Icon": "EFST_AUTOGUARD"
+  },
+  "AVOID": {
+    "DurationLookup": "HLIF_AVOID",
+    "Flags": {
+      "NoSave": true,
+      "RemoveFromHomOnWarp": true
+    }
+  },
+  "BASILICA": {
+    "DurationLookup": "HP_BASILICA",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true
+    },
+    "States": {
+      "NoAttack": true,
+      "NoMoveCond": true
+    }
+  },
+  "BATKFOOD": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    }
+  },
+  "BENEDICTIO": {
+    "DurationLookup": "PR_BENEDICTIO",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_BENEDICTIO"
+  },
+  "BERSERK": {
+    "DurationLookup": "LK_BERSERK",
+    "Fail": {
+      "Saturdaynightfever": true,
+      "_Bloodylust": true
+    },
+    "Flags": {
+      "NoSave": true
+    },
+    "Icon": "EFST_BERSERK",
+    "States": {
+      "NoCast": true,
+      "NoChat": true,
+      "NoConsumeItem": true,
+      "NoEquipItem": true,
+      "NoUnEquipItem": true
+    }
+  },
+  "BLEEDING": {
+    "DurationLookup": "NPC_BLEEDING",
+    "Fail": {
+      "Inspiration": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "SendOption": true
+    },
+    "Icon": "EFST_BLOODING",
+    "Opt2": {
+      "Bleeding": true
+    }
+  },
+  "BLESSING": {
+    "DurationLookup": "AL_BLESSING",
+    "Flags": {
+      "BossResist": true,
+      "RemoveOnHermode": true,
+      "TaekwonAngel": true
+    },
+    "Icon": "EFST_BLESSING"
+  },
+  "BLIND": {
+    "DurationLookup": "NPC_BLINDATTACK",
+    "Fail": {
+      "Blind": true,
+      "Fear": true,
+      "Gvg_Blind": true,
+      "Inspiration": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true
+    },
+    "Opt2": {
+      "Blind": true
+    }
+  },
+  "BLOODLUST": {
+    "DurationLookup": "HAMI_BLOODLUST",
+    "Flags": {
+      "NoSave": true,
+      "RemoveFromHomOnWarp": true
+    }
+  },
+  "BOSSMAPINFO": {
+    "Fail": {
+      "Bossmapinfo": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnMapWarp": true
+    },
+    "Icon": "EFST_CASH_BOSS_ALARM"
+  },
+  "CARTBOOST": {
+    "DurationLookup": "WS_CARTBOOST",
+    "EndReturn": {
+      "Decreaseagi": true
+    },
+    "Fail": {
+      "Dontforgetme": true,
+      "Quagmire": true
+    },
+    "Flags": {
+      "MadoCancel": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_CARTBOOST"
+  },
+  "CHANGE": {
+    "DurationLookup": "HLIF_CHANGE",
+    "Fail": {
+      "Change": true
+    },
+    "Flags": {
+      "NoSave": true,
+      "RemoveFromHomOnWarp": true
+    }
+  },
+  "CHANGEUNDEAD": {
+    "DurationLookup": "NPC_CHANGEUNDEAD",
+    "EndOnStart": {
+      "Blessing": true,
+      "Increaseagi": true
+    },
+    "Flags": {
+      "Debuff": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROPERTYUNDEAD"
+  },
+  "CHASEWALK": {
+    "DurationLookup": "ST_CHASEWALK",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "OnTouch": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnDamaged": true,
+      "StopAttacking": true
+    },
+    "Icon": "EFST_CHASEWALK",
+    "Options": {
+      "ChaseWalk": true,
+      "Cloak": true
+    },
+    "States": {
+      "NoPickItem": true
+    }
+  },
+  "CHASEWALK2": {
+    "CalcFlags": {
+      "Str": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_CHASEWALK2"
+  },
+  "CLOAKING": {
+    "DurationLookup": "AS_CLOAKING",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "OnTouch": true,
+      "RemoveOnDamaged": true,
+      "RemoveOnMapWarp": true,
+      "StopAttacking": true
+    },
+    "Icon": "EFST_CLOAKING",
+    "Options": {
+      "Cloak": true
+    },
+    "States": {
+      "NoPickItem": true
+    }
+  },
+  "COMA": {
+    "DurationLookup": "NPC_DARKBLESSING",
+    "Flags": {
+      "BossResist": true,
+      "MvpResist": true
+    }
+  },
+  "COMMONSC_RESIST": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_TARGET_BLOOD"
+  },
+  "CONCENTRATE": {
+    "DurationLookup": "AC_CONCENTRATION",
+    "Fail": {
+      "Quagmire": true
+    },
+    "Flags": {
+      "FailedMado": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_CONCENTRATION"
+  },
+  "CONCENTRATION": {
+    "DurationLookup": "LK_CONCENTRATION",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "RemoveOnUnequip": true
+    },
+    "Icon": "EFST_LKCONCENTRATION"
+  },
+  "CONFUSION": {
+    "DurationLookup": "NPC_WIDECONFUSE",
+    "EndReturn": {
+      "Confusion": true
+    },
+    "Fail": {
+      "Inspiration": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true,
+      "StopWalking": true
+    },
+    "Opt2": {
+      "Confusion": true
+    }
+  },
+  "CP_ARMOR": {
+    "DurationLookup": "AM_CP_ARMOR",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "RemoveChemicalProtect": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROTECTARMOR"
+  },
+  "CP_HELM": {
+    "DurationLookup": "AM_CP_HELM",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "RemoveChemicalProtect": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROTECTHELM"
+  },
+  "CP_SHIELD": {
+    "DurationLookup": "AM_CP_SHIELD",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "RemoveChemicalProtect": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROTECTSHIELD"
+  },
+  "CP_WEAPON": {
+    "DurationLookup": "AM_CP_WEAPON",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "RemoveChemicalProtect": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROTECTWEAPON"
+  },
+  "CRITICALWOUND": {
+    "DurationLookup": "NPC_CRITICALWOUND",
+    "Flags": {
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_CRITICALWOUND"
+  },
+  "CURSE": {
+    "DurationLookup": "NPC_CURSEATTACK",
+    "Fail": {
+      "Curse": true,
+      "Gvg_Curse": true,
+      "Inspiration": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true
+    },
+    "Opt2": {
+      "Curse": true
+    }
+  },
+  "DECREASEAGI": {
+    "DurationLookup": "AL_DECAGI",
+    "EndOnStart": {
+      "Acceleration": true,
+      "Adrenaline": true,
+      "Adrenaline2": true,
+      "Cartboost": true,
+      "Gn_Cartboost": true,
+      "Increaseagi": true,
+      "Merc_Quicken": true,
+      "Onehand": true,
+      "Spearquicken": true,
+      "Twohandquicken": true
+    },
+    "Fail": {
+      "Speedup1": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_DEC_AGI"
+  },
+  "DEFENCE": {
+    "DurationLookup": "HAMI_DEFENCE",
+    "Flags": {
+      "NoSave": true,
+      "RemoveFromHomOnWarp": true
+    }
+  },
+  "DEFENDER": {
+    "DurationLookup": "CR_DEFENDER",
+    "Flags": {
+      "RemoveOnHermode": true,
+      "RequireShield": true
+    },
+    "Icon": "EFST_DEFENDER"
+  },
+  "DEFSET": {
+    "Icon": "EFST_SET_NUM_DEF"
+  },
+  "DEF_RATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_PROTECT_DEF"
+  },
+  "DELUGE": {
+    "DurationLookup": "SA_DELUGE",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_GROUNDMAGIC"
+  },
+  "DEVOTION": {
+    "DurationLookup": "CR_DEVOTION",
+    "EndOnEnd": {
+      "Autoguard": true,
+      "Defender": true,
+      "Endure": true,
+      "ReflectShield": true
+    },
+    "Flags": {
+      "NoSave": true,
+      "OverlapIgnoreLevel": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_DEVOTION"
+  },
+  "DEXFOOD": {
+    "EndOnStart": {
+      "Food_Dex_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_DEX"
+  },
+  "DPOISON": {
+    "DurationLookup": "NPC_POISON",
+    "Fail": {
+      "Inspiration": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true
+    },
+    "Opt2": {
+      "Dpoison": true
+    }
+  },
+  "EARTHWEAPON": {
+    "DurationLookup": "SA_SEISMICWEAPON",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_PROPERTYGROUND"
+  },
+  "ENCHANTARMS": {
+    "DurationLookup": "ITEM_ENCHANTARMS",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Enchantarms": true
+    },
+    "Flags": {
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true,
+      "RemoveOnUnequipWeapon": true,
+      "SendVal1": true
+    },
+    "Icon": "EFST_WEAPONPROPERTY"
+  },
+  "ENCPOISON": {
+    "DurationLookup": "AS_ENCHANTPOISON",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Enchantarms": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true,
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_ENCHANTPOISON"
+  },
+  "ENDURE": {
+    "DurationLookup": "SM_ENDURE",
+    "Flags": {
+      "NoRemoveOnDead": true,
+      "NoSaveInfinite": true
+    },
+    "Icon": "EFST_ENDURE"
+  },
+  "ENERGYCOAT": {
+    "DurationLookup": "MG_ENERGYCOAT",
+    "Flags": {
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_ENERGYCOAT"
+  },
+  "EXPBOOST": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendVal1": true
+    },
+    "Icon": "EFST_CASH_PLUSEXP"
+  },
+  "EXPLOSIONSPIRITS": {
+    "DurationLookup": "MO_EXPLOSIONSPIRITS",
+    "Flags": {
+      "Debuff": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_EXPLOSIONSPIRITS"
+  },
+  "FIREWEAPON": {
+    "DurationLookup": "SA_FLAMELAUNCHER",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Encpoison": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_PROPERTYFIRE"
+  },
+  "FLEEFOOD": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_BASICAVOIDANCE"
+  },
+  "FLEET": {
+    "DurationLookup": "HFLI_FLEET"
+  },
+  "FOOD_AGI_CASH": {
+    "EndOnStart": {
+      "Agifood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_AGI_CASH"
+  },
+  "FOOD_DEX_CASH": {
+    "EndOnStart": {
+      "Dexfood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_DEX_CASH"
+  },
+  "FOOD_INT_CASH": {
+    "EndOnStart": {
+      "Intfood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_INT_CASH"
+  },
+  "FOOD_LUK_CASH": {
+    "EndOnStart": {
+      "Lukfood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_LUK_CASH"
+  },
+  "FOOD_STR_CASH": {
+    "EndOnStart": {
+      "Strfood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_STR_CASH"
+  },
+  "FOOD_VIT_CASH": {
+    "EndOnStart": {
+      "Vitfood": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_FOOD_VIT_CASH"
+  },
+  "FREEZE": {
+    "DurationLookup": "NPC_WIDEFREEZE",
+    "EndOnStart": {
+      "Aeterna": true
+    },
+    "Fail": {
+      "Burning": true,
+      "Freeze": true,
+      "Gvg_Freez": true,
+      "Inspiration": true,
+      "Refresh": true,
+      "Sleep": true,
+      "Stone": true,
+      "StoneWait": true,
+      "Stun": true,
+      "Warmer": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "RemoveOnDamaged": true,
+      "SendOption": true,
+      "StopAttacking": true,
+      "StopCasting": true
+    },
+    "Opt1": "Freeze",
+    "States": {
+      "NoAttack": true,
+      "NoCast": true,
+      "NoMove": true
+    }
+  },
+  "GHOSTWEAPON": {
+    "DurationLookup": "TK_SEVENWIND",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROPERTYTELEKINESIS"
+  },
+  "GLORIA": {
+    "DurationLookup": "PR_GLORIA",
+    "Flags": {
+      "RemoveOnHermode": true,
+      "SuperNoviceAngel": true
+    },
+    "Icon": "EFST_GLORIA"
+  },
+  "HALLUCINATION": {
+    "DurationLookup": "NPC_HALLUCINATION",
+    "Fail": {
+      "Inspiration": true
+    },
+    "Flags": {
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_ILLUSION"
+  },
+  "HELLPOWER": {
+    "DurationLookup": "NPC_HELLPOWER",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_HELLPOWER"
+  },
+  "HIDING": {
+    "DurationLookup": "TF_HIDING",
+    "EndOnStart": {
+      "Closeconfine": true,
+      "Closeconfine2": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "OnTouch": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnDamaged": true,
+      "StopAttacking": true
+    },
+    "Icon": "EFST_HIDING",
+    "Options": {
+      "Hide": true
+    },
+    "States": {
+      "NoConsumeItem": true,
+      "NoMoveCond": true,
+      "NoPickItem": true
+    }
+  },
+  "HITFOOD": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_BASICHIT"
+  },
+  "IMPOSITIO": {
+    "DurationLookup": "PR_IMPOSITIO",
+    "EndOnStart": {
+      "Impositio": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true,
+      "SuperNoviceAngel": true
+    },
+    "Icon": "EFST_IMPOSITIO"
+  },
+  "INCAGI": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCALLSTATUS": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCATKRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendOption": true
+    }
+  },
+  "INCCRI": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_CRITICALPERCENT"
+  },
+  "INCDEFRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCDEX": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCFLEE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCFLEERATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCHEALRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_HEALPLUS"
+  },
+  "INCHIT": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCHITRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCINT": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCLUK": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCMATKRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCMHPRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCMSPRATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCREASEAGI": {
+    "DurationLookup": "AL_INCAGI",
+    "EndOnStart": {
+      "Adoramus": true,
+      "Decreaseagi": true
+    },
+    "Fail": {
+      "Quagmire": true
+    },
+    "Flags": {
+      "FailedMado": true,
+      "RemoveOnHermode": true,
+      "TaekwonAngel": true
+    },
+    "Icon": "EFST_INC_AGI"
+  },
+  "INCREASE_MAXHP": {
+    "Icon": "EFST_ATKER_ASPD"
+  },
+  "INCREASE_MAXSP": {
+    "Icon": "EFST_ATKER_MOVESPEED"
+  },
+  "INCSTR": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INCVIT": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    }
+  },
+  "INTFOOD": {
+    "EndOnStart": {
+      "Food_Int_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_INT"
+  },
+  "INTRAVISION": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_CLAIRVOYANCE"
+  },
+  "ITEMBOOST": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendVal1": true
+    },
+    "Icon": "EFST_CASH_RECEIVEITEM"
+  },
+  "JOINTBEAT": {
+    "DurationLookup": "LK_JOINTBEAT",
+    "Flags": {
+      "Debuff": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_JOINTBEAT"
+  },
+  "KYRIE": {
+    "DurationLookup": "PR_KYRIE",
+    "EndOnStart": {
+      "Assumptio": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true,
+      "SuperNoviceAngel": true
+    },
+    "Icon": "EFST_KYRIE"
+  },
+  "LIFEINSURANCE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_CASH_DEATHPENALTY",
+    "States": {
+      "NoDeathPenalty": true
+    }
+  },
+  "LOUD": {
+    "DurationLookup": "MC_LOUD",
+    "Flags": {
+      "MadoCancel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_SHOUT"
+  },
+  "LUKFOOD": {
+    "EndOnStart": {
+      "Food_Luk_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_LUK"
+  },
+  "MAGICMIRROR": {
+    "DurationLookup": "NPC_MAGICMIRROR"
+  },
+  "MAGICROD": {
+    "DurationLookup": "SA_MAGICROD",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_MAGICROD"
+  },
+  "MAGNIFICAT": {
+    "DurationLookup": "PR_MAGNIFICAT",
+    "Flags": {
+      "FailedMado": true,
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "SuperNoviceAngel": true
+    },
+    "Icon": "EFST_MAGNIFICAT"
+  },
+  "MANU_ATK": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MANU_ATK"
+  },
+  "MANU_DEF": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MANU_DEF"
+  },
+  "MANU_MATK": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MANU_MATK"
+  },
+  "MATKFOOD": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    }
+  },
+  "MATKPOTION": {
+    "Flags": {
+      "NoClearance": true,
+      "NoRemoveOnDead": true,
+      "OverlapIgnoreLevel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PLUSMAGICPOWER"
+  },
+  "MAXIMIZEPOWER": {
+    "DurationLookup": "BS_MAXIMIZE",
+    "Flags": {
+      "MadoCancel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_MAXIMIZE"
+  },
+  "MDEFSET": {
+    "Icon": "EFST_SET_NUM_MDEF"
+  },
+  "MDEF_RATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_PROTECT_MDEF"
+  },
+  "MERC_ATKUP": {
+    "Flags": {
+      "BlEffect": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MER_ATK"
+  },
+  "MERC_FLEEUP": {
+    "Flags": {
+      "BlEffect": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MER_FLEE"
+  },
+  "MERC_HITUP": {
+    "Flags": {
+      "BlEffect": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MER_HIT"
+  },
+  "MERC_HPUP": {
+    "Flags": {
+      "BlEffect": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MER_HP"
+  },
+  "MERC_QUICKEN": {
+    "DurationLookup": "MER_QUICKEN",
+    "Fail": {
+      "Decreaseagi": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    }
+  },
+  "MERC_SPUP": {
+    "Flags": {
+      "BlEffect": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_MER_SP"
+  },
+  "NEN": {
+    "CalcFlags": {
+      "Int": true,
+      "Str": true
+    },
+    "DurationLookup": "NJ_NEN",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_NJ_NEN"
+  },
+  "NORECOVER_STATE": {
+    "Icon": "EFST_HANDICAPSTATE_NORECOVER"
+  },
+  "ORCISH": {
+    "DurationLookup": "SA_REVERSEORCISH",
+    "Flags": {
+      "Debuff": true,
+      "SendOption": true
+    },
+    "Options": {
+      "Orcish": true
+    }
+  },
+  "OVERTHRUST": {
+    "DurationLookup": "BS_OVERTHRUST",
+    "Fail": {
+      "Maxoverthrust": true
+    },
+    "Flags": {
+      "MadoCancel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_OVERTHRUST"
+  },
+  "PARRYING": {
+    "DurationLookup": "LK_PARRYING",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "RequireWeapon": true
+    },
+    "Icon": "EFST_PARRYING"
+  },
+  "PARTYFLEE": {
+    "DurationLookup": "ALL_PARTYFLEE",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true
+    },
+    "Icon": "EFST_PARTYFLEE"
+  },
+  "PNEUMA": {
+    "DurationLookup": "AL_PNEUMA",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    }
+  },
+  "POISON": {
+    "DurationLookup": "NPC_POISON",
+    "Fail": {
+      "Dpoison": true,
+      "Inspiration": true,
+      "Poison": true,
+      "Refresh": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true,
+      "StopAttacking": true
+    },
+    "Opt2": {
+      "Poison": true
+    }
+  },
+  "PROVOKE": {
+    "DurationLookup": "SM_PROVOKE",
+    "EndOnStart": {
+      "Freeze": true,
+      "Sleep": true,
+      "Stone": true,
+      "TrickDead": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoSaveInfinite": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROVOKE"
+  },
+  "QUAGMIRE": {
+    "DurationLookup": "WZ_QUAGMIRE",
+    "EndOnStart": {
+      "Acceleration": true,
+      "Adrenaline": true,
+      "Adrenaline2": true,
+      "Cartboost": true,
+      "Concentrate": true,
+      "Gn_Cartboost": true,
+      "Increaseagi": true,
+      "Loud": true,
+      "Magneticfield": true,
+      "Merc_Quicken": true,
+      "Onehand": true,
+      "Spearquicken": true,
+      "Truesight": true,
+      "Twohandquicken": true,
+      "Windwalk": true
+    },
+    "Fail": {
+      "Speedup1": true
+    },
+    "Flags": {
+      "Debuff": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_QUAGMIRE"
+  },
+  "REFLECTSHIELD": {
+    "DurationLookup": "CR_REFLECTSHIELD",
+    "EndOnStart": {
+      "Reflectdamage": true
+    },
+    "Flags": {
+      "NoClearance": true,
+      "RemoveOnHermode": true,
+      "RequireShield": true
+    },
+    "Icon": "EFST_REFLECTSHIELD"
+  },
+  "REGENERATION": {
+    "DurationLookup": "GD_REGENERATION",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSaveInfinite": true
+    },
+    "Icon": "EFST_GDSKILL_REGENERATION"
+  },
+  "RUN": {
+    "DurationLookup": "TK_RUN",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_RUN"
+  },
+  "RUWACH": {
+    "DurationLookup": "AL_RUWACH",
+    "Flags": {
+      "SendOption": true
+    },
+    "Options": {
+      "Ruwach": true
+    }
+  },
+  "SCRESIST": {
+    "DurationLookup": "PA_GOSPEL"
+  },
+  "SHADOWWEAPON": {
+    "DurationLookup": "TK_SEVENWIND",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Waterweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PROPERTYDARK"
+  },
+  "SIGHT": {
+    "DurationLookup": "MG_SIGHT",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "SendOption": true
+    },
+    "Options": {
+      "Sight": true
+    }
+  },
+  "SIGNUMCRUCIS": {
+    "DurationLookup": "AL_CRUCIS",
+    "Fail": {
+      "Signumcrucis": true
+    },
+    "Flags": {
+      "Debuff": true
+    },
+    "Icon": "EFST_CRUCIS"
+  },
+  "SILENCE": {
+    "DurationLookup": "NPC_SILENCEATTACK",
+    "Fail": {
+      "Gvg_Silence": true,
+      "Inspiration": true,
+      "Refresh": true,
+      "Silence": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true,
+      "StopCasting": true
+    },
+    "Opt2": {
+      "Silence": true
+    },
+    "States": {
+      "NoCast": true
+    }
+  },
+  "SLEEP": {
+    "DurationLookup": "NPC_SLEEPATTACK",
+    "Fail": {
+      "Gvg_Sleep": true,
+      "Inspiration": true,
+      "Refresh": true,
+      "Sleep": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "RemoveOnDamaged": true,
+      "SendOption": true,
+      "StopAttacking": true,
+      "StopCasting": true
+    },
+    "Opt1": "Sleep",
+    "States": {
+      "NoAttack": true,
+      "NoCast": true,
+      "NoMove": true
+    }
+  },
+  "SLOWCAST": {
+    "DurationLookup": "NPC_SLOWCAST",
+    "Flags": {
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true
+    },
+    "Icon": "EFST_SLOWCAST"
+  },
+  "SLOWDOWN": {
+    "Flags": {
+      "Debuff": true
+    }
+  },
+  "SLOWPOISON": {
+    "DurationLookup": "PR_SLOWPOISON",
+    "Flags": {
+      "NoClearance": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_SLOWPOISON"
+  },
+  "SPCOST_RATE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_ATKER_BLOOD"
+  },
+  "SPEED": {
+    "DurationLookup": "HFLI_SPEED"
+  },
+  "SPEEDUP0": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_MOVHASTE_HORSE"
+  },
+  "SPEEDUP1": {
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_MOVHASTE_POTION"
+  },
+  "SPIRIT": {
+    "DurationLookup": "SL_HIGH",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_SOULLINK"
+  },
+  "SPLASHER": {
+    "DurationLookup": "AS_SPLASHER",
+    "Icon": "EFST_SPLASHER"
+  },
+  "SPL_ATK": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_SPL_ATK"
+  },
+  "SPL_DEF": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_SPL_DEF"
+  },
+  "SPL_MATK": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_SPL_MATK"
+  },
+  "SPURT": {
+    "DurationLookup": "TK_RUN",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true,
+      "RequireNoWeapon": true
+    },
+    "Icon": "EFST_STRUP"
+  },
+  "STEELBODY": {
+    "DurationLookup": "MO_STEELBODY",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_STEELBODY",
+    "States": {
+      "NoCast": true
+    }
+  },
+  "STONE": {
+    "DurationLookup": "NPC_PETRIFYATTACK",
+    "EndOnStart": {
+      "Aeterna": true
+    },
+    "EndReturn": {
+      "Stone": true,
+      "StoneWait": true
+    },
+    "Fail": {
+      "Burning": true,
+      "Freeze": true,
+      "Gvg_Stone": true,
+      "Inspiration": true,
+      "Power_Of_Gaia": true,
+      "Refresh": true,
+      "Sleep": true,
+      "Stun": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "RemoveOnDamaged": true,
+      "SendOption": true,
+      "StopAttacking": true,
+      "StopCasting": true
+    },
+    "Opt1": "Stone",
+    "States": {
+      "NoAttack": true,
+      "NoCast": true,
+      "NoMove": true
+    }
+  },
+  "STONEWAIT": {
+    "DurationLookup": "NPC_PETRIFYATTACK",
+    "EndReturn": {
+      "Stone": true,
+      "StoneWait": true
+    },
+    "Fail": {
+      "Burning": true,
+      "Freeze": true,
+      "Sleep": true,
+      "Stun": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true,
+      "StopAttacking": true
+    },
+    "Opt1": "StoneWait",
+    "States": {
+      "NoAttack": true,
+      "NoCast": true
+    }
+  },
+  "STOP": {
+    "DurationLookup": "NPC_STOP",
+    "Flags": {
+      "Debuff": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true,
+      "StopWalking": true
+    },
+    "Icon": "EFST_STOP",
+    "States": {
+      "NoMove": true
+    }
+  },
+  "STRFOOD": {
+    "EndOnStart": {
+      "Food_Str_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_STR"
+  },
+  "STRIPARMOR": {
+    "DurationLookup": "RG_STRIPARMOR",
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_NOEQUIPARMOR"
+  },
+  "STRIPHELM": {
+    "DurationLookup": "RG_STRIPHELM",
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_NOEQUIPHELM"
+  },
+  "STRIPSHIELD": {
+    "DurationLookup": "RG_STRIPSHIELD",
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_NOEQUIPSHIELD"
+  },
+  "STRIPWEAPON": {
+    "DurationLookup": "RG_STRIPWEAPON",
+    "Flags": {
+      "BossResist": true,
+      "Debuff": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_NOEQUIPWEAPON"
+  },
+  "STUN": {
+    "DurationLookup": "NPC_STUNATTACK",
+    "Fail": {
+      "Gvg_Stun": true,
+      "Inspiration": true,
+      "Refresh": true,
+      "Stun": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "SendOption": true,
+      "StopAttacking": true,
+      "StopCasting": true
+    },
+    "Opt1": "Stun",
+    "States": {
+      "NoAttack": true,
+      "NoCast": true,
+      "NoMove": true
+    }
+  },
+  "SUFFRAGIUM": {
+    "DurationLookup": "PR_SUFFRAGIUM",
+    "Flags": {
+      "RemoveOnHermode": true,
+      "SuperNoviceAngel": true
+    },
+    "Icon": "EFST_SUFFRAGIUM"
+  },
+  "SUMMER": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendLook": true,
+      "StopAttacking": true
+    },
+    "Options": {
+      "Summer": true
+    },
+    "States": {
+      "NoAttack": true
+    }
+  },
+  "TRICKDEAD": {
+    "DurationLookup": "NV_TRICKDEAD",
+    "EndOnStart": {
+      "Dancing": true
+    },
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnDamaged": true,
+      "RemoveOnHermode": true,
+      "StopAttacking": true,
+      "StopCasting": true,
+      "StopWalking": true
+    },
+    "Icon": "EFST_TRICKDEAD",
+    "States": {
+      "NoAttack": true,
+      "NoConsumeItem": true,
+      "NoInteract": true,
+      "NoMove": true,
+      "NoPickItem": true
+    }
+  },
+  "TWOHANDQUICKEN": {
+    "DurationLookup": "KN_TWOHANDQUICKEN",
+    "Fail": {
+      "Decreaseagi": true
+    },
+    "Flags": {
+      "RemoveOnHermode": true,
+      "RequireWeapon": true
+    },
+    "Icon": "EFST_TWOHANDQUICKEN"
+  },
+  "VITFOOD": {
+    "EndOnStart": {
+      "Food_Vit_Cash": true
+    },
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_FOOD_VIT"
+  },
+  "WALKSPEED": {},
+  "WATERWEAPON": {
+    "DurationLookup": "SA_FROSTWEAPON",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Windweapon": true
+    },
+    "Flags": {
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_PROPERTYWATER"
+  },
+  "WATKFOOD": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoDispell": true
+    }
+  },
+  "WATK_ELEMENT": {
+    "DurationLookup": "MS_MAGNUM",
+    "EndOnStart": {
+      "Watk_Element": true
+    },
+    "Flags": {
+      "NoSave": true
+    }
+  },
+  "WEAPONPERFECTION": {
+    "DurationLookup": "BS_WEAPONPERFECT",
+    "Flags": {
+      "MadoCancel": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_WEAPONPERFECT"
+  },
+  "WEDDING": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendLook": true,
+      "StopAttacking": true
+    },
+    "Options": {
+      "Wedding": true
+    },
+    "States": {
+      "NoAttack": true
+    }
+  },
+  "WINDWALK": {
+    "DurationLookup": "SN_WINDWALK",
+    "Fail": {
+      "Quagmire": true
+    },
+    "Flags": {
+      "FailedMado": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_WINDWALK"
+  },
+  "WINDWEAPON": {
+    "DurationLookup": "SA_LIGHTNINGLOADER",
+    "EndOnStart": {
+      "Aspersio": true,
+      "Earthweapon": true,
+      "Encpoison": true,
+      "Fireweapon": true,
+      "Ghostweapon": true,
+      "Shadowweapon": true,
+      "Waterweapon": true
+    },
+    "Flags": {
+      "RemoveOnUnequipWeapon": true
+    },
+    "Icon": "EFST_PROPERTYWIND"
+  },
+  "WINKCHARM": {
+    "DurationLookup": "DC_WINKCHARM",
+    "Flags": {
+      "Debuff": true,
+      "RemoveOnDamaged": true
+    },
+    "Icon": "EFST_DC_WINKCHARM",
+    "States": {
+      "NoCastCond": true
+    }
+  },
+  "XMAS": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "SendLook": true,
+      "StopAttacking": true
+    },
+    "Options": {
+      "Xmas": true
+    },
+    "States": {
+      "NoAttack": true
+    }
+  }
+}
