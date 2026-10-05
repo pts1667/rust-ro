@@ -201,7 +201,7 @@ fn earthquake_uses_attack_and_hits_three_split_waves() {
     use models::enums::EnumWithMaskValueU16;
     use models::enums::cell::CellType;
 
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, MobDamage, ScriptMobCombat};
     let (context, _, mut character) = fixture(false, true);
     character.status.str = 30;
     let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
@@ -245,7 +245,7 @@ fn earthquake_uses_attack_and_hits_three_split_waves() {
         let damage = events
             .into_iter()
             .filter_map(|event| {
-                if let MapEvent::MobDamage(damage) = event {
+                if let MapEvent::MobDamage(MobDamage { damage }) = event {
                     Some(damage)
                 } else {
                     None
@@ -593,7 +593,7 @@ fn expired_sphere_rolls_back_native_skill_payment() {
 
 #[test]
 fn wide_soul_drain_applies_current_sp_loss_inside_its_radius_and_spares_friendly_summons() {
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, ScriptMobCombat};
     use crate::server::service::map_instance_service::MapInstanceService;
     use crate::server::service::mob_service::MobService;
     let (context, _, mut character) = fixture(false, true);
@@ -633,11 +633,11 @@ fn wide_soul_drain_applies_current_sp_loss_inside_its_radius_and_spares_friendly
         )
         .unwrap();
     for event in instance.task_queue().pop().unwrap_or_default() {
-        if let MapEvent::ScriptMobCombat {
+        if let MapEvent::ScriptMobCombat(ScriptMobCombat {
             source_id,
             target_id,
             effect,
-        } = event
+        }) = event
         {
             service.script_mob_combat(
                 instance.state_mut().as_mut(),
@@ -664,7 +664,7 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
     use models::enums::mob::MobRace;
     use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, MobDamage};
     use crate::server::service::map_instance_service::MapInstanceService;
     use crate::server::service::mob_service::MobService;
     for (skill, armor_element, ground) in [
@@ -741,7 +741,7 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
             .unwrap_or_default()
             .into_iter()
             .find_map(|event| {
-                if let MapEvent::MobDamage(damage) = event {
+                if let MapEvent::MobDamage(MobDamage { damage }) = event {
                     Some(damage)
                 } else {
                     None
@@ -1056,7 +1056,7 @@ fn final_strike_keeps_damage_and_hp_penalty_in_gvg_without_sliding_the_caster() 
     use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
     use models::enums::cell::CellType;
     use models::status_bonus::BattleFlag;
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, MobDamage};
     use crate::server::model::map_flags::{MapFlag, MapFlags};
     let (context, _, mut source) = fixture(false, true);
     let mut flags = MapFlags::default();
@@ -1072,7 +1072,7 @@ fn final_strike_keeps_damage_and_hp_penalty_in_gvg_without_sliding_the_caster() 
         &context.server, context.server.state(), &mut source, SkillEnum::NjIssen.id(), 1, 111, false, 0, true,
     ).unwrap();
     let damage = instance.task_queue().pop().unwrap_or_default().into_iter().find_map(|event| {
-        if let MapEvent::MobDamage(damage) = event { Some(damage) } else { None }
+        if let MapEvent::MobDamage(MobDamage { damage }) = event { Some(damage) } else { None }
     }).expect("Final Strike did not dispatch its damage");
     assert_ne!(damage.battle_flags & BattleFlag::Weapon.as_flag(), 0);
     let source_id = source.char_id;

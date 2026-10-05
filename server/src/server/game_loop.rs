@@ -9,7 +9,7 @@ use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
 use crate::server::Server;
 use crate::server::model::events::client_notification::{AreaNotification, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterSavePosition, GameEvent};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, UpdateActorVisibility, UpdateMobsFov};
 use crate::server::model::map_item::ToMapItemSnapshot;
 use crate::server::model::movement::{Movable, Movement};
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -175,8 +175,7 @@ impl Server {
             for instance in map.iter() {
                 let map_name = instance.key().map_name();
                 let instance_id = instance.key().map_instance();
-                instance.add_to_next_tick(MapEvent::UpdateActorVisibility(
-                    server_state_mut
+                instance.add_to_next_tick(MapEvent::UpdateActorVisibility(UpdateActorVisibility { actors: server_state_mut
                         .characters()
                         .values()
                         .filter(|character| character.current_map_name() == map_name && character.current_map_instance() == instance_id)
@@ -195,10 +194,8 @@ impl Server {
                             }
                             visibility
                         })
-                        .collect(),
-                ));
-                instance.add_to_next_tick(MapEvent::UpdateMobsFov(
-                    server_state_mut
+                        .collect(), }));
+                instance.add_to_next_tick(MapEvent::UpdateMobsFov(UpdateMobsFov { characters: server_state_mut
                         .characters()
                         .iter()
                         .filter(|(_, character)| {
@@ -211,8 +208,7 @@ impl Server {
                             actors.extend(crate::server::service::script_world_service::companion_snapshots(character));
                             actors
                         })
-                        .collect(),
-                ));
+                        .collect(), }));
             }
         }
     }

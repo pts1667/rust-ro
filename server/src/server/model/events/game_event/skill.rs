@@ -5,7 +5,7 @@ use super::*;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobEndStatus, MobStatusChange};
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::script::skill::{ScriptSkillAction, ScriptSkillService};
 use crate::server::service::status_effect_service::StatusEffectService;
@@ -433,7 +433,7 @@ impl GameEventHandler for CharacterStatusChange {
                 .flatten()
                 .find(|instance| instance.state().get_mob(char_id).is_some())
                 .ok_or("Status target is no longer on a map")?;
-            instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id: char_id, request });
+            instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: char_id, request }));
         }
         Ok(())
     }
@@ -506,7 +506,7 @@ impl GameEventHandler for CharacterEndStatus {
                 .flatten()
                 .find(|instance| instance.state().get_mob(char_id).is_some())
                 .ok_or("Status target is no longer on a map")?;
-            instance.add_to_next_tick(MapEvent::MobEndStatus { mob_id: char_id, kind });
+            instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus { mob_id: char_id, kind }));
         }
         Ok(())
     }

@@ -8,7 +8,7 @@ use script_sdk::{Function, Reply, Value};
 
 use crate::server::Server;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, SetMapFlags};
 use crate::server::model::map::Map;
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::model::map_instance::MapInstanceKey;
@@ -273,7 +273,7 @@ impl Server {
         let previous = state.map_flags(key);
         state.runtime_map_flags.insert((name, key.map_instance()), flags.clone());
         if let Some(instance) = instance {
-            instance.add_to_next_tick(MapEvent::SetMapFlags(flags.clone()));
+            instance.add_to_next_tick(MapEvent::SetMapFlags(SetMapFlags { flags: flags.clone() }));
         }
         let packet = map_property_packet_in_siege(&flags, self.packetver(), state.siege_active);
         let stop_attacks = previous.versus(state.siege_active) && !flags.versus(state.siege_active);

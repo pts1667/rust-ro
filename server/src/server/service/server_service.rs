@@ -22,7 +22,7 @@ use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{
     CharacterChangeMap, CharacterMovement, CharacterRemoveFromMap, CharacterUseSkill, GameEvent, CharacterClearFov, CharacterDamage, CharacterUpdateClientSideStats};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage, RemoveDroppedItemFromMap};
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::map_item::{CHARACTER_MAX_MAP_ITEM_ID, MAP_INSTANCE_MAX_MAP_ITEM_ID, MapItemSnapshot, MapItemType, MapItems, ToMapItemSnapshot};
@@ -328,7 +328,7 @@ impl ServerService {
                     if damage.skill_id == models::enums::skill_enums::SkillEnum::NpcMagicalattack.id() {
                         let delay = damage.attacked_at.saturating_sub(tick);
                         if *map_item.object_type() == MapItemType::Mob {
-                            map_instance.add_to_delayed_tick(MapEvent::MobDamage(damage), delay);
+                            map_instance.add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), delay);
                         } else {
                             server.add_to_delayed_tick(GameEvent::ScriptMapDamage(crate::server::model::events::game_event::ScriptMapDamage {
                                 map: character.map_instance_key.clone(), damage,
@@ -415,7 +415,7 @@ impl ServerService {
         if map_item_type == MapItemType::SkillUnit {
             self.server_task_queue.add_to_first_index(GameEvent::ScriptMapDamage(crate::server::model::events::game_event::ScriptMapDamage { map: map_instance.key().clone(), damage }));
         } else if matches!(map_item_type, MapItemType::Mob) {
-            map_instance.add_to_next_tick(MapEvent::MobDamage(damage));
+            map_instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
         } else if matches!(map_item_type, MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
             self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage }));
         }
@@ -610,7 +610,7 @@ impl ServerService {
                     match self.script_skill_service.complete_damage_skill(server, server_state, character, skill_use_response.to_damage(), &self.battle_service, tick) {
                         Ok(damages) => for (kind, damage) in damages {
                             if kind == MapItemType::SkillUnit { self.apply_damage(kind, map_instance, damage); }
-                            else if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(damage)); }
+                            else if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage })); }
                             else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage })); }
                         },
                         Err(error) => warn!("Unable to complete area damage for skill {}: {}", skill_use_response.skill_id, error),
@@ -743,7 +743,7 @@ impl ServerService {
             map_instance.key().map_name().clone(), map_instance.key().map_instance(),
             AreaNotificationRangeType::Fov { x: dropped_item.x(), y: dropped_item.y(), exclude_id: None }, packet.raw,
         ))).unwrap_or_else(|_| error!("Failed to send pickup animation"));
-        map_instance.add_to_next_tick(MapEvent::RemoveDroppedItemFromMap(map_item_id));
+        map_instance.add_to_next_tick(MapEvent::RemoveDroppedItemFromMap(RemoveDroppedItemFromMap { dropped_item_id: map_item_id }));
         Ok(true)
     }
 }

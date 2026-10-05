@@ -6,7 +6,7 @@ use super::super::{ScriptSkillEffect, ScriptSkillService};
 use crate::repository::Error;
 use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
 use crate::server::Server;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, GroundTrapRecover};
 use crate::server::model::game_systems::PlayerOption;
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::service::status_service::StatusService;
@@ -193,12 +193,12 @@ impl ScriptSkillService {
                         if self.configuration.config().game.skill_units.drop_recovery_items_when_full {
                             if let Some(map) = state.get_map_instance_from_character(character) {
                                 for (item_id, amount) in materials {
-                                    map.add_to_next_tick(MapEvent::GroundTrapRecover {
+                                    map.add_to_next_tick(MapEvent::GroundTrapRecover(GroundTrapRecover {
                                         item_id,
                                         amount: amount as u16,
                                         x: character.x,
                                         y: character.y,
-                                    });
+                                    }));
                                 }
                             }
                         }

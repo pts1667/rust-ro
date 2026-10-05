@@ -15,7 +15,7 @@ use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterEndStatus, CharacterStatusChange, GameEvent, ScriptSkillCast};
-use crate::server::model::events::map_event::{MapEvent, MobDispel, MobProvoke};
+use crate::server::model::events::map_event::{MapEvent, MobDispel, MobProvoke, MobDamage, MobEndStatus, MobHeal, MobKnockback, MobLoseTarget, MobRandomWarp, MobSlide, MobStatusChange};
 use crate::server::model::map_item::MapItemType;
 use crate::server::service::battle_service::BattleService;
 use crate::server::service::combat_trigger_service::ComaBonuses;
@@ -337,7 +337,7 @@ impl ScriptSkillService {
                             tick,
                         )?;
                     } else {
-                        instance.add_to_next_tick(MapEvent::MobLoseTarget { mob_id: request.target_id });
+                        instance.add_to_next_tick(MapEvent::MobLoseTarget(MobLoseTarget { mob_id: request.target_id }));
                     }
                 }
             }
@@ -405,7 +405,7 @@ impl ScriptSkillService {
                     return Err("Teleport is disabled on this map".into());
                 }
                 if source.object_type == MapItemType::Mob {
-                    instance.add_to_next_tick(MapEvent::MobRandomWarp { mob_id: source.id });
+                    instance.add_to_next_tick(MapEvent::MobRandomWarp(MobRandomWarp { mob_id: source.id }));
                 } else {
                     instance.add_to_next_tick(MapEvent::NpcEffect(crate::server::service::map_npc_effect::MapNpcEffect {
                         actor_id: source.id,
@@ -419,12 +419,12 @@ impl ScriptSkillService {
                 }
                 let (dx, dy) = Self::facing_vector(source.dir);
                 let cells = metadata.knockback.as_ref().and_then(|value| value.value(level, "Amount")).unwrap_or(5).clamp(0, i32::from(u16::MAX)) as u16;
-                instance.add_to_next_tick(MapEvent::MobSlide {
+                instance.add_to_next_tick(MapEvent::MobSlide(MobSlide {
                     mob_id: source.id,
                     source_x: (i32::from(source.x) + dx).clamp(0, i32::from(u16::MAX)) as u16,
                     source_y: (i32::from(source.y) + dy).clamp(0, i32::from(u16::MAX)) as u16,
                     cells,
-                });
+                }));
             }
             "NPC_EXPULSION" => {
                 if state
@@ -442,7 +442,7 @@ impl ScriptSkillService {
                         request.target_id,
                     );
                 } else {
-                    instance.add_to_next_tick(MapEvent::MobRandomWarp { mob_id: request.target_id });
+                    instance.add_to_next_tick(MapEvent::MobRandomWarp(MobRandomWarp { mob_id: request.target_id }));
                 }
             }
             name if Self::status_for_skill(name).is_some()
@@ -550,10 +550,10 @@ impl ScriptSkillService {
             );
         } else if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
             instance.add_to_delayed_tick(
-                MapEvent::MobStatusChange {
+                MapEvent::MobStatusChange(MobStatusChange {
                     mob_id: target_id,
                     request,
-                },
+                }),
                 delay,
             );
         }
@@ -574,10 +574,10 @@ impl ScriptSkillService {
                 kind: Some(kind),
             }));
         } else if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
-            instance.add_to_next_tick(MapEvent::MobEndStatus {
+            instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                 mob_id: target_id,
                 kind: Some(kind),
-            });
+            }));
         }
     }
 
@@ -612,7 +612,7 @@ impl ScriptSkillService {
                 .script_world_service()
                 .heal_companion(server, character, target_id, hp, sp, tick as u64)?;
         } else if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
-            instance.add_to_next_tick(MapEvent::MobHeal { mob_id: target_id, hp, sp });
+            instance.add_to_next_tick(MapEvent::MobHeal(MobHeal { mob_id: target_id, hp, sp }));
         }
         Ok(())
     }
@@ -858,12 +858,12 @@ impl ScriptSkillService {
     fn knock_back_actor_target(&self, server: &Server, state: &ServerState, source: &ScriptSkillActor, target_id: u32, player: bool, cells: u16) {
         if !player {
             if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
-                instance.add_to_next_tick(MapEvent::MobKnockback {
+                instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                     mob_id: target_id,
                     source_x: source.x,
                     source_y: source.y,
                     cells,
-                });
+                }));
             }
             return;
         }
@@ -1066,7 +1066,7 @@ impl ScriptSkillService {
             state
                 .get_map_instance(&source.map, source.instance)
                 .ok_or("Unit skill target map is unavailable")?
-                .add_to_delayed_tick(MapEvent::MobDamage(damage), delay);
+                .add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), delay);
         }
         Ok(())
     }

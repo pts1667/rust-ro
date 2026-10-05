@@ -11,7 +11,7 @@ use sled::transaction::Transactional;
 use super::{fixture, request};
 use crate::repository::InventoryRepository;
 use crate::server::model::events::game_event::{GameEvent, PetCaptureClaimResult};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::game_systems::{PetRecord, ScriptWorldRequest};
 use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -432,7 +432,7 @@ fn pet_target_hooks_obey_the_config_and_loyalty_and_normal_damage_uses_the_real_
         world.tick_in_state(&context.server, context.server.state(), &mut source, tick).unwrap();
         context.server.state_mut().insert_character(source);
         if let Some(damage) = map.pop_task().unwrap_or_default().into_iter().find_map(|event| match event {
-            MapEvent::MobDamage(damage) if damage.landed && damage.damage > 0 => Some(damage), _ => None,
+            MapEvent::MobDamage(MobDamage { damage }) if damage.landed && damage.damage > 0 => Some(damage), _ => None,
         }) { landed = Some(damage); break; }
     }
     let damage = landed.expect("The real pet actor never dealt a normal attack");
@@ -466,7 +466,7 @@ fn pet_fixed_skill_preserves_elements_and_applies_real_capped_absorption_without
     world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);
     let completion = finish_pet_cast(&context, &world);
-    let damage = map.pop_task().unwrap().into_iter().find_map(|event| match event { MapEvent::MobDamage(damage) => Some(damage), _ => None }).unwrap();
+    let damage = map.pop_task().unwrap().into_iter().find_map(|event| match event { MapEvent::MobDamage(MobDamage { damage }) => Some(damage), _ => None }).unwrap();
     assert_eq!((damage.attacker_id, damage.credit_id, damage.damage), (pet_world_id(77), 150_000, 0));
     assert_eq!(damage.healing, (200.0 * -modifier).floor() as u32);
     map_service.mob_being_attacked(map.state_mut().as_mut(), damage, map.task_queue(), completion as u128);
@@ -495,14 +495,14 @@ fn pet_fixed_heaven_drive_places_real_ground_cells_and_hits_each_covered_enemy_o
     world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);
     let completion = finish_pet_cast(&context, &world);
-    assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(_))));
+    assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(MobDamage { damage: _ }))));
     context.server.script_skill_service().tick_ground_skills(&context.server, context.server.state(), completion as u128 + 40);
     let damage = map.pop_task().unwrap_or_default().into_iter().filter_map(|event| match event {
-        MapEvent::MobDamage(damage) => Some(damage), _ => None,
+        MapEvent::MobDamage(MobDamage { damage }) => Some(damage), _ => None,
     }).collect::<Vec<_>>();
     assert_eq!(damage.len(), 2);
     assert!(damage.iter().all(|damage| damage.attacker_id == pet_world_id(77) && damage.credit_id == 150_000
         && damage.skill_id == 91 && damage.damage > 0));
     context.server.script_skill_service().tick_ground_skills(&context.server, context.server.state(), completion as u128 + 80);
-    assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(_))));
+    assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(MobDamage { damage: _ }))));
 }

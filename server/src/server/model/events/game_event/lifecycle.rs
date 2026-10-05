@@ -2,7 +2,7 @@ use movement::position::Position;
 
 use super::*;
 use crate::server::Server;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, InsertCharToMap, RemoveCharFromMap};
 use crate::server::model::map_item::ToMapItem;
 use crate::server::model::movement::Movement;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -255,7 +255,7 @@ impl GameEventHandler for CharacterChangeMap {
             let origin = character.map_instance_key.clone();
             let map_item = character.to_map_item();
             if let Some(instance) = state.get_map_instance(origin.map_name(), origin.map_instance()) {
-                instance.add_to_next_tick(MapEvent::InsertCharToMap(map_item));
+                instance.add_to_next_tick(MapEvent::InsertCharToMap(InsertCharToMap { map_item }));
             }
             return Ok(());
         }
@@ -263,7 +263,7 @@ impl GameEventHandler for CharacterChangeMap {
             .character_service()
             .change_map_with_flags(map_instance.key(), event.new_position.unwrap(), character, &flags);
         let char_map_item = character.to_map_item();
-        map_instance.add_to_next_tick(MapEvent::InsertCharToMap(char_map_item));
+        map_instance.add_to_next_tick(MapEvent::InsertCharToMap(InsertCharToMap { map_item: char_map_item }));
         server.add_to_next_tick(GameEvent::CharacterInitInventory(CharacterInitInventory {
             char_id: character.char_id,
         }));
@@ -289,7 +289,7 @@ impl GameEventHandler for CharacterRemoveFromMap {
             .state()
             .get_map_instance(&character_remove_from_map.map_name, character_remove_from_map.instance_id)
         {
-            instance.add_to_next_tick(MapEvent::RemoveCharFromMap(character_remove_from_map.char_id));
+            instance.add_to_next_tick(MapEvent::RemoveCharFromMap(RemoveCharFromMap { char_id: character_remove_from_map.char_id }));
         }
         Ok(())
     }

@@ -8,7 +8,7 @@ use super::{
 };
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobStatusChange};
 use crate::server::model::game_systems::{CharacterGameSystems, CompanionCast, CompanionPosition, ScriptWorldRequest};
 use crate::server::script::skill::GroundSkillSource;
 use crate::server::script::skill::companion::{CompanionSkillContext, CompanionSkillEffect};
@@ -810,7 +810,7 @@ impl ScriptWorldService {
                         0,
                     );
                     if map.state().get_mob(damage.target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobDamage(damage));
+                        map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                     }
@@ -825,10 +825,10 @@ impl ScriptWorldService {
                                 coma: crate::server::service::combat_trigger_service::ComaBonuses::from_bonuses(source.bonuses()),
                             }));
                         } else {
-                            map.add_to_next_tick(MapEvent::MobStatusChange {
+                            map.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: target_id,
                                 request,
-                            });
+                            }));
                         }
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterStatusChange(
@@ -846,10 +846,10 @@ impl ScriptWorldService {
                 } => {
                     if map.state().get_mob(target_id).is_some() {
                         map.add_to_delayed_tick(
-                            MapEvent::MobStatusChange {
+                            MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: target_id,
                                 request,
-                            },
+                            }),
                             u128::from(delay_ms),
                         );
                     } else {
@@ -864,10 +864,10 @@ impl ScriptWorldService {
                 }
                 CompanionSkillEffect::EndStatus { target_id, kind } if !is_local_companion(&character.game_systems, target_id) => {
                     if map.state().get_mob(target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobEndStatus {
+                        map.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: target_id,
                             kind: Some(kind),
-                        });
+                        }));
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterEndStatus(
                             crate::server::model::events::game_event::CharacterEndStatus {
@@ -892,7 +892,7 @@ impl ScriptWorldService {
                             );
                         }
                     } else if map.state().get_mob(target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobHeal { mob_id: target_id, hp, sp });
+                        map.add_to_next_tick(MapEvent::MobHeal(MobHeal { mob_id: target_id, hp, sp }));
                     } else if state.characters().contains_key(&target_id) {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                             char_id: target_id,

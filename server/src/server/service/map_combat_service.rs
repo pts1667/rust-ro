@@ -134,7 +134,7 @@ pub fn reflect_magic(server: &Server, state: &ServerState, request: MagicReflect
     if is_player_actor {
         server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
     } else {
-        map.add_to_next_tick(crate::server::model::events::map_event::MapEvent::MobDamage(damage));
+        map.add_to_next_tick(crate::server::model::events::map_event::MapEvent::MobDamage(crate::server::model::events::map_event::MobDamage { damage }));
     }
     Ok(())
 }

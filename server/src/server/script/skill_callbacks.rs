@@ -6,9 +6,8 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::events::game_event::{CharacterPickUpItem, GameEvent};
-use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives};
-use crate::server::model::map_item::{MapItemType, ToMapItemSnapshot};
-use crate::server::service::status_effect_service::StatusEffectService;
+use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives, MobStatusChange, ScriptMobCombat};
+use crate::server::model::map_item::MapItemType;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -163,14 +162,14 @@ impl ScriptSkillService {
                 continue;
             }
             if metadata.name == "NPC_WIDESOULDRAIN" {
-                instance.add_to_next_tick(MapEvent::ScriptMobCombat {
+                instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
                     source_id: character.char_id,
                     target_id: mob.id,
                     effect: crate::server::service::script_combat_service::MobCombatEffect::Vanish {
                         hp: 0,
                         sp: Self::wide_soul_drain(level, mob.status.sp()),
                     },
-                });
+                }));
             } else if metadata.name == "NPC_DRAGONFEAR" {
                 instance.add_to_next_tick(MapEvent::MobStatusAlternatives(MobStatusAlternatives {
                     mob_id: mob.id,
@@ -185,7 +184,7 @@ impl ScriptSkillService {
                 if metadata.name.starts_with("NPC_") {
                     request.values[1] = character.char_id as i32;
                 }
-                instance.add_to_delayed_tick(MapEvent::MobStatusChange { mob_id: mob.id, request }, delay);
+                instance.add_to_delayed_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: mob.id, request }), delay);
             }
         }
         for target in state.characters().values().filter(|target| {

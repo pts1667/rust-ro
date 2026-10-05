@@ -9,7 +9,7 @@ use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterUseSkill, GameEvent, ScriptEvent, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::movement::Movable;
 use crate::server::model::script::Script;
 use crate::server::script::NpcScriptHost;
@@ -461,7 +461,7 @@ impl Server {
             self.admit_character_damage(state, request.damage, tick)
         } else {
             if let Some(instance) = state.get_map_instance(request.map.map_name(), request.map.map_instance()) {
-                instance.add_to_next_tick(MapEvent::MobDamage(request.damage));
+                instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: request.damage }));
             }
             Ok(())
         }
@@ -542,7 +542,7 @@ impl Server {
         if attacker_is_player {
             self.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: counter }));
         } else if let Some(instance) = state.get_map_instance_from_character(defender) {
-            instance.add_to_next_tick(MapEvent::MobDamage(counter));
+            instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: counter }));
         }
         true
     }
@@ -988,7 +988,7 @@ impl Server {
                 if player_actor {
                     self.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: reflected }));
                 } else if let Some(instance) = state.get_map_instance_from_character(&character) {
-                    instance.add_to_next_tick(MapEvent::MobDamage(reflected));
+                    instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: reflected }));
                 }
             }
             if let Some(Some(protector)) = devotion {

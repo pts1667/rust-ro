@@ -11,7 +11,7 @@ use script_sdk::Value;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterZeny, GameEvent, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage, ScriptDropItem, ScriptMobCombat};
 use crate::server::model::status::StatusFromDb;
 use crate::server::service::combat_trigger_service::{CombatEffect, CombatEffectTarget, CombatEvent, resolve};
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -280,7 +280,7 @@ fn apply_effect(
                 state
                     .get_map_instance_from_character(character)
                     .ok_or("Reflection map is unavailable")?
-                    .add_to_next_tick(MapEvent::MobDamage(Damage {
+                    .add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: Damage {
                         notification: None,
                         source_kind: models::enums::actor::CombatActorKind::Player,
                         skill_damage_adjusted: false,
@@ -299,7 +299,7 @@ fn apply_effect(
                         credit_id: request.source_id,
                         defenses_applied: true,
                         magic_context: None,
-                    }));
+                    } }));
             }
             Ok(())
         }
@@ -487,7 +487,7 @@ fn apply_splash(server: &Server, state: &mut ServerState, request: &ScriptCombat
         if player {
             server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: event }));
         } else {
-            instance.add_to_next_tick(MapEvent::MobDamage(event));
+            instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: event }));
         }
     }
     Ok(())
@@ -607,11 +607,11 @@ fn map_effect(state: &ServerState, source_id: u32, target_id: u32, effect: MobCo
     state
         .get_map_instance_from_character(source)
         .ok_or("Combat map is unavailable")?
-        .add_to_next_tick(MapEvent::ScriptMobCombat {
+        .add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
             source_id,
             target_id,
             effect,
-        });
+        }));
     Ok(())
 }
 
@@ -661,13 +661,13 @@ fn prepare_drop_item(
         return Err("Extra drop has no valid map location".into());
     }
     drop(location);
-    Ok((map, MapEvent::ScriptDropItem {
+    Ok((map, MapEvent::ScriptDropItem(ScriptDropItem {
         owner_id: request.source_id,
         item_id: item_id as i32,
         amount,
         x: position.x,
         y: position.y,
-    }))
+    })))
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -956,13 +956,13 @@ mod tests {
         };
         drop_item(&state, &request, 501, 1).unwrap();
         let events = old_tasks.pop().unwrap();
-        assert!(matches!(events.as_slice(), [MapEvent::ScriptDropItem {
+        assert!(matches!(events.as_slice(), [MapEvent::ScriptDropItem(ScriptDropItem {
             owner_id: 150000,
             item_id: 501,
             amount: 1,
             x: 2,
             y: 3
-        }]));
+        })]));
         assert!(new_tasks.pop().unwrap_or_default().is_empty());
         assert!(prepare_drop_item(&state, &request, 501, 0).is_err());
         let mut flags = crate::server::model::map_flags::MapFlags::default();

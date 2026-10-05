@@ -21,7 +21,7 @@ use crate::debugger::multi_player_simulator::MultiPlayerSimulator;
 use crate::debugger::{View, Window, frame_history};
 use crate::repository::model::char_model::CharSelectModel;
 use crate::server::Server;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, AdminKillAllMobs, AdminTogglePauseMobMovement};
 use crate::server::model::map_item::{MapItem, MapItemType};
 use crate::server::model::session::{Session, SessionRecord, SessionRecordEntry};
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -240,10 +240,10 @@ impl VisualDebugger {
                         ui.heading(map_name.to_string());
                         ui.separator();
                         if ui.button("Toggle mob movement").clicked() {
-                            map_instance.add_to_next_tick(MapEvent::AdminTogglePauseMobMovement);
+                            map_instance.add_to_next_tick(MapEvent::AdminTogglePauseMobMovement(AdminTogglePauseMobMovement));
                         }
                         if ui.button("Killall mob").clicked() {
-                            map_instance.add_to_next_tick(MapEvent::AdminKillAllMobs(150000));
+                            map_instance.add_to_next_tick(MapEvent::AdminKillAllMobs(AdminKillAllMobs { char_id: 150000 }));
                         }
                         ui.separator();
                         ui.label("Characters:");

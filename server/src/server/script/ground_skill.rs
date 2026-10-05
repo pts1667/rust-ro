@@ -17,7 +17,7 @@ use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, GroundTrapRecover, MobDamage, MobEndStatus, MobKnockback, MobStatusChange};
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -975,10 +975,10 @@ impl ScriptSkillService {
                                 },
                             ));
                         } else {
-                            instance.add_to_next_tick(MapEvent::MobStatusChange {
+                            instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: target_id,
                                 request,
-                            });
+                            }));
                         }
                     }
                 }
@@ -1006,10 +1006,10 @@ impl ScriptSkillService {
                             },
                         ));
                     } else if kind != StatusChangeKind::Quagmire {
-                        instance.add_to_next_tick(MapEvent::MobEndStatus {
+                        instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: *target_id,
                             kind: Some(kind),
-                        });
+                        }));
                     }
                 }
                 ground.affected = affected;
@@ -1130,29 +1130,29 @@ impl ScriptSkillService {
                     1,
                     0,
                 );
-                instance.add_to_next_tick(MapEvent::MobDamage(damage_event));
+                instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: damage_event }));
                 if ground.kind == GroundKind::Firewall {
                     cell.remaining_hits = cell.remaining_hits.saturating_sub(1);
                     if *target_status.element() != Element::Fire
                         && *target_status.element() != Element::Undead
                         && *target_status.race() != MobRace::RUndead
                     {
-                        instance.add_to_next_tick(MapEvent::MobKnockback {
+                        instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                             mob_id: target_id,
                             source_x: ground.source_x,
                             source_y: ground.source_y,
                             cells: 2,
-                        });
+                        }));
                     }
                 } else if ground.kind == GroundKind::GrandCross {
                     cell.remaining_hits = cell.remaining_hits.saturating_sub(1);
                 } else if ground.kind == GroundKind::StormGust {
-                    instance.add_to_next_tick(MapEvent::MobKnockback {
+                    instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                         mob_id: target_id,
                         source_x: ground.source_x,
                         source_y: ground.source_y,
                         cells: 2,
-                    });
+                    }));
                 }
             }
             if ground.kind == GroundKind::GrandCross && source.status.hp > 0 {
@@ -1215,12 +1215,12 @@ impl ScriptSkillService {
             {
                 if let Some(item_id) = ground.recovery_item.take() {
                     if let Some(map) = state.get_map_instance(&ground.map, ground.instance) {
-                        map.add_to_next_tick(MapEvent::GroundTrapRecover {
+                        map.add_to_next_tick(MapEvent::GroundTrapRecover(GroundTrapRecover {
                             item_id,
                             amount: 1,
                             x: ground.cells[0].x,
                             y: ground.cells[0].y,
-                        });
+                        }));
                     }
                 }
             }

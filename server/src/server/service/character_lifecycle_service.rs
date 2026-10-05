@@ -9,7 +9,7 @@ use crate::server::model::character_lifecycle::{
     ScriptLogoutCompleted, TimerQuitCallback,
 };
 use crate::server::model::events::game_event::{GameEvent, CharacterInitInventory, CharacterJoinGame};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, RemoveCharFromMap};
 use crate::server::model::script_timer::ScriptTimerOwner;
 use crate::server::model::session::Session;
 use crate::server::script::{NpcScriptHost, ScriptRequest};
@@ -395,7 +395,7 @@ impl Server {
         }
         if let Some(mut character) = state.characters_mut().remove(&char_id) {
             if let Some(map) = state.get_map_instance_from_character(&character) {
-                map.add_to_next_tick(MapEvent::RemoveCharFromMap(char_id));
+                map.add_to_next_tick(MapEvent::RemoveCharFromMap(RemoveCharFromMap { char_id }));
             }
             character.loaded_from_client_side = false;
             character.clear_attack();

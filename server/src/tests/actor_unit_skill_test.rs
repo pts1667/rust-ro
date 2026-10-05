@@ -9,7 +9,7 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFl
 use super::ServerServiceTestContext;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobStatusChange};
 use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::map_item::{MapItems, ToMapItem, ToMapItemSnapshot};
@@ -273,7 +273,7 @@ fn monster_self_buff_and_summon_skill_keep_actor_and_loot_owner_separate() {
     complete(&context, &instance, &service, 1000).unwrap();
     while let Some(events) = instance.task_queue().pop() {
         for event in events {
-            if let MapEvent::MobStatusChange { mob_id, request } = event {
+            if let MapEvent::MobStatusChange(MobStatusChange { mob_id, request }) = event {
                 service.start_mob_status(&mut instance.state_mut(), mob_id, request, 1000);
             }
         }

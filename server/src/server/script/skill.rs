@@ -17,7 +17,7 @@ use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterAddItems, CharacterUseSkill, GameEvent, CharacterDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_item::{MapItemType, ToMapItemSnapshot};
@@ -898,7 +898,7 @@ impl ScriptSkillService {
                     .ok_or("Map instance is unavailable")?;
                 for (kind, damage) in self.complete_damage_skill(server, state, character, damage_event, server.battle_service(), tick)? {
                     if kind == MapItemType::Mob {
-                        instance.add_to_next_tick(MapEvent::MobDamage(damage));
+                        instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                     }

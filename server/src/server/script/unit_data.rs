@@ -11,7 +11,7 @@ use script_sdk::{Function, Reply, Request, Value};
 use super::ScriptRequest;
 use super::skill::actor::{NpcSkillState, ScriptSkillActor};
 use crate::server::Server;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, ReleaseScriptNpc};
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::map_item::MapItemType;
 use crate::server::model::session::Session;
@@ -418,7 +418,7 @@ pub fn handle_request(server: &Server, state: &mut ServerState, request: &Script
 pub fn route_transfer(server: &Server, state: &ServerState, mut transfer: ScriptNpcTransfer) {
     if transfer.phase == NpcTransferPhase::Complete {
         if let Some(origin) = state.get_map_instance(transfer.origin.map_name(), transfer.origin.map_instance()) {
-            origin.add_to_next_tick(MapEvent::ReleaseScriptNpc(transfer.npc.id));
+            origin.add_to_next_tick(MapEvent::ReleaseScriptNpc(ReleaseScriptNpc { id: transfer.npc.id }));
         }
         return;
     }

@@ -21,7 +21,7 @@ use crate::repository::Repository;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::game_systems::{
     CharacterGameSystems, CompanionPosition, HomunculusRecord, MercenaryRecord, PetCapture, PlayerOption, StoreSearch,
 };
@@ -719,7 +719,7 @@ impl ScriptWorldService {
             );
             if let Some(map) = server.state().get_map_instance_from_character(character) {
                 if map.state().get_mob(reflected.target_id).is_some() {
-                    map.add_to_next_tick(MapEvent::MobDamage(reflected));
+                    map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: reflected }));
                 } else {
                     server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterDamage(crate::server::model::events::game_event::CharacterDamage { damage: reflected }));
                 }
@@ -2297,7 +2297,7 @@ impl ScriptWorldService {
             let command = character.game_systems.companion_commands.entry(id).or_default();
             command.last_attack_at = now;
             if command.target.is_some() && !command.repeat { command.target = None; command.stay = true; }
-            map.add_to_delayed_tick(MapEvent::MobDamage(damage), u128::from(delay));
+            map.add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), u128::from(delay));
             return Ok(());
         }
         let mut rng = fastrand::Rng::new();
@@ -2369,7 +2369,7 @@ impl ScriptWorldService {
             action,
             (signed_damage, 0),
         );
-        map.add_to_next_tick(MapEvent::MobDamage(damage));
+        map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
         Ok(())
     }
 }

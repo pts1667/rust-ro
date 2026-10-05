@@ -10,7 +10,7 @@ use super::{ScriptWorldService, companion_status_snapshot, pet_world_id, protoco
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterStatusChange, GameEvent};
-use crate::server::model::events::map_event::{MapEvent, MobProvoke};
+use crate::server::model::events::map_event::{MapEvent, MobProvoke, MobDamage, MobEndStatus, MobStatusChange};
 use crate::server::model::game_systems::{PetAttackSkill, PetRecord, PetSupportCast};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::script::skill::companion::{CompanionSkillContext, CompanionSkillEffect};
@@ -400,10 +400,10 @@ impl ScriptWorldService {
                 .filter(|mob| mob.hp() > 0 && mob.summon_ai == 0 && mob.x.abs_diff(target.x).max(mob.y.abs_diff(target.y)) <= radius)
             {
                 map.add_to_delayed_tick(
-                    MapEvent::MobStatusChange {
+                    MapEvent::MobStatusChange(MobStatusChange {
                         mob_id: mob.id,
                         request: request.clone(),
-                    },
+                    }),
                     1000,
                 );
             }
@@ -568,7 +568,7 @@ impl ScriptWorldService {
                         attack.hits.max(1),
                         0,
                     );
-                    map.add_to_next_tick(MapEvent::MobDamage(damage));
+                    map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                 }
                 CompanionSkillEffect::Status { target_id, request } => {
                     if request.kind == StatusChangeKind::Provoke {
@@ -579,10 +579,10 @@ impl ScriptWorldService {
                             coma: Default::default(),
                         }));
                     } else {
-                        map.add_to_next_tick(MapEvent::MobStatusChange {
+                        map.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: target_id,
                             request,
-                        });
+                        }));
                     }
                 }
                 CompanionSkillEffect::DelayedStatus {
@@ -590,16 +590,16 @@ impl ScriptWorldService {
                     request,
                     delay_ms,
                 } => map.add_to_delayed_tick(
-                    MapEvent::MobStatusChange {
+                    MapEvent::MobStatusChange(MobStatusChange {
                         mob_id: target_id,
                         request,
-                    },
+                    }),
                     u128::from(delay_ms),
                 ),
-                CompanionSkillEffect::EndStatus { target_id, kind } => map.add_to_next_tick(MapEvent::MobEndStatus {
+                CompanionSkillEffect::EndStatus { target_id, kind } => map.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                     mob_id: target_id,
                     kind: Some(kind),
-                }),
+                })),
                 CompanionSkillEffect::Ground { skill_id, level, .. } => {
                     server.script_skill_service().validate_actor_ground(
                         state,

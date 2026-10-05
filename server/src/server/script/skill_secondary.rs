@@ -9,7 +9,7 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillHit, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobKnockback, MobStatusChange, ScriptMobCombat};
 use crate::server::service::script_combat_service::MobCombatEffect;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
@@ -309,17 +309,17 @@ impl ScriptSkillService {
                 } else if let Some(instance) = state.get_map_instance(&map, instance_id) {
                     if delay > 0 {
                         instance.add_to_delayed_tick(
-                            MapEvent::MobStatusChange {
+                            MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: hit.target_id,
                                 request,
-                            },
+                            }),
                             delay,
                         );
                     } else {
-                        instance.add_to_next_tick(MapEvent::MobStatusChange {
+                        instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: hit.target_id,
                             request,
-                        });
+                        }));
                     }
                 }
             }
@@ -333,14 +333,14 @@ impl ScriptSkillService {
                     target.status.sp.saturating_sub(target.status.sp * percent / 100),
                 );
             } else if let Some(instance) = state.get_map_instance(&map, instance_id) {
-                instance.add_to_next_tick(MapEvent::ScriptMobCombat {
+                instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
                     source_id: hit.source_id,
                     target_id: hit.target_id,
                     effect: MobCombatEffect::Vanish {
                         hp: 0,
                         sp: target.sp().saturating_mul(percent) / 100,
                     },
-                });
+                }));
             }
         }
         if metadata.name != "WZ_STORMGUST" && metadata.name != "MG_FIREWALL" {
@@ -361,12 +361,12 @@ impl ScriptSkillService {
                     ));
                 } else if let Some(instance) = state.get_map_instance(&map, instance_id) {
                     if instance.state().get_mob(hit.target_id).is_some() {
-                        instance.add_to_next_tick(MapEvent::MobKnockback {
+                        instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                             mob_id: hit.target_id,
                             source_x,
                             source_y,
                             cells: cells.min(u16::MAX as i32) as u16,
-                        });
+                        }));
                     }
                 }
             }
