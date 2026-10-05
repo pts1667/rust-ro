@@ -20,7 +20,6 @@ use tokio::runtime::Runtime;
 use crate::repository::Repository;
 use crate::server::game_loop::GAME_TICK_RATE;
 use crate::server::model::map_item::MapItems;
-use crate::server::model::path::manhattan_distance;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
 use crate::server::model::session::{SessionRecord, SessionRegistry};
@@ -36,6 +35,7 @@ use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
+use crate::server::state::character_directory::CharacterDirectory;
 use crate::server::state::server::ServerState;
 use crate::util::cell::{MyRefMut, MyUnsafeCell};
 use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
@@ -62,6 +62,7 @@ pub struct Server {
     state: MyUnsafeCell<ServerState>,
     state_loops_lock: Mutex<()>,
     sessions: SessionRegistry,
+    directory: CharacterDirectory,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -85,6 +86,11 @@ impl Server {
     /// Session registry for threads that must not read `ServerState`.
     pub fn sessions(&self) -> &SessionRegistry {
         &self.sessions
+    }
+
+    /// Character positions for threads that must not read `ServerState`.
+    pub fn directory(&self) -> &CharacterDirectory {
+        &self.directory
     }
 
     pub fn state(&self) -> &ServerState {
@@ -203,6 +209,7 @@ impl Server {
         );
         let state = ServerState::new(map_items);
         let sessions = state.sessions().clone();
+        let directory = state.directory().clone();
         Server {
             configuration,
             repository,
@@ -210,6 +217,7 @@ impl Server {
             state: MyUnsafeCell::new(state),
             state_loops_lock: Mutex::new(()),
             sessions,
+            directory,
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -235,12 +243,14 @@ impl Server {
         );
         let state = ServerState::new(map_items);
         let sessions = state.sessions().clone();
+        let directory = state.directory().clone();
         Server {
             configuration,
             repository,
             state: MyUnsafeCell::new(state),
             state_loops_lock: Mutex::new(()),
             sessions,
+            directory,
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,
@@ -344,16 +354,20 @@ impl Server {
     }
 
     pub fn start_recording_session(&self, char_id: u32) {
-        let character = self.state().characters().get(&char_id).unwrap();
+        let Some(presence) = self.directory.presence(char_id) else {
+            return;
+        };
         if !self.is_recording_session(char_id) {
             self.recording_sessions
                 .borrow_mut()
-                .push(SessionRecord::new(character, self.packetver()));
+                .push(SessionRecord::new(char_id, &presence, self.packetver()));
         }
     }
 
     pub fn stop_recording_session(&self, char_id: u32) {
-        let session_id = self.state().characters().get(&char_id).unwrap().account_id;
+        let Some(session_id) = self.directory.presence(char_id).map(|presence| presence.account_id) else {
+            return;
+        };
         if let Some(recording) = self.get_recording_session(session_id) {
             recording.finish();
         }
@@ -363,7 +377,9 @@ impl Server {
     }
 
     pub fn is_recording_session(&self, char_id: u32) -> bool {
-        let session_id = self.state().characters().get(&char_id).unwrap().account_id;
+        let Some(session_id) = self.directory.presence(char_id).map(|presence| presence.account_id) else {
+            return false;
+        };
         self.recording_sessions
             .borrow()
             .as_ref()
@@ -645,16 +661,10 @@ impl Server {
                                         AreaNotificationRangeType::Map => {}
                                         AreaNotificationRangeType::Fov { x, y, exclude_id } => {
                                             server_ref
-                                                .state()
-                                                .characters()
-                                                .iter()
-                                                .filter(|(_, character)| {
-                                                    character.current_map_name() == &area_notification.map_name
-                                                        && character.current_map_instance() == area_notification.map_instance_id
-                                                        && manhattan_distance(character.x(), character.y(), x, y) <= PLAYER_FOV
-                                                        && (exclude_id.is_none() || exclude_id.unwrap() != character.char_id)
-                                                })
-                                                .for_each(|(_, character)| {
+                                                .directory()
+                                                .in_fov(&area_notification.map_name, area_notification.map_instance_id, x, y, PLAYER_FOV, exclude_id)
+                                                .into_iter()
+                                                .for_each(|char_id| {
                                                     if GlobalConfigService::instance().config().server.trace_packet {
                                                         debug_packets_from_vec(
                                                             None,
@@ -666,7 +676,7 @@ impl Server {
                                                     }
                                                     Self::buffer_packets(
                                                         &mut packets_by_session,
-                                                        character.char_id,
+                                                        char_id,
                                                         area_notification.serialized_packet().as_slice(),
                                                     );
                                                 });

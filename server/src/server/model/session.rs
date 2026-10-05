@@ -14,7 +14,7 @@ use serde_json::value::RawValue;
 use tokio::sync::mpsc::Sender;
 
 use crate::server::script::PlayerInput;
-use crate::server::state::character::Character;
+use crate::server::state::character_directory::CharacterPresence;
 
 #[derive(Clone)]
 pub struct SessionBinding(Weak<Session>);
@@ -83,15 +83,15 @@ pub struct Position {
 
 const PACKET_TO_RECORDS: &'static [&'static str; 2] = &["PacketCzRequestMove", "PacketCzPlayerChat"];
 impl SessionRecord {
-    pub fn new(character: &Character, packetver: u32) -> Self {
+    pub fn new(char_id: u32, presence: &CharacterPresence, packetver: u32) -> Self {
         Self {
-            session_id: character.account_id,
-            char_id: Some(character.char_id),
-            map_name: character.map_instance_key.map_name().clone(),
+            session_id: presence.account_id,
+            char_id: Some(char_id),
+            map_name: presence.map_name.clone(),
             position: Position {
-                x: character.x,
-                y: character.y,
-                dir: character.dir,
+                x: presence.x,
+                y: presence.y,
+                dir: presence.dir,
             },
             entries: Mutex::new(vec![]),
             packetver,

@@ -14,6 +14,7 @@ use crate::server::model::script::Script;
 use crate::server::model::session::{Session, SessionRegistry};
 use crate::server::service::script_world_service::{companion_name, companion_snapshots, companion_status_snapshot};
 use crate::server::state::character::Character;
+use crate::server::state::character_directory::CharacterDirectory;
 use crate::util::hasher::NoopHasherU32;
 
 pub struct ServerState {
@@ -22,6 +23,7 @@ pub struct ServerState {
     map_instances: HashMap<String, Vec<Arc<MapInstance>>>,
     map_instances_count: AtomicI8,
     sessions: SessionRegistry,
+    directory: CharacterDirectory,
     characters: HashMap<u32, Character, NoopHasherU32>,
     locked_map_item: HashSet<u32, NoopHasherU32>, /* map item that should be removed from map instance, in next tick, avoid to use them
                                                    * meanwhile. */
@@ -135,6 +137,7 @@ impl ServerState {
             map_instances: Default::default(),
             map_instances_count: Default::default(),
             sessions: SessionRegistry::default(),
+            directory: CharacterDirectory::default(),
             characters: Default::default(),
             locked_map_item: Default::default(),
             runtime_map_flags: Default::default(),
@@ -195,6 +198,14 @@ impl ServerState {
 
     pub fn insert_map_item(&mut self, id: u32, map_item: MapItem) {
         self.map_items.insert(id, map_item);
+    }
+
+    pub fn directory(&self) -> &CharacterDirectory {
+        &self.directory
+    }
+
+    pub fn publish_directory(&self) {
+        self.directory.publish(&self.characters);
     }
 
     pub fn sessions(&self) -> &SessionRegistry {

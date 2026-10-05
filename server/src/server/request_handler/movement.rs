@@ -1,15 +1,10 @@
-use std::time::{SystemTime, UNIX_EPOCH};
-
 use movement::position::Position;
 use packets::packets::{PacketCzRequestMove, PacketCzRequestMove2};
 
-use crate::server::model::events::game_event::CharacterMovement;
-use crate::server::model::events::game_event::GameEvent::CharacterMove;
-use crate::server::model::movement::{Movable, Movement};
-use crate::server::model::path::path_search_client_side_algorithm;
+use crate::server::Server;
+use crate::server::model::events::game_event::{CharacterRequestMove, GameEvent};
 use crate::server::model::position::PositionPacket;
 use crate::server::model::request::Request;
-use crate::server::Server;
 
 pub fn handle_char_move(server: &Server, context: Request) {
     let destination = if context.packet().as_any().downcast_ref::<PacketCzRequestMove2>().is_some() {
@@ -20,58 +15,8 @@ pub fn handle_char_move(server: &Server, context: Request) {
         Position::from_move_packet(move_packet)
     };
     debug!("Request move to {}", destination);
-    let character = server.state().get_character_from_context_unsafe(&context);
-    let map_instance = server
-        .state()
-        .get_map_instance_from_character(character)
-        .unwrap_or_else(|| panic!("Expected to find map instance for character but didn't succeed"));
-    // server.add_to_next_movement_tick(CharacterClearMove(character.char_id));
-    let mut current_position = Position {
-        x: character.x(),
-        y: character.y(),
-        dir: 0,
-    };
-    if character.is_moving() {
-        if let Some(previous_movement) = character.peek_movement() {
-            // if get_current_time() > previous_movement.move_at() && ((get_current_time() -
-            // previous_movement.move_at()) < (character.status.speed/2) as u128) {
-            current_position = *previous_movement.position()
-            // }
-        }
-    }
-    // let maybe_previous_movement = character.peek_movement().cloned();
-
-    let path = path_search_client_side_algorithm(
-        map_instance.x_size(),
-        map_instance.y_size(),
-        map_instance.state().cells().as_ref(),
-        current_position.x(),
-        current_position.y(),
-        destination.x,
-        destination.y,
-    );
-    let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-    let canmove_tick = character.get_canmove_tick();
-    let start_at = if tick < canmove_tick {
-        debug!("Character movement delayed until canmove_tick: {}ms", canmove_tick - tick);
-        canmove_tick
-    } else {
-        tick
-    };
-    let path = Movement::from_path(path, start_at);
-    // if let Some(previous_movement) = maybe_previous_movement {
-    //     path.push(previous_movement);
-    // }
-    server.add_to_next_movement_tick(CharacterMove(CharacterMovement {
-        char_id: character.char_id,
+    server.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
+        char_id: context.session().char_id.unwrap(),
         destination,
-        path,
-        start_at,
-        current_position,
-        cancel_attack: true,
     }));
-    // debug_in_game_chat(&session, format!("path: {:?}", path.iter().map(|node|
-    // (node.x, node.y)).collect::<Vec<(u16, u16)>>()));
-    // debug_in_game_chat(&session, format!("current_position: {:?}, destination
-    // {:?}", current_position, destination));
 }

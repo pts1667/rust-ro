@@ -225,6 +225,27 @@ mod tests {
     use crate::{assert_sent_packet_in_current_packetver, assert_vec_equals, status_snapshot};
 
     #[test]
+    fn chat_with_an_unknown_at_command_is_answered_from_the_game_loop() {
+        // Given
+        let (context, _repository, character) = super::native_payment_tests::fixture(false, false);
+        let char_id = character.char_id;
+        let message = format!("{} : @bogus", character.name);
+        context.server.state_mut().insert_character(character);
+        context.server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterChat(
+            crate::server::model::events::game_event::CharacterChat { char_id, message },
+        ));
+        // When
+        crate::server::Server::game_loop_iteration(&context.server, 40);
+        // Then
+        let packetver = GlobalConfigService::instance().packetver();
+        let packets = context
+            .test_context
+            .get_sent_packet(vec![packets::packets::PacketZcNotifyPlayerchat::packet_id(packetver)], packetver);
+        assert_eq!(packets.len(), 1);
+        assert!(cast!(packets[0], packets::packets::PacketZcNotifyPlayerchat).msg.starts_with("@bogus is an Unknown Command"));
+    }
+
+    #[test]
     fn removed_map_item_notification_releases_its_lock_without_a_matching_character() {
         // Given
         let context = before_each();
