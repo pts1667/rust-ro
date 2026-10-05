@@ -16,8 +16,8 @@ use crate::repository::SledRepository;
 use crate::repository::game_system_repository::GameSystemRepository;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::Notification;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::game_systems::{HomunculusRecord, ScriptWorldRequest};
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::game_systems::{HomunculusRecord, ScriptWorldRequest, PartyRequest};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_combat_service::MagicAttackContext;
 use crate::server::service::script_world_service::ScriptWorldService;
@@ -98,39 +98,39 @@ fn wait_packet(context: &ServerServiceTestContext, actor: u32, id: u16) -> Vec<u
 #[test]
 fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_roster_in_sync() {
     let (context, repository) = fixture();
-    request(&context, 150_000, ScriptWorldRequest::CreateParty {
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::CreateParty {
         name: "Play Party".into(),
         item_pickup: true,
         item_share: true,
-    })
+    }))
     .unwrap();
     let party_id = context.server.state().get_character(150_000).unwrap().game_systems.party_id;
     assert_ne!(party_id, 0);
     assert_eq!(wait_packet(&context, 150_000, 0x00FA), vec![0xFA, 0, 0]);
     assert!(
-        request(&context, 150_001, ScriptWorldRequest::AnswerPartyInvite {
+        request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::AnswerPartyInvite {
             party_id,
             accept: true
-        })
+        }))
         .is_err()
     );
     assert_eq!(repository.character_game_systems(150_001).unwrap().party_id, 0);
-    request(&context, 150_000, ScriptWorldRequest::InviteParty(2_000_001)).unwrap();
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::InviteParty(2_000_001))).unwrap();
     let invite = wait_packet(&context, 150_001, 0x02C6);
     assert_eq!(invite.len(), 30);
     assert_eq!(u32::from_le_bytes(invite[2..6].try_into().unwrap()), party_id);
     assert!(
-        request(&context, 150_001, ScriptWorldRequest::AnswerPartyInvite {
+        request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::AnswerPartyInvite {
             party_id: party_id + 1,
             accept: true
-        })
+        }))
         .is_err()
     );
-    request(&context, 150_000, ScriptWorldRequest::InvitePartyByName("Party Member".into())).unwrap();
-    request(&context, 150_001, ScriptWorldRequest::AnswerPartyInvite {
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::InvitePartyByName("Party Member".into()))).unwrap();
+    request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::AnswerPartyInvite {
         party_id,
         accept: true,
-    })
+    }))
     .unwrap();
     for id in [150_000, 150_001] {
         let live = &context.server.state().get_character(id).unwrap().game_systems;
@@ -140,16 +140,16 @@ fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_
         assert_eq!(live.party.as_ref().unwrap().members, live.party_members);
     }
     assert!(
-        request(&context, 150_001, ScriptWorldRequest::ExpelParty {
+        request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::ExpelParty {
             account_id: 2_000_000,
             name: "Walkiry".into()
-        })
+        }))
         .is_err()
     );
-    request(&context, 150_000, ScriptWorldRequest::ChangePartyOptions {
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::ChangePartyOptions {
         exp_share: true,
         item_rules: Some((false, true)),
-    })
+    }))
     .unwrap();
     assert!(
         context
@@ -163,12 +163,12 @@ fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_
             .unwrap()
             .exp_share
     );
-    request(&context, 150_000, ScriptWorldRequest::ChangePartyLeader(2_000_001)).unwrap();
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::ChangePartyLeader(2_000_001))).unwrap();
     assert_eq!(
         context.server.state().get_character(150_000).unwrap().game_systems.party_leader_id,
         150_001
     );
-    request(&context, 150_001, ScriptWorldRequest::LeaveParty).unwrap();
+    request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::LeaveParty)).unwrap();
     assert!(repository.party(party_id).unwrap().is_none());
     for id in [150_000, 150_001] {
         let live = &context.server.state().get_character(id).unwrap().game_systems;
@@ -191,11 +191,11 @@ fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notifi
         .status
         .known_skills
         .clear();
-    request(&context, 150_000, ScriptWorldRequest::CreateParty {
+    request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::CreateParty {
         name: "Blocked Party".into(),
         item_pickup: false,
         item_share: false,
-    })
+    }))
     .unwrap();
     assert_eq!(repository.character_game_systems(150_000).unwrap().party_id, 0);
     assert_eq!(wait_packet(&context, 150_000, 0x0110).len(), 10);
@@ -220,11 +220,11 @@ fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notifi
                 &context.server,
                 context.server.state_mut().as_mut(),
                 150_000,
-                ScriptWorldRequest::CreateParty {
+                ScriptWorldRequest::Party(PartyRequest::CreateParty {
                     name: "Committed Party".into(),
                     item_pickup: false,
                     item_share: false
-                },
+                }),
                 100
             )
             .is_err()
@@ -319,7 +319,7 @@ fn companion_magic_reflection_precedes_absorption_and_reflected_magic_cannot_bou
         .unwrap()
         .into_iter()
         .find_map(|event| match event {
-            GameEvent::CharacterDamage(damage) => Some(damage),
+            GameEvent::CharacterDamage(CharacterDamage { damage }) => Some(damage),
             _ => None,
         })
         .unwrap();
@@ -416,7 +416,7 @@ fn companion_gvg_reduction_follows_shields_and_reflects_only_the_admitted_loss()
     let saved = repository.character_game_systems(150_001).unwrap();
     assert_eq!((saved.revision, saved.homunculus.as_ref()), (live.game_systems.revision, Some(homunculus)));
     let reflected = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
-        GameEvent::CharacterDamage(damage) => Some(damage), _ => None,
+        GameEvent::CharacterDamage(CharacterDamage { damage }) => Some(damage), _ => None,
     }).expect("Companion Reflect Shield did not use the actual admitted damage");
     assert_eq!((reflected.attacker_id, reflected.credit_id, reflected.target_id, reflected.damage), (id, 150_001, 150_000, 4));
     assert_eq!(reflected.battle_flags, 0);

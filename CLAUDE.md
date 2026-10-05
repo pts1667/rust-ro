@@ -107,14 +107,15 @@ This section contains guidance for common implementation tasks
 ## How to implement handling of a new packet?
 - Add a new condition in `server/src/server/request_handler/mod.rs` to downcast_ref the packet to handle, the prompt MUST contains the packet structure
 - Add a new function to handle this packet following this pattern: `pub fn handle_MY_PACKET_DESCRIPTION(server: &Server, context: Request)`
-- Add a new GameEvent in `server/src/server/model/events/game_event.rs`. If there is more than 1 argument to provide in the event, a structure containing those arguments should be created aswell
-- Arguments of the events are generally, the `char_id` of type `u32` and other `Packet` structure fields except: `packet_id`, `raw`, `*_raw` 
-- Implement the handling of this GameEvent in the game loop `server/src/server/game_loop.rs`
-- Inside `server/src/server/game_loop.rs` a mutable reference of character can be obtain by calling: `let character = server_state_mut.characters_mut().get_mut(&game_event_arguments.char_id).unwrap();`
+- Add a payload struct and its `impl GameEventHandler` in the matching domain file of `server/src/server/model/events/game_event/` (`character.rs`, `skill.rs`, `world.rs`, `script.rs`, `lifecycle.rs`), then register it in the `game_events!` list of `game_event/mod.rs`
+- Payload fields are generally the `char_id` of type `u32` and other `Packet` structure fields except: `packet_id`, `raw`, `*_raw`
+- The handler is `fn handle(self, server: &Server, state: &mut ServerState, tick: u128) -> Result<(), String>`, it runs in the game loop, and its logic lives next to the payload struct. Events tied to a character override `required_character()` (and `also_affects()` for other involved characters) so the game loop holds them back while that character is logging out
 - Implement the business logic in a service present in `server/src/server/service/` a service function usually have following signature: `pub fn use_item(&self, server_ref: &Server, runtime: &Runtime, character: &mut Character, game_event_arguments: MyGameEventArguments)`
 - In addition to business logic the service can also send packet to the client using: `self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, packet_to_send.raw)))
                         .unwrap_or_else(|_| error!("Failed to send notification packet_to_send to client"));`
 - Implement unit test for the newly added service function
+- Map instance events follow the same pattern with `MapEventHandler` and `map_events!` in `server/src/server/model/events/map_event/`
+- Script world requests are split by domain sub-enums in `server/src/server/service/script_world_requests.rs`, with each domain handler in its `script_world_*.rs` file
 
 ## How to implement a bitflag?
 - Create the enum in `lib/models/src/enums/` (add to existing file or create new one)

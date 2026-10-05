@@ -78,8 +78,7 @@ mod tests {
     use crate::repository::model::item_model::InventoryItemModel;
     use crate::repository::{Error, InventoryRepository};
     use crate::server::model::events::game_event::{
-        CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterSlotCard, CharacterZeny,
-    };
+        CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterRequestCardCompositionList, CharacterSlotCard, CharacterZeny, CharacterUpdateClientSideStats, CharacterUpdateWeight};
     use crate::server::model::events::map_event::{CharacterDropItems, MapEvent};
     use crate::server::model::events::persistence_event::{InventoryItemUpdate, PersistenceEvent};
     use crate::server::model::tasks_queue::TasksQueue;
@@ -242,7 +241,7 @@ mod tests {
         // Then
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue,
-            GameEvent::CharacterUpdateWeight(character.char_id),
+            GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }),
             0
         );
     }
@@ -334,7 +333,7 @@ mod tests {
         // Then
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue,
-            GameEvent::CharacterUpdateWeight(character.char_id),
+            GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }),
             0
         );
         context.test_context.countdown_latch().wait_with_timeout(Duration::from_millis(200));
@@ -1011,7 +1010,7 @@ mod tests {
             index: inventory_index,
         });
         // Then
-        assert_task_queue_contains_event_at_tick!(context.server_task_queue, GameEvent::CharacterUpdateClientSideStats(char_id), 0);
+        assert_task_queue_contains_event_at_tick!(context.server_task_queue, GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id }), 0);
     }
 
     #[test]
@@ -1059,7 +1058,7 @@ mod tests {
         // When
         context.inventory_service.takeoff_equip_item(&mut character, knife_index);
         // Then
-        assert_task_queue_contains_event_at_tick!(context.server_task_queue, GameEvent::CharacterUpdateClientSideStats(char_id), 0);
+        assert_task_queue_contains_event_at_tick!(context.server_task_queue, GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id }), 0);
         context.test_context.countdown_latch().wait_with_timeout(Duration::from_millis(200));
         assert_sent_packet_in_current_packetver!(
             context,
@@ -1180,7 +1179,7 @@ mod tests {
             .wait_expected_count_with_timeout(1, Duration::from_millis(200));
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue,
-            GameEvent::CharacterUpdateWeight(character.char_id),
+            GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }),
             0
         );
         assert_sent_packet_in_current_packetver!(
@@ -1370,10 +1369,9 @@ mod tests {
         add_items_in_inventory(&mut character, "Golden_Mace", 1);
         add_items_in_inventory(&mut character, "Marionette_Doll", 1);
 
-        let request = CharacterEquipItem {
-            requested_location: None,
+        let request = CharacterRequestCardCompositionList {
             char_id: character.char_id,
-            index: 0,
+            card_index: 0,
         };
         // When
         context.inventory_service.send_card_composition_list(&mut character, request);

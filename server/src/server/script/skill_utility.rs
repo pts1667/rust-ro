@@ -13,7 +13,6 @@ use packets::packets::{Packet, PacketZcUseskillAck2};
 use super::{metadata::SkillMetadata, ScriptSkillAction, ScriptSkillEffect, ScriptSkillService, ScriptSkillState};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterMovement, CharacterUseSkill, GameEvent};
-use crate::server::model::map_item::MapItemType;
 use crate::server::model::movement::Movement;
 use crate::server::model::path::PathNode;
 use crate::server::service::battle_service::BattleService;
@@ -160,14 +159,14 @@ impl ScriptSkillService {
             }
             "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" => {
                 let request = match metadata.name.as_str() {
-                    "MC_VENDING" => crate::server::model::game_systems::ScriptWorldRequest::PrepareVending { skill_level: effect.level },
-                    "MC_PUSHCART" => crate::server::model::game_systems::ScriptWorldRequest::SetCart(1),
-                    "AM_CALLHOMUN" => crate::server::model::game_systems::ScriptWorldRequest::CallHomunculus,
-                    "WE_CALLPARTNER" => crate::server::model::game_systems::ScriptWorldRequest::CallPartner,
-                    "WE_CALLBABY" => crate::server::model::game_systems::ScriptWorldRequest::CallBaby,
-                    "WE_CALLPARENT" => crate::server::model::game_systems::ScriptWorldRequest::CallParents,
-                    "AM_REST" => crate::server::model::game_systems::ScriptWorldRequest::RestHomunculus,
-                    _ => crate::server::model::game_systems::ScriptWorldRequest::ResurrectHomunculus { skill_level: effect.level },
+                    "MC_VENDING" => crate::server::model::game_systems::ScriptWorldRequest::Store(crate::server::model::game_systems::StoreRequest::PrepareVending { skill_level: effect.level }),
+                    "MC_PUSHCART" => crate::server::model::game_systems::ScriptWorldRequest::Container(crate::server::model::game_systems::ContainerRequest::SetCart(1)),
+                    "AM_CALLHOMUN" => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::CallHomunculus),
+                    "WE_CALLPARTNER" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallPartner),
+                    "WE_CALLBABY" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallBaby),
+                    "WE_CALLPARENT" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallParents),
+                    "AM_REST" => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::RestHomunculus),
+                    _ => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::ResurrectHomunculus { skill_level: effect.level }),
                 };
                 server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld { char_id: character.char_id, request }));
             }

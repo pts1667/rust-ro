@@ -1,6 +1,5 @@
 use super::ScriptWorldService;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::game_systems::ScriptWorldRequest;
 use crate::server::model::party_booking::{BookingAd, BOOKING_JOBS};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -45,6 +44,24 @@ fn now_seconds() -> u32 {
         .map_or(0, |elapsed| elapsed.as_secs() as u32)
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum BookingRequest {
+    BookingRegister {
+            level: i16,
+            map_id: i16,
+            jobs: [i16; 6],
+        },
+    BookingSearch {
+            level: i16,
+            map_id: i16,
+            job: i16,
+            last_index: u32,
+        },
+    BookingDelete,
+    BookingUpdate([i16; 6]),
+}
+
+
 impl ScriptWorldService {
     fn send_to(&self, char_id: u32, packet: Vec<u8>) {
         let _ = self.notifications.try_send(Notification::Char(CharNotification::new(char_id, packet)));
@@ -57,11 +74,11 @@ impl ScriptWorldService {
         }
     }
 
-    pub(crate) fn booking_request(&self, state: &mut ServerState, character: &Character, request: ScriptWorldRequest) -> Result<(), String> {
+    pub(crate) fn booking_request(&self, state: &mut ServerState, character: &Character, request: BookingRequest) -> Result<(), String> {
         let online: Vec<u32> = state.characters().keys().copied().collect();
         state.party_bookings.prune(|id| online.contains(&id) || id == character.char_id);
         match request {
-            ScriptWorldRequest::BookingRegister { level, map_id, jobs } => {
+            BookingRequest::BookingRegister { level, map_id, jobs } => {
                 let ad = state.party_bookings.register(character.char_id, &character.name, now_seconds(), level, map_id, jobs);
                 let mut ack = header(REGISTER_ACK);
                 ack.extend_from_slice(&(if ad.is_some() { REGISTER_SUCCESS } else { REGISTER_DUPLICATE }).to_le_bytes());
@@ -72,7 +89,7 @@ impl ScriptWorldService {
                     self.broadcast_booking(state, character, notice);
                 }
             }
-            ScriptWorldRequest::BookingSearch { level, map_id, job, last_index } => {
+            BookingRequest::BookingSearch { level, map_id, job, last_index } => {
                 let (results, more) = state.party_bookings.search(level, map_id, job, last_index);
                 let mut packet = header(SEARCH_ACK);
                 packet.extend_from_slice(&((5 + results.len() * 48) as u16).to_le_bytes());
@@ -82,7 +99,7 @@ impl ScriptWorldService {
                 }
                 self.send_to(character.char_id, packet);
             }
-            ScriptWorldRequest::BookingDelete => {
+            BookingRequest::BookingDelete => {
                 let mut ack = header(DELETE_ACK);
                 match state.party_bookings.delete(character.char_id) {
                     Some(index) => {
@@ -98,7 +115,7 @@ impl ScriptWorldService {
                     }
                 }
             }
-            ScriptWorldRequest::BookingUpdate(jobs) => {
+            BookingRequest::BookingUpdate(jobs) => {
                 if let Some(ad) = state.party_bookings.update(character.char_id, now_seconds(), jobs) {
                     let mut notice = header(NOTIFY_UPDATE);
                     notice.extend_from_slice(&ad.index.to_le_bytes());
@@ -106,8 +123,10 @@ impl ScriptWorldService {
                     self.broadcast_booking(state, character, notice);
                 }
             }
-            _ => return Err("Not a party booking request".into()),
         }
         Ok(())
     }
+}
+
+impl ScriptWorldService {
 }

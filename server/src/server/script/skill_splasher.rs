@@ -9,8 +9,8 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -214,7 +214,7 @@ impl ScriptSkillService {
                 1,
                 0,
             );
-            instance.add_to_next_tick(MapEvent::MobDamage(damage_event));
+            instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: damage_event }));
         }
         if let Some((target_id, target)) = player_target {
             let damage = server.battle_service().player_physical_splash_damage_signed(
@@ -257,7 +257,7 @@ impl ScriptSkillService {
                 1,
                 0,
             );
-            server.add_to_next_tick(GameEvent::CharacterDamage(damage_event));
+            server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: damage_event }));
         }
         Ok(())
     }

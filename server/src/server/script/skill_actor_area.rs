@@ -8,7 +8,7 @@ use super::ground::{GroundKind, GroundSkillSource};
 use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::events::game_event::{CharacterStatusAlternatives, GameEvent, ScriptSkillCast};
-use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives};
+use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives, ScriptMobCombat};
 use crate::server::model::map_item::MapItemType;
 use crate::server::state::server::ServerState;
 
@@ -119,11 +119,11 @@ impl ScriptSkillService {
                         .character_service()
                         .update_hp_sp(character, character.status.hp, character.status.sp.saturating_sub(drain));
                 } else if !player {
-                    instance.add_to_next_tick(MapEvent::ScriptMobCombat {
+                    instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
                         source_id: source.id,
                         target_id: id,
                         effect: crate::server::service::script_combat_service::MobCombatEffect::Vanish { hp: 0, sp: drain },
-                    });
+                    }));
                 }
                 continue;
             }

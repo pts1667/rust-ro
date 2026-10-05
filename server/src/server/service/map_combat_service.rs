@@ -6,7 +6,7 @@ use models::status_bonus::BattleFlag;
 
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MobAttackCharacter;
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::service::battle_service::{BattleService, NormalAttackRoll};
@@ -132,9 +132,9 @@ pub fn reflect_magic(server: &Server, state: &ServerState, request: MagicReflect
         landed: false,
     };
     if is_player_actor {
-        server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+        server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
     } else {
-        map.add_to_next_tick(crate::server::model::events::map_event::MapEvent::MobDamage(damage));
+        map.add_to_next_tick(crate::server::model::events::map_event::MapEvent::MobDamage(crate::server::model::events::map_event::MobDamage { damage }));
     }
     Ok(())
 }
@@ -175,7 +175,7 @@ pub fn handle(server: &Server, state: &mut ServerState, request: MobAttackReques
     }
     if let Some(damage) = server.battle_service().magical_normal_attack(&request.source_status, &target,
         attack.mob_id, attack.target_char_id, attack.mob_id, &request.source_key, attack.mob_x, attack.mob_y, tick, attack.attack_motion, 480) {
-        server.add_to_delayed_tick(GameEvent::CharacterDamage(damage), u128::from(attack.attack_motion));
+        server.add_to_delayed_tick(GameEvent::CharacterDamage(CharacterDamage { damage }), u128::from(attack.attack_motion));
         return;
     }
     let mut rng = fastrand::Rng::new();
@@ -230,7 +230,7 @@ pub fn handle(server: &Server, state: &mut ServerState, request: MobAttackReques
     ));
     let delay = attack.attack_motion as u128 / 2;
     server.add_to_delayed_tick(
-        GameEvent::CharacterDamage(Damage {
+        GameEvent::CharacterDamage(CharacterDamage { damage: Damage {
             notification,
             source_kind: *request.source_status.combat_actor_kind(),
             skill_damage_adjusted: false,
@@ -249,7 +249,7 @@ pub fn handle(server: &Server, state: &mut ServerState, request: MobAttackReques
             credit_id: attack.mob_id,
             defenses_applied: true,
             magic_context: None,
-        }),
+        } }),
         delay,
     );
 }

@@ -13,8 +13,8 @@ use super::metadata::SkillMetadata;
 use super::{GroundSkillSource, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobKnockback, MobStatusChange};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -718,9 +718,9 @@ impl ScriptSkillService {
                 0,
             );
             if player {
-                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
             } else {
-                instance.add_to_next_tick(MapEvent::MobDamage(damage));
+                instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
             }
             if ground.kind == GroundKind::GrandDarkness {
                 let request = models::status_change::StatusChangeRequest {
@@ -736,7 +736,7 @@ impl ScriptSkillService {
                         request,
                     }));
                 } else {
-                    instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id: target_id, request });
+                    instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: target_id, request }));
                 }
             }
             let knocked_back = match ground.kind {
@@ -755,12 +755,12 @@ impl ScriptSkillService {
                         cells: ACTOR_GROUND_KNOCKBACK,
                     }));
                 } else {
-                    instance.add_to_next_tick(MapEvent::MobKnockback {
+                    instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                         mob_id: target_id,
                         source_x: ground.source_x,
                         source_y: ground.source_y,
                         cells: ACTOR_GROUND_KNOCKBACK,
-                    });
+                    }));
                 }
             }
         }

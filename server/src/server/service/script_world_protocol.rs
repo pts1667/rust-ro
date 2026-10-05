@@ -2,8 +2,7 @@ use models::enums::{EnumWithMaskValueU8, EnumWithNumberValue, EnumWithStringValu
 
 use crate::server::model::game_systems::{
     BuyingOffer, BuyingStore, HomunculusInfoFlag, HomunculusRecord, ItemContainer, ScriptWorldRequest, StorageItemFlag, StoreSearchResult,
-    VendingStore,
-};
+    VendingStore, PartyRequest, GuildRequest, BattlegroundRequest, BookingRequest, FamilyRequest, HomunculusRequest, CompanionRequest, PetRequest, StoreRequest, ContainerRequest};
 use crate::server::model::battleground_queue::BattlegroundQueueAction;
 use crate::server::request_handler::framing::FrameLength;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -247,67 +246,67 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             } else {
                 (false, false)
             };
-            ScriptWorldRequest::CreateParty {
+            ScriptWorldRequest::Party(PartyRequest::CreateParty {
                 name: text(&bytes[2..26])?,
                 item_pickup,
                 item_share,
-            }
+            })
         }
         0x00FC => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::InviteParty(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Party(PartyRequest::InviteParty(u32_at(bytes, 2)?))
         }
         0x02C4 => {
             exact_length(bytes, 26)?;
-            ScriptWorldRequest::InvitePartyByName(text(&bytes[2..26])?)
+            ScriptWorldRequest::Party(PartyRequest::InvitePartyByName(text(&bytes[2..26])?))
         }
         0x00FF | 0x02C7 => {
             exact_length(bytes, if id == 0x00FF { 10 } else { 7 })?;
-            ScriptWorldRequest::AnswerPartyInvite {
+            ScriptWorldRequest::Party(PartyRequest::AnswerPartyInvite {
                 party_id: u32_at(bytes, 2)?,
                 accept: boolean(if id == 0x00FF { u32_at(bytes, 6)? } else { u32::from(bytes[6]) })?,
-            }
+            })
         }
         0x0100 => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::LeaveParty
+            ScriptWorldRequest::Party(PartyRequest::LeaveParty)
         }
         0x0103 => {
             exact_length(bytes, 30)?;
-            ScriptWorldRequest::ExpelParty {
+            ScriptWorldRequest::Party(PartyRequest::ExpelParty {
                 account_id: u32_at(bytes, 2)?,
                 name: text(&bytes[6..30])?,
-            }
+            })
         }
         0x0102 | 0x07D7 => {
             exact_length(bytes, if id == 0x0102 { 6 } else { 8 })?;
-            ScriptWorldRequest::ChangePartyOptions {
+            ScriptWorldRequest::Party(PartyRequest::ChangePartyOptions {
                 exp_share: boolean(u32_at(bytes, 2)?)?,
                 item_rules: if id == 0x0102 {
                     None
                 } else {
                     Some((boolean(u32::from(bytes[6]))?, boolean(u32::from(bytes[7]))?))
                 },
-            }
+            })
         }
         0x07DA => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::ChangePartyLeader(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Party(PartyRequest::ChangePartyLeader(u32_at(bytes, 2)?))
         }
         0x02C8 => {
             exact_length(bytes, 3)?;
-            ScriptWorldRequest::DisablePartyInvites(boolean(u32::from(bytes[2]))?)
+            ScriptWorldRequest::Party(PartyRequest::DisablePartyInvites(boolean(u32::from(bytes[2]))?))
         }
         0x0108 => {
             variable_length(bytes, 5, 1)?;
             if bytes.len() > 259 || bytes.last() != Some(&0) {
                 return Err("Invalid party chat length or terminator".into());
             }
-            ScriptWorldRequest::PartyMessage(text(&bytes[4..])?)
+            ScriptWorldRequest::Party(PartyRequest::PartyMessage(text(&bytes[4..])?))
         }
         0x01F9 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::AdoptRequest(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Family(FamilyRequest::AdoptRequest(u32_at(bytes, 2)?))
         }
         0x0802 => {
             exact_length(bytes, 18)?;
@@ -315,24 +314,24 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             for (index, job) in jobs.iter_mut().enumerate() {
                 *job = i16::from(bytes[6 + index * 2]);
             }
-            ScriptWorldRequest::BookingRegister {
+            ScriptWorldRequest::Booking(BookingRequest::BookingRegister {
                 level: u16_at(bytes, 2)? as i16,
                 map_id: u16_at(bytes, 4)? as i16,
                 jobs,
-            }
+            })
         }
         0x0804 => {
             exact_length(bytes, 14)?;
-            ScriptWorldRequest::BookingSearch {
+            ScriptWorldRequest::Booking(BookingRequest::BookingSearch {
                 level: u16_at(bytes, 2)? as i16,
                 map_id: u16_at(bytes, 4)? as i16,
                 job: u16_at(bytes, 6)? as i16,
                 last_index: u32_at(bytes, 8)?,
-            }
+            })
         }
         0x0806 => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::BookingDelete
+            ScriptWorldRequest::Booking(BookingRequest::BookingDelete)
         }
         0x0808 => {
             exact_length(bytes, 14)?;
@@ -340,23 +339,23 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             for (index, job) in jobs.iter_mut().enumerate() {
                 *job = u16_at(bytes, 2 + index * 2)? as i16;
             }
-            ScriptWorldRequest::BookingUpdate(jobs)
+            ScriptWorldRequest::Booking(BookingRequest::BookingUpdate(jobs))
         }
         0x01F7 => {
             exact_length(bytes, 14)?;
-            ScriptWorldRequest::AdoptAnswer {
+            ScriptWorldRequest::Family(FamilyRequest::AdoptAnswer {
                 father_account: u32_at(bytes, 2)?,
                 mother_account: u32_at(bytes, 6)?,
                 accept: u32_at(bytes, 10)? == 1,
-            }
+            })
         }
         0x0165 => {
             exact_length(bytes, 30)?;
-            ScriptWorldRequest::CreateGuild(text(&bytes[6..30])?)
+            ScriptWorldRequest::Guild(GuildRequest::CreateGuild(text(&bytes[6..30])?))
         }
         0x0168 => {
             exact_length(bytes, 14)?;
-            ScriptWorldRequest::InviteGuild(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Guild(GuildRequest::InviteGuild(u32_at(bytes, 2)?))
         }
         0x016B => {
             exact_length(bytes, 10)?;
@@ -364,10 +363,10 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             if answer > 1 {
                 return Err("Invalid guild invitation response".into());
             }
-            ScriptWorldRequest::AnswerGuildInvite {
+            ScriptWorldRequest::Guild(GuildRequest::AnswerGuildInvite {
                 guild_id: u32_at(bytes, 2)?,
                 accept: answer == 1,
-            }
+            })
         }
         0x0217 => ScriptWorldRequest::FameList(0),
         0x0218 => ScriptWorldRequest::FameList(1),
@@ -379,59 +378,59 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
         }
         0x0170 => {
             exact_length(bytes, 14)?;
-            ScriptWorldRequest::GuildAllianceRequest(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Guild(GuildRequest::GuildAllianceRequest(u32_at(bytes, 2)?))
         }
         0x0172 => {
             exact_length(bytes, 10)?;
-            ScriptWorldRequest::GuildAllianceReply {
+            ScriptWorldRequest::Guild(GuildRequest::GuildAllianceReply {
                 inviter: u32_at(bytes, 2)?,
                 accept: u32_at(bytes, 6)? == 1,
-            }
+            })
         }
         0x0180 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::GuildOpposition(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Guild(GuildRequest::GuildOpposition(u32_at(bytes, 2)?))
         }
         0x0183 => {
             exact_length(bytes, 10)?;
-            ScriptWorldRequest::GuildRelationBreak {
+            ScriptWorldRequest::Guild(GuildRequest::GuildRelationBreak {
                 guild_id: u32_at(bytes, 2)?,
                 hostile: u32_at(bytes, 6)? == 1,
-            }
+            })
         }
         0x014D => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::GuildMenu
+            ScriptWorldRequest::Guild(GuildRequest::GuildMenu)
         }
         0x014F => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::GuildInformation(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Guild(GuildRequest::GuildInformation(u32_at(bytes, 2)?))
         }
         0x0159 => {
             exact_length(bytes, 54)?;
-            ScriptWorldRequest::LeaveGuild {
+            ScriptWorldRequest::Guild(GuildRequest::LeaveGuild {
                 guild_id: u32_at(bytes, 2)?,
                 reason: text(&bytes[14..54])?,
-            }
+            })
         }
         0x015B => {
             exact_length(bytes, 54)?;
-            ScriptWorldRequest::ExpelGuild {
+            ScriptWorldRequest::Guild(GuildRequest::ExpelGuild {
                 guild_id: u32_at(bytes, 2)?,
                 member_id: u32_at(bytes, 10)?,
                 reason: text(&bytes[14..54])?,
-            }
+            })
         }
         0x015D => {
             exact_length(bytes, 42)?;
-            ScriptWorldRequest::DisbandGuild(text(&bytes[2..42])?)
+            ScriptWorldRequest::Guild(GuildRequest::DisbandGuild(text(&bytes[2..42])?))
         }
         0x016E => {
             exact_length(bytes, 186)?;
-            ScriptWorldRequest::GuildNotice {
+            ScriptWorldRequest::Guild(GuildRequest::GuildNotice {
                 subject: text(&bytes[6..66])?,
                 body: text(&bytes[66..186])?,
-            }
+            })
         }
         0x0161 => {
             variable_length(bytes, 4, 40)?;
@@ -449,7 +448,7 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                     },
                 ));
             }
-            ScriptWorldRequest::GuildPositions(positions)
+            ScriptWorldRequest::Guild(GuildRequest::GuildPositions(positions))
         }
         0x0155 => {
             variable_length(bytes, 4, 12)?;
@@ -457,77 +456,77 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             for record in bytes[4..].chunks_exact(12) {
                 members.push((u32_at(record, 4)?, u32_at(record, 8)?));
             }
-            ScriptWorldRequest::GuildMemberPositions(members)
+            ScriptWorldRequest::Guild(GuildRequest::GuildMemberPositions(members))
         }
         0x0153 => {
             if bytes.len() < 4 || usize::from(u16_at(bytes, 2)?) != bytes.len() {
                 return Err("Malformed guild emblem packet".into());
             }
-            ScriptWorldRequest::GuildEmblem(bytes[4..].to_vec())
+            ScriptWorldRequest::Guild(GuildRequest::GuildEmblem(bytes[4..].to_vec()))
         }
         0x017E => {
             variable_length(bytes, 5, 1)?;
             if bytes.len() > 259 || bytes.last() != Some(&0) {
                 return Err("Invalid guild chat length or terminator".into());
             }
-            ScriptWorldRequest::GuildMessage(text(&bytes[4..])?)
+            ScriptWorldRequest::Guild(GuildRequest::GuildMessage(text(&bytes[4..])?))
         }
         0x08D7 => {
             exact_length(bytes, 28)?;
-            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Apply { kind: u16_at(bytes, 2)?, name: text(&bytes[4..28])? })
+            ScriptWorldRequest::Battleground(BattlegroundRequest::BattlegroundQueue(BattlegroundQueueAction::Apply { kind: u16_at(bytes, 2)?, name: text(&bytes[4..28])? }))
         }
         0x08DA => {
             exact_length(bytes, 26)?;
-            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Cancel(text(&bytes[2..26])?))
+            ScriptWorldRequest::Battleground(BattlegroundRequest::BattlegroundQueue(BattlegroundQueueAction::Cancel(text(&bytes[2..26])?)))
         }
         0x090A => {
             exact_length(bytes, 26)?;
-            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Number(text(&bytes[2..26])?))
+            ScriptWorldRequest::Battleground(BattlegroundRequest::BattlegroundQueue(BattlegroundQueueAction::Number(text(&bytes[2..26])?)))
         }
         0x08E0 => {
             exact_length(bytes, 51)?;
-            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Reply { accept: bytes[2] == 1 })
+            ScriptWorldRequest::Battleground(BattlegroundRequest::BattlegroundQueue(BattlegroundQueueAction::Reply { accept: bytes[2] == 1 }))
         }
         0x02DB => {
             variable_length(bytes, 5, 1)?;
             if bytes.len() > 259 || bytes.last() != Some(&0) {
                 return Err("Invalid battleground chat length or terminator".into());
             }
-            ScriptWorldRequest::BattlegroundMessage(text(&bytes[4..])?)
+            ScriptWorldRequest::Battleground(BattlegroundRequest::BattlegroundMessage(text(&bytes[4..])?))
         }
         0x0151 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::GuildEmblemRequest(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Guild(GuildRequest::GuildEmblemRequest(u32_at(bytes, 2)?))
         }
         0x022D => {
             exact_length(bytes, 5)?;
-            ScriptWorldRequest::HomunculusMenu(bytes[4])
+            ScriptWorldRequest::Homunculus(HomunculusRequest::HomunculusMenu(bytes[4]))
         }
         0x0231 => {
             exact_length(bytes, 26)?;
-            ScriptWorldRequest::HomunculusRename(text(&bytes[2..])?)
+            ScriptWorldRequest::Homunculus(HomunculusRequest::HomunculusRename(text(&bytes[2..])?))
         }
         0x0234 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::CompanionMoveToOwner(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Homunculus(HomunculusRequest::CompanionMoveToOwner(u32_at(bytes, 2)?))
         }
         0x0232 => {
             exact_length(bytes, 9)?;
             let x = u16::from(bytes[6]) << 2 | u16::from(bytes[7] >> 6);
             let y = u16::from(bytes[7] & 63) << 4 | u16::from(bytes[8] >> 4);
-            ScriptWorldRequest::CompanionMove {
+            ScriptWorldRequest::Homunculus(HomunculusRequest::CompanionMove {
                 id: u32_at(bytes, 2)?,
                 x,
                 y,
-            }
+            })
         }
         0x0233 => {
             exact_length(bytes, 11)?;
-            ScriptWorldRequest::CompanionAttack {
+            ScriptWorldRequest::Homunculus(HomunculusRequest::CompanionAttack {
                 id: u32_at(bytes, 2)?,
                 target: u32_at(bytes, 6)?,
                 repeat: bytes[10] != 0,
-            }
+            })
         }
         0x0126 | 0x0127 | 0x0128 | 0x0129 => {
             exact_length(bytes, 8)?;
@@ -537,36 +536,36 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 0x0128 => (ItemContainer::Storage, ItemContainer::Cart),
                 _ => (ItemContainer::Cart, ItemContainer::Storage),
             };
-            ScriptWorldRequest::ContainerTransfer {
+            ScriptWorldRequest::Container(ContainerRequest::ContainerTransfer {
                 source,
                 destination,
                 index: u16_at(bytes, 2)?
                     .checked_sub(if source == ItemContainer::Storage { 1 } else { 2 })
                     .ok_or("Invalid container index")?,
                 amount: u32_at(bytes, 4)?,
-            }
+            })
         }
         0x012A => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::RemoveOption
+            ScriptWorldRequest::Container(ContainerRequest::RemoveOption)
         }
         0x01AF => {
             exact_length(bytes, 4)?;
-            ScriptWorldRequest::ChangeCart(u8::try_from(u16_at(bytes, 2)?).map_err(|_| "Invalid cart style")?)
+            ScriptWorldRequest::Container(ContainerRequest::ChangeCart(u8::try_from(u16_at(bytes, 2)?).map_err(|_| "Invalid cart style")?))
         }
         0x012E => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::CloseVendingStore
+            ScriptWorldRequest::Store(StoreRequest::CloseVendingStore)
         }
         0x0130 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::OpenVendingStore(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Store(StoreRequest::OpenVendingStore(u32_at(bytes, 2)?))
         }
         0x012F | 0x01B2 => {
             let base = if id == 0x012F { 84 } else { 85 };
             variable_length(bytes, base, 8)?;
             if id == 0x01B2 && bytes[84] == 0 {
-                ScriptWorldRequest::CloseVendingStore
+                ScriptWorldRequest::Store(StoreRequest::CloseVendingStore)
             } else {
                 let offers = bytes[base..]
                     .chunks_exact(8)
@@ -581,10 +580,10 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 if offers.len() > 12 {
                     return Err("Too many vending offers".into());
                 }
-                ScriptWorldRequest::CreateVendingStore {
+                ScriptWorldRequest::Store(StoreRequest::CreateVendingStore {
                     title: text(&bytes[4..84])?,
                     offers,
-                }
+                })
             }
         }
         0x0134 | 0x0801 => {
@@ -602,58 +601,58 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             if items.len() > 12 {
                 return Err("Too many vending purchases".into());
             }
-            ScriptWorldRequest::PurchaseVendingStore {
+            ScriptWorldRequest::Store(StoreRequest::PurchaseVendingStore {
                 account_id: u32_at(bytes, 4)?,
                 store_id: if id == 0x0801 { Some(u32_at(bytes, 8)?) } else { None },
                 items,
-            }
+            })
         }
         0x019F => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::CapturePet(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Pet(PetRequest::CapturePet(u32_at(bytes, 2)?))
         }
         0x01A7 => {
             exact_length(bytes, 4)?;
-            ScriptWorldRequest::HatchPet(u16_at(bytes, 2)?.checked_sub(2).ok_or("Invalid egg inventory index")?)
+            ScriptWorldRequest::Pet(PetRequest::HatchPet(u16_at(bytes, 2)?.checked_sub(2).ok_or("Invalid egg inventory index")?))
         }
         0x01A1 => {
             exact_length(bytes, 3)?;
-            ScriptWorldRequest::PetMenu(bytes[2])
+            ScriptWorldRequest::Pet(PetRequest::PetMenu(bytes[2]))
         }
         0x01A5 => {
             exact_length(bytes, 26)?;
-            ScriptWorldRequest::PetRename(text(&bytes[2..26])?)
+            ScriptWorldRequest::Pet(PetRequest::PetRename(text(&bytes[2..26])?))
         }
         0x01A9 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::PetEmotion(u32_at(bytes, 2)? as i32)
+            ScriptWorldRequest::Pet(PetRequest::PetEmotion(u32_at(bytes, 2)? as i32))
         }
         0x029F => {
             exact_length(bytes, 3)?;
-            ScriptWorldRequest::DismissMercenary(bytes[2])
+            ScriptWorldRequest::Companion(CompanionRequest::DismissMercenary(bytes[2]))
         }
         0x00F3 => {
             exact_length(bytes, 8)?;
-            ScriptWorldRequest::StorageDeposit {
+            ScriptWorldRequest::Container(ContainerRequest::StorageDeposit {
                 index: u16_at(bytes, 2)?.checked_sub(2).ok_or("Invalid deposit inventory index")?,
                 amount: u32_at(bytes, 4)?,
-            }
+            })
         }
         0x00F5 => {
             exact_length(bytes, 8)?;
-            ScriptWorldRequest::StorageWithdraw {
+            ScriptWorldRequest::Container(ContainerRequest::StorageWithdraw {
                 index: u16_at(bytes, 2)?.checked_sub(1).ok_or("Invalid storage inventory index")?,
                 amount: u32_at(bytes, 4)?,
-            }
+            })
         }
         0x00F7 => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::CloseStorage
+            ScriptWorldRequest::Container(ContainerRequest::CloseStorage)
         }
         0x0811 => {
             variable_length(bytes, 89, item_width + 6)?;
             if bytes[8] == 0 {
-                ScriptWorldRequest::CloseBuyingStore
+                ScriptWorldRequest::Store(StoreRequest::CloseBuyingStore)
             } else {
                 let offers = bytes[89..]
                     .chunks_exact(item_width + 6)
@@ -668,20 +667,20 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 if offers.len() > 5 {
                     return Err("Too many buying store offers".into());
                 }
-                ScriptWorldRequest::CreateBuyingStore {
+                ScriptWorldRequest::Store(StoreRequest::CreateBuyingStore {
                     title: text(&bytes[9..89])?,
                     zeny_limit: u32_at(bytes, 4)?,
                     offers,
-                }
+                })
             }
         }
         0x0815 => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::CloseBuyingStore
+            ScriptWorldRequest::Store(StoreRequest::CloseBuyingStore)
         }
         0x0817 => {
             exact_length(bytes, 6)?;
-            ScriptWorldRequest::OpenBuyingStore(u32_at(bytes, 2)?)
+            ScriptWorldRequest::Store(StoreRequest::OpenBuyingStore(u32_at(bytes, 2)?))
         }
         0x0819 => {
             variable_length(bytes, 12, item_width + 4)?;
@@ -698,11 +697,11 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             if items.len() > 100 {
                 return Err("Too many buying store sale items".into());
             }
-            ScriptWorldRequest::TradeBuyingStore {
+            ScriptWorldRequest::Store(StoreRequest::TradeBuyingStore {
                 account_id: u32_at(bytes, 4)?,
                 store_id: u32_at(bytes, 8)?,
                 items,
-            }
+            })
         }
         0x0835 => {
             if bytes.len() < 15 || usize::from(u16_at(bytes, 2)?) != bytes.len() {
@@ -719,29 +718,29 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
             let cards = (0..cards_count)
                 .map(|index| item_at(bytes, 15 + (index + items_count) * item_width, item_width).map(|card| card as u16))
                 .collect::<Result<Vec<_>, _>>()?;
-            ScriptWorldRequest::SearchStores {
+            ScriptWorldRequest::Store(StoreRequest::SearchStores {
                 kind: bytes[4],
                 max_price: u32_at(bytes, 5)?,
                 min_price: u32_at(bytes, 9)?,
                 items,
                 cards,
-            }
+            })
         }
         0x0838 => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::NextSearchPage
+            ScriptWorldRequest::Store(StoreRequest::NextSearchPage)
         }
         0x083B => {
             exact_length(bytes, 2)?;
-            ScriptWorldRequest::CloseStoreSearch
+            ScriptWorldRequest::Store(StoreRequest::CloseStoreSearch)
         }
         0x083C => {
             exact_length(bytes, 10 + item_width)?;
-            ScriptWorldRequest::LocateStore {
+            ScriptWorldRequest::Store(StoreRequest::LocateStore {
                 account_id: u32_at(bytes, 2)?,
                 store_id: u32_at(bytes, 6)?,
                 item_id: item_at(bytes, 10, item_width)?,
-            }
+            })
         }
         _ => return Ok(None),
     };
@@ -1228,18 +1227,18 @@ mod tests {
         assert_eq!(world_frame_length(0x01E8, 20120229), Some(FrameLength::Fixed(28)));
         assert_eq!(
             decode_request(&create, 20120229).unwrap(),
-            Some(ScriptWorldRequest::CreateParty {
+            Some(ScriptWorldRequest::Party(PartyRequest::CreateParty {
                 name: "Classic Party".into(),
                 item_pickup: true,
                 item_share: false
-            })
+            }))
         );
         assert!(decode_request(&create[..27], 20120229).is_err());
         let mut name = header(0x088D);
         fixed_string(&mut name, "Member", 24);
         assert_eq!(
             decode_request(&name, 20120229).unwrap(),
-            Some(ScriptWorldRequest::InvitePartyByName("Member".into()))
+            Some(ScriptWorldRequest::Party(PartyRequest::InvitePartyByName("Member".into())))
         );
         assert_eq!(world_frame_length(0x02C4, 20120229), None);
         let mut skill = header(0x02C4);
@@ -1250,10 +1249,10 @@ mod tests {
         answer.push(1);
         assert_eq!(
             decode_request(&answer, 20120229).unwrap(),
-            Some(ScriptWorldRequest::AnswerPartyInvite {
+            Some(ScriptWorldRequest::Party(PartyRequest::AnswerPartyInvite {
                 party_id: 123,
                 accept: true
-            })
+            }))
         );
         answer[6] = 2;
         assert!(decode_request(&answer, 20120229).is_err());
@@ -1262,10 +1261,10 @@ mod tests {
         options.extend_from_slice(&[1, 1]);
         assert_eq!(
             decode_request(&options, 20120229).unwrap(),
-            Some(ScriptWorldRequest::ChangePartyOptions {
+            Some(ScriptWorldRequest::Party(PartyRequest::ChangePartyOptions {
                 exp_share: true,
                 item_rules: Some((true, true))
-            })
+            }))
         );
         let message = b"Member : hello\0";
         let mut chat = header(0x0108);
@@ -1273,7 +1272,7 @@ mod tests {
         chat.extend_from_slice(message);
         assert_eq!(
             decode_request(&chat, 20120229).unwrap(),
-            Some(ScriptWorldRequest::PartyMessage("Member : hello".into()))
+            Some(ScriptWorldRequest::Party(PartyRequest::PartyMessage("Member : hello".into())))
         );
         chat.pop();
         assert!(decode_request(&chat, 20120229).is_err());
@@ -1290,10 +1289,10 @@ mod tests {
         packet.extend_from_slice(&2u16.to_le_bytes());
         packet.extend_from_slice(&50u32.to_le_bytes());
         let decoded = decode_request(&packet, 20120229).unwrap().unwrap();
-        assert!(matches!(decoded, ScriptWorldRequest::CreateBuyingStore { zeny_limit: 100, .. }));
+        assert!(matches!(decoded, ScriptWorldRequest::Store(StoreRequest::CreateBuyingStore { zeny_limit: 100, .. })));
         assert_eq!(
             decode_request(&header(0x089B), 20120229).unwrap(),
-            Some(ScriptWorldRequest::CloseBuyingStore)
+            Some(ScriptWorldRequest::Store(StoreRequest::CloseBuyingStore))
         );
     }
 
@@ -1316,7 +1315,7 @@ mod tests {
         fixed_string(&mut create, "Classic Guild", 24);
         assert_eq!(
             decode_request(&create, 20120229).unwrap(),
-            Some(ScriptWorldRequest::CreateGuild("Classic Guild".into()))
+            Some(ScriptWorldRequest::Guild(GuildRequest::CreateGuild("Classic Guild".into())))
         );
         let mut invite = header(0x0168);
         for actor in [150_001u32, 999, 999] {
@@ -1324,7 +1323,7 @@ mod tests {
         }
         assert_eq!(
             decode_request(&invite, 20120229).unwrap(),
-            Some(ScriptWorldRequest::InviteGuild(150_001))
+            Some(ScriptWorldRequest::Guild(GuildRequest::InviteGuild(150_001)))
         );
         assert!(decode_request(&invite[..6], 20120229).is_err());
         let mut answer = header(0x016B);

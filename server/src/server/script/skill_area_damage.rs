@@ -9,8 +9,8 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobKnockback};
 use crate::server::model::map_item::MapItemType;
 use crate::server::service::battle_service::BattleService;
 use crate::server::service::status_service::StatusService;
@@ -309,12 +309,12 @@ impl ScriptSkillService {
                     let source_x = (collision.origin.0 as i32 - collision.direction.0).clamp(0, u16::MAX as i32) as u16;
                     let source_y = (collision.origin.1 as i32 - collision.direction.1).clamp(0, u16::MAX as i32) as u16;
                     if target.kind == MapItemType::Mob {
-                        instance.add_to_next_tick(MapEvent::MobKnockback {
+                        instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
                             mob_id: target.id,
                             source_x,
                             source_y,
                             cells: collision.moved,
-                        });
+                        }));
                     } else {
                         server.add_to_next_tick(GameEvent::GroundTrapEffect(super::trap::GroundTrapEffect {
                             map: character.map_instance_key.clone(),
@@ -608,9 +608,9 @@ impl ScriptSkillService {
                 0,
             );
             if target.3 == MapItemType::Mob {
-                instance.add_to_next_tick(MapEvent::MobDamage(damage));
+                instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
             } else {
-                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
             }
         }
         if let Ok(mut sequences) = self.water_ball_sequences.lock() {

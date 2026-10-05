@@ -8,8 +8,8 @@ use crate::server::model::character_lifecycle::{
     ActiveTimerQuit, CharacterAdmission, CharacterLogout, CharacterSelectionGate, ClientDisconnected, PendingCharacterLogout,
     ScriptLogoutCompleted, TimerQuitCallback,
 };
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterInitInventory, CharacterJoinGame};
+use crate::server::model::events::map_event::{MapEvent, RemoveCharFromMap};
 use crate::server::model::script_timer::ScriptTimerOwner;
 use crate::server::model::session::Session;
 use crate::server::script::{NpcScriptHost, ScriptRequest};
@@ -135,9 +135,9 @@ impl Server {
             character.x(),
             character.y(),
         );
-        self.add_to_next_tick(GameEvent::CharacterJoinGame(char_id));
+        self.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id }));
         self.server_service().schedule_warp_to_walkable_cell(state, &map, x, y, char_id);
-        self.add_to_next_tick(GameEvent::CharacterInitInventory(char_id));
+        self.add_to_next_tick(GameEvent::CharacterInitInventory(CharacterInitInventory { char_id }));
     }
 
     pub(crate) fn character_selection_gate(&self, state: &mut ServerState, gate: CharacterSelectionGate, tick: u128) {
@@ -395,7 +395,7 @@ impl Server {
         }
         if let Some(mut character) = state.characters_mut().remove(&char_id) {
             if let Some(map) = state.get_map_instance_from_character(&character) {
-                map.add_to_next_tick(MapEvent::RemoveCharFromMap(char_id));
+                map.add_to_next_tick(MapEvent::RemoveCharFromMap(RemoveCharFromMap { char_id }));
             }
             character.loaded_from_client_side = false;
             character.clear_attack();

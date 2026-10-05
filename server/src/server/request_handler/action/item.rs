@@ -60,10 +60,9 @@ pub fn handle_player_drop_item(server: &Server, context: Request) {
 
 pub fn handle_player_card_composition_list(server: &Server, context: Request) {
     let packet_cz_req_item_composition_list = cast!(context.packet(), PacketCzReqItemcompositionList);
-    server.add_to_next_tick(GameEvent::CharacterRequestCardCompositionList(CharacterEquipItem {
+    server.add_to_next_tick(GameEvent::CharacterRequestCardCompositionList(CharacterRequestCardCompositionList {
         char_id: context.session().char_id(),
-        index: packet_cz_req_item_composition_list.card_index as usize,
-        requested_location: None,
+        card_index: packet_cz_req_item_composition_list.card_index as usize,
     }));
 }
 

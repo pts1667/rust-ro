@@ -6,7 +6,7 @@ mod tests {
     use movement::position::Position;
 
     use crate::server::model::events::game_event::{CharacterChangeMap, GameEvent};
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, AdminKillAllMobs};
     use crate::tests::common::integration_test::{before_all, character_join_game};
 
     #[tokio::test]
@@ -20,7 +20,7 @@ mod tests {
         let character = server.state().get_character_unsafe(char_id);
         let map_instance = server.state().get_map_instance_from_character(character).clone().unwrap();
         for _ in 0..60 {
-            map_instance.add_to_delayed_tick(MapEvent::AdminKillAllMobs(char_id), 26);
+            map_instance.add_to_delayed_tick(MapEvent::AdminKillAllMobs(AdminKillAllMobs { char_id }), 26);
             // Then
             tokio::time::sleep(Duration::from_millis(500)).await;
         }

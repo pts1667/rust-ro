@@ -5,7 +5,7 @@ use packets::packets::{
 };
 
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterLoadedFromClientSide};
 use crate::server::model::request::Request;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::util::packet::chain_packets;
@@ -79,5 +79,5 @@ pub fn handle_char_loaded_client_side(server: &Server, context: Request) {
     packet_zc_hat_effect.fill_raw();
     let final_response_packet: Vec<u8> = chain_packets(vec![&packet_zc_hat_effect, &packet_zc_notify_mapproperty2]);
     socket_send_raw!(context, final_response_packet);
-    server.add_to_tick(GameEvent::CharacterLoadedFromClientSide(session.char_id.unwrap()), 2);
+    server.add_to_tick(GameEvent::CharacterLoadedFromClientSide(CharacterLoadedFromClientSide { char_id: session.char_id.unwrap() }), 2);
 }

@@ -7,8 +7,8 @@ use super::{
     recalculate_mercenary, world_data,
 };
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobStatusChange};
 use crate::server::model::game_systems::{CharacterGameSystems, CompanionCast, CompanionPosition, ScriptWorldRequest};
 use crate::server::script::skill::GroundSkillSource;
 use crate::server::script::skill::companion::{CompanionSkillContext, CompanionSkillEffect};
@@ -17,6 +17,39 @@ use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum CompanionRequest {
+    UseCompanionSkill {
+            skill_id: u32,
+            skill_level: u8,
+            target_id: u32,
+        },
+    UseCompanionGroundSkill {
+            skill_id: u32,
+            skill_level: u8,
+            x: u16,
+            y: u16,
+        },
+    FinishCompanionSkill(u32),
+    CompanionSelfDestruct(u32),
+    HealByCompanion {
+            source_id: u32,
+            hp: u32,
+            sp: u32,
+        },
+    HealCompanion {
+            target_id: u32,
+            hp: u32,
+            sp: u32,
+        },
+    CompanionAttackLanded {
+            id: u32,
+            damage: u32,
+        },
+    DismissMercenary(u8),
+}
+
 
 impl ScriptWorldService {
     pub(crate) fn heal_companion(
@@ -487,7 +520,7 @@ impl ScriptWorldService {
                     cast.completes_at = u64::MAX;
                     server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                         char_id: character.char_id,
-                        request: ScriptWorldRequest::FinishCompanionSkill(*id),
+                        request: ScriptWorldRequest::Companion(CompanionRequest::FinishCompanionSkill(*id)),
                     }));
                 }
             }
@@ -810,9 +843,9 @@ impl ScriptWorldService {
                         0,
                     );
                     if map.state().get_mob(damage.target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobDamage(damage));
+                        map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                     } else {
-                        server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                        server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                     }
                 }
                 CompanionSkillEffect::Status { target_id, request } if !is_local_companion(&character.game_systems, target_id) => {
@@ -825,10 +858,10 @@ impl ScriptWorldService {
                                 coma: crate::server::service::combat_trigger_service::ComaBonuses::from_bonuses(source.bonuses()),
                             }));
                         } else {
-                            map.add_to_next_tick(MapEvent::MobStatusChange {
+                            map.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: target_id,
                                 request,
-                            });
+                            }));
                         }
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterStatusChange(
@@ -846,10 +879,10 @@ impl ScriptWorldService {
                 } => {
                     if map.state().get_mob(target_id).is_some() {
                         map.add_to_delayed_tick(
-                            MapEvent::MobStatusChange {
+                            MapEvent::MobStatusChange(MobStatusChange {
                                 mob_id: target_id,
                                 request,
-                            },
+                            }),
                             u128::from(delay_ms),
                         );
                     } else {
@@ -864,10 +897,10 @@ impl ScriptWorldService {
                 }
                 CompanionSkillEffect::EndStatus { target_id, kind } if !is_local_companion(&character.game_systems, target_id) => {
                     if map.state().get_mob(target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobEndStatus {
+                        map.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: target_id,
                             kind: Some(kind),
-                        });
+                        }));
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterEndStatus(
                             crate::server::model::events::game_event::CharacterEndStatus {
@@ -892,18 +925,18 @@ impl ScriptWorldService {
                             );
                         }
                     } else if map.state().get_mob(target_id).is_some() {
-                        map.add_to_next_tick(MapEvent::MobHeal { mob_id: target_id, hp, sp });
+                        map.add_to_next_tick(MapEvent::MobHeal(MobHeal { mob_id: target_id, hp, sp }));
                     } else if state.characters().contains_key(&target_id) {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                             char_id: target_id,
-                            request: ScriptWorldRequest::HealByCompanion { source_id: id, hp, sp },
+                            request: ScriptWorldRequest::Companion(CompanionRequest::HealByCompanion { source_id: id, hp, sp }),
                         }));
                     } else if let Some(owner) =
                         state.companion_owner(target_id, character.current_map_name(), character.current_map_instance())
                     {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                             char_id: owner.char_id,
-                            request: ScriptWorldRequest::HealCompanion { target_id, hp, sp },
+                            request: ScriptWorldRequest::Companion(CompanionRequest::HealCompanion { target_id, hp, sp }),
                         }));
                     }
                 }
@@ -934,7 +967,7 @@ impl ScriptWorldService {
                 CompanionSkillEffect::SelfDestruct { delay_ms } => server.add_to_delayed_tick(
                     GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                         char_id: character.char_id,
-                        request: ScriptWorldRequest::CompanionSelfDestruct(id),
+                        request: ScriptWorldRequest::Companion(CompanionRequest::CompanionSelfDestruct(id)),
                     }),
                     u128::from(delay_ms),
                 ),
@@ -1335,6 +1368,97 @@ fn apply_local_effect(systems: &mut CharacterGameSystems, effect: &CompanionSkil
         }
     }
     Ok(accepted)
+}
+
+impl ScriptWorldService {
+    pub(crate) fn companion_request(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        character: &mut Character,
+        request: CompanionRequest,
+        now: u64,
+    ) -> Result<(), String> {
+        match request {
+            CompanionRequest::CompanionAttackLanded { id, damage } => {
+                let Some(homunculus) = character
+                    .game_systems
+                    .homunculus
+                    .as_mut()
+                    .filter(|homunculus| super::homunculus_world_id(homunculus) == id && homunculus.active && homunculus.hp > 0)
+                else {
+                    return Ok(());
+                };
+                let Some(bloodlust) = homunculus
+                    .statuses
+                    .iter()
+                    .find(|status| status.kind == models::status_change::StatusChangeKind::Bloodlust)
+                    .filter(|status| status.expires_at.is_none_or(|expiry| u128::from(now) < expiry))
+                else {
+                    return Ok(());
+                };
+                if homunculus
+                    .statuses
+                    .iter()
+                    .any(|status| status.kind == models::status_change::StatusChangeKind::NoRecovery)
+                {
+                    return Ok(());
+                }
+                if fastrand::u32(0..100) >= bloodlust.values[2].clamp(0, 100) as u32 {
+                    return Ok(());
+                }
+                let heal = u64::from(damage) * bloodlust.values[3].max(0) as u64 / 100;
+                let before = homunculus.hp;
+                homunculus.hp = homunculus
+                    .hp
+                    .saturating_add(heal.min(u64::from(u32::MAX)) as u32)
+                    .min(homunculus.max_hp);
+                if homunculus.hp != before {
+                    self.persist(character)?;
+                    self.send_homunculus(character)?;
+                }
+                Ok(())
+            }
+            CompanionRequest::HealByCompanion { source_id: _, hp, sp } => {
+                if character.status.hp > 0
+                    && !character
+                        .status
+                        .has_status_change(models::status_change::StatusChangeKind::NoRecovery)
+                {
+                    let snapshot = crate::server::service::status_service::StatusService::instance().to_snapshot(&character.status);
+                    server.character_service().update_hp_sp(
+                        character,
+                        character.status.hp.saturating_add(hp).min(snapshot.max_hp()),
+                        character.status.sp.saturating_add(sp).min(snapshot.max_sp()),
+                    );
+                }
+                Ok(())
+            }
+            CompanionRequest::HealCompanion { target_id, hp, sp } => self.heal_companion(server, character, target_id, hp, sp, now),
+            CompanionRequest::UseCompanionSkill {
+                skill_id,
+                skill_level,
+                target_id,
+            } => self.begin_companion_skill(server, state, character, skill_id, skill_level, target_id, now),
+            CompanionRequest::UseCompanionGroundSkill {
+                skill_id,
+                skill_level,
+                x,
+                y,
+            } => self.begin_companion_ground_skill(server, state, character, skill_id, skill_level, x, y, now),
+            CompanionRequest::FinishCompanionSkill(id) => self.finish_companion_skill(server, state, character, id, now),
+            CompanionRequest::CompanionSelfDestruct(id) => self.destroy_companion(server, character, id, now),
+            CompanionRequest::DismissMercenary(command) => {
+                if command == 2 {
+                    character.game_systems.mercenary = None;
+                    self.persist(character)?;
+                    self.render_companions(server, character, now)
+                } else {
+                    self.send_mercenary(character, now)
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]

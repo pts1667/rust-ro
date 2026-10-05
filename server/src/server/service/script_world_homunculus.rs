@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use models::enums::element::Element;
 use models::enums::mob::MobRace;
 use models::enums::size::Size;
-use models::enums::{EnumWithMaskValueU16, EnumWithNumberValue, EnumWithStringValue};
+use models::enums::{EnumWithMaskValueU16, EnumWithStringValue};
 use models::status::{Status, StatusSnapshot};
 use models::status_bonus::StatusBonus;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
@@ -11,10 +11,33 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use super::{ScriptWorldService, homunculus_world_id, install_state, mercenary_world_id, protocol, world_data};
 use crate::server::Server;
 use crate::server::model::events::game_event::CharacterKillMonster;
-use crate::server::model::game_systems::{HomunculusRecord, ScriptWorldRequest};
+use crate::server::model::game_systems::HomunculusRecord;
 use crate::server::script::skill::metadata::SkillMetadata;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::state::character::Character;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum HomunculusRequest {
+    CallHomunculus,
+    RestHomunculus,
+    ResurrectHomunculus {
+            skill_level: u8,
+        },
+    HomunculusMenu(u8),
+    HomunculusRename(String),
+    CompanionMove {
+            id: u32,
+            x: u16,
+            y: u16,
+        },
+    CompanionMoveToOwner(u32),
+    CompanionAttack {
+            id: u32,
+            target: u32,
+            repeat: bool,
+        },
+}
+
 
 impl ScriptWorldService {
     pub fn learn_homunculus_skill(&self, character: &mut Character, skill_id: u32) -> Result<(), String> {
@@ -146,11 +169,11 @@ impl ScriptWorldService {
         &self,
         server: &Server,
         character: &mut Character,
-        request: ScriptWorldRequest,
+        request: HomunculusRequest,
         now: u64,
     ) -> Result<(), String> {
         match request {
-            ScriptWorldRequest::CallHomunculus => {
+            HomunculusRequest::CallHomunculus => {
                 if let Some(homunculus) = character.game_systems.homunculus.as_mut() {
                     if homunculus.active || homunculus.hp == 0 {
                         return Err("Homunculus cannot be called in the current state".into());
@@ -201,7 +224,7 @@ impl ScriptWorldService {
                         .reload_inventory(server.runtime(), character.char_id, character);
                 }
             }
-            ScriptWorldRequest::RestHomunculus => {
+            HomunculusRequest::RestHomunculus => {
                 let homunculus = character.game_systems.homunculus.as_mut().ok_or("No homunculus exists")?;
                 if !homunculus.active || homunculus.hp == 0 || u64::from(homunculus.hp) * 100 < u64::from(homunculus.max_hp) * 80 {
                     return Err("An active homunculus needs at least 80% HP to rest".into());
@@ -212,7 +235,7 @@ impl ScriptWorldService {
                 recalculate_homunculus(homunculus);
                 self.persist(character)?;
             }
-            ScriptWorldRequest::ResurrectHomunculus { skill_level } => {
+            HomunculusRequest::ResurrectHomunculus { skill_level } => {
                 if !(1..=5).contains(&skill_level) {
                     return Err("Invalid homunculus resurrection level".into());
                 }
@@ -225,7 +248,7 @@ impl ScriptWorldService {
                 homunculus.next_hunger_at = now + 60_000;
                 self.persist(character)?;
             }
-            ScriptWorldRequest::HomunculusMenu(menu) => {
+            HomunculusRequest::HomunculusMenu(menu) => {
                 if !character
                     .game_systems
                     .homunculus
@@ -244,7 +267,7 @@ impl ScriptWorldService {
                     _ => return Err("Unknown homunculus command".into()),
                 }
             }
-            ScriptWorldRequest::HomunculusRename(name) => {
+            HomunculusRequest::HomunculusRename(name) => {
                 if name.trim().is_empty() || name.len() > 23 || name.chars().any(char::is_control) {
                     return Err("Invalid homunculus name".into());
                 }
@@ -256,7 +279,7 @@ impl ScriptWorldService {
                 homunculus.renamed = true;
                 self.persist(character)?;
             }
-            ScriptWorldRequest::CompanionMove { id, x, y } => {
+            HomunculusRequest::CompanionMove { id, x, y } => {
                 validate_companion(character, id)?;
                 let map = server
                     .state()
@@ -278,12 +301,12 @@ impl ScriptWorldService {
                 command.stay = true;
                 return Ok(());
             }
-            ScriptWorldRequest::CompanionMoveToOwner(id) => {
+            HomunculusRequest::CompanionMoveToOwner(id) => {
                 validate_companion(character, id)?;
                 character.game_systems.companion_commands.remove(&id);
                 return Ok(());
             }
-            ScriptWorldRequest::CompanionAttack { id, target, repeat } => {
+            HomunculusRequest::CompanionAttack { id, target, repeat } => {
                 validate_companion(character, id)?;
                 let map = server
                     .state()
@@ -310,7 +333,6 @@ impl ScriptWorldService {
                 command.stay = false;
                 return Ok(());
             }
-            _ => return Err("Unknown homunculus operation".into()),
         }
         if character.game_systems.homunculus.is_some() {
             self.send_homunculus(character)?;
@@ -609,6 +631,9 @@ fn feed_homunculus_record(homunculus: &mut HomunculusRecord) {
     };
     homunculus.intimacy = (i64::from(homunculus.intimacy) + i64::from(adjustment)).clamp(0, 100_000) as u32;
     homunculus.hunger = homunculus.hunger.saturating_add(10).min(100);
+}
+
+impl ScriptWorldService {
 }
 
 #[cfg(test)]

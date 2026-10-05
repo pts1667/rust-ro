@@ -11,7 +11,7 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
@@ -287,7 +287,7 @@ impl ScriptSkillService {
                         defenses_applied: true,
                         magic_context: None,
                     };
-                    server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                    server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                 }
             }
             "SM_PROVOKE" | "MS_PROVOKE" | "AL_DECAGI" | "SA_FLAMELAUNCHER" | "SA_FROSTWEAPON" | "SA_LIGHTNINGLOADER"

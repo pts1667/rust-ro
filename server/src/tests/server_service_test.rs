@@ -210,7 +210,7 @@ mod tests {
 
     use crate::server::Server;
     use crate::server::model::events::game_event::CharacterUseSkill;
-    use crate::server::model::events::map_event::MapEvent;
+    use crate::server::model::events::map_event::{MapEvent, RemoveDroppedItemFromMap};
     use crate::server::model::map_item::ToMapItem;
     use crate::server::model::tasks_queue::TasksQueue;
     use crate::server::service::global_config_service::GlobalConfigService;
@@ -483,7 +483,7 @@ mod tests {
         // Then
         let item_from_inventory = character_state.get_item_from_inventory(0);
         assert!(item_from_inventory.is_some());
-        task_queue_contains_event_at_tick::<MapEvent>(task_queue, MapEvent::RemoveDroppedItemFromMap(map_item_id), 0);
+        task_queue_contains_event_at_tick::<MapEvent>(task_queue, MapEvent::RemoveDroppedItemFromMap(RemoveDroppedItemFromMap { dropped_item_id: map_item_id }), 0);
     }
 
     #[test]

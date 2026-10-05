@@ -2,7 +2,7 @@ use models::enums::action::ActionType;
 use models::enums::EnumWithNumberValue;
 use packets::packets::{PacketCzItemPickup, PacketCzRequestAct};
 
-use crate::server::model::events::game_event::{CharacterAttack, CharacterPickUpItem, GameEvent};
+use crate::server::model::events::game_event::{CharacterAttack, CharacterPickUpItem, GameEvent, CharacterSit, CharacterStand};
 use crate::server::model::request::Request;
 use crate::server::Server;
 
@@ -30,8 +30,8 @@ pub fn handle_action(server: &Server, context: Request) {
     match action_type {
         ActionType::Attack => {}
         ActionType::Itempickup => {}
-        ActionType::Sit => server.add_to_next_tick(GameEvent::CharacterSit(char_id)),
-        ActionType::Stand => server.add_to_next_tick(GameEvent::CharacterStand(char_id)),
+        ActionType::Sit => server.add_to_next_tick(GameEvent::CharacterSit(CharacterSit { char_id })),
+        ActionType::Stand => server.add_to_next_tick(GameEvent::CharacterStand(CharacterStand { char_id })),
         ActionType::AttackNomotion => {}
         ActionType::Splash => {}
         ActionType::Skill => {}

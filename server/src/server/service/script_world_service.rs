@@ -13,7 +13,7 @@ use models::status::{Status, StatusSnapshot};
 use models::status_bonus::{BattleFlag, StatusBonus};
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use movement::position::Position;
-use packets::packets::{Packet, PacketZcNotifyAct, PacketZcNotifyMove, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcUseSkill};
+use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcUseSkill};
 use script_sdk::{Function, Value};
 use serde::Deserialize;
 
@@ -21,9 +21,9 @@ use crate::repository::Repository;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::game_systems::{
-    CharacterGameSystems, CompanionPosition, GuildRecord, HomunculusRecord, MercenaryRecord, PetCapture, PlayerOption, StoreSearch,
+    CharacterGameSystems, CompanionPosition, HomunculusRecord, MercenaryRecord, PetCapture, PlayerOption, StoreSearch,
 };
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType};
 use crate::server::service::battle_service::{BattleService, NormalAttackRoll};
@@ -57,6 +57,15 @@ mod pets;
 mod protocol;
 #[path = "script_world_requests.rs"]
 mod requests;
+pub use requests::{BattlegroundRequest, ContainerRequest, ScriptWorldRequest};
+pub use booking::BookingRequest;
+pub use companion_skills::CompanionRequest;
+pub use family::FamilyRequest;
+pub use guild::GuildRequest;
+pub use homunculus::HomunculusRequest;
+pub use party::PartyRequest;
+pub use pets::PetRequest;
+pub use vending::StoreRequest;
 #[cfg(test)]
 pub(crate) use pet_support::PetSupportHost;
 pub use pet_support::pet_support_operation;
@@ -719,9 +728,9 @@ impl ScriptWorldService {
             );
             if let Some(map) = server.state().get_map_instance_from_character(character) {
                 if map.state().get_mob(reflected.target_id).is_some() {
-                    map.add_to_next_tick(MapEvent::MobDamage(reflected));
+                    map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: reflected }));
                 } else {
-                    server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterDamage(reflected));
+                    server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterDamage(crate::server::model::events::game_event::CharacterDamage { damage: reflected }));
                 }
             }
         }
@@ -2297,7 +2306,7 @@ impl ScriptWorldService {
             let command = character.game_systems.companion_commands.entry(id).or_default();
             command.last_attack_at = now;
             if command.target.is_some() && !command.repeat { command.target = None; command.stay = true; }
-            map.add_to_delayed_tick(MapEvent::MobDamage(damage), u128::from(delay));
+            map.add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), u128::from(delay));
             return Ok(());
         }
         let mut rng = fastrand::Rng::new();
@@ -2369,7 +2378,7 @@ impl ScriptWorldService {
             action,
             (signed_damage, 0),
         );
-        map.add_to_next_tick(MapEvent::MobDamage(damage));
+        map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
         Ok(())
     }
 }

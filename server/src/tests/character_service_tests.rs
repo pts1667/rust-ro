@@ -85,7 +85,7 @@ mod tests {
     };
 
     use crate::repository::{CharacterRepository, Error};
-    use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny};
+    use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, CharacterUpdateClientSideStats};
     use crate::server::model::events::map_event::{MapEvent, MobDropItems};
     use crate::server::model::events::persistence_event::{
         IncreaseSkillLevel, PersistenceEvent, ResetSkills, SavePositionUpdate, StatusUpdate,
@@ -2107,7 +2107,7 @@ mod tests {
         );
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue,
-            GameEvent::CharacterUpdateClientSideStats(character.char_id),
+            GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }),
             0
         );
     }
@@ -2378,7 +2378,7 @@ mod tests {
         // Then
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue,
-            GameEvent::CharacterUpdateClientSideStats(character.char_id),
+            GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }),
             0
         );
     }

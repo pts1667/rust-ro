@@ -11,21 +11,18 @@ use models::item::{EquippedItem, Wearable};
 use packets::packets::{
     EQUIPSLOTINFO, EquipmentitemExtrainfo301, NormalitemExtrainfo3, Packet, PacketZcAckItemcomposition, PacketZcAttackRange,
     PacketZcEquipArrow, PacketZcEquipmentItemlist3, PacketZcItemFallEntry, PacketZcItemPickupAck3, PacketZcItemThrowAck,
-    PacketZcItemcompositionList, PacketZcNormalItemlist3, PacketZcPcPurchaseResult, PacketZcReqTakeoffEquipAck2, PacketZcReqWearEquipAck2,
-    PacketZcSkillinfoList, PacketZcSpriteChange2, SKILLINFO,
+    PacketZcItemcompositionList, PacketZcNormalItemlist3, PacketZcPcPurchaseResult, PacketZcReqTakeoffEquipAck2, PacketZcReqWearEquipAck2, PacketZcSpriteChange2,
 };
 use rand::RngCore;
 use tokio::runtime::Runtime;
 
-use crate::Server;
 use crate::repository::InventoryRepository;
 use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::game_event::GameEvent::{CharacterUpdateWeight, CharacterUpdateZeny};
+use crate::server::model::events::game_event::GameEvent::CharacterUpdateZeny;
 use crate::server::model::events::game_event::{
     CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterRequestCardCompositionList,
-    CharacterSlotCard, CharacterZeny, GameEvent,
-};
+    CharacterSlotCard, CharacterZeny, GameEvent, CharacterUpdateClientSideStats, CharacterUpdateWeight};
 use crate::server::model::events::map_event::{CharacterDropItems, MapEvent};
 use crate::server::model::events::persistence_event::{InventoryItemUpdate, PersistenceEvent};
 use crate::server::model::map_instance::MapInstance;
@@ -132,7 +129,7 @@ impl InventoryService {
                     zeny: None,
                 }));
             }
-            self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
+            self.server_task_queue.add_to_first_index(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
             self.client_notification_sender
                 .send(Notification::Char(CharNotification::new(
                     character.char_id,
@@ -240,7 +237,7 @@ impl InventoryService {
                     packet_zc_item_fall_entry.set_count(remove_item.amount);
                 }
             }
-            self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
+            self.server_task_queue.add_to_first_index(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
             if remove_items.sell {
                 let mut packet_zc_pc_purchase_result = PacketZcPcPurchaseResult::new(self.configuration_service.packetver());
                 packet_zc_pc_purchase_result.set_result(0);
@@ -282,7 +279,7 @@ impl InventoryService {
             character.add_items(items);
         });
         let packets = self.inventory_packets(character);
-        self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
+        self.server_task_queue.add_to_first_index(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
         for packet in packets {
             self.client_notification_sender
                 .send(Notification::Char(CharNotification::new(character.char_id, packet)))
@@ -632,7 +629,7 @@ impl InventoryService {
             )))
             .unwrap_or_else(|_| error!("Failed to send notification equip item to client"));
         self.server_task_queue
-            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
         equipped_item
     }
 
@@ -739,17 +736,17 @@ impl InventoryService {
             )))
             .unwrap_or_else(|_| error!("Failed to send notification takeoff item to client"));
         self.server_task_queue
-            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
         takeoff_equipement
     }
 
-    pub fn send_card_composition_list(&self, character: &mut Character, char_equip_item: CharacterEquipItem) {
+    pub fn send_card_composition_list(&self, character: &mut Character, request: CharacterRequestCardCompositionList) {
         if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return; }
         let mut packet_zc_item_composition_list = PacketZcItemcompositionList::new(self.configuration_service.packetver());
 
         let mut slotable_items: Vec<u16> = vec![];
 
-        if let Some(card_item) = character.get_item_from_inventory(char_equip_item.index) {
+        if let Some(card_item) = character.get_item_from_inventory(request.card_index) {
             let card_info = self.configuration_service.get_item(card_item.item_id);
 
             if card_info.item_type.is_card() {
@@ -854,7 +851,7 @@ impl InventoryService {
         match result {
             Ok(slot_index) => {
                 character.del_item_from_inventory(slot_card_args.card_index, 1);
-                self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
+                self.server_task_queue.add_to_first_index(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
                 if let Some(equipment) = character.inventory.get_mut(slot_card_args.equip_index) {
                     if let Some(equipment) = equipment {
                         equipment.set_card_at(slot_index as usize, card.item_id as i16);

@@ -14,7 +14,7 @@ use crate::repository::{InventoryRepository, SledRepository};
 use crate::repository::game_system_repository::GameSystemRepository;
 use crate::server::model::events::game_event::{CharacterUseItem, GameEvent, PetLootClaimResult, PetLootDropResult};
 use crate::server::model::events::map_event::{MapEvent, PetLootDropRequest, PetLootClaimRequest};
-use crate::server::model::game_systems::{CompanionPosition, PetLootCargo, ScriptWorldRequest};
+use crate::server::model::game_systems::{CompanionPosition, PetLootCargo, ScriptWorldRequest, PetRequest};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::map_item::{ToMapItem, ToMapItemSnapshot};
 use crate::server::script::item_script_handler::ItemEffect;
@@ -110,7 +110,7 @@ fn server_events(context: &super::super::super::ServerServiceTestContext) -> Vec
 
 fn claim(context: &super::super::super::ServerServiceTestContext, service: &MapInstanceService, target_id: u32) -> PetLootClaimResult {
     context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetLootTarget(target_id), 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetLootTarget(target_id)), 100).unwrap();
     assert!(context.server.state().contains_locked_map_item(target_id));
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.pet_loot.is_none());
     let request: PetLootClaimRequest = map_events(context).into_iter().find_map(|event| match event {
@@ -252,7 +252,7 @@ fn pet_cargo_return_keeps_capacity_overflow_until_floor_reservation_and_offline_
 fn pet_performance_returns_cargo_to_the_floor_even_when_inventory_has_room() {
     let (context, repository, map_service) = loot_fixture(30);
     cargo(&context, &repository, vec![equipment()]);
-    context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000, ScriptWorldRequest::PetMenu(2), 100).unwrap();
+    context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000, ScriptWorldRequest::Pet(PetRequest::PetMenu(2)), 100).unwrap();
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
     let request = map_events(&context).into_iter().find_map(|event| match event { MapEvent::PreparePetLootDrop(request) => Some(request), _ => None }).unwrap();
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
@@ -322,10 +322,10 @@ fn pet_loot_ai_walks_to_owned_floor_items_and_returns_full_cargo_without_combat_
         moved |= character.game_systems.rendered_companions[&pet_world_id(77)].x > 50;
         context.server.state_mut().insert_character(character);
         for event in server_events(&context) { if let GameEvent::ScriptWorld(request) = event {
-            if let ScriptWorldRequest::PetLootTarget(id) = request.request {
+            if let ScriptWorldRequest::Pet(PetRequest::PetLootTarget(id)) = request.request {
                 assert_eq!(id, 9001);
                 context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-                    ScriptWorldRequest::PetLootTarget(id), tick).unwrap();
+                    ScriptWorldRequest::Pet(PetRequest::PetLootTarget(id)), tick).unwrap();
             }
         } }
         for event in map_events(&context) { if let MapEvent::ClaimPetLoot(request) = event {

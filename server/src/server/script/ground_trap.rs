@@ -7,7 +7,7 @@ use super::ScriptSkillService;
 use super::ground::{GroundKind, GroundSkill, GroundSkillSource};
 use super::metadata::SkillMetadata;
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, GroundTrapSpend};
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::service::script_world_service::companion_status_snapshot;
 use crate::server::service::status_service::StatusService;
@@ -359,10 +359,10 @@ impl ScriptSkillService {
                 };
                 damage.set_signed_damage(amount);
                 damage = damage.with_skill_notification(&ground.map, ground.instance, center.0, center.1, tick, 1, 0);
-                server.add_to_next_tick(GameEvent::GroundTrapSpend {
+                server.add_to_next_tick(GameEvent::GroundTrapSpend(GroundTrapSpend {
                     map: map.clone(),
                     unit_id: unit.id,
-                });
+                }));
                 server.add_to_next_tick(GameEvent::ScriptMapDamage(ScriptMapDamage { map: map.clone(), damage }));
             }
         }

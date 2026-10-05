@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use models::enums::bonus::BonusType;
 use models::enums::item::{ItemFlag, ItemType};
 use models::enums::status::StatusTypes;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue};
@@ -13,8 +12,8 @@ use tokio::runtime::Runtime;
 use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
 use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemConsumption, ScriptItemGrant, ScriptCharacterChange};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterUseItem, GameEvent, ScriptMapSpawn};
-use crate::server::model::events::map_event::{MapEvent, ScriptSpawn};
+use crate::server::model::events::game_event::{CharacterUseItem, GameEvent, ScriptMapSpawn, CharacterUpdateWeight};
+use crate::server::model::events::map_event::ScriptSpawn;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::model::movement::Movable;
@@ -514,7 +513,7 @@ impl ItemService {
             let index = character.add_in_inventory(item.clone());
             self.notify_grant(character.char_id, index, &item, item.amount);
         }
-        server.add_to_next_tick(GameEvent::CharacterUpdateWeight(character.char_id));
+        server.add_to_next_tick(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
     }
 
     fn notify_takeoff(&self, character: &mut Character, index: usize) {

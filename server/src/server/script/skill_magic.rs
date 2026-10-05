@@ -11,7 +11,7 @@ use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::{GameEvent, ScriptMapDamage};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, MobDamage};
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::map_item::{MapItemSnapshot, MapItemType, ToMapItemSnapshot};
 use crate::server::service::status_effect_service::StatusEffectService;
@@ -154,7 +154,7 @@ impl ScriptSkillService {
             state
                 .get_map_instance(map.map_name(), map.map_instance())
                 .ok_or("Magic map is unavailable")?
-                .add_to_delayed_tick(MapEvent::MobDamage(damage), u128::from(motion));
+                .add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), u128::from(motion));
         } else {
             server.add_to_delayed_tick(
                 GameEvent::ScriptMapDamage(ScriptMapDamage { map: map.clone(), damage }),

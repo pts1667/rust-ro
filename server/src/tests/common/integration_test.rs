@@ -13,7 +13,7 @@ use crate::server::Server;
 use crate::server::boot::map_loader::MapLoader;
 use crate::server::boot::mob_spawn_loader::MobSpawnLoader;
 use crate::server::model::events::client_notification::Notification;
-use crate::server::model::events::game_event::GameEvent::CharacterJoinGame;
+use crate::server::model::events::game_event::{CharacterJoinGame, GameEvent};
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::model::map::Map;
 use crate::server::model::map_item::MapItems;
@@ -125,7 +125,7 @@ pub async fn character_join_game() -> u32 {
     character.loaded_from_client_side = true;
     server.state_mut().insert_character(character);
     let character = server.state().get_character_unsafe(char_id);
-    server.add_to_next_tick(CharacterJoinGame(character.char_id));
+    server.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id: character.char_id }));
     server.server_service().schedule_warp_to_walkable_cell(
         server.state_mut().as_mut(),
         &Map::name_without_ext(character.current_map_name()),

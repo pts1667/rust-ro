@@ -5,8 +5,8 @@ use models::status_change::{StatusChange, StatusChangeKind};
 use script_sdk::{Function, Value};
 
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::{CharacterUseSkill, GameEvent};
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{CharacterUseSkill, GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, SetMapFlags};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 
 fn damage(source: u32, target: u32) -> Damage {
@@ -149,7 +149,7 @@ fn normal_player_attacks_use_the_player_damage_queue_and_stop_when_pvp_is_disabl
     assert!(
         tasks
             .iter()
-            .any(|task| matches!(task,GameEvent::CharacterDamage(damage) if damage.target_id==target&&damage.attacker_id==source.char_id))
+            .any(|task| matches!(task,GameEvent::CharacterDamage(CharacterDamage { damage }) if damage.target_id==target&&damage.attacker_id==source.char_id))
     );
     context
         .server
@@ -167,7 +167,7 @@ fn normal_player_attacks_use_the_player_damage_queue_and_stop_when_pvp_is_disabl
             .pop()
             .unwrap_or_default()
             .iter()
-            .all(|task| !matches!(task, GameEvent::CharacterDamage(_)))
+            .all(|task| !matches!(task, GameEvent::CharacterDamage(CharacterDamage { damage: _ })))
     );
 }
 
@@ -242,7 +242,7 @@ fn live_map_flag_calls_update_the_main_state_and_enqueue_the_same_flags_for_the_
             .pop()
             .unwrap_or_default()
             .iter()
-            .any(|event| matches!(event,MapEvent::SetMapFlags(flags) if flags.enabled(MapFlag::NoTeleport)))
+            .any(|event| matches!(event,MapEvent::SetMapFlags(SetMapFlags { flags }) if flags.enabled(MapFlag::NoTeleport)))
     );
     context
         .server

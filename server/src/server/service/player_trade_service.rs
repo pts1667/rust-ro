@@ -10,7 +10,7 @@ use packets::packets::{Packet, PacketZcLongparChange};
 use crate::repository::game_system_repository::{PlayerTradeCommit, PlayerTradeSide, restrictions_allow};
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::Server;
-use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction};
+use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction, CharacterUpdateClientSideStats, CharacterUpdateWeight};
 use crate::server::model::game_systems::{PlayerTrade, PlayerTradeItem, PlayerTradePhase, PlayerTradeRequest};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -547,8 +547,8 @@ impl Server {
             self.script_world_service().send(character.char_id, packet)?;
         }
         self.send_trade_wallet(character)?;
-        self.add_to_next_tick(GameEvent::CharacterUpdateWeight(character.char_id));
-        self.add_to_next_tick(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+        self.add_to_next_tick(GameEvent::CharacterUpdateWeight(CharacterUpdateWeight { char_id: character.char_id }));
+        self.add_to_next_tick(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
         Ok(())
     }
 

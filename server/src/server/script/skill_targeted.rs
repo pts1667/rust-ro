@@ -1,6 +1,6 @@
 use models::enums::bonus::BonusType;
 use models::enums::element::Element;
-use models::enums::item::{EquipmentLocation, ItemType};
+use models::enums::item::EquipmentLocation;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use models::status::{Status, StatusSnapshot};
@@ -12,8 +12,8 @@ use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobLoseTarget, MobRandomWarp, MobStatusChange, ScriptMobCombat};
 use crate::server::service::script_combat_service::MobCombatEffect;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
@@ -581,10 +581,10 @@ impl ScriptSkillService {
         } = effect.action
         {
             if character.current_map_name() == map && character.current_map_instance() == origin_instance {
-                instance.add_to_next_tick(MapEvent::MobStatusChange {
+                instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                     mob_id: target.id,
                     request: request.clone(),
-                });
+                }));
             }
             return Ok(());
         }
@@ -616,10 +616,10 @@ impl ScriptSkillService {
         }
         if skill.name() == "PR_LEXDIVINA" {
             if target.status.has_status_change(StatusChangeKind::Silence) {
-                instance.add_to_next_tick(MapEvent::MobEndStatus {
+                instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                     mob_id: target.id,
                     kind: Some(StatusChangeKind::Silence),
-                });
+                }));
             } else {
                 self.queue_delayed_status(
                     server,
@@ -649,20 +649,20 @@ impl ScriptSkillService {
                     coma: crate::server::service::combat_trigger_service::ComaBonuses::from_bonuses(source.bonuses()),
                 }));
             } else {
-                instance.add_to_next_tick(MapEvent::MobStatusChange {
+                instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                     mob_id: target.id,
                     request,
-                });
+                }));
             }
         } else {
             match skill.name().as_str() {
                 "AS_SPLASHER" => {
                     let immune = target.mode & models::enums::mob::MobMode::Boss.as_flag() != 0;
                     let request = Self::splasher_request(effect, target.status.hp(), target.status.max_hp(), immune)?;
-                    instance.add_to_next_tick(MapEvent::MobStatusChange {
+                    instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                         mob_id: target.id,
                         request,
-                    });
+                    }));
                 }
                 "MG_STONECURSE" => {
                     if let Some(prepared) = &effect.prepared_outcome {
@@ -673,10 +673,10 @@ impl ScriptSkillService {
                             self.apply_mob_tarot_effect(&instance, effect, &target.status, target_effect, tick);
                         }
                     } else {
-                        instance.add_to_next_tick(MapEvent::MobStatusChange {
+                        instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: target.id,
                             request: Self::stone_curse_request(effect.level, effect.source_char_id),
-                        });
+                        }));
                     }
                 }
                 "DC_WINKCHARM" => {
@@ -691,10 +691,10 @@ impl ScriptSkillService {
                     request.flags = 0;
                     request.rate = ((40 + character.status.base_level as i32 - target.status_effects.base_level as i32).max(0) * 100)
                         .min(u16::MAX as i32) as u16;
-                    instance.add_to_next_tick(MapEvent::MobStatusChange {
+                    instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                         mob_id: target.id,
                         request,
-                    });
+                    }));
                 }
                 "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
                     let source = StatusService::instance().to_snapshot(&character.status);
@@ -707,10 +707,10 @@ impl ScriptSkillService {
                         false,
                         fastrand::u16(0..1000),
                     ) {
-                        instance.add_to_next_tick(MapEvent::MobStatusChange {
+                        instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: target.id,
                             request,
-                        });
+                        }));
                     }
                 }
                 "CG_TAROTCARD" => {
@@ -743,27 +743,27 @@ impl ScriptSkillService {
                             1,
                             0,
                         );
-                    instance.add_to_next_tick(MapEvent::MobDamage(damage));
+                    instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                 }
-                "AL_HEAL" => instance.add_to_next_tick(MapEvent::MobHeal {
+                "AL_HEAL" => instance.add_to_next_tick(MapEvent::MobHeal(MobHeal {
                     mob_id: target.id,
                     hp: Self::target_heal_amount(&target.status, effect.heal_value),
                     sp: 0,
-                }),
+                })),
                 "TF_DETOXIFY" => {
                     for kind in [StatusChangeKind::Poison, StatusChangeKind::DeadlyPoison] {
-                        instance.add_to_next_tick(MapEvent::MobEndStatus {
+                        instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: target.id,
                             kind: Some(kind),
-                        });
+                        }));
                     }
                 }
                 "AL_CURE" => {
                     for kind in [StatusChangeKind::Silence, StatusChangeKind::Blind, StatusChangeKind::Confusion] {
-                        instance.add_to_next_tick(MapEvent::MobEndStatus {
+                        instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: target.id,
                             kind: Some(kind),
-                        });
+                        }));
                     }
                 }
                 "PR_STRECOVERY" => {
@@ -771,10 +771,10 @@ impl ScriptSkillService {
                         self.notify_support_skill_result(character, effect, false);
                         return Ok(());
                     }
-                    instance.add_to_next_tick(MapEvent::MobEndStatus {
+                    instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                         mob_id: target.id,
                         kind: Some(StatusChangeKind::NoRecovery),
-                    });
+                    }));
                     if Self::undead_target(&target.status) {
                         self.queue_delayed_status(
                             server,
@@ -790,12 +790,12 @@ impl ScriptSkillService {
                             StatusChangeKind::Stun,
                             StatusChangeKind::Sleep,
                         ] {
-                            instance.add_to_next_tick(MapEvent::MobEndStatus {
+                            instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                                 mob_id: target.id,
                                 kind: Some(kind),
-                            });
+                            }));
                         }
-                        instance.add_to_next_tick(MapEvent::MobLoseTarget { mob_id: target.id });
+                        instance.add_to_next_tick(MapEvent::MobLoseTarget(MobLoseTarget { mob_id: target.id }));
                     }
                 }
                 "SA_DISPELL" => {
@@ -1000,7 +1000,7 @@ impl ScriptSkillService {
                 },
             )),
             TargetEffect::Action(action) => self.followup_action(server, effect, character.char_id, action),
-            TargetEffect::Damage(amount) => server.add_to_next_tick(GameEvent::CharacterDamage(Self::fixed_damage(effect, amount, tick))),
+            TargetEffect::Damage(amount) => server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: Self::fixed_damage(effect, amount, tick) })),
         }
         Ok(())
     }
@@ -1014,42 +1014,42 @@ impl ScriptSkillService {
         tick: u128,
     ) {
         match target {
-            TargetEffect::Status(request) => instance.add_to_next_tick(MapEvent::MobStatusChange {
+            TargetEffect::Status(request) => instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                 mob_id: effect.target_id,
                 request,
-            }),
-            TargetEffect::EndStatus(kind) => instance.add_to_next_tick(MapEvent::MobEndStatus {
+            })),
+            TargetEffect::EndStatus(kind) => instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                 mob_id: effect.target_id,
                 kind: Some(kind),
-            }),
-            TargetEffect::Damage(amount) => instance.add_to_next_tick(MapEvent::MobDamage(Self::fixed_damage(effect, amount, tick))),
+            })),
+            TargetEffect::Damage(amount) => instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: Self::fixed_damage(effect, amount, tick) })),
             TargetEffect::Action(ScriptSkillAction::SetResources { sp: Some(0), .. }) => {
-                instance.add_to_next_tick(MapEvent::ScriptMobCombat {
+                instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
                     source_id: effect.source_char_id,
                     target_id: effect.target_id,
                     effect: MobCombatEffect::Vanish {
                         hp: 0,
                         sp: target_status.sp(),
                     },
-                })
+                }))
             }
-            TargetEffect::Action(ScriptSkillAction::Heal { hp, sp }) => instance.add_to_next_tick(MapEvent::MobHeal {
+            TargetEffect::Action(ScriptSkillAction::Heal { hp, sp }) => instance.add_to_next_tick(MapEvent::MobHeal(MobHeal {
                 mob_id: effect.target_id,
                 hp,
                 sp,
-            }),
+            })),
             TargetEffect::Action(ScriptSkillAction::RandomWarp) => {
-                instance.add_to_next_tick(MapEvent::MobRandomWarp { mob_id: effect.target_id })
+                instance.add_to_next_tick(MapEvent::MobRandomWarp(MobRandomWarp { mob_id: effect.target_id }))
             }
             TargetEffect::Action(ScriptSkillAction::ClearBuffs) => {
                 for change in target_status.active_statuses() {
                     if !change.kind.metadata().flags.get("NoClearBuff").copied().unwrap_or(false)
                         && !change.kind.metadata().flags.get("Debuff").copied().unwrap_or(false)
                     {
-                        instance.add_to_next_tick(MapEvent::MobEndStatus {
+                        instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: effect.target_id,
                             kind: Some(change.kind),
-                        });
+                        }));
                     }
                 }
             }

@@ -224,6 +224,35 @@ fn roster(state: &ServerState, source: &Character, records: &[CharacterRecord], 
         .collect()
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum PartyRequest {
+    CreateParty {
+            name: String,
+            item_pickup: bool,
+            item_share: bool,
+        },
+    InviteParty(u32),
+    InvitePartyByName(String),
+    AnswerPartyInvite {
+            party_id: u32,
+            accept: bool,
+        },
+    LeaveParty,
+    ExpelParty {
+            account_id: u32,
+            name: String,
+        },
+    ChangePartyLeader(u32),
+    ChangePartyOptions {
+            exp_share: bool,
+            item_rules: Option<(bool, bool)>,
+        },
+    DisablePartyInvites(bool),
+    PartyMessage(String),
+    RefreshParty,
+}
+
+
 impl ScriptWorldService {
     pub fn initialize_party(&self, server: &Server, character: &mut Character) -> Result<(), String> {
         self.send(character.char_id, vec![
@@ -269,7 +298,7 @@ impl ScriptWorldService {
         }
         server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld {
             char_id: character.char_id,
-            request: ScriptWorldRequest::RefreshParty,
+            request: ScriptWorldRequest::Party(PartyRequest::RefreshParty),
         }));
         self.area(character, names_packet(character))
     }
@@ -295,10 +324,10 @@ impl ScriptWorldService {
         server: &Server,
         state: &mut ServerState,
         character: &mut Character,
-        request: ScriptWorldRequest,
+        request: PartyRequest,
     ) -> Result<(), String> {
         match request {
-            ScriptWorldRequest::CreateParty {
+            PartyRequest::CreateParty {
                 name,
                 item_pickup,
                 item_share,
@@ -326,7 +355,7 @@ impl ScriptWorldService {
                 self.install_party_change(server, state, character, change, false)?;
                 self.send(character.char_id, vec![0xFA, 0, 0])
             }
-            ScriptWorldRequest::InviteParty(account_id) => {
+            PartyRequest::InviteParty(account_id) => {
                 let target = state
                     .characters()
                     .values()
@@ -334,7 +363,7 @@ impl ScriptWorldService {
                     .map(|other| other.char_id);
                 self.invite_party(state, character, target)
             }
-            ScriptWorldRequest::InvitePartyByName(name) => {
+            PartyRequest::InvitePartyByName(name) => {
                 let target = state
                     .characters()
                     .values()
@@ -342,7 +371,7 @@ impl ScriptWorldService {
                     .map(|other| other.char_id);
                 self.invite_party(state, character, target)
             }
-            ScriptWorldRequest::AnswerPartyInvite { party_id, accept } => {
+            PartyRequest::AnswerPartyInvite { party_id, accept } => {
                 let invitation = character
                     .game_systems
                     .party_invitation
@@ -379,14 +408,14 @@ impl ScriptWorldService {
                 self.send(invitation.inviter_id, invitation_result(&character.name, 2))?;
                 self.refresh_party(server, state, character)
             }
-            ScriptWorldRequest::LeaveParty => {
+            PartyRequest::LeaveParty => {
                 let change = self
                     .repository
                     .leave_party(character.char_id, None)
                     .map_err(|error| error.to_string())?;
                 self.install_party_change(server, state, character, change, false)
             }
-            ScriptWorldRequest::ExpelParty { account_id, name } => {
+            PartyRequest::ExpelParty { account_id, name } => {
                 let party = self
                     .repository
                     .party(character.game_systems.party_id)
@@ -406,7 +435,7 @@ impl ScriptWorldService {
                     .map_err(|error| error.to_string())?;
                 self.install_party_change(server, state, character, change, true)
             }
-            ScriptWorldRequest::ChangePartyLeader(account_id) => {
+            PartyRequest::ChangePartyLeader(account_id) => {
                 let party = cached_party(character).ok_or("Character has no party")?.clone();
                 let target = state
                     .characters()
@@ -434,7 +463,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::ChangePartyOptions { exp_share, item_rules } => {
+            PartyRequest::ChangePartyOptions { exp_share, item_rules } => {
                 let party = cached_party(character).ok_or("Character has no party")?.clone();
                 if party.leader_char_id != character.char_id {
                     return Err("Only the party leader can change sharing".into());
@@ -451,7 +480,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::DisablePartyInvites(disabled) => {
+            PartyRequest::DisablePartyInvites(disabled) => {
                 let mut systems = character.game_systems.clone();
                 systems.party_invite_disabled = disabled;
                 let saved = self
@@ -461,7 +490,7 @@ impl ScriptWorldService {
                 install_state(character, saved);
                 self.send(character.char_id, vec![0xC9, 0x02, u8::from(disabled)])
             }
-            ScriptWorldRequest::PartyMessage(text) => {
+            PartyRequest::PartyMessage(text) => {
                 let party = cached_party(character).ok_or("Character has no party")?;
                 let prefix = format!("{} : ", character.name);
                 let body = text
@@ -480,8 +509,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::RefreshParty => self.refresh_party(server, state, character),
-            _ => Err("Unknown party operation".into()),
+            PartyRequest::RefreshParty => self.refresh_party(server, state, character),
         }
     }
 
@@ -648,7 +676,7 @@ impl ScriptWorldService {
         if map_changed && character.game_systems.party_position.is_some() {
             server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld {
                 char_id: character.char_id,
-                request: ScriptWorldRequest::RefreshParty,
+                request: ScriptWorldRequest::Party(PartyRequest::RefreshParty),
             }));
         }
         if health_changed || position_changed || map_changed {
@@ -684,6 +712,9 @@ impl ScriptWorldService {
         }
         Ok(())
     }
+}
+
+impl ScriptWorldService {
 }
 
 #[cfg(test)]

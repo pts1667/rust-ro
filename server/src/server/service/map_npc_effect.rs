@@ -9,8 +9,8 @@ use packets::packets::{Packet, PacketZcNotifyVanish, PacketZcUseSkill};
 use super::MapInstanceService;
 use super::unit_data::{walkable, warp_position};
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobKnockback, MobLoseTarget, MobRandomWarp, MobStatusChange, ScriptMobCombat};
 use crate::server::model::map_item::MapItemType;
 use crate::server::script::skill::actor::{self, NpcSkillState};
 use crate::server::service::combat_trigger_service::{magic_reflection, physical_reflection};
@@ -43,12 +43,12 @@ pub enum NpcEffect {
 impl MapInstanceService {
     pub fn handle_npc_map_event(&self, state: &mut MapInstanceState, event: &MapEvent, tick: u128) -> bool {
         let (actor_id, effect) = match event {
-            MapEvent::MobDamage(damage) => (damage.target_id, NpcEffect::Damage(*damage)),
-            MapEvent::MobStatusChange { mob_id, request } => (*mob_id, NpcEffect::Status(request.clone())),
+            MapEvent::MobDamage(MobDamage { damage }) => (damage.target_id, NpcEffect::Damage(*damage)),
+            MapEvent::MobStatusChange(MobStatusChange { mob_id, request }) => (*mob_id, NpcEffect::Status(request.clone())),
             MapEvent::MobStatusAlternatives(request) => (request.mob_id, NpcEffect::StatusAlternatives(request.requests.clone())),
-            MapEvent::MobEndStatus { mob_id, kind } => (*mob_id, NpcEffect::EndStatus(*kind)),
+            MapEvent::MobEndStatus(MobEndStatus { mob_id, kind }) => (*mob_id, NpcEffect::EndStatus(*kind)),
             MapEvent::MobDispel(request) => (request.mob_id, NpcEffect::Dispel { clear_buffs: false }),
-            MapEvent::MobHeal { mob_id, hp, sp } => (*mob_id, NpcEffect::Heal {
+            MapEvent::MobHeal(MobHeal { mob_id, hp, sp }) => (*mob_id, NpcEffect::Heal {
                 hp: *hp,
                 sp: *sp,
                 raw: false,
@@ -67,37 +67,37 @@ impl MapInstanceService {
                 x: request.x,
                 y: request.y,
             }),
-            MapEvent::MobRandomWarp { mob_id } => (*mob_id, NpcEffect::RandomWarp),
-            MapEvent::MobKnockback {
+            MapEvent::MobRandomWarp(MobRandomWarp { mob_id }) => (*mob_id, NpcEffect::RandomWarp),
+            MapEvent::MobKnockback(MobKnockback {
                 mob_id,
                 source_x,
                 source_y,
                 cells,
-            } => (*mob_id, NpcEffect::Knockback {
+            }) => (*mob_id, NpcEffect::Knockback {
                 source_x: *source_x,
                 source_y: *source_y,
                 cells: *cells,
             }),
-            MapEvent::ScriptMobCombat {
+            MapEvent::ScriptMobCombat(ScriptMobCombat {
                 source_id,
                 target_id,
                 effect: MobCombatEffect::Status(request),
-            } => {
+            }) => {
                 if *source_id == 0 {
                     return false;
                 }
                 (*target_id, NpcEffect::Status(request.clone()))
             }
-            MapEvent::ScriptMobCombat {
+            MapEvent::ScriptMobCombat(ScriptMobCombat {
                 source_id,
                 target_id,
                 effect: MobCombatEffect::Vanish { hp, sp },
-            } => (*target_id, NpcEffect::Vanish {
+            }) => (*target_id, NpcEffect::Vanish {
                 source_id: *source_id,
                 hp: *hp,
                 sp: *sp,
             }),
-            MapEvent::MobLoseTarget { mob_id } if state.script_skill_state.npcs.contains_key(mob_id) => return true,
+            MapEvent::MobLoseTarget(MobLoseTarget { mob_id }) if state.script_skill_state.npcs.contains_key(mob_id) => return true,
             _ => return false,
         };
         if !state.script_skill_state.npcs.contains_key(&actor_id) {
@@ -387,7 +387,7 @@ impl MapInstanceService {
                     MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary
                 )
             }) {
-                self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(reflected));
+                self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage: reflected }));
             } else {
                 self.server_task_queue.add_to_first_index(GameEvent::ScriptMapDamage(
                     crate::server::model::events::game_event::ScriptMapDamage {

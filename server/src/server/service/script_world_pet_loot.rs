@@ -10,7 +10,7 @@ use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, PetLootClaimResult, PetLootDropResult, ScriptWorld};
 use crate::server::model::events::map_event::{MapEvent, PetLootClaimRequest, PetLootFinalize, PetLootDropRequest, PetLootDropFinalize};
 use crate::server::model::game_systems::{CharacterGameSystems, PetLootCargo, PetLootDropReceipt, PetLootDropReservation,
-    PetLootRuntime, PetSupportRuntime, PendingPetLootClaim, ScriptWorldRequest};
+    PetLootRuntime, PetSupportRuntime, PendingPetLootClaim, ScriptWorldRequest, PetRequest};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -329,7 +329,7 @@ impl ScriptWorldService {
             character.game_systems.companion_commands.entry(id).or_default().destination = Some((target.x(), target.y()));
         } else {
             loot.claim_queued = true;
-            server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld { char_id: character.char_id, request: ScriptWorldRequest::PetLootTarget(target.map_item_id) }));
+            server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld { char_id: character.char_id, request: ScriptWorldRequest::Pet(PetRequest::PetLootTarget(target.map_item_id)) }));
         }
         Ok(())
     }

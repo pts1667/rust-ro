@@ -5,8 +5,8 @@ use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use super::ground::GroundSkill;
 use crate::server::state::character::Character;
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobHeal, MobStatusChange};
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 use models::status::StatusSnapshot;
@@ -91,14 +91,14 @@ impl ScriptSkillService {
                         tick,
                     )
                     .with_skill_notification(source.current_map_name(), source.current_map_instance(), source.x, source.y, tick, 1, 0);
-                instance.add_to_next_tick(MapEvent::MobDamage(damage));
+                instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                 ground.waves = ground.waves.saturating_add(1);
             } else if status.hp() < status.max_hp() {
-                instance.add_to_next_tick(MapEvent::MobHeal {
+                instance.add_to_next_tick(MapEvent::MobHeal(MobHeal {
                     mob_id,
                     hp: Self::target_heal_amount(&status, heal),
                     sp: 0,
-                });
+                }));
             }
         }
         let players = state
@@ -129,7 +129,7 @@ impl ScriptSkillService {
                         tick,
                     )
                     .with_skill_notification(source.current_map_name(), source.current_map_instance(), source.x, source.y, tick, 1, 0);
-                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                 ground.waves = ground.waves.saturating_add(1);
                 continue;
             }
@@ -171,7 +171,7 @@ impl ScriptSkillService {
                 .map(|mob| mob.id)
                 .collect::<Vec<_>>();
             for mob_id in poisoned {
-                instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id, request: request.clone() });
+                instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id, request: request.clone() }));
             }
         }
         let owner = if ground.actor_source.is_none() { state.get_character(ground.source_id) } else { None };
@@ -268,7 +268,7 @@ impl ScriptSkillService {
                 crate::server::model::events::game_event::CharacterStatusChange { char_id: target_id, request },
             ));
         } else {
-            instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id: target_id, request });
+            instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: target_id, request }));
         }
         ground.triggered = true;
         ground.expires_at = tick.saturating_add(duration.max(0) as u128);

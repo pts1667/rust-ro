@@ -8,7 +8,7 @@ use tokio::sync::oneshot;
 
 use super::ServerServiceTestContext;
 use crate::server::model::events::game_event::GameEvent;
-use crate::server::model::events::map_event::MapEvent;
+use crate::server::model::events::map_event::{MapEvent, ReleaseScriptNpc};
 use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::map_item::MapItems;
@@ -76,7 +76,7 @@ fn process_map(instance: &MapInstance, service: &MapInstanceService) {
             match event {
                 MapEvent::UnitData(request) => service.unit_data(&mut instance.state_mut(), request),
                 MapEvent::InstallScriptNpc(transfer) => service.install_script_npc(&mut instance.state_mut(), transfer),
-                MapEvent::ReleaseScriptNpc(id) => {
+                MapEvent::ReleaseScriptNpc(ReleaseScriptNpc { id }) => {
                     instance.state_mut().script_skill_state.transferring_npcs.remove(&id);
                 }
                 _ => panic!("Unexpected map event {event:?}"),
