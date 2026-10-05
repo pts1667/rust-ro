@@ -40,6 +40,7 @@ impl Server {
     }
 
     pub(crate) fn game_loop_iteration(server_ref: &Server, tick: u128) {
+        let _state_loops_guard = server_ref.lock_state_loops();
         let mut server_state_mut = server_ref.state_mut();
         server_ref.drain_map_notifications(server_state_mut.as_mut());
         server_ref.tick_player_trades(server_state_mut.as_mut(), tick as u64);
@@ -219,6 +220,7 @@ impl Server {
                 break;
             }
             let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+            let state_loops_guard = server_ref.lock_state_loops();
             let mut server_state_mut = server_ref.state_mut();
             if let Some(tasks) = server_ref.pop_movement_task() {
                 for task in tasks {
@@ -413,6 +415,8 @@ impl Server {
                 character.transition_to_idle();
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
             }
+            drop(server_state_mut);
+            drop(state_loops_guard);
 
             let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
             let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;

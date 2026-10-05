@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, OnceLock, RwLock, Weak, mpsc};
+use std::sync::{Arc, Mutex, MutexGuard, OnceLock, RwLock, Weak, mpsc};
 use std::thread;
 use std::thread::Scope;
 use std::time::Duration;
@@ -60,6 +60,7 @@ pub struct Server {
     pub configuration: &'static Config,
     pub repository: Arc<dyn Repository>,
     state: MyUnsafeCell<ServerState>,
+    state_loops_lock: Mutex<()>,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -75,6 +76,11 @@ unsafe impl Sync for Server {}
 unsafe impl Send for Server {}
 
 impl Server {
+    /// The game loop and the movement loop both mutate `ServerState` from their own thread, they must not run at the same time.
+    pub(crate) fn lock_state_loops(&self) -> MutexGuard<'_, ()> {
+        self.state_loops_lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
     pub fn state(&self) -> &ServerState {
         self.state.borrow().as_ref()
     }
@@ -194,6 +200,7 @@ impl Server {
             repository,
             tasks_queue,
             state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state_loops_lock: Mutex::new(()),
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -221,6 +228,7 @@ impl Server {
             configuration,
             repository,
             state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state_loops_lock: Mutex::new(()),
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,
