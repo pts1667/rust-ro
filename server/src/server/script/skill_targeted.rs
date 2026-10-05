@@ -154,6 +154,15 @@ impl ScriptSkillService {
             .iter()
             .find(|skill| skill.value == SkillEnum::HpMeditatio)
             .map_or(0, |skill| skill.level as u32);
+        Self::scale_heal_power(snapshot, hp, meditation)
+    }
+
+    /// Sanctuary has a fixed base in rathena, so Meditatio does not scale it.
+    pub(super) fn scale_fixed_heal(snapshot: &StatusSnapshot, hp: u32) -> u32 {
+        Self::scale_heal_power(snapshot, hp, 0)
+    }
+
+    fn scale_heal_power(snapshot: &StatusSnapshot, hp: u32, meditation: u32) -> u32 {
         let power = snapshot
             .bonuses_raw()
             .iter()

@@ -442,6 +442,19 @@ impl StatusEffectService {
         Some(status.sp.saturating_sub(before))
     }
 
+    fn is_fire_skill(skill_id: u32) -> bool {
+        crate::server::script::skill::metadata::SkillMetadata::find(skill_id).is_some_and(|metadata| metadata.element(1) == Some("Fire"))
+    }
+
+    /// A fire hit tears one web layer; the status ends with the last one.
+    fn weaken_spider_web(status: &mut Status) {
+        let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::SpiderWeb) else { return };
+        change.values[0] -= 1;
+        if change.values[0] <= 0 {
+            Self::end_status(status, Some(StatusChangeKind::SpiderWeb));
+        }
+    }
+
     pub fn apply_incoming_damage(status: &mut Status, mut damage: u32, physical: bool) -> u32 {
         use models::status_bonus::BattleFlag;
         let flags = if physical { BattleFlag::Weapon.as_flag() } else { BattleFlag::Magic.as_flag() };
@@ -479,6 +492,10 @@ impl StatusEffectService {
                 if change.values[1] <= 0 { Self::end_status(status, Some(StatusChangeKind::SafetyWall)); }
                 return 0;
             }
+        }
+        if status.has_status_change(StatusChangeKind::SpiderWeb) && Self::is_fire_skill(skill_id) {
+            damage = damage.saturating_mul(2);
+            Self::weaken_spider_web(status);
         }
         if status.has_status_change(StatusChangeKind::Armor) && flags & BattleFlag::Long.as_flag() != 0 && flags & (BattleFlag::Weapon.as_flag() | BattleFlag::Misc.as_flag()) != 0 { damage /= NPC_DEFENDER_DIVISOR; }
         if physical && status.status_change(StatusChangeKind::AutoGuard).is_some_and(|change| (guard_roll as i32) < change.values[1]) { return 0; }
@@ -782,6 +799,23 @@ mod tests {
         assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 1);
         start_for_test(&mut status, StatusChangeKind::Invincible, 10000, 1, 0);
         assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 0);
+    }
+
+    #[test]
+    fn fire_skills_double_damage_on_a_spider_web_and_tear_one_layer() {
+        use models::enums::skill_enums::SkillEnum;
+        use models::status_bonus::BattleFlag;
+        let magic = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
+        let mut status = status();
+        start_for_test(&mut status, StatusChangeKind::SpiderWeb, 10000, 2, 0);
+        let cold = SkillEnum::MgColdbolt.id();
+        let fire = SkillEnum::MgFirebolt.id();
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, magic, false, cold, 99), 100);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, magic, false, fire, 99), 200);
+        assert_eq!(status.status_change(StatusChangeKind::SpiderWeb).map(|change| change.values[0]), Some(1));
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, magic, false, fire, 99), 200);
+        assert!(!status.has_status_change(StatusChangeKind::SpiderWeb));
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, magic, false, fire, 99), 100);
     }
 
     #[test]

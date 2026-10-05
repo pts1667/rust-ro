@@ -113,6 +113,10 @@ impl SkillService {
         if character.status.blocks_casting() {
             return SkillCasted::invalid();
         }
+        if character.script_skill_state.skill_blocked_until.get(&skill_id).is_some_and(|until| *until > tick) {
+            self.send_skill_fail_packet(character, UseSkillFailure::Skillinterval);
+            return SkillCasted::invalid();
+        }
         if target.is_none() || target_status.is_none() {
             return SkillCasted::invalid();
         }

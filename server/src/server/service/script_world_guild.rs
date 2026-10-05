@@ -522,6 +522,17 @@ impl ScriptWorldService {
             .collect())
     }
 
+    fn castles_held_by(&self, guild_id: u32) -> usize {
+        crate::server::service::castle_service::castles()
+            .iter()
+            .filter(|castle| {
+                self.repository
+                    .castle_value(&castle.map, crate::server::service::castle_service::CD_GUILD_ID)
+                    .is_ok_and(|owner| u32::try_from(owner).is_ok_and(|owner| owner == guild_id))
+            })
+            .count()
+    }
+
     pub(crate) fn guild_summary_packet(&self, server: &Server, character: &Character, guild: &GuildRecord) -> Result<Vec<u8>, String> {
         let roster = self.guild_roster(server, character, guild)?;
         let mut packet = protocol::guild_basic(
@@ -541,6 +552,9 @@ impl ScriptWorldService {
             packet[70..94].copy_from_slice(&name);
         }
         packet[14..18].copy_from_slice(&(guild.max_members() as u32).to_le_bytes());
+        let mut land = Vec::new();
+        protocol::fixed_string(&mut land, castle_holdings_text(self.castles_held_by(guild.id)), 16);
+        packet[94..110].copy_from_slice(&land);
         packet.extend_from_slice(&[0x62, 0x01, 6, 0]);
         packet.extend_from_slice(&guild.skill_points.to_le_bytes());
         Ok(packet)
@@ -629,6 +643,34 @@ impl ScriptWorldService {
         }
         self.broadcast_guild_summary(server, character, &guild)
     }
+}
+
+const CASTLE_HOLDINGS: [&str; 21] = [
+    "None Taken",
+    "One Castle",
+    "Two Castles",
+    "Three Castles",
+    "Four Castles",
+    "Five Castles",
+    "Six Castles",
+    "Seven Castles",
+    "Eight Castles",
+    "Nine Castles",
+    "Ten Castles",
+    "Eleven Castles",
+    "Twelve Castles",
+    "Thirteen Castles",
+    "Fourteen Castles",
+    "Fifteen Castles",
+    "Sixteen Castles",
+    "Seventeen Castles",
+    "Eighteen Castles",
+    "Nineteen Castles",
+    "Twenty Castles",
+];
+
+fn castle_holdings_text(count: usize) -> &'static str {
+    CASTLE_HOLDINGS[count.min(CASTLE_HOLDINGS.len() - 1)]
 }
 
 fn guild_positions(info: bool, guild: &GuildRecord) -> Vec<u8> {

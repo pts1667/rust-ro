@@ -58,7 +58,7 @@ impl Server {
         if !flags.is_gvg() {
             return Err("Guild skills are restricted to Guild vs Guild maps".into());
         }
-        if caster.script_skill_state.guild_skill_blocked_until.get(&skill_id).is_some_and(|until| *until > tick) {
+        if caster.script_skill_state.skill_blocked_until.get(&skill_id).is_some_and(|until| *until > tick) {
             return Err("Guild skill is still blocked".into());
         }
         let metadata = SkillMetadata::find(skill_id).ok_or("Guild skill metadata is unavailable")?;
@@ -102,7 +102,7 @@ impl Server {
             _ => return Err("Unsupported guild skill".into()),
         }
         let block = metadata.duration(level, true).unwrap_or(0).max(0) as u128;
-        caster.script_skill_state.guild_skill_blocked_until.insert(skill_id, tick + block);
+        caster.script_skill_state.skill_blocked_until.insert(skill_id, tick + block);
         Ok(())
     }
 

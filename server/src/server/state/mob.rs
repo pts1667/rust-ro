@@ -155,6 +155,8 @@ pub struct Mob {
     pub loot_items: Vec<(i32, u16, bool)>,
     pub looted: bool,
     pub friendly_guilds: Vec<u32>,
+    pub castle_owner: u32,
+    pub trickcasting_until: u128,
     pub bg_id: u32,
     pub damage_immune: bool,
 }
@@ -616,6 +618,8 @@ impl Mob {
             loot_items: Vec::new(),
             looted: false,
             friendly_guilds: Vec::new(),
+            castle_owner: 0,
+            trickcasting_until: 0,
             bg_id: 0,
             damage_immune: false,
         }

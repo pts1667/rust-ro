@@ -241,6 +241,7 @@ pub struct GuardianSpawn {
     pub guard_upgrade: u8,
     pub emperium: bool,
     pub friendly_guilds: Vec<u32>,
+    pub owner_guild: u32,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]

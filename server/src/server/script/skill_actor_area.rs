@@ -172,33 +172,9 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unknown actor ground skill")?;
-        let kind = GroundKind::from_name(&metadata.name).ok_or("Actor ground unit is not implemented")?;
-        if !matches!(
-            kind,
-            GroundKind::HeavenDrive
-                | GroundKind::Thunderstorm
-                | GroundKind::Pneuma
-                | GroundKind::SafetyWall
-                | GroundKind::Sanctuary
-                | GroundKind::VenomDust
-                | GroundKind::SpiderWeb
-                | GroundKind::Quagmire
-                | GroundKind::Deluge
-                | GroundKind::LandProtector
-                | GroundKind::SkidTrap
-                | GroundKind::LandMine
-                | GroundKind::Sandman
-                | GroundKind::FreezingTrap
-                | GroundKind::ArrowShower
-                | GroundKind::Firewall
-                | GroundKind::Meteor
-                | GroundKind::StormGust
-                | GroundKind::Vermilion
-                | GroundKind::Earthquake
-                | GroundKind::GrandCross
-                | GroundKind::GrandDarkness
-        ) {
-            return Err("This ground skill still requires an actor-specific unit lifecycle".into());
+        let kind = GroundKind::from_name(&metadata.name).ok_or_else(|| format!("Actor ground unit {} is not implemented", metadata.name))?;
+        if !kind.actor_placeable() {
+            return Err(format!("{} still requires an actor-specific unit lifecycle", metadata.name));
         }
         if kind == GroundKind::Meteor {
             return self.place_actor_meteors(server, state, source, request, metadata, x, y, tick);
