@@ -348,7 +348,7 @@ impl GameEventHandler for CharacterEquipItem {
         {
             server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                 char_id: character.char_id,
-                request: crate::server::model::game_systems::ScriptWorldRequest::EquipPetAccessory(character_equip_item.index as u16),
+                request: crate::server::model::game_systems::ScriptWorldRequest::Pet(crate::server::model::game_systems::PetRequest::EquipPetAccessory(character_equip_item.index as u16)),
             }));
             return Ok(());
         }
@@ -617,7 +617,7 @@ impl GameEventHandler for CharacterSkillUpgrade {
         if (10000..=10015).contains(&u32::from(character_skill_upgrade.skill_id)) {
             server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                 char_id: character.char_id,
-                request: crate::server::model::game_systems::ScriptWorldRequest::GuildSkillUp(u32::from(character_skill_upgrade.skill_id)),
+                request: crate::server::model::game_systems::ScriptWorldRequest::Guild(crate::server::model::game_systems::GuildRequest::GuildSkillUp(u32::from(character_skill_upgrade.skill_id))),
             }));
             return Ok(());
         }

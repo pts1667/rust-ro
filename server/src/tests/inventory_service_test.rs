@@ -78,7 +78,7 @@ mod tests {
     use crate::repository::model::item_model::InventoryItemModel;
     use crate::repository::{Error, InventoryRepository};
     use crate::server::model::events::game_event::{
-        CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterSlotCard, CharacterZeny, CharacterUpdateClientSideStats, CharacterUpdateWeight};
+        CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterRequestCardCompositionList, CharacterSlotCard, CharacterZeny, CharacterUpdateClientSideStats, CharacterUpdateWeight};
     use crate::server::model::events::map_event::{CharacterDropItems, MapEvent};
     use crate::server::model::events::persistence_event::{InventoryItemUpdate, PersistenceEvent};
     use crate::server::model::tasks_queue::TasksQueue;
@@ -1369,10 +1369,9 @@ mod tests {
         add_items_in_inventory(&mut character, "Golden_Mace", 1);
         add_items_in_inventory(&mut character, "Marionette_Doll", 1);
 
-        let request = CharacterEquipItem {
-            requested_location: None,
+        let request = CharacterRequestCardCompositionList {
             char_id: character.char_id,
-            index: 0,
+            card_index: 0,
         };
         // When
         context.inventory_service.send_card_composition_list(&mut character, request);

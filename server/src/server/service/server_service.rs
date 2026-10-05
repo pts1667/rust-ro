@@ -322,7 +322,7 @@ impl ServerService {
                 if let Some(damage) = maybe_damage {
                     if self.configuration_service.config().game.pet_support.attack_support && character.game_systems.pet.as_ref().is_some_and(|pet|!pet.incubating&&pet.intimacy>0) {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
-                            char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false},
+                            char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::Pet(crate::server::model::game_systems::PetRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false}),
                         }));
                     }
                     if damage.skill_id == models::enums::skill_enums::SkillEnum::NpcMagicalattack.id() {

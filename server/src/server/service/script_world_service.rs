@@ -57,6 +57,15 @@ mod pets;
 mod protocol;
 #[path = "script_world_requests.rs"]
 mod requests;
+pub use requests::{BattlegroundRequest, ContainerRequest, ScriptWorldRequest};
+pub use booking::BookingRequest;
+pub use companion_skills::CompanionRequest;
+pub use family::FamilyRequest;
+pub use guild::GuildRequest;
+pub use homunculus::HomunculusRequest;
+pub use party::PartyRequest;
+pub use pets::PetRequest;
+pub use vending::StoreRequest;
 #[cfg(test)]
 pub(crate) use pet_support::PetSupportHost;
 pub use pet_support::pet_support_operation;

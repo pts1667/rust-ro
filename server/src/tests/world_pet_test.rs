@@ -12,7 +12,7 @@ use super::{fixture, request};
 use crate::repository::InventoryRepository;
 use crate::server::model::events::game_event::{GameEvent, PetCaptureClaimResult};
 use crate::server::model::events::map_event::{MapEvent, MobDamage};
-use crate::server::model::game_systems::{PetRecord, ScriptWorldRequest};
+use crate::server::model::game_systems::{PetRecord, ScriptWorldRequest, CompanionRequest, PetRequest};
 use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_instance_service::MapInstanceService;
@@ -173,7 +173,7 @@ fn claim(context: &super::super::ServerServiceTestContext, service: &MapInstance
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
     context.server.script_world_service().call(&context.server, &mut source, Function::Pet, &[Value::Number(1002)], 100).unwrap();
     context.server.state_mut().insert_character(source);
-    request(context, 150_000, ScriptWorldRequest::CapturePet(42)).unwrap();
+    request(context, 150_000, ScriptWorldRequest::Pet(PetRequest::CapturePet(42))).unwrap();
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let request = map.pop_task().unwrap().into_iter().find_map(|event| match event { MapEvent::ClaimPetCapture(request) => Some(request), _ => None }).unwrap();
     service.claim_pet_capture_with_roll(map.state_mut().as_mut(), request, 101, 0);
@@ -325,7 +325,7 @@ fn timed_pet_bonus_recalculates_thresholds_before_the_live_heal_and_is_removed_w
     world.tick_in_state(&context.server, context.server.state(), &mut source, 1100).unwrap();
     assert_eq!(StatusService::instance().to_snapshot(&source.status).max_hp(), baseline.max_hp() * 2);
     let heal = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
-        GameEvent::ScriptWorld(world) if matches!(world.request, ScriptWorldRequest::HealByCompanion { .. }) => Some(world.request),
+        GameEvent::ScriptWorld(world) if matches!(world.request, ScriptWorldRequest::Companion(CompanionRequest::HealByCompanion { .. })) => Some(world.request),
         _ => None,
     }).expect("Timed HP bonus did not enable the pet heal threshold");
     let previous_hp = source.status.hp;
@@ -374,7 +374,7 @@ fn pet_recovery_is_scheduled_from_a_new_status_and_cast_completion_rechecks_map_
     context.server.map_flag_call(context.server.state_mut().as_mut(), 150_000, Function::SetMapFlag,
         &[Value::from("empty"), Value::Number(MapFlag::NoSkill as i32)]).unwrap();
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::FinishPetSupport(casting.id), casting.completes_at).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::FinishPetSupport(casting.id)), casting.completes_at).unwrap();
     let source = context.server.state().get_character(150_000).unwrap();
     assert!(source.game_systems.pet_support.as_ref().unwrap().casting.is_none());
     assert!(!source.status.has_status_change(StatusChangeKind::Magnificat));
@@ -405,7 +405,7 @@ fn finish_pet_cast(context: &super::super::ServerServiceTestContext, world: &Scr
         .and_then(|support| support.casting.as_ref()).cloned();
     if let Some(casting) = casting {
         world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-            ScriptWorldRequest::FinishPetSupport(casting.id), casting.completes_at).unwrap();
+            ScriptWorldRequest::Pet(PetRequest::FinishPetSupport(casting.id)), casting.completes_at).unwrap();
         casting.completes_at
     } else { 3000 }
 }
@@ -414,16 +414,16 @@ fn finish_pet_cast(context: &super::super::ServerServiceTestContext, world: &Scr
 fn pet_target_hooks_obey_the_config_and_loyalty_and_normal_damage_uses_the_real_pet_actor() {
     let (context, _, map_service, world) = pet_combat_fixture();
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetCombatTarget { target_id: 42, retaliation: true }, 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: true }), 100).unwrap();
     let actor = pet_world_id(77);
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands.get(&actor).is_none());
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().game_systems.pet.as_mut().unwrap().intimacy = 899;
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetCombatTarget { target_id: 42, retaliation: false }, 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands.get(&actor).is_none());
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().game_systems.pet.as_mut().unwrap().intimacy = 910;
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetCombatTarget { target_id: 42, retaliation: false }, 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     assert_eq!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands[&actor].target, Some(42));
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let mut landed = None;
@@ -461,7 +461,7 @@ fn pet_fixed_skill_preserves_elements_and_applies_real_capped_absorption_without
         &[Value::from("NPC_WINDATTACK"), Value::Number(200), Value::Number(2), Value::Number(100), Value::Number(0)], 100).unwrap();
     context.server.state_mut().insert_character(source);
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetCombatTarget { target_id: 42, retaliation: false }, 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
     world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);
@@ -490,7 +490,7 @@ fn pet_fixed_heaven_drive_places_real_ground_cells_and_hits_each_covered_enemy_o
         &[Value::from("WZ_HEAVENDRIVE"), Value::Number(200), Value::Number(1), Value::Number(100), Value::Number(0)], 100).unwrap();
     context.server.state_mut().insert_character(source);
     world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
-        ScriptWorldRequest::PetCombatTarget { target_id: 42, retaliation: false }, 100).unwrap();
+        ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
     world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);

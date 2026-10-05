@@ -71,6 +71,20 @@ fn check_adoption(father: &Character, mother: &Character, baby: &Character) -> R
     baby_job(JobName::from_value(baby.status.job as usize)).ok_or(Refusal::Silent)
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum FamilyRequest {
+    CallPartner,
+    CallBaby,
+    CallParents,
+    AdoptRequest(u32),
+    AdoptAnswer {
+            father_account: u32,
+            mother_account: u32,
+            accept: bool,
+        },
+}
+
+
 impl ScriptWorldService {
     fn adoption_reply(&self, char_id: u32, code: u32) {
         let mut packet = 0x0216_u16.to_le_bytes().to_vec();
@@ -222,5 +236,25 @@ impl ScriptWorldService {
             return Err("No family member can be called".into());
         }
         Ok(())
+    }
+}
+
+impl ScriptWorldService {
+    pub(crate) fn family_request(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        character: &mut Character,
+        request: FamilyRequest,
+    ) -> Result<(), String> {
+        match request {
+            FamilyRequest::CallPartner => self.call_partner(server, state, character),
+            FamilyRequest::CallBaby => self.call_family(server, state, character, false),
+            FamilyRequest::CallParents => self.call_family(server, state, character, true),
+            FamilyRequest::AdoptRequest(account) => self.request_adoption(state, character, account),
+            FamilyRequest::AdoptAnswer { father_account, mother_account, accept } => {
+                self.answer_adoption(server, state, character, father_account, mother_account, accept)
+            }
+        }
     }
 }

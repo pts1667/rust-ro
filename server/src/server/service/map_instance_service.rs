@@ -1285,10 +1285,10 @@ impl MapInstanceService {
                 self.server_task_queue
                     .add_to_first_index(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                         char_id: credited_id,
-                        request: crate::server::model::game_systems::ScriptWorldRequest::CompanionAttackLanded {
+                        request: crate::server::model::game_systems::ScriptWorldRequest::Companion(crate::server::model::game_systems::CompanionRequest::CompanionAttackLanded {
                             id: damage.attacker_id,
                             damage: applied,
-                        },
+                        }),
                     }));
             }
             if damage.landed && is_player_attack && damage.battle_flags != 0 {

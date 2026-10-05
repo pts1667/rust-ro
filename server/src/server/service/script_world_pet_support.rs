@@ -8,7 +8,7 @@ use script_sdk::{Function, Reply, Request, Value};
 use super::{ScriptWorldService, pet_world_id, protocol, world_data};
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, ScriptWorld, CharacterStatusChange, CharacterEndStatus};
-use crate::server::model::game_systems::{PetRecord, PetRecovery, PetSupportCast, PetSupportRuntime, PetSupportSkill, PetTimedBonus, ScriptWorldRequest};
+use crate::server::model::game_systems::{PetRecord, PetRecovery, PetSupportCast, PetSupportRuntime, PetSupportSkill, PetTimedBonus, ScriptWorldRequest, CompanionRequest, PetRequest};
 use crate::server::script::bonus::BonusScriptHandler;
 use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::script::skill::{metadata::SkillMetadata, ScriptSkillService};
@@ -226,7 +226,7 @@ impl ScriptWorldService {
             if let Some(casting) = support.casting.as_mut().filter(|casting| !casting.queued && now >= casting.completes_at) {
                 casting.queued = true;
                 server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld {
-                    char_id: character.char_id, request: ScriptWorldRequest::FinishPetSupport(casting.id),
+                    char_id: character.char_id, request: ScriptWorldRequest::Pet(PetRequest::FinishPetSupport(casting.id)),
                 }));
             }
             if let Some(skill) = &mut support.skill {
@@ -315,7 +315,7 @@ impl ScriptWorldService {
             let snapshot = crate::server::model::status::StatusFromDb::from_mob_model(data);
             let hp = ScriptSkillService::heal_amount(&snapshot, u32::from(pet.level), level);
             server.add_to_next_tick(GameEvent::ScriptWorld(ScriptWorld { char_id: character.char_id,
-                request: ScriptWorldRequest::HealByCompanion { source_id: actor_id, hp, sp: 0 } }));
+                request: ScriptWorldRequest::Companion(CompanionRequest::HealByCompanion { source_id: actor_id, hp, sp: 0 }) }));
         } else if let Some(kind) = metadata.status.as_deref().and_then(StatusChangeKind::from_name) {
             server.add_to_next_tick(GameEvent::CharacterStatusChange(CharacterStatusChange { char_id: character.char_id,
                 request: StatusChangeRequest::guaranteed(kind, metadata.duration(level, false).unwrap_or(0), i32::from(level)) }));

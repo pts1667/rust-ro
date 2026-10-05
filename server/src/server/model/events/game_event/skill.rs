@@ -586,12 +586,12 @@ fn use_ground_skill(
     if (8001..=8016).contains(&event.skill_id) || (8201..=8240).contains(&event.skill_id) {
         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
             char_id: event.char_id,
-            request: crate::server::model::game_systems::ScriptWorldRequest::UseCompanionGroundSkill {
+            request: crate::server::model::game_systems::ScriptWorldRequest::Companion(crate::server::model::game_systems::CompanionRequest::UseCompanionGroundSkill {
                 skill_id: event.skill_id,
                 skill_level: event.skill_level,
                 x: event.x,
                 y: event.y,
-            },
+            }),
         }));
         return Ok(());
     }

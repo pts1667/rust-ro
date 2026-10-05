@@ -304,11 +304,11 @@ impl Server {
             if (8001..=8016).contains(&event.skill_id) || (8201..=8240).contains(&event.skill_id) {
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                     char_id: character.char_id,
-                    request: crate::server::model::game_systems::ScriptWorldRequest::UseCompanionSkill {
+                    request: crate::server::model::game_systems::ScriptWorldRequest::Companion(crate::server::model::game_systems::CompanionRequest::UseCompanionSkill {
                         skill_id: event.skill_id,
                         skill_level: event.skill_level,
                         target_id: event.target_id,
-                    },
+                    }),
                 }));
                 return Ok(());
             }
@@ -357,11 +357,11 @@ impl Server {
                 self.item_service()
                     .pay_skill_requirements(self, &mut character, event.skill_id, event.skill_level, tick, true, None)?;
                 let request = if skill.name() == "MC_VENDING" {
-                    crate::server::model::game_systems::ScriptWorldRequest::PrepareVending {
+                    crate::server::model::game_systems::ScriptWorldRequest::Store(crate::server::model::game_systems::StoreRequest::PrepareVending {
                         skill_level: event.skill_level,
-                    }
+                    })
                 } else {
-                    crate::server::model::game_systems::ScriptWorldRequest::SetCart(1)
+                    crate::server::model::game_systems::ScriptWorldRequest::Container(crate::server::model::game_systems::ContainerRequest::SetCart(1))
                 };
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                     char_id: character.char_id,
@@ -1097,10 +1097,10 @@ impl Server {
         {
             self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                 char_id: damage.target_id,
-                request: crate::server::model::game_systems::ScriptWorldRequest::PetCombatTarget {
+                request: crate::server::model::game_systems::ScriptWorldRequest::Pet(crate::server::model::game_systems::PetRequest::PetCombatTarget {
                     target_id: damage.attacker_id,
                     retaliation: true,
-                },
+                }),
             }));
         }
         if let Some(redirected) = redirected {
@@ -1121,10 +1121,10 @@ impl Server {
             {
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                     char_id: damage.credit_id,
-                    request: crate::server::model::game_systems::ScriptWorldRequest::CompanionAttackLanded {
+                    request: crate::server::model::game_systems::ScriptWorldRequest::Companion(crate::server::model::game_systems::CompanionRequest::CompanionAttackLanded {
                         id: damage.attacker_id,
                         damage: damage.damage,
-                    },
+                    }),
                 }));
             }
             let grand_cross_self =

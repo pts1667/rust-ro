@@ -3,7 +3,7 @@ use models::enums::EnumWithMaskValueU32;
 
 use super::{ScriptWorldService, install_state, protocol, world_data};
 use crate::server::Server;
-use crate::server::model::game_systems::{GuildInvitation, GuildMenu, GuildPermission, GuildRecord, ScriptWorldRequest};
+use crate::server::model::game_systems::{GuildInvitation, GuildMenu, GuildPermission, GuildPosition, GuildRecord};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -33,6 +33,40 @@ fn belong_packet(actor: &Character, guild: Option<&GuildRecord>) -> Vec<u8> {
     protocol::fixed_string(&mut packet, guild.map_or("", |guild| guild.name.as_str()), 24);
     packet
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum GuildRequest {
+    CreateGuild(String),
+    InviteGuild(u32),
+    AnswerGuildInvite {
+            guild_id: u32,
+            accept: bool,
+        },
+    GuildMenu,
+    GuildInformation(u32),
+    LeaveGuild {
+            guild_id: u32,
+            reason: String,
+        },
+    ExpelGuild {
+            guild_id: u32,
+            member_id: u32,
+            reason: String,
+        },
+    DisbandGuild(String),
+    GuildNotice { subject: String, body: String },
+    GuildPositions(Vec<(u32, GuildPosition)>),
+    GuildMemberPositions(Vec<(u32, u32)>),
+    GuildEmblem(Vec<u8>),
+    GuildEmblemRequest(u32),
+    GuildSkillUp(u32),
+    GuildAllianceRequest(u32),
+    GuildAllianceReply { inviter: u32, accept: bool },
+    GuildOpposition(u32),
+    GuildRelationBreak { guild_id: u32, hostile: bool },
+    GuildMessage(String),
+}
+
 
 impl ScriptWorldService {
     pub fn initialize_guild(&self, server: &Server, character: &Character) -> Result<(), String> {
@@ -91,10 +125,10 @@ impl ScriptWorldService {
         server: &Server,
         state: &mut ServerState,
         character: &mut Character,
-        request: ScriptWorldRequest,
+        request: GuildRequest,
     ) -> Result<(), String> {
         match request {
-            ScriptWorldRequest::CreateGuild(name) => {
+            GuildRequest::CreateGuild(name) => {
                 if character.game_systems.guild_id != 0 {
                     return self.send(character.char_id, vec![0x67, 0x01, 1]);
                 }
@@ -123,7 +157,7 @@ impl ScriptWorldService {
                 self.send(character.char_id, self.guild_summary_packet(server, character, &guild)?)?;
                 self.area(character, guild_actor_packet(character.char_id, guild.id))
             }
-            ScriptWorldRequest::InviteGuild(target_id) => {
+            GuildRequest::InviteGuild(target_id) => {
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -151,7 +185,7 @@ impl ScriptWorldService {
                 protocol::fixed_string(&mut packet, &guild.name, 24);
                 self.send(target.char_id, packet)
             }
-            ScriptWorldRequest::AnswerGuildInvite { guild_id, accept } => {
+            GuildRequest::AnswerGuildInvite { guild_id, accept } => {
                 if character
                     .game_systems
                     .guild_invitation
@@ -191,7 +225,7 @@ impl ScriptWorldService {
                 self.broadcast_guild_summary(server, character, &guild)?;
                 self.area(character, guild_actor_packet(character.char_id, guild.id))
             }
-            ScriptWorldRequest::GuildMenu => {
+            GuildRequest::GuildMenu => {
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -207,7 +241,7 @@ impl ScriptWorldService {
                 packet.extend_from_slice(&mode.to_le_bytes());
                 self.send(character.char_id, packet)
             }
-            ScriptWorldRequest::GuildInformation(kind) => {
+            GuildRequest::GuildInformation(kind) => {
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -231,15 +265,15 @@ impl ScriptWorldService {
                     _ => Err("Unknown guild information section".into()),
                 }
             }
-            ScriptWorldRequest::LeaveGuild { guild_id, reason } => {
+            GuildRequest::LeaveGuild { guild_id, reason } => {
                 self.guild_remove_member(server, state, character, guild_id, character.char_id, reason, false)
             }
-            ScriptWorldRequest::ExpelGuild {
+            GuildRequest::ExpelGuild {
                 guild_id,
                 member_id,
                 reason,
             } => self.guild_remove_member(server, state, character, guild_id, member_id, reason, true),
-            ScriptWorldRequest::DisbandGuild(name) => {
+            GuildRequest::DisbandGuild(name) => {
                 if self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -272,14 +306,14 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::GuildNotice { subject, body } => {
+            GuildRequest::GuildNotice { subject, body } => {
                 let guild = self
                     .repository
                     .guild_set_notice(character.char_id, crate::server::model::game_systems::GuildNotice { subject, body })
                     .map_err(|error| error.to_string())?;
                 self.broadcast_guild_packet(&guild, guild_notice_packet(&guild))
             }
-            ScriptWorldRequest::GuildPositions(changes) => {
+            GuildRequest::GuildPositions(changes) => {
                 let current = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -297,7 +331,7 @@ impl ScriptWorldService {
                 self.broadcast_guild_packet(&guild, guild_positions(false, &guild))?;
                 self.broadcast_guild_packet(&guild, guild_positions(true, &guild))
             }
-            ScriptWorldRequest::GuildMemberPositions(changes) => {
+            GuildRequest::GuildMemberPositions(changes) => {
                 let mut latest = None;
                 for (member, position) in changes {
                     let position = u8::try_from(position).map_err(|_| "Invalid guild position")?;
@@ -313,7 +347,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::GuildEmblem(emblem) => {
+            GuildRequest::GuildEmblem(emblem) => {
                 let guild = self
                     .repository
                     .guild_set_emblem(character.char_id, emblem)
@@ -328,7 +362,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::GuildEmblemRequest(guild_id) => {
+            GuildRequest::GuildEmblemRequest(guild_id) => {
                 if let Some(guild) = self.repository.guild(guild_id).map_err(|error| error.to_string())? {
                     if !guild.emblem.is_empty() {
                         self.send(character.char_id, guild_emblem_packet(&guild))?;
@@ -336,7 +370,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            ScriptWorldRequest::GuildMessage(message) => {
+            GuildRequest::GuildMessage(message) => {
                 let prefix = format!("{} : ", character.name);
                 if !message.starts_with(&prefix) {
                     return Err("Guild chat sender does not match the character".into());
@@ -356,7 +390,7 @@ impl ScriptWorldService {
                 protocol::set_length(&mut packet);
                 self.broadcast_guild_packet(&guild, packet)
             }
-            ScriptWorldRequest::GuildSkillUp(skill_id) => {
+            GuildRequest::GuildSkillUp(skill_id) => {
                 let guild = self
                     .repository
                     .guild_upgrade_skill(character.char_id, skill_id)
@@ -371,7 +405,7 @@ impl ScriptWorldService {
                 self.broadcast_guild_packet(&guild, guild_skills_packet(&guild))?;
                 self.broadcast_guild_summary(server, character, &guild)
             }
-            ScriptWorldRequest::GuildAllianceRequest(target_id) => {
+            GuildRequest::GuildAllianceRequest(target_id) => {
                 let guild = self.guild_master_of(character)?;
                 if state.siege_active {
                     return Err("Alliances cannot be made during Guild Wars".into());
@@ -407,7 +441,7 @@ impl ScriptWorldService {
                 protocol::fixed_string(&mut packet, &guild.name, 24);
                 self.send(target_char, packet)
             }
-            ScriptWorldRequest::GuildAllianceReply { inviter, accept } => {
+            GuildRequest::GuildAllianceReply { inviter, accept } => {
                 let (inviter_char, inviting_guild) = state
                     .guild_alliance_requests
                     .remove(&character.char_id)
@@ -433,7 +467,7 @@ impl ScriptWorldService {
                 self.send(character.char_id, vec![0x73, 0x01, 1])?;
                 self.refresh_guild_relations(&[&first, &second])
             }
-            ScriptWorldRequest::GuildOpposition(target_id) => {
+            GuildRequest::GuildOpposition(target_id) => {
                 let guild = self.guild_master_of(character)?;
                 let target = state
                     .characters()
@@ -458,7 +492,7 @@ impl ScriptWorldService {
                 guilds.extend(opposed.as_ref());
                 self.refresh_guild_relations(&guilds)
             }
-            ScriptWorldRequest::GuildRelationBreak { guild_id, .. } => {
+            GuildRequest::GuildRelationBreak { guild_id, .. } => {
                 let before = self.guild_master_of(character)?;
                 if state.siege_active {
                     return Err("Guild relations cannot change during Guild Wars".into());
@@ -478,7 +512,6 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            _ => Err("Unknown guild operation".into()),
         }
     }
 
@@ -740,4 +773,7 @@ fn guild_emblem_packet(guild: &GuildRecord) -> Vec<u8> {
     packet.extend_from_slice(&guild.emblem);
     protocol::set_length(&mut packet);
     packet
+}
+
+impl ScriptWorldService {
 }

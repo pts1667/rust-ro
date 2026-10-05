@@ -1,7 +1,7 @@
 use models::script_context::ScriptPetState;
 use script_sdk::Value;
 
-use super::{PetDefinition, ScriptWorldService, pet_world_id, world_data};
+use super::{PetDefinition, ScriptWorldService, install_state, pet_world_id, protocol, world_data};
 use crate::server::Server;
 use crate::server::model::events::game_event::PetCaptureClaimResult;
 use crate::server::model::events::map_event::{MapEvent, PetCaptureFinalize};
@@ -99,6 +99,23 @@ pub fn pet_constant(name: &str) -> Option<Value> {
     Some(Value::Number(value))
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum PetRequest {
+    PetLootTarget(u32),
+    CapturePet(u32),
+    HatchPet(u16),
+    PetMenu(u8),
+    PetRename(String),
+    PetEmotion(i32),
+    EquipPetAccessory(u16),
+    FinishPetSupport(u64),
+    PetCombatTarget {
+            target_id: u32,
+            retaliation: bool,
+        },
+}
+
+
 impl ScriptWorldService {
     pub(crate) fn refresh_pet_bonuses(&self, server: &Server, character: &mut Character, previous: Option<ScriptPetState>) {
         if pet_bonus_state(character) != previous {
@@ -176,5 +193,205 @@ impl ScriptWorldService {
                 map.add_to_next_tick(MapEvent::FinalizePetCapture(PetCaptureFinalize { claim_id: pending.claim_id, target_id: pending.target_id, commit: false }));
             }
         }
+    }
+}
+
+impl ScriptWorldService {
+    pub(crate) fn pet_request(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        character: &mut Character,
+        request: PetRequest,
+        now: u64,
+    ) -> Result<(), String> {
+        match request {
+            PetRequest::FinishPetSupport(id) => self.finish_pet_support(server, state, character, id, now),
+            PetRequest::PetCombatTarget { target_id, retaliation } => self.pet_combat_target(server, state, character, target_id, retaliation, now),
+            PetRequest::PetLootTarget(target_id) => self.pet_loot_target(state, character, target_id, now),
+            PetRequest::CapturePet(target) => self.capture_pet(server, state, character, target, now),
+            PetRequest::HatchPet(index) => {
+                if !std::mem::take(&mut character.game_systems.pet_hatching) {
+                    return Err("Pet hatching window is not open".into());
+                }
+                let item = character
+                    .get_item_from_inventory(index as usize)
+                    .ok_or("Unknown pet egg inventory index")?;
+                let saved = self
+                    .repository
+                    .hatch_pet(character.char_id, item.id, now)
+                    .map_err(|error| error.to_string())?;
+                install_state(character, saved);
+                server
+                    .inventory_service()
+                    .reload_inventory(server.runtime(), character.char_id, character);
+                self.send_pet(character)?;
+                self.render_companions(server, character, now)
+            }
+            PetRequest::PetMenu(menu) => match menu {
+                0 => self.send_pet(character),
+                1 => self.feed_pet(server, character, now),
+                2 => {
+                    self.drop_pet_loot_in_state(server, state, character, now)?;
+                    let pet = character.game_systems.pet.as_ref().ok_or("No pet is active")?;
+                    let command = character.game_systems.companion_commands.entry(pet_world_id(pet.id)).or_default();
+                    command.destination = None;
+                    command.target = None;
+                    command.next_move_at = now.saturating_add(2000);
+                    let mut packet = protocol::header(0x01A4);
+                    packet.push(4);
+                    packet.extend_from_slice(&pet_world_id(pet.id).to_le_bytes());
+                    packet.extend_from_slice(&fastrand::u32(1..=if pet.intimacy > 900 { 4 } else { 3 }).to_le_bytes());
+                    self.area(character, packet)
+                }
+                3 => {
+                    self.return_pet_loot_in_state(server, state, character, now)?;
+                    let saved = self
+                        .repository
+                        .return_pet_to_egg(character.char_id)
+                        .map_err(|error| error.to_string())?;
+                    install_state(character, saved);
+                    server
+                        .inventory_service()
+                        .reload_inventory(server.runtime(), character.char_id, character);
+                    self.render_companions(server, character, now)
+                }
+                4 => {
+                    let saved = self
+                        .repository
+                        .pet_accessory(character.char_id, None, 0)
+                        .map_err(|error| error.to_string())?;
+                    install_state(character, saved);
+                    server
+                        .inventory_service()
+                        .reload_inventory(server.runtime(), character.char_id, character);
+                    self.send_pet(character)?;
+                    if let Some(packet) = super::pet_accessory_packet(character, self.configuration) {
+                        self.area(character, packet)?;
+                    }
+                    Ok(())
+                }
+                _ => Err("Unknown pet menu operation".into()),
+            },
+            PetRequest::PetRename(name) => {
+                if name.trim().is_empty() || name.len() > 23 || name.chars().any(char::is_control) {
+                    return Err("Invalid pet name".into());
+                }
+                let pet = character.game_systems.pet.as_mut().ok_or("No pet is active")?;
+                if pet.renamed {
+                    return Err("The pet has already been renamed".into());
+                }
+                pet.name = name;
+                pet.renamed = true;
+                self.persist(character)?;
+                self.send_pet(character)
+            }
+            PetRequest::PetEmotion(value) => {
+                if !(0..=200_000).contains(&value) {
+                    return Err("Invalid pet emotion".into());
+                }
+                let pet = character.game_systems.pet.as_ref().ok_or("No pet is active")?;
+                let mut packet = protocol::header(0x01AA);
+                packet.extend_from_slice(&pet_world_id(pet.id).to_le_bytes());
+                packet.extend_from_slice(&value.to_le_bytes());
+                self.area(character, packet)
+            }
+            PetRequest::EquipPetAccessory(index) => {
+                let pet = character.game_systems.pet.as_ref().ok_or("No pet is active")?;
+                let definition = world_data()
+                    .pets
+                    .iter()
+                    .find(|definition| definition.class_id == pet.class_id)
+                    .ok_or("Unknown pet class")?;
+                let item = character
+                    .get_item_from_inventory(index as usize)
+                    .ok_or("Unknown pet accessory inventory index")?;
+                if definition.equip_item == 0 || item.item_id != definition.equip_item {
+                    return Err("This accessory cannot be equipped by this pet".into());
+                }
+                let saved = self
+                    .repository
+                    .pet_accessory(character.char_id, Some(item.id), definition.equip_item)
+                    .map_err(|error| error.to_string())?;
+                install_state(character, saved);
+                server
+                    .inventory_service()
+                    .reload_inventory(server.runtime(), character.char_id, character);
+                self.send_pet(character)?;
+                if let Some(packet) = super::pet_accessory_packet(character, self.configuration) {
+                    self.area(character, packet)?;
+                }
+                Ok(())
+            }
+        }
+    }
+
+    fn capture_pet(
+        &self,
+        _server: &Server,
+        state: &mut ServerState,
+        character: &mut Character,
+        target: u32,
+        now: u64,
+    ) -> Result<(), String> {
+        if character.game_systems.pending_pet_capture.is_some() {
+            return Err("A pet capture is awaiting confirmation".into());
+        }
+        let capture = character.game_systems.pet_capture.take().ok_or("No pet capture is in progress")?;
+        if now >= capture.expires_at || character.status.hp == 0 || !character.loaded_from_client_side
+            || state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoPetCapture) {
+            return self.send(character.char_id, vec![0xA0, 0x01, 0]);
+        }
+        if state.contains_locked_map_item(target) {
+            return Err("Monster is already being captured or removed".into());
+        }
+        let map = state.get_map_instance_from_character(character).ok_or("Character map is unavailable")?;
+        let claim_id = self.next_pet_capture_id.fetch_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed, |value| value.checked_add(1))
+            .map_err(|_| "Pet capture identifiers exhausted")?;
+        let expires_at = capture.expires_at.min(now.saturating_add(5000));
+        character.game_systems.pending_pet_capture = Some(crate::server::model::game_systems::PendingPetCapture {
+            claim_id, target_id: target, map_key: character.map_instance_key.clone(), expires_at, committed: false,
+        });
+        state.insert_locked_map_item(target);
+        map.add_to_next_tick(MapEvent::ClaimPetCapture(crate::server::model::events::map_event::PetCaptureClaimRequest {
+            claim_id, char_id: character.char_id, target_id: target, x: character.x, y: character.y,
+            lure_item_id: capture.item_id, flag: capture.flag, expires_at,
+        }));
+        Ok(())
+    }
+
+    fn feed_pet(&self, server: &Server, character: &mut Character, now: u64) -> Result<(), String> {
+        let pet = character.game_systems.pet.as_ref().ok_or("No pet is active")?;
+        let data = world_data()
+            .pets
+            .iter()
+            .find(|data| data.class_id == pet.class_id)
+            .ok_or("Unknown pet class")?;
+        let intimacy = if pet.hunger > 90 {
+            data.intimacy_overfed
+        } else if pet.hunger > 75 {
+            (data.intimacy_fed / 2).max(1)
+        } else {
+            data.intimacy_fed
+        };
+        let state = self
+            .repository
+            .feed_pet(
+                character.char_id,
+                data.food_item,
+                data.hunger_increase,
+                intimacy,
+                now + data.hungry_delay,
+            )
+            .map_err(|error| error.to_string())?;
+        install_state(character, state);
+        server
+            .inventory_service()
+            .reload_inventory(server.runtime(), character.char_id, character);
+        self.send_pet(character)?;
+        let mut packet = protocol::header(0x01A3);
+        packet.push(1);
+        packet.extend_from_slice(&(data.food_item as u16).to_le_bytes());
+        self.send(character.char_id, packet)
     }
 }

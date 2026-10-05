@@ -13,7 +13,7 @@ use super::ServerServiceTestContext;
 use crate::repository::{InventoryRepository, SledRepository};
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction};
-use crate::server::model::game_systems::{ItemContainer, PlayerTradePhase, PlayerTradeRequest, ScriptWorldRequest};
+use crate::server::model::game_systems::{ItemContainer, PlayerTradePhase, PlayerTradeRequest, ScriptWorldRequest, StoreRequest, ContainerRequest};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::model::session::Session;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -527,15 +527,15 @@ fn accepted_trade_blocks_storage_store_creation_item_use_and_equipment_changes()
     open(&context);
     let before = economy(&repository);
     for request in [
-        ScriptWorldRequest::StorageDeposit { index: 2, amount: 1 },
-        ScriptWorldRequest::ContainerTransfer {
+        ScriptWorldRequest::Container(ContainerRequest::StorageDeposit { index: 2, amount: 1 }),
+        ScriptWorldRequest::Container(ContainerRequest::ContainerTransfer {
             source: ItemContainer::Inventory,
             destination: ItemContainer::Cart,
             index: 2,
             amount: 1,
-        },
-        ScriptWorldRequest::PrepareVending { skill_level: 1 },
-        ScriptWorldRequest::OpenVendingStore(2_000_001),
+        }),
+        ScriptWorldRequest::Store(StoreRequest::PrepareVending { skill_level: 1 }),
+        ScriptWorldRequest::Store(StoreRequest::OpenVendingStore(2_000_001)),
     ] {
         assert!(
             context
