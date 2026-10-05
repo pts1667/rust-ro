@@ -773,10 +773,6 @@ impl GameEventHandler for CharacterSlotCard {
 }
 
 impl GameEventHandler for MapNotifyItemRemoved {
-    fn required_character(&self) -> Option<u32> {
-        Some(self.map_item_id)
-    }
-
     fn handle(self, _server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let MapNotifyItemRemoved { map_item_id } = self;
         state.remove_locked_map_item(map_item_id);

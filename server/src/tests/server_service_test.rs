@@ -225,6 +225,21 @@ mod tests {
     use crate::{assert_sent_packet_in_current_packetver, assert_vec_equals, status_snapshot};
 
     #[test]
+    fn removed_map_item_notification_releases_its_lock_without_a_matching_character() {
+        // Given
+        let context = before_each();
+        let map_item_id = 300_001;
+        context.server.state_mut().insert_locked_map_item(map_item_id);
+        context.server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::MapNotifyItemRemoved(
+            crate::server::model::events::game_event::MapNotifyItemRemoved { map_item_id },
+        ));
+        // When
+        crate::server::Server::game_loop_iteration(&context.server, 40);
+        // Then
+        assert!(!context.server.state().contains_locked_map_item(map_item_id));
+    }
+
+    #[test]
     fn character_pickup_item_should_add_item_to_character_inventory_when_item_in_fov() {
         // Given
         let (context, mut character_state) = super::before_each_pickup();
