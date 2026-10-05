@@ -1,7 +1,7 @@
 use packets::packets::PacketCzShortcutKeyChange;
 
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterHotkeyAdd, CharacterHotkeyRemove};
 use crate::server::model::hotkey::Hotkey;
 use crate::server::model::request::Request;
 
@@ -15,8 +15,8 @@ pub fn handle_shortcut_change(server: &Server, context: Request) {
     };
     let char_id = context.session().char_id.unwrap();
     if hotkey.itemskill_id == 0 {
-        server.add_to_next_tick(GameEvent::CharacterHotkeyRemove(char_id, hotkey.index as usize))
+        server.add_to_next_tick(GameEvent::CharacterHotkeyRemove(CharacterHotkeyRemove { char_id, index: hotkey.index as usize }))
     } else {
-        server.add_to_next_tick(GameEvent::CharacterHotkeyAdd(char_id, hotkey))
+        server.add_to_next_tick(GameEvent::CharacterHotkeyAdd(CharacterHotkeyAdd { char_id, hotkey }))
     }
 }

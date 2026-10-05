@@ -9,7 +9,7 @@ use super::ScriptSkillService;
 use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::service::map_combat_service::MagicAttackContext;
 use crate::server::service::status_service::StatusService;
@@ -140,13 +140,13 @@ impl ScriptSkillService {
             }
             if source.kind == StatusChangeKind::Ruwach && source.damage_players && character.char_id != source.credit_id {
                 let target = StatusService::instance().to_snapshot(&character.status);
-                server.add_to_next_tick(GameEvent::CharacterDamage(Self::ruwach_damage(
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: Self::ruwach_damage(
                     server,
                     source,
                     &target,
                     character.char_id,
                     tick,
-                )));
+                ) }));
             }
         }
         Ok(())

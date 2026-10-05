@@ -15,7 +15,7 @@ use models::status_bonus::{BattleFlag, CombatTrigger};
 use models::status_change::StatusChangeRequest;
 use movement::position::Position;
 use packets::packets::{
-    Packet, PacketZcItemDisappear, PacketZcItemFallEntry, PacketZcNotifyAct, PacketZcNotifyMove, PacketZcNotifyStandentry7,
+    Packet, PacketZcItemDisappear, PacketZcItemFallEntry, PacketZcNotifyMove, PacketZcNotifyStandentry7,
     PacketZcNotifyVanish, PacketZcUseSkill,
 };
 
@@ -23,7 +23,7 @@ use crate::server::game_loop::GAME_TICK_RATE;
 use crate::server::map_instance_loop::MAP_LOOP_TICK_RATE;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
-use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent, ScriptEvent};
+use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent, ScriptEvent, CharacterDamage, MapNotifyItemRemoved, ReleaseScriptCapture};
 use crate::server::model::events::map_event::{CharacterDropItems, MapEvent, MobAttackCharacter, MobDropItems, MobLocation, ScriptSpawn};
 use crate::server::model::map::Map;
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, ToMapItemSnapshot};
@@ -1250,7 +1250,7 @@ impl MapInstanceService {
                 if source.is_some() {
                     map_instance_tasks_queue.add_to_first_index(MapEvent::MobDamage(returned));
                 } else {
-                    self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(returned));
+                    self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage: returned }));
                 }
             }
             mob.add_attack(credited_id, applied);
@@ -1752,7 +1752,7 @@ impl MapInstanceService {
                 y: mob.y,
             });
         }
-        self.server_task_queue.add_to_first_index(GameEvent::ReleaseScriptCapture(id));
+        self.server_task_queue.add_to_first_index(GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id }));
     }
 
     pub fn mob_die_client_notification(&self, map_instance_state: &MapInstanceState, mob_location: MobLocation) {
@@ -1988,7 +1988,7 @@ impl MapInstanceService {
                 .unwrap_or_else(|_| error!("Failed to send notification packet_zc_item_disappear to client"));
         }
         self.server_task_queue
-            .add_to_first_index(GameEvent::MapNotifyItemRemoved(dropped_item_id));
+            .add_to_first_index(GameEvent::MapNotifyItemRemoved(MapNotifyItemRemoved { map_item_id: dropped_item_id }));
     }
 
     fn add_to_delayed_tick(map_instance_tasks_queue: &TasksQueue<MapEvent>, event: MapEvent, delay: u128) {

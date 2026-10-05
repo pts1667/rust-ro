@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use configuration::configuration::SkillConfig;
-use models::enums::skill::{SkillTargetType, SkillType};
+use models::enums::skill::SkillType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
@@ -16,7 +16,7 @@ use crate::repository::Repository;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterAddItems, CharacterUseSkill, GameEvent};
+use crate::server::model::events::game_event::{CharacterAddItems, CharacterUseSkill, GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
@@ -774,7 +774,7 @@ impl ScriptSkillService {
                 }
                 return Ok(());
             }
-            let snapshot = StatusService::instance().to_snapshot(&character.status);
+            let _snapshot = StatusService::instance().to_snapshot(&character.status);
             let healing = self.source_heal_amount(character, level);
             let target_hp = if target_id == character.char_id {
                 character.status.hp
@@ -900,7 +900,7 @@ impl ScriptSkillService {
                     if kind == MapItemType::Mob {
                         instance.add_to_next_tick(MapEvent::MobDamage(damage));
                     } else {
-                        server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                        server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                     }
                 }
                 return Ok(());

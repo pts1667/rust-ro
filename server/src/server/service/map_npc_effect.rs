@@ -9,7 +9,7 @@ use packets::packets::{Packet, PacketZcNotifyVanish, PacketZcUseSkill};
 use super::MapInstanceService;
 use super::unit_data::{walkable, warp_position};
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map_item::MapItemType;
 use crate::server::script::skill::actor::{self, NpcSkillState};
@@ -387,7 +387,7 @@ impl MapInstanceService {
                     MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary
                 )
             }) {
-                self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(reflected));
+                self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage: reflected }));
             } else {
                 self.server_task_queue.add_to_first_index(GameEvent::ScriptMapDamage(
                     crate::server::model::events::game_event::ScriptMapDamage {

@@ -17,7 +17,7 @@ use models::status::{KnownSkill, Status, StatusSnapshot};
 use movement::position::Position;
 use packets::packets::{
     Packet, PacketZcAttackRange, PacketZcItemDisappear, PacketZcItemEntry, PacketZcLongparChange, PacketZcMsgStateChange,
-    PacketZcMsgStateChange2, PacketZcNotifyAct, PacketZcNotifyEffect, PacketZcNotifyMove, PacketZcNotifyPlayermove,
+    PacketZcMsgStateChange2, PacketZcNotifyAct, PacketZcNotifyEffect, PacketZcNotifyMove,
     PacketZcNotifyStandentry5, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcNpcackMapmove, PacketZcParChange,
     PacketZcShortcutKeyListV2, PacketZcSpriteChange2, PacketZcStatusChangeAck, PacketZcStatusValues, PacketZcStopmove, ShortCutKey,
 };
@@ -27,11 +27,11 @@ use crate::repository::CharacterRepository;
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::PLAYER_FOV;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, GameEvent};
+use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, GameEvent, CharacterUpdateClientSideStats};
 use crate::server::model::events::map_event::{MapEvent, MobDropItems};
 use crate::server::model::events::persistence_event::PersistenceEvent::SaveCharacterPosition;
 use crate::server::model::events::persistence_event::{
-    IncreaseSkillLevel, PersistenceEvent, ResetSkills, SavePositionUpdate, StatusUpdate,
+    PersistenceEvent, SavePositionUpdate, StatusUpdate,
 };
 use crate::server::model::hotkey::Hotkey;
 use crate::server::model::map_flags::MapFlags;
@@ -706,7 +706,7 @@ impl CharacterService {
         character.status.status_point = status_point;
         self.send_status_update_and_defer_db_update(character.char_id, StatusTypes::Statuspoint, character.status.status_point);
         self.server_task_queue
-            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
     }
 
     pub fn update_skill_point(&self, character: &mut Character, skill_point: u32, should_persist: bool) {
@@ -782,7 +782,7 @@ impl CharacterService {
             }))
             .expect("Fail to send persistence notification");
         self.server_task_queue
-            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
         true
     }
 
@@ -838,7 +838,7 @@ impl CharacterService {
             .unwrap_or_else(|_| error!("Failed to notify skill points"));
         self.skill_tree_service.send_skill_tree(character);
         self.server_task_queue
-            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
         true
     }
 

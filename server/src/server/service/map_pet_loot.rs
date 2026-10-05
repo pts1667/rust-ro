@@ -5,7 +5,7 @@ use models::item::ItemInstanceAttributes;
 use packets::packets::{Packet, PacketZcItemDisappear};
 
 use super::MapInstanceService;
-use crate::server::model::events::game_event::{GameEvent, PetLootClaimResult, PetLootDropResult};
+use crate::server::model::events::game_event::{GameEvent, PetLootClaimResult, PetLootDropResult, MapNotifyItemRemoved, ReleaseScriptCapture};
 use crate::server::model::events::map_event::{PetLootClaimRequest, PetLootDropFinalize, PetLootDropRequest, PetLootFinalize};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::map_item::MapItemType;
@@ -90,7 +90,7 @@ impl MapInstanceService {
         if !matches {
             if !state.is_pet_loot_reserved(request.target_id) {
                 self.server_task_queue
-                    .add_to_first_index(GameEvent::ReleaseScriptCapture(request.target_id));
+                    .add_to_first_index(GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: request.target_id }));
             }
             return;
         }
@@ -102,7 +102,7 @@ impl MapInstanceService {
             packet.fill_raw();
             self.notify_area(state, pending.item.x(), pending.item.y(), packet.raw);
             self.server_task_queue
-                .add_to_first_index(GameEvent::MapNotifyItemRemoved(request.target_id));
+                .add_to_first_index(GameEvent::MapNotifyItemRemoved(MapNotifyItemRemoved { map_item_id: request.target_id }));
         } else {
             state.restore_pet_loot(pending.item);
         }
@@ -119,7 +119,7 @@ impl MapInstanceService {
             }
         }
         self.server_task_queue
-            .add_to_first_index(GameEvent::ReleaseScriptCapture(request.target_id));
+            .add_to_first_index(GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: request.target_id }));
     }
 
     pub fn prepare_pet_loot_drop(&self, state: &mut MapInstanceState, request: PetLootDropRequest) {

@@ -1,6 +1,6 @@
 use models::enums::bonus::BonusType;
 use models::enums::element::Element;
-use models::enums::item::{EquipmentLocation, ItemType};
+use models::enums::item::EquipmentLocation;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use models::status::{Status, StatusSnapshot};
@@ -12,7 +12,7 @@ use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::service::script_combat_service::MobCombatEffect;
 use crate::server::service::status_effect_service::StatusEffectService;
@@ -1000,7 +1000,7 @@ impl ScriptSkillService {
                 },
             )),
             TargetEffect::Action(action) => self.followup_action(server, effect, character.char_id, action),
-            TargetEffect::Damage(amount) => server.add_to_next_tick(GameEvent::CharacterDamage(Self::fixed_damage(effect, amount, tick))),
+            TargetEffect::Damage(amount) => server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: Self::fixed_damage(effect, amount, tick) })),
         }
         Ok(())
     }

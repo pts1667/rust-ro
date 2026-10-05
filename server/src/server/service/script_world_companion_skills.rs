@@ -7,7 +7,7 @@ use super::{
     recalculate_mercenary, world_data,
 };
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::game_systems::{CharacterGameSystems, CompanionCast, CompanionPosition, ScriptWorldRequest};
 use crate::server::script::skill::GroundSkillSource;
@@ -812,7 +812,7 @@ impl ScriptWorldService {
                     if map.state().get_mob(damage.target_id).is_some() {
                         map.add_to_next_tick(MapEvent::MobDamage(damage));
                     } else {
-                        server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                        server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                     }
                 }
                 CompanionSkillEffect::Status { target_id, request } if !is_local_companion(&character.game_systems, target_id) => {

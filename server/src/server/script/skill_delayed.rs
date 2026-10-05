@@ -6,11 +6,10 @@ use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::{CharacterEndStatus, CharacterKnockback, GameEvent};
+use crate::server::model::events::game_event::{CharacterEndStatus, CharacterKnockback, GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::{MapEvent, MobFace, MobWarpTo};
 use crate::server::model::map::Map;
 use crate::server::model::map_item::MapItemType;
-use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -270,7 +269,7 @@ impl ScriptSkillService {
                 .ok_or("Delayed skill map is unavailable")?
                 .add_to_next_tick(MapEvent::MobDamage(damage));
         } else {
-            server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+            server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
         }
         Ok(())
     }

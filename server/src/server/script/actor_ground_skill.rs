@@ -13,7 +13,7 @@ use super::metadata::SkillMetadata;
 use super::{GroundSkillSource, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -718,7 +718,7 @@ impl ScriptSkillService {
                 0,
             );
             if player {
-                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
             } else {
                 instance.add_to_next_tick(MapEvent::MobDamage(damage));
             }

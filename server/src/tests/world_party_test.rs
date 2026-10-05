@@ -16,7 +16,7 @@ use crate::repository::SledRepository;
 use crate::repository::game_system_repository::GameSystemRepository;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::Notification;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::game_systems::{HomunculusRecord, ScriptWorldRequest};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_combat_service::MagicAttackContext;
@@ -319,7 +319,7 @@ fn companion_magic_reflection_precedes_absorption_and_reflected_magic_cannot_bou
         .unwrap()
         .into_iter()
         .find_map(|event| match event {
-            GameEvent::CharacterDamage(damage) => Some(damage),
+            GameEvent::CharacterDamage(CharacterDamage { damage }) => Some(damage),
             _ => None,
         })
         .unwrap();
@@ -416,7 +416,7 @@ fn companion_gvg_reduction_follows_shields_and_reflects_only_the_admitted_loss()
     let saved = repository.character_game_systems(150_001).unwrap();
     assert_eq!((saved.revision, saved.homunculus.as_ref()), (live.game_systems.revision, Some(homunculus)));
     let reflected = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
-        GameEvent::CharacterDamage(damage) => Some(damage), _ => None,
+        GameEvent::CharacterDamage(CharacterDamage { damage }) => Some(damage), _ => None,
     }).expect("Companion Reflect Shield did not use the actual admitted damage");
     assert_eq!((reflected.attacker_id, reflected.credit_id, reflected.target_id, reflected.damage), (id, 150_001, 150_000, 4));
     assert_eq!(reflected.battle_flags, 0);

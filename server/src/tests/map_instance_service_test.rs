@@ -65,7 +65,7 @@ mod tests {
 
     use crate::server::map_instance_loop::MAP_LOOP_TICK_RATE;
     use crate::server::model::action::Damage;
-    use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent};
+    use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent, MapNotifyItemRemoved, ReleaseScriptCapture};
     use crate::server::model::events::map_event::{MapEvent, MobDropItems, MobLocation};
     use crate::server::model::map_item::{MapItem, MapItemType};
     use crate::server::model::tasks_queue::TasksQueue;
@@ -388,7 +388,7 @@ mod tests {
         );
         assert_task_queue_contains_event_at_tick!(
             context.server_task_queue.clone(),
-            GameEvent::MapNotifyItemRemoved(clover.map_item_id),
+            GameEvent::MapNotifyItemRemoved(MapNotifyItemRemoved { map_item_id: clover.map_item_id }),
             0
         );
     }
@@ -509,7 +509,7 @@ mod tests {
                 .server_task_queue
                 .pop()
                 .unwrap()
-                .contains(&GameEvent::ReleaseScriptCapture(7000))
+                .contains(&GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: 7000 }))
         );
         context.map_instance_service.finalize_pet_loot(&mut state, PetLootFinalize {
             claim_id: 10,
@@ -544,7 +544,7 @@ mod tests {
         assert_eq!(
             events
                 .iter()
-                .filter(|event| matches!(event, GameEvent::MapNotifyItemRemoved(7000)))
+                .filter(|event| matches!(event, GameEvent::MapNotifyItemRemoved(MapNotifyItemRemoved { map_item_id: 7000 })))
                 .count(),
             1
         );
@@ -600,7 +600,7 @@ mod tests {
                     .server_task_queue
                     .pop()
                     .unwrap()
-                    .contains(&GameEvent::ReleaseScriptCapture(7000))
+                    .contains(&GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: 7000 }))
             );
         }
     }
@@ -851,7 +851,7 @@ mod tests {
                 .pop()
                 .unwrap()
                 .into_iter()
-                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(42)))
+                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: 42 })))
         );
         let committed = PetCaptureClaimRequest { claim_id: 2, ..request };
         context
@@ -875,7 +875,7 @@ mod tests {
                 .pop()
                 .unwrap()
                 .into_iter()
-                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(42)))
+                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: 42 })))
         );
     }
 
@@ -929,7 +929,7 @@ mod tests {
                 .pop()
                 .unwrap()
                 .into_iter()
-                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(42)))
+                .all(|event| matches!(event, GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: 42 })))
         );
     }
 

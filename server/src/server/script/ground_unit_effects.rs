@@ -5,7 +5,7 @@ use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use super::ground::GroundSkill;
 use crate::server::state::character::Character;
 use crate::server::Server;
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
@@ -129,7 +129,7 @@ impl ScriptSkillService {
                         tick,
                     )
                     .with_skill_notification(source.current_map_name(), source.current_map_instance(), source.x, source.y, tick, 1, 0);
-                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                 ground.waves = ground.waves.saturating_add(1);
                 continue;
             }

@@ -14,17 +14,14 @@ use models::status_bonus::BonusExpiry;
 use movement::position::Position;
 use packets::packets::{Packet, PacketZcMsgStateChange, PacketZcNotifyAct};
 use script_runtime::WasmRuntime;
-use tokio::runtime::Runtime;
 
 use crate::MAP_DIR;
-use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::boot::map_loader::MapLoader;
 use crate::server::map_instance_loop::MapInstanceLoop;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{
-    CharacterAddItems, CharacterChangeMap, CharacterMovement, CharacterRemoveFromMap, CharacterUseSkill, GameEvent,
-};
+    CharacterChangeMap, CharacterMovement, CharacterRemoveFromMap, CharacterUseSkill, GameEvent, CharacterClearFov, CharacterDamage, CharacterUpdateClientSideStats};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_instance::MapInstance;
@@ -219,7 +216,7 @@ impl ServerService {
         let map_instance = if let Some(instance) = server_state.get_map_instance(&map_name, instance_id) { instance }
             else if let Some(map) = self.configuration_service.find_map(&map_name) { self.create_map_instance(server_state, map, instance_id) }
             else { return; };
-        self.server_task_queue.add_to_first_index(GameEvent::CharacterClearFov(char_id));
+        self.server_task_queue.add_to_first_index(GameEvent::CharacterClearFov(CharacterClearFov { char_id }));
         self.server_task_queue.add_to_index(
             GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
                 char_id,
@@ -410,7 +407,7 @@ impl ServerService {
         }
         if *should_reload_client_side_status.borrow() {
             self.server_task_queue
-                .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id))
+                .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }))
         }
     }
 
@@ -420,7 +417,7 @@ impl ServerService {
         } else if matches!(map_item_type, MapItemType::Mob) {
             map_instance.add_to_next_tick(MapEvent::MobDamage(damage));
         } else if matches!(map_item_type, MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
-            self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage));
+            self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage }));
         }
     }
 
@@ -451,7 +448,7 @@ impl ServerService {
         if skill.is_none() {
             return;
         }
-        let skill = skill.unwrap();
+        let _skill = skill.unwrap();
         let effective_range = self.script_skill_service.player_skill_range(&self.get_status_snapshot(&character.status, tick), character_use_skill.skill_id, character_use_skill.skill_level);
 
         let is_in_range = character.x.abs_diff(target_snapshot.position.x).max(character.y.abs_diff(target_snapshot.position.y)) <= effective_range.max(1);
@@ -542,7 +539,7 @@ impl ServerService {
             character.clear_pending_skill();
             return;
         }
-        let skill = skill.unwrap();
+        let _skill = skill.unwrap();
         let effective_range = self.script_skill_service.player_skill_range(&self.get_status_snapshot(&character.status, tick), pending.skill_id, pending.skill_level);
 
         let is_in_range = character.x.abs_diff(target_snapshot.position.x).max(character.y.abs_diff(target_snapshot.position.y)) <= effective_range.max(1);
@@ -614,7 +611,7 @@ impl ServerService {
                         Ok(damages) => for (kind, damage) in damages {
                             if kind == MapItemType::SkillUnit { self.apply_damage(kind, map_instance, damage); }
                             else if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(damage)); }
-                            else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage)); }
+                            else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage })); }
                         },
                         Err(error) => warn!("Unable to complete area damage for skill {}: {}", skill_use_response.skill_id, error),
                     }
@@ -627,7 +624,7 @@ impl ServerService {
                 if !skill_use_response.bonuses.is_empty() {
                     character.status.temporary_bonuses.merge(skill_use_response.bonuses);
                     self.server_task_queue
-                        .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+                        .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
                 }
             }
         }

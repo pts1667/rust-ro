@@ -8,7 +8,7 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFl
 
 use super::ServerServiceTestContext;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast};
+use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstance;
@@ -167,7 +167,7 @@ pub(super) fn complete(context: &ServerServiceTestContext, instance: &MapInstanc
 fn damage_event(context: &ServerServiceTestContext) -> Damage {
     while let Some(events) = context.server_task_queue.pop() {
         for event in events {
-            if let GameEvent::CharacterDamage(damage) = event {
+            if let GameEvent::CharacterDamage(CharacterDamage { damage }) = event {
                 return damage;
             }
             if let GameEvent::ScriptMapDamage(request) = event {
@@ -431,7 +431,7 @@ fn npc_ground_cast_keeps_a_live_source_and_damages_player_targets() {
     let mut damages = vec![];
     while let Some(events) = context.server_task_queue.pop() {
         for event in events {
-            if let GameEvent::CharacterDamage(damage) = event {
+            if let GameEvent::CharacterDamage(CharacterDamage { damage }) = event {
                 damages.push(damage);
             }
         }

@@ -11,7 +11,7 @@ use regex_lite::Regex;
 
 use crate::load_scripts;
 use crate::server::Server;
-use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent};
+use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent, CharacterResetSkills, CharacterResetStats, CharacterRestoreAllHpAndSP, CharacterUpdateSpeed};
 use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::map_flags::MapFlag;
@@ -19,7 +19,6 @@ use crate::server::model::request::Request;
 use crate::server::model::session::Session;
 use crate::server::script::Value;
 use crate::server::service::global_config_service::GlobalConfigService;
-use crate::util::packet::chain_packets;
 
 lazy_static! {
     static ref COMMAND_REGEX: Regex = Regex::new(r"^([@#!])([^\s]*)\s?(.*)?").unwrap();
@@ -361,7 +360,7 @@ pub fn handle_rates(server: &Server) -> String {
     msg
 }
 
-pub fn handle_reload(server: &Server, _session: Arc<Session>, args: Vec<&str>) -> String {
+pub fn handle_reload(_server: &Server, _session: Arc<Session>, args: Vec<&str>) -> String {
     // TODO check if user privileges
     if args.is_empty() {
         return "@reload command accept 1 parameters but received none".to_string();
@@ -381,12 +380,12 @@ pub fn handle_reload(server: &Server, _session: Arc<Session>, args: Vec<&str>) -
 }
 
 pub fn handle_reset_skills(server: &Server, session: Arc<Session>, _args: Vec<&str>) -> String {
-    server.add_to_next_tick(GameEvent::CharacterResetSkills(session.char_id()));
+    server.add_to_next_tick(GameEvent::CharacterResetSkills(CharacterResetSkills { char_id: session.char_id() }));
     "Skills have been reset.".to_string()
 }
 
 pub fn handle_reset_stats(server: &Server, session: Arc<Session>, _args: Vec<&str>) -> String {
-    server.add_to_next_tick(GameEvent::CharacterResetStats(session.char_id()));
+    server.add_to_next_tick(GameEvent::CharacterResetStats(CharacterResetStats { char_id: session.char_id() }));
     "Stats have been reset.".to_string()
 }
 
@@ -400,7 +399,7 @@ pub fn handle_speed_change(server: &Server, session: Arc<Session>, args: Vec<&st
     } else if speed > 500 {
         speed = 500;
     }
-    server.add_to_next_tick(GameEvent::CharacterUpdateSpeed(session.char_id(), speed));
+    server.add_to_next_tick(GameEvent::CharacterUpdateSpeed(CharacterUpdateSpeed { char_id: session.char_id(), speed }));
     format!("Speed has been set at {}.", speed)
 }
 
@@ -408,6 +407,6 @@ pub fn handle_heal(server: &Server, session: Arc<Session>, args: Vec<&str>) -> S
     if args.is_empty() {
         return "@speed command accept 1 parameters but received none".to_string();
     }
-    server.add_to_next_tick(GameEvent::CharacterRestoreAllHpAndSP(session.char_id()));
+    server.add_to_next_tick(GameEvent::CharacterRestoreAllHpAndSP(CharacterRestoreAllHpAndSP { char_id: session.char_id() }));
     "Restored all HP and SP".to_string()
 }

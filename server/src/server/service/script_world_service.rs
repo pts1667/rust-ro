@@ -13,7 +13,7 @@ use models::status::{Status, StatusSnapshot};
 use models::status_bonus::{BattleFlag, StatusBonus};
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use movement::position::Position;
-use packets::packets::{Packet, PacketZcNotifyAct, PacketZcNotifyMove, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcUseSkill};
+use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcUseSkill};
 use script_sdk::{Function, Value};
 use serde::Deserialize;
 
@@ -23,7 +23,7 @@ use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::game_systems::{
-    CharacterGameSystems, CompanionPosition, GuildRecord, HomunculusRecord, MercenaryRecord, PetCapture, PlayerOption, StoreSearch,
+    CharacterGameSystems, CompanionPosition, HomunculusRecord, MercenaryRecord, PetCapture, PlayerOption, StoreSearch,
 };
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType};
 use crate::server::service::battle_service::{BattleService, NormalAttackRoll};
@@ -721,7 +721,7 @@ impl ScriptWorldService {
                 if map.state().get_mob(reflected.target_id).is_some() {
                     map.add_to_next_tick(MapEvent::MobDamage(reflected));
                 } else {
-                    server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterDamage(reflected));
+                    server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterDamage(crate::server::model::events::game_event::CharacterDamage { damage: reflected }));
                 }
             }
         }

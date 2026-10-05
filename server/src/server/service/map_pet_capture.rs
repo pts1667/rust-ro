@@ -1,11 +1,10 @@
-use models::enums::mob::MobMode;
 use models::enums::vanish::VanishType;
-use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
+use models::enums::EnumWithNumberValue;
 use models::status_change::StatusChangeKind;
 use packets::packets::{Packet, PacketZcNotifyVanish};
 
 use super::MapInstanceService;
-use crate::server::model::events::game_event::{GameEvent, PetCaptureClaimResult};
+use crate::server::model::events::game_event::{GameEvent, PetCaptureClaimResult, ReleaseScriptCapture};
 use crate::server::model::events::map_event::{PetCaptureClaimRequest, PetCaptureFinalize};
 use crate::server::service::script_world_service::world_data;
 use crate::server::state::map_instance::{MapInstanceState, PendingPetCapture};
@@ -73,7 +72,7 @@ impl MapInstanceService {
         {
             if !state.pending_pet_captures.values().any(|claim| claim.mob.id == request.target_id) {
                 self.server_task_queue
-                    .add_to_first_index(GameEvent::ReleaseScriptCapture(request.target_id));
+                    .add_to_first_index(GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: request.target_id }));
             }
             return;
         }
@@ -96,7 +95,7 @@ impl MapInstanceService {
             state.mobs_mut().insert(claim.mob.id, claim.mob);
         }
         self.server_task_queue
-            .add_to_first_index(GameEvent::ReleaseScriptCapture(request.target_id));
+            .add_to_first_index(GameEvent::ReleaseScriptCapture(ReleaseScriptCapture { id: request.target_id }));
     }
 }
 

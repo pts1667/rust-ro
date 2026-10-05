@@ -16,7 +16,7 @@ use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
-use crate::server::model::events::game_event::GameEvent;
+use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
@@ -1195,7 +1195,7 @@ impl ScriptSkillService {
                         1,
                         0,
                     );
-                    server.add_to_next_tick(GameEvent::CharacterDamage(damage_event));
+                    server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: damage_event }));
                     cell.remaining_hits = cell.remaining_hits.saturating_sub(1);
                 }
             }

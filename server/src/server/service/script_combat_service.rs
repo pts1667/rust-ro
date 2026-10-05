@@ -1,6 +1,5 @@
 use models::enums::bonus::BonusType;
 use models::enums::item::EquipmentLocation;
-use models::enums::mob::{MobClass, MobMode};
 use models::enums::skill::{SkillDamageFlags, SkillTargetType};
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use models::status::{Status, StatusSnapshot};
@@ -11,7 +10,7 @@ use script_sdk::Value;
 
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::game_event::{CharacterZeny, GameEvent};
+use crate::server::model::events::game_event::{CharacterZeny, GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::status::StatusFromDb;
 use crate::server::service::combat_trigger_service::{CombatEffect, CombatEffectTarget, CombatEvent, resolve};
@@ -256,7 +255,7 @@ fn apply_effect(
                 return Ok(());
             }
             if state.get_character(request.target_id).is_some() {
-                server.add_to_next_tick(GameEvent::CharacterDamage(Damage {
+                server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: Damage {
                     notification: None,
                     source_kind: models::enums::actor::CombatActorKind::Player,
                     skill_damage_adjusted: false,
@@ -275,7 +274,7 @@ fn apply_effect(
                     credit_id: request.source_id,
                     defenses_applied: true,
                     magic_context: None,
-                }));
+                } }));
             } else {
                 let character = state.get_character(request.source_id).ok_or("Reflection owner is unavailable")?;
                 state
@@ -486,7 +485,7 @@ fn apply_splash(server: &Server, state: &mut ServerState, request: &ScriptCombat
             (damage, 0),
         );
         if player {
-            server.add_to_next_tick(GameEvent::CharacterDamage(event));
+            server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: event }));
         } else {
             instance.add_to_next_tick(MapEvent::MobDamage(event));
         }
