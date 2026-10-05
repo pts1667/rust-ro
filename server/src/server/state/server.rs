@@ -30,7 +30,6 @@ pub struct ServerState {
                                                    * meanwhile. */
     map_flag_overrides: MapFlagOverrides,
     siege: SiegeFlag,
-    pub battlegrounds: crate::server::model::battleground::Battlegrounds,
     pub(crate) script_timers: crate::server::model::script_timer::ScriptTimers,
     pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
     pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
@@ -138,7 +137,6 @@ impl ServerState {
             locked_map_item: Default::default(),
             map_flag_overrides: MapFlagOverrides::default(),
             siege: SiegeFlag::default(),
-            battlegrounds: Default::default(),
             script_timers: Default::default(),
             character_logins: Default::default(),
             pending_character_logouts: Default::default(),

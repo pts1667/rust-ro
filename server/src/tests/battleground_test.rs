@@ -3,6 +3,7 @@ use script_sdk::{Function, Value};
 
 use crate::server::model::battleground_queue::{ADMISSION_WINDOW_MS, BattlegroundQueueAction, BattlegroundQueueCommand, QueueState};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
+use crate::server::service::battleground_service::battleground_members;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_instance_service::MapInstanceService;
 use crate::server::service::mob_service::MobService;
@@ -74,6 +75,24 @@ fn members_respawn_at_their_team_cemetery_and_leave_clears_the_roster() {
     assert_eq!(call(&context, 0, Function::BgGetData, vec![team.into(), 0.into()]), Value::Number(0));
 }
 
+#[test]
+fn destroying_a_team_releases_every_member_and_leaving_resets_tracking() {
+    let context = fixture();
+    let (first, second) = (create_team(&context, 10), create_team(&context, 90));
+    join(&context, first, 150_000);
+    join(&context, second, 150_001);
+    assert_eq!(context.server.state().get_character(150_000).unwrap().bg_id, first as u32);
+    assert!(context.server.state().get_character(150_000).unwrap().bg_tracking.last_hp == u32::MAX);
+    context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().bg_tracking.last_hp = 10;
+    call(&context, 150_000, Function::BgLeave, vec![]);
+    let leader = context.server.state().get_character(150_000).unwrap().clone();
+    assert_eq!((leader.bg_id, leader.bg_tracking.last_hp), (0, u32::MAX));
+    call(&context, 0, Function::BgDestroy, vec![second.into()]);
+    assert_eq!(context.server.state().get_character(150_001).unwrap().bg_id, 0);
+    assert!(context.server.battlegrounds().team(second as u32).is_none());
+    assert_eq!(join(&context, second, 150_001), 0);
+}
+
 fn add_players(context: &super::ServerServiceTestContext, count: u32) -> Vec<u32> {
     let mut ids = vec![150_000, 150_001];
     for index in 0..count.saturating_sub(2) {
@@ -106,10 +125,12 @@ fn a_full_queue_asks_for_acceptance_then_builds_two_teams_and_publishes_their_id
         queue_command(&context, *id, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
     }
     {
-        let state = context.server.state();
-        let queue = state.battlegrounds.queues.queues.iter().find(|queue| queue.state == QueueState::SetupDelay).unwrap();
-        assert_eq!((queue.team_a.len(), queue.team_b.len()), (6, 6));
-        assert!(state.battlegrounds.queues.reserved_maps.contains("bat_b01"));
+        let (sides, reserved) = context.server.battlegrounds().with_queues(|queues| {
+            let queue = queues.queues.iter().find(|queue| queue.state == QueueState::SetupDelay).unwrap();
+            ((queue.team_a.len(), queue.team_b.len()), queues.reserved_maps.contains("bat_b01"))
+        });
+        assert_eq!(sides, (6, 6));
+        assert!(reserved);
     }
     for id in &ids {
         queue_command(&context, *id, BattlegroundQueueAction::Reply { accept: true });
@@ -119,10 +140,10 @@ fn a_full_queue_asks_for_acceptance_then_builds_two_teams_and_publishes_their_id
     let first = context.server.script_service().server_temporary("$@FlaviusBG1_id1").unwrap().number_value().unwrap() as u32;
     let second = context.server.script_service().server_temporary("$@FlaviusBG1_id2").unwrap().number_value().unwrap() as u32;
     assert_ne!(first, second);
-    assert_eq!((state.battlegrounds.member_ids(first).len(), state.battlegrounds.member_ids(second).len()), (6, 6));
-    let cemetery = state.battlegrounds.team(first).unwrap().cemetery.clone().unwrap();
+    assert_eq!((battleground_members(&state, first).len(), battleground_members(&state, second).len()), (6, 6));
+    let cemetery = context.server.battlegrounds().team(first).unwrap().cemetery.unwrap();
     assert_eq!((cemetery.map.as_str(), cemetery.x, cemetery.y), ("bat_b01", 10, 290));
-    assert!(state.battlegrounds.queues.queues.iter().any(|queue| queue.state == QueueState::Active));
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queues.iter().any(|queue| queue.state == QueueState::Active)));
 }
 
 #[test]
@@ -133,9 +154,8 @@ fn an_unanswered_admission_window_dissolves_the_queue_and_frees_the_arena() {
         queue_command(&context, *id, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
     }
     context.server.tick_battleground_queues(context.server.state_mut().as_mut(), crate::util::tick::get_tick() + ADMISSION_WINDOW_MS as u128 + 1);
-    let state = context.server.state();
-    assert!(state.battlegrounds.queues.reserved_maps.is_empty());
-    assert!(ids.iter().all(|id| state.battlegrounds.queues.queue_of(*id).is_none()));
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.reserved_maps.is_empty()));
+    assert!(ids.iter().all(|id| context.server.battlegrounds().with_queues(|queues| queues.queue_of(*id)).is_none()));
 }
 
 #[test]
@@ -150,13 +170,13 @@ fn applications_are_rejected_for_restricted_jobs_low_levels_and_duplicates() {
     }
     queue_command(&context, 150_000, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
     queue_command(&context, 150_001, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
-    assert!(context.server.state().battlegrounds.queues.queue_of(150_000).is_none());
-    assert!(context.server.state().battlegrounds.queues.queue_of(150_001).is_none());
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queue_of(150_000)).is_none());
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queue_of(150_001)).is_none());
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().status.base_level = 90;
     queue_command(&context, 150_001, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
-    assert!(context.server.state().battlegrounds.queues.queue_of(150_001).is_some());
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queue_of(150_001)).is_some());
     queue_command(&context, 150_001, BattlegroundQueueAction::Cancel("Flavius".into()));
-    assert!(context.server.state().battlegrounds.queues.queue_of(150_001).is_none());
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queue_of(150_001)).is_none());
 }
 
 #[test]
@@ -171,7 +191,7 @@ fn bg_info_reads_the_catalog_and_leaving_a_team_as_a_deserter_blocks_new_applica
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().status.base_level = 90;
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().status.job = 1;
     queue_command(&context, 150_000, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
-    assert!(context.server.state().battlegrounds.queues.queue_of(150_000).is_none());
+    assert!(context.server.battlegrounds().with_queues(|queues| queues.queue_of(150_000)).is_none());
 }
 
 #[test]

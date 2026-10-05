@@ -90,7 +90,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `ServerState` (characters and the data handlers touch) is owned by the game loop; the movement loop shares it through `Server::lock_state_loops()`. Other threads must not call `server.state()`/`state_mut()`.
 - Request-handler and notification threads read `Server::sessions()` (`SessionRegistry`, a DashMap) and `Server::directory()` (`CharacterDirectory`, positions published at the end of each loop iteration, up to one tick stale). For anything else, enqueue a `GameEvent`.
 - `MapInstanceState` is behind a `parking_lot::RwLock` (`state()`/`state_mut()` panic after a 10s timeout instead of hanging).
-- Stores that only need character ids or are read from several threads are cloneable handles with their own lock, not `ServerState` fields: `Server::duels()`, `Server::map_flag_overrides()`, `Server::siege()`, `ScriptWorldService`'s party bookings and guild alliance requests. `ServerState` keeps clones of the map flag and siege handles so `state.map_flags()` and `state.siege_active()` still work.
+- Stores that only need character ids or are read from several threads are cloneable handles with their own lock, not `ServerState` fields: `Server::duels()`, `Server::map_flag_overrides()`, `Server::siege()`, `Server::battlegrounds()` (team definitions, scores, queues), `ScriptWorldService`'s party bookings and guild alliance requests. Battleground membership lives on the character (`Character::bg_id`, `bg_tracking`) and rosters are derived by scanning characters. `ServerState` keeps clones of the map flag and siege handles so `state.map_flags()` and `state.siege_active()` still work.
 
 
 ## Files to read or to avoid

@@ -78,7 +78,7 @@ impl Server {
             return false;
         }
         let (source_team, target_team) = if flags.enabled(MapFlag::Battleground) {
-            (state.battlegrounds.team_of(source.char_id), state.battlegrounds.team_of(target.char_id))
+            (source.bg_id, target.bg_id)
         } else {
             (0, 0)
         };

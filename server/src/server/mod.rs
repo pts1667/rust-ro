@@ -24,6 +24,7 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
 use crate::server::model::session::{SessionRecord, SessionRegistry};
+use crate::server::model::battleground::Battlegrounds;
 use crate::server::model::character_lifecycle::CharacterSelectionGate;
 use crate::server::model::duel::Duels;
 use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
@@ -69,6 +70,7 @@ pub struct Server {
     sessions: SessionRegistry,
     directory: CharacterDirectory,
     duels: Duels,
+    battlegrounds: Battlegrounds,
     map_flag_overrides: MapFlagOverrides,
     siege: SiegeFlag,
     cell_basilica: Mutex<HashSet<u32>>,
@@ -106,6 +108,10 @@ impl Server {
 
     pub fn duels(&self) -> &Duels {
         &self.duels
+    }
+
+    pub fn battlegrounds(&self) -> &Battlegrounds {
+        &self.battlegrounds
     }
 
     pub fn map_flag_overrides(&self) -> &MapFlagOverrides {
@@ -248,6 +254,7 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            battlegrounds: Battlegrounds::default(),
             map_flag_overrides,
             siege,
             cell_basilica: Mutex::new(HashSet::new()),
@@ -289,6 +296,7 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            battlegrounds: Battlegrounds::default(),
             map_flag_overrides,
             siege,
             cell_basilica: Mutex::new(HashSet::new()),
