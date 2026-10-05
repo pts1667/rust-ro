@@ -132,6 +132,21 @@ impl Server {
         self.repository.castle_value(&castle.map, field).unwrap_or(0)
     }
 
+    fn castle_owner(&self, castle: &Castle) -> u32 {
+        u32::try_from(self.castle_value(castle, CD_GUILD_ID)).unwrap_or(0)
+    }
+
+    /// Owning guild and castle names shown when a guardian or Emperium is targeted.
+    pub(crate) fn guardian_label(&self, state: &ServerState, map_name: &str, instance_id: u8, mob_id: u32) -> Option<(String, String)> {
+        let owner = state.get_map_instance(&map_name.to_string(), instance_id)?.state().get_mob(mob_id)?.castle_owner;
+        if owner == 0 {
+            return None;
+        }
+        let castle = castle_by_map(map_name)?;
+        let guild = self.repository.guild(owner).ok().flatten()?;
+        Some((guild.name, castle.name.clone()))
+    }
+
     fn set_castle_value(&self, castle: &Castle, field: u8, value: i32) {
         if let Err(error) = self.repository.set_castle_value(&castle.map, field, value) {
             error!("Castle {} field {field} update failed: {error}", castle.map);
@@ -202,7 +217,7 @@ impl Server {
     fn start_castle_arena(&self, state: &mut ServerState, castle: &Castle) {
         let defense = self.castle_value(castle, CD_CURRENT_DEFENSE);
         let mut request = spawn_request(EMPERIUM, castle.emperium[0], castle.emperium[1], "Emperium", 1);
-        request.guardian = Some(GuardianSpawn { defense, guard_upgrade: 0, emperium: true, friendly_guilds: Vec::new() });
+        request.guardian = Some(GuardianSpawn { defense, guard_upgrade: 0, emperium: true, friendly_guilds: Vec::new(), owner_guild: self.castle_owner(castle) });
         self.send_castle_command(state, castle, CastleCommand::SpawnUnlessPresent(request));
     }
 
@@ -233,7 +248,7 @@ impl Server {
     fn spawn_guardian_slot(&self, state: &mut ServerState, castle: &Castle, slot: usize, defense: i32, guard_upgrade: u8, friendly: &[u32]) {
         let guardian = &castle.guardians[slot];
         let mut request = spawn_request(guardian_class(guardian.kind), guardian.x, guardian.y, "", 1);
-        request.guardian = Some(GuardianSpawn { defense, guard_upgrade, emperium: false, friendly_guilds: friendly.to_vec() });
+        request.guardian = Some(GuardianSpawn { defense, guard_upgrade, emperium: false, friendly_guilds: friendly.to_vec(), owner_guild: friendly.first().copied().unwrap_or(0) });
         self.send_castle_command(state, castle, CastleCommand::Spawn(request));
     }
 

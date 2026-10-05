@@ -750,6 +750,7 @@ impl MapInstanceService {
             mob.atk2 = mob.atk2.saturating_add(bonus);
         }
         mob.friendly_guilds = guardian.friendly_guilds.clone();
+        mob.castle_owner = guardian.owner_guild;
     }
 
     fn mob_from_model(&self, id: u32, x: u16, y: u16, model: &crate::repository::model::mob_model::MobModel, spawn_id: u32) -> Mob {
@@ -1847,8 +1848,11 @@ impl MapInstanceService {
         let mut rng = fastrand::Rng::new();
         let mob = self.configuration_service.get_mob(mob_drop_items.mob_id as i32);
         let mut item_to_drop: Vec<DroppedItem> = vec![];
+        let treasure_chest = mob.race_groups.iter().any(|group| group.eq_ignore_ascii_case("Treasure"));
         for drop in mob.drops.iter() {
-            let drop_rate = if drop.is_card {
+            let drop_rate = if treasure_chest {
+                drop.rate as u16
+            } else if drop.is_card {
                 (drop.rate as f32 * self.configuration_service.config().game.drop_rate_card).round() as u16
             } else {
                 (drop.rate as f32 * self.configuration_service.config().game.drop_rate).round() as u16

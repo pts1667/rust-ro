@@ -136,6 +136,35 @@ impl GroundKind {
         }
     }
 
+    /// Kinds that the actor (monster and NPC) cast pipeline can place and run to completion.
+    pub(super) fn actor_placeable(self) -> bool {
+        matches!(
+            self,
+            Self::HeavenDrive
+                | Self::Thunderstorm
+                | Self::Pneuma
+                | Self::SafetyWall
+                | Self::Sanctuary
+                | Self::VenomDust
+                | Self::SpiderWeb
+                | Self::Quagmire
+                | Self::Deluge
+                | Self::LandProtector
+                | Self::SkidTrap
+                | Self::LandMine
+                | Self::Sandman
+                | Self::FreezingTrap
+                | Self::ArrowShower
+                | Self::Firewall
+                | Self::Meteor
+                | Self::StormGust
+                | Self::Vermilion
+                | Self::Earthquake
+                | Self::GrandCross
+                | Self::GrandDarkness
+        )
+    }
+
     fn damaging(self) -> bool {
         !matches!(
             self,

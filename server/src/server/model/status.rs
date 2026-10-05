@@ -69,11 +69,13 @@ impl StatusFromDb {
     }
 
     pub fn from_mob_model(mob_model: &MobModel) -> StatusSnapshot {
+        // The pre-renewal mob database leaves treasure chests without HP; rathena defaults them to 1.
+        let hp = mob_model.hp.max(1) as u32;
         let mut snapshot = StatusSnapshot::new_for_mob(
             mob_model.id as u32,
-            mob_model.hp as u32,
+            hp,
             mob_model.sp as u32,
-            mob_model.hp as u32,
+            hp,
             mob_model.sp as u32,
             mob_model.str as u16,
             mob_model.agi as u16,
@@ -100,5 +102,16 @@ impl StatusFromDb {
         snapshot.set_flee((mob_model.level + mob_model.agi).clamp(0, i16::MAX as i32) as i16);
         snapshot.set_mob_groups(mob_model.race_groups.iter().filter_map(|name| MobGroup::try_from_string_ignore_case(name).or_else(|_| MobGroup::try_from_string_ignore_case(&format!("RC2_{name}"))).ok()).collect());
         snapshot
+    }
+}
+
+#[cfg(test)]
+mod mob_status_tests {
+    use super::*;
+
+    #[test]
+    fn mobs_without_a_database_hp_spawn_with_one_hp() {
+        let snapshot = StatusFromDb::from_mob_model(&MobModel::default());
+        assert_eq!((snapshot.hp(), snapshot.max_hp()), (1, 1));
     }
 }

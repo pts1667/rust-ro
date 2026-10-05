@@ -22,6 +22,13 @@ const FRIEND_SEARCH_RANGE: u16 = 9;
 const NEARBY_MOB_RANGE: u16 = 9;
 const AFTER_SKILL_WINDOW_MS: u128 = 2000;
 const NPC_RUN_DEFAULT_DISTANCE: u16 = 7;
+const MOB_SKILL_INTERVAL_MS: u128 = 1000;
+const TRICKCASTING_MS: u128 = MOB_SKILL_INTERVAL_MS * 3;
+const TRICKCASTING_STOP_MS: u128 = MOB_SKILL_INTERVAL_MS * 7 / 10;
+const TRICKCASTING_ESCAPE_CELLS: u16 = 8;
+const TRICKCASTING_SPEED_STEP: u16 = 250;
+const MIN_WALK_SPEED: u16 = 20;
+const SKILL_ELEMENT_FIRE: u32 = 3;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MobSkillEntry {
@@ -196,6 +203,8 @@ enum SpecialMobSkill {
     Run { distance: u16 },
     Revenge,
     ClassChange { classes: Vec<i32>, extra: u16 },
+    RandomMove { skill_id: u16 },
+    SpeedUp,
 }
 
 struct Friend {
@@ -333,7 +342,7 @@ impl MapInstanceService {
             }
         }
         for (id, special) in specials {
-            self.run_special_mob_skill(state, id, special);
+            self.run_special_mob_skill(state, id, special, tick);
         }
         for cast in casts {
             self.send_mob_skill(cast);
@@ -383,11 +392,13 @@ impl MapInstanceService {
                 distance: if entry.level > 1 { entry.level } else { NPC_RUN_DEFAULT_DISTANCE },
             }),
             "NPC_REVENGE" => Some(SpecialMobSkill::Revenge),
+            "NPC_RANDOMMOVE" => Some(SpecialMobSkill::RandomMove { skill_id: entry.skill_id as u16 }),
+            "NPC_SPEEDUP" => Some(SpecialMobSkill::SpeedUp),
             _ => None,
         }
     }
 
-    fn run_special_mob_skill(&self, state: &mut MapInstanceState, id: u32, special: SpecialMobSkill) {
+    fn run_special_mob_skill(&self, state: &mut MapInstanceState, id: u32, special: SpecialMobSkill, tick: u128) {
         let Some((x, y)) = state.mobs().get(&id).map(|mob| (mob.x, mob.y)) else {
             return;
         };
@@ -425,6 +436,7 @@ impl MapInstanceService {
                         state,
                         id,
                         SpecialMobSkill::SummonSlaves { classes: classes.clone(), amount: extra, slaves: true },
+                        tick,
                     );
                 }
                 self.mob_class_change(state, id, classes[fastrand::usize(..classes.len())]);
@@ -452,6 +464,44 @@ impl MapInstanceService {
                         mob.lose_target();
                     }
                     self.slide_mob(state, id, threat_x, threat_y, distance);
+                }
+            }
+            SpecialMobSkill::RandomMove { skill_id } => {
+                let threat = state
+                    .mobs()
+                    .get(&id)
+                    .and_then(|mob| mob.get_target_id())
+                    .and_then(|target| state.characters().iter().find(|character| character.map_item().id() == target).map(|character| (character.x(), character.y())))
+                    .unwrap_or_else(|| (x.saturating_add_signed(fastrand::i16(-1..=1)), y.saturating_add_signed(fastrand::i16(-1..=1))));
+                if let Some(mob) = state.mobs_mut().get_mut(&id) {
+                    mob.trickcasting_until = tick + TRICKCASTING_MS;
+                }
+                let mut packet = 0x013E_u16.to_le_bytes().to_vec();
+                packet.extend_from_slice(&id.to_le_bytes());
+                packet.extend_from_slice(&id.to_le_bytes());
+                packet.extend_from_slice(&x.to_le_bytes());
+                packet.extend_from_slice(&y.to_le_bytes());
+                packet.extend_from_slice(&skill_id.to_le_bytes());
+                packet.extend_from_slice(&SKILL_ELEMENT_FIRE.to_le_bytes());
+                packet.extend_from_slice(&((TRICKCASTING_MS + MOB_SKILL_INTERVAL_MS / 2) as u32).to_le_bytes());
+                let notification = AreaNotification::new(
+                    state.key().map_name().clone(),
+                    state.key().map_instance(),
+                    AreaNotificationRangeType::Fov { x, y, exclude_id: None },
+                    packet,
+                );
+                let _ = self.client_notification_sender.send(Notification::Area(notification));
+                self.slide_mob(state, id, threat.0, threat.1, TRICKCASTING_ESCAPE_CELLS);
+            }
+            SpecialMobSkill::SpeedUp => {
+                let Some(mob) = state.mobs_mut().get_mut(&id) else { return };
+                let remaining = mob.trickcasting_until.saturating_sub(tick);
+                if remaining >= TRICKCASTING_STOP_MS {
+                    let speed = mob.status.speed().saturating_sub(TRICKCASTING_SPEED_STEP).max(MIN_WALK_SPEED);
+                    mob.status.set_speed(speed);
+                    mob.base_status.set_speed(speed);
+                } else {
+                    mob.trickcasting_until = 0;
                 }
             }
             SpecialMobSkill::Revenge => {
@@ -592,7 +642,8 @@ impl MapInstanceService {
                 recent
                     && SkillMetadata::find(mob.last_attack_skill).is_some_and(|metadata| metadata.target_type.as_deref() == Some("Ground"))
             }
-            "alchemist" => mob.summon_ai != 0 && mob.status.hp() < mob.status.max_hp(),
+            "alchemist" => mob.summon_ai != 0 && mob.trickcasting_until == 0 && mob.status.hp() < mob.status.max_hp(),
+            "trickcasting" => mob.trickcasting_until > 0,
             _ => false,
         }
     }
@@ -684,5 +735,36 @@ mod tests {
         assert!(entries.iter().any(|entry| entry.emotion == Some(6) && entry.chat.is_none()));
         assert!(entries.iter().any(|entry| entry.chat == Some(17) && entry.emotion.is_none()));
         assert_eq!(parse_mode("0x3885"), Some(0x3885));
+    }
+
+    fn marine_sphere() -> Mob {
+        let snapshot = crate::tests::common::mob_helper::create_test_mob_status(1000, 10, 20);
+        let mut mob = Mob::new(111, 5, 5, 1142, 1, "Marine Sphere".into(), "Marine Sphere".into(), 0, snapshot, 0, 1, 9, 1000, 500, 10, 20);
+        mob.summon_ai = 1;
+        mob
+    }
+
+    fn entry(skill_name: &str) -> MobSkillEntry {
+        let entries: Vec<MobSkillEntry> = serde_json::from_str(include_str!("../../../../config/mob_skills.json")).unwrap();
+        entries
+            .into_iter()
+            .find(|entry| entry.mob_id == 1142 && SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name == skill_name))
+            .unwrap_or_else(|| panic!("Marine Sphere has no {skill_name} entry"))
+    }
+
+    #[test]
+    fn trickcasting_gates_the_alchemist_and_speed_up_entries() {
+        let mut mob = marine_sphere();
+        let random_move = entry("NPC_RANDOMMOVE");
+        let speed_up = entry("NPC_SPEEDUP");
+        let met = |mob: &Mob, entry: &MobSkillEntry| MapInstanceService::condition_met(mob, entry, false, 0, 0, false, &[], 0);
+        assert!(!met(&mob, &random_move) && !met(&mob, &speed_up));
+        let max_hp = mob.status.max_hp();
+        mob.set_hp(max_hp - 1);
+        assert!(met(&mob, &random_move) && !met(&mob, &speed_up));
+        mob.trickcasting_until = 3000;
+        assert!(!met(&mob, &random_move) && met(&mob, &speed_up));
+        assert!(MapInstanceService::special_action(&mob, &random_move, SkillMetadata::find(random_move.skill_id).unwrap()).is_some());
+        assert!(MapInstanceService::special_action(&mob, &speed_up, SkillMetadata::find(speed_up.skill_id).unwrap()).is_some());
     }
 }

@@ -1,3 +1,4 @@
+use models::enums::skill_enums::SkillEnum;
 use models::enums::mob::MobRace;
 
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -21,6 +22,7 @@ pub(super) const GANBANTEIN_SUCCESS_PERCENT: u8 = 80;
 const GANBANTEIN_RADIUS: u16 = 1;
 const SPIDER_WEB_DEFAULT_MS: i32 = 8000;
 const SPIDER_WEB_MAX_LAYERS: i32 = 3;
+const BODY_RELOCATION_ASURA_BLOCK_MS: u128 = 2000;
 
 impl ScriptSkillService {
     fn sanctuary_base_heal(level: u8) -> u32 {
@@ -46,9 +48,7 @@ impl ScriptSkillService {
         let source_character = if ground.actor_source.is_none() { state.get_character(ground.source_id) } else { None };
         let base = Self::sanctuary_base_heal(ground.level);
         let heal = match (&ground.actor_source, source_character) {
-            (None, Some(source)) => {
-                Self::scale_source_heal(source, &StatusService::instance().to_snapshot(&source.status), base)
-            }
+            (None, Some(source)) => Self::scale_fixed_heal(&StatusService::instance().to_snapshot(&source.status), base),
             _ => base,
         };
         let effect_for = |target_id: u32, action: ScriptSkillAction| ScriptSkillEffect {
@@ -113,7 +113,27 @@ impl ScriptSkillService {
             .map(|target| (target.char_id, StatusService::instance().to_snapshot(&target.status), target.status.hp))
             .collect::<Vec<_>>();
         for (char_id, snapshot, hp) in players {
-            if Self::sanctuary_repels(&snapshot) || hp >= snapshot.max_hp() {
+            if Self::sanctuary_repels(&snapshot) {
+                let (Some(source), None) = (source_character, &ground.actor_source) else {
+                    continue;
+                };
+                if ground.waves >= budget || !server.player_ground_target_allowed(state, source, char_id, true) {
+                    continue;
+                }
+                let damage = self
+                    .offensive_heal_damage(
+                        server,
+                        &StatusService::instance().to_snapshot(&source.status),
+                        &snapshot,
+                        &effect_for(char_id, ScriptSkillAction::Cast),
+                        tick,
+                    )
+                    .with_skill_notification(source.current_map_name(), source.current_map_instance(), source.x, source.y, tick, 1, 0);
+                server.add_to_next_tick(GameEvent::CharacterDamage(damage));
+                ground.waves = ground.waves.saturating_add(1);
+                continue;
+            }
+            if hp >= snapshot.max_hp() {
                 continue;
             }
             let amount = Self::target_heal_amount(&snapshot, heal);
@@ -153,8 +173,8 @@ impl ScriptSkillService {
             for mob_id in poisoned {
                 instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id, request: request.clone() });
             }
-            return;
         }
+        let owner = if ground.actor_source.is_none() { state.get_character(ground.source_id) } else { None };
         let poisoned = state
             .characters()
             .values()
@@ -164,6 +184,7 @@ impl ScriptSkillService {
                     && target.current_map_instance() == ground.instance
                     && ground.covers(target.x, target.y)
                     && !target.status.has_status_change(StatusChangeKind::Poison)
+                    && (ground.actor_source.is_some() || owner.is_some_and(|owner| server.player_ground_target_allowed(state, owner, target.char_id, true)))
             })
             .map(|target| target.char_id)
             .collect::<Vec<_>>();
@@ -194,7 +215,12 @@ impl ScriptSkillService {
     }
 
     pub(super) fn body_relocation(&self, server: &Server, state: &ServerState, character: &mut Character, x: u16, y: u16, tick: u128) {
-        self.relocate_skill_actor(server, state, character, x, y, tick);
+        if self.relocate_skill_actor(server, state, character, x, y, tick) {
+            character
+                .script_skill_state
+                .skill_blocked_until
+                .insert(SkillEnum::MoExtremityfist.id(), tick + BODY_RELOCATION_ASURA_BLOCK_MS);
+        }
     }
 
     pub(super) fn tick_spider_web(&self, server: &Server, state: &ServerState, ground: &mut GroundSkill, tick: u128) {
@@ -234,7 +260,7 @@ impl ScriptSkillService {
             ground.expires_at = tick;
             return;
         }
-        let duration = if layers == 1 { base * 2 } else { base };
+        let duration = spider_web_duration(base, layers, instance.state().flags.versus(state.siege_active));
         let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::SpiderWeb, duration, layers + 1);
         request.flags = 0;
         if player {
@@ -246,5 +272,25 @@ impl ScriptSkillService {
         }
         ground.triggered = true;
         ground.expires_at = tick.saturating_add(duration.max(0) as u128);
+    }
+}
+
+/// Duration in PvM is 1st 8s, 2nd 16s, 3rd 8s; versus maps halve the base and grow by layer: 4s, 8s, 12s.
+fn spider_web_duration(base: i32, layers: i32, versus: bool) -> i32 {
+    let base = if versus { base / 2 } else { base };
+    let growing_layers = if versus { 3 } else { 2 };
+    if layers > 0 && layers < growing_layers { base * (layers + 1) } else { base }
+}
+
+#[cfg(test)]
+mod spider_web_tests {
+    use super::spider_web_duration;
+
+    #[test]
+    fn layers_stack_durations_per_map_type() {
+        let monster_map: Vec<i32> = (0..3).map(|layers| spider_web_duration(8000, layers, false)).collect();
+        assert_eq!(monster_map, [8000, 16000, 8000]);
+        let versus_map: Vec<i32> = (0..3).map(|layers| spider_web_duration(8000, layers, true)).collect();
+        assert_eq!(versus_map, [4000, 8000, 12000]);
     }
 }

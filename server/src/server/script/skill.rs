@@ -110,7 +110,7 @@ pub struct ScriptSkillState {
     pub pending_teleport: Option<PendingTeleportMenu>,
     pub pending_warp_portal: Option<PendingWarpPortalMenu>,
     pub ground_skill_text: Vec<u8>,
-    pub guild_skill_blocked_until: std::collections::BTreeMap<u32, u128>,
+    pub skill_blocked_until: std::collections::BTreeMap<u32, u128>,
 }
 
 #[derive(Clone, Debug, PartialEq)]

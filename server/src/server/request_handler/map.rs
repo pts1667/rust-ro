@@ -48,7 +48,16 @@ pub fn handle_map_item_name(server: &Server, context: Request) {
         map_item_name.fill_char_array(name.as_mut());
     }
     packet_zc_ack_reqnameall2.set_name(name);
-    // TODO handle guild name, guild title
+    if let Some((guild_name, castle_name)) =
+        server.guardian_label(server.state(), character.current_map_name(), character.current_map_instance(), gid)
+    {
+        let mut field: [char; 24] = [0 as char; 24];
+        guild_name.fill_char_array(field.as_mut());
+        packet_zc_ack_reqnameall2.set_guild_name(field);
+        let mut field: [char; 24] = [0 as char; 24];
+        castle_name.fill_char_array(field.as_mut());
+        packet_zc_ack_reqnameall2.set_position_name(field);
+    }
     packet_zc_ack_reqnameall2.fill_raw();
     socket_send!(context, packet_zc_ack_reqnameall2);
 }

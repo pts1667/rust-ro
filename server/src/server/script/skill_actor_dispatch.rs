@@ -514,42 +514,14 @@ impl ScriptSkillService {
             return Ok(());
         }
         if let Some(kind) = GroundKind::from_name(&metadata.name) {
-            return if matches!(
-                kind,
-                GroundKind::HeavenDrive
-                    | GroundKind::Thunderstorm
-                    | GroundKind::Pneuma
-                    | GroundKind::SafetyWall
-                    | GroundKind::Sanctuary
-                    | GroundKind::VenomDust
-                    | GroundKind::SpiderWeb
-                    | GroundKind::Quagmire
-                    | GroundKind::Deluge
-                    | GroundKind::LandProtector
-                    | GroundKind::SkidTrap
-                    | GroundKind::AnkleSnare
-                    | GroundKind::LandMine
-                    | GroundKind::BlastMine
-                    | GroundKind::ClaymoreTrap
-                    | GroundKind::Shockwave
-                    | GroundKind::Flasher
-                    | GroundKind::Sandman
-                    | GroundKind::FreezingTrap
-                    | GroundKind::TalkieBox
-                    | GroundKind::Graffiti
-                    | GroundKind::ArrowShower
-                    | GroundKind::Firewall
-                    | GroundKind::Meteor
-                    | GroundKind::StormGust
-                    | GroundKind::Vermilion
-                    | GroundKind::Earthquake
-                    | GroundKind::GrandCross
-                    | GroundKind::GrandDarkness
-            ) {
+            return if kind.actor_placeable() {
                 Ok(())
             } else {
                 Err(format!("{} requires an actor-specific ground lifecycle", metadata.name))
             };
+        }
+        if metadata.target_type.as_deref() == Some("Ground") {
+            return Err(format!("{} requires an actor-specific ground lifecycle", metadata.name));
         }
         if matches!(
             metadata.name.as_str(),
