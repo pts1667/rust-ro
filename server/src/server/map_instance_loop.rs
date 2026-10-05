@@ -43,7 +43,8 @@ impl MapInstanceLoop {
                         && last_mobs_action.elapsed().as_millis()
                             >= (GlobalConfigService::instance().config().game.mob_action_refresh_frequency * 1000.0) as u128
                     {
-                        let map_instance_state = map_instance.state_mut().as_mut();
+                        let mut map_instance_guard = map_instance.state_mut();
+                        let map_instance_state = map_instance_guard.as_mut();
                         map_instance_service_clone.mobs_action(map_instance_state, map_instance.task_queue(), tick);
                         map_instance_service_clone.mobs_skill_ai(map_instance_state, tick);
                         last_mobs_action = now;
