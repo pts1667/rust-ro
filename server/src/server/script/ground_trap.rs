@@ -322,13 +322,14 @@ impl ScriptSkillService {
         }
         if ground.kind == GroundKind::ClaymoreTrap {
             let raw = Self::classic_splash_trap_damage(ground.level, source.status.dex(), source.status.int(), 75);
-            for unit in state.ground_units.values().filter(|unit| {
+            let splashed = state.ground_units().matching(|unit| {
                 unit.map == map
                     && unit.alive(tick)
                     && !unit.used
                     && !ground.cells.iter().any(|cell| cell.id == unit.id)
                     && unit.x.abs_diff(center.0).max(unit.y.abs_diff(center.1)) <= radius
-            }) {
+            });
+            for unit in splashed {
                 let amount = server.battle_service().actor_misc_skill_damage_signed(
                     raw,
                     &source.status,

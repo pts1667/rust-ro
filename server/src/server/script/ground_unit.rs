@@ -113,18 +113,14 @@ impl ScriptSkillService {
                     },
                 }
             });
-        if let Some(unit) = unit {
-            state.ground_units.insert(id, unit);
-        } else {
-            state.ground_units.remove(&id);
-        }
+        state.ground_units().set(unit, id);
     }
 
     pub(crate) fn sync_ground_unit_snapshots(&self, state: &mut ServerState, tick: u128) {
         let Ok(grounds) = self.ground_skills.lock() else {
             return;
         };
-        state.ground_units = grounds
+        let snapshots = grounds
             .iter()
             .filter(|ground| ground.kind.trap() && ground.cast_verified && ground.active_from <= tick && ground.expires_at > tick)
             .flat_map(|ground| {
@@ -150,6 +146,7 @@ impl ScriptSkillService {
             })
             .map(|unit| (unit.id, unit))
             .collect();
+        state.ground_units().replace_all(snapshots);
     }
 
     pub(crate) fn apply_ground_unit_damage(

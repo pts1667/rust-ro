@@ -748,7 +748,7 @@ impl Server {
     }
 
     pub(crate) fn admit_character_damage(&self, state: &mut ServerState, mut damage: Damage, tick: u128) -> Result<(), String> {
-        if let Some(map) = state.ground_units.get(&damage.target_id).map(|unit| unit.map.clone()) {
+        if let Some(map) = state.ground_units().map_of(damage.target_id) {
             if self
                 .script_skill_service()
                 .apply_ground_unit_damage(self, state, &map, damage, tick)

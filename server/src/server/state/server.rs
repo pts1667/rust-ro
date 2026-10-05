@@ -19,7 +19,7 @@ use crate::server::state::character_directory::CharacterDirectory;
 use crate::util::hasher::NoopHasherU32;
 
 pub struct ServerState {
-    pub(crate) ground_units: HashMap<u32, crate::server::model::ground_unit::GroundUnitSnapshot>,
+    ground_units: crate::server::model::ground_unit::GroundUnitSnapshots,
     map_items: MapItems,
     map_instances: HashMap<String, Vec<Arc<MapInstance>>>,
     map_instances_count: AtomicI8,
@@ -118,11 +118,12 @@ unsafe impl Sync for ServerState {}
 unsafe impl Send for ServerState {}
 
 impl ServerState {
-    pub(crate) fn ground_unit(&self, id: u32, map: &str, instance: u8) -> Option<&crate::server::model::ground_unit::GroundUnitSnapshot> {
-        self.ground_units.get(&id).filter(|unit| {
-            unit.map == crate::server::model::map_instance::MapInstanceKey::new(map.into(), instance)
-                && unit.alive(crate::util::tick::get_tick())
-        })
+    pub(crate) fn ground_units(&self) -> &crate::server::model::ground_unit::GroundUnitSnapshots {
+        &self.ground_units
+    }
+
+    pub(crate) fn ground_unit(&self, id: u32, map: &str, instance: u8) -> Option<crate::server::model::ground_unit::GroundUnitSnapshot> {
+        self.ground_units.get(id, map, instance, crate::util::tick::get_tick())
     }
 
     pub fn new(map_items: MapItems) -> Self {
