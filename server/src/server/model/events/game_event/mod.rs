@@ -165,6 +165,7 @@ game_events! {
     CharacterUpdateSpeed(CharacterUpdateSpeed),
     CharacterRestoreAllHpAndSP(CharacterRestoreAllHpAndSP),
     Duel(crate::server::model::duel::DuelCommand),
+    DuelOutcome(crate::server::model::duel::DuelOutcome),
     BattlegroundQueue(crate::server::model::battleground_queue::BattlegroundQueueCommand),
     CharacterRequestCardCompositionList(CharacterRequestCardCompositionList),
     CharacterSlotCard(CharacterSlotCard),

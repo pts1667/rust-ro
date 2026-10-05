@@ -1,15 +1,15 @@
 use packets::packets::{Packet, PacketZcNotifyPlayerchat};
 
 use crate::server::Server;
-use crate::server::model::duel::{DuelAction, DuelCommand};
+use crate::server::model::duel::{DuelAction, DuelCommand, DuelOutcome, DuelRequest};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::server::ServerState;
 
 impl Server {
     pub(crate) fn handle_duel_command(&self, state: &mut ServerState, command: DuelCommand) {
-        let online: Vec<u32> = state.characters().keys().copied().collect();
-        state.duels.prune(|id| online.contains(&id));
+        let actor = self.duel_actor();
+        actor.send(DuelRequest::Prune { online: state.characters().keys().copied().collect() });
         let char_id = command.char_id;
         let Some(name) = state.characters().get(&char_id).map(|character| character.name.clone()) else {
             return;
@@ -17,13 +17,7 @@ impl Server {
         match command.action {
             DuelAction::Create => {
                 let limit = command.argument.parse::<usize>().unwrap_or(0);
-                match state.duels.create(char_id, limit) {
-                    Ok(_) => {
-                        self.duel_message(char_id, "You have created a duel. Use @invite <name> to invite players.");
-                        self.notify_map_property(state, char_id);
-                    }
-                    Err(error) => self.duel_message(char_id, error),
-                }
+                actor.send(DuelRequest::Create { char_id, limit });
             }
             DuelAction::Invite => {
                 let target = state
@@ -34,30 +28,10 @@ impl Server {
                 let Some(target) = target else {
                     return self.duel_message(char_id, "Player not found on this map");
                 };
-                match state.duels.invite(char_id, target) {
-                    Ok(()) => {
-                        self.duel_message(char_id, "Duel invitation sent");
-                        self.duel_message(target, &format!("{name} invites you to a duel. Use @accept or @reject."));
-                    }
-                    Err(error) => self.duel_message(char_id, error),
-                }
+                actor.send(DuelRequest::Invite { inviter: char_id, target });
             }
-            DuelAction::Accept => match state.duels.accept(char_id) {
-                Ok(duel) => {
-                    self.notify_map_property(state, char_id);
-                    for member in state.characters().keys().copied().filter(|id| state.duels.duel_of(*id) == Some(duel)).collect::<Vec<_>>() {
-                        self.duel_message(member, &format!("{name} joined the duel"));
-                    }
-                }
-                Err(error) => self.duel_message(char_id, error),
-            },
-            DuelAction::Reject => {
-                if state.duels.reject(char_id) {
-                    self.duel_message(char_id, "Duel invitation rejected");
-                } else {
-                    self.duel_message(char_id, "You have no pending duel invitation");
-                }
-            }
+            DuelAction::Accept => actor.send(DuelRequest::Accept { char_id }),
+            DuelAction::Reject => actor.send(DuelRequest::Reject { char_id, silent: false }),
             DuelAction::Killer => {
                 let Some(character) = state.characters_mut().get_mut(&char_id) else {
                     return;
@@ -66,24 +40,70 @@ impl Server {
                 let text = if character.killer { "You are now a killer: you can attack any player" } else { "You are no longer a killer" };
                 self.duel_message(char_id, text);
             }
-            DuelAction::Leave => {
-                if state.duels.duel_of(char_id).is_none() {
-                    return self.duel_message(char_id, "You are not in a duel");
+            DuelAction::Leave => actor.send(DuelRequest::Leave { char_id, explicit: true }),
+        }
+    }
+
+    pub(crate) fn apply_duel_outcome(&self, state: &mut ServerState, outcome: DuelOutcome) {
+        match outcome {
+            DuelOutcome::Created { char_id, result } => match result {
+                Ok(_) => {
+                    self.duel_message(char_id, "You have created a duel. Use @invite <name> to invite players.");
+                    self.notify_map_property(state, char_id);
                 }
-                self.duel_message(char_id, "You left the duel");
-                self.leave_duel(state, char_id);
+                Err(error) => self.duel_message(char_id, error),
+            },
+            DuelOutcome::Invited { inviter, target, result } => match result {
+                Ok(()) => {
+                    self.duel_message(inviter, "Duel invitation sent");
+                    let inviter_name = state.characters().get(&inviter).map(|character| character.name.clone());
+                    if let Some(inviter_name) = inviter_name {
+                        self.duel_message(target, &format!("{inviter_name} invites you to a duel. Use @accept or @reject."));
+                    }
+                }
+                Err(error) => self.duel_message(inviter, error),
+            },
+            DuelOutcome::Accepted { char_id, result } => match result {
+                Ok(members) => {
+                    self.notify_map_property(state, char_id);
+                    let name = state.characters().get(&char_id).map(|character| character.name.clone()).unwrap_or_default();
+                    for member in members {
+                        self.duel_message(member, &format!("{name} joined the duel"));
+                    }
+                }
+                Err(error) => self.duel_message(char_id, error),
+            },
+            DuelOutcome::Rejected { char_id, had_invitation, silent } => {
+                if silent {
+                    return;
+                }
+                let text = if had_invitation { "Duel invitation rejected" } else { "You have no pending duel invitation" };
+                self.duel_message(char_id, text);
+            }
+            DuelOutcome::Left { char_id, explicit, was_member, remaining } => {
+                if !was_member {
+                    if explicit {
+                        self.duel_message(char_id, "You are not in a duel");
+                    }
+                    return;
+                }
+                if explicit {
+                    self.duel_message(char_id, "You left the duel");
+                }
+                self.notify_map_property(state, char_id);
+                for member in remaining {
+                    self.duel_message(member, "The duel has ended");
+                    self.notify_map_property(state, member);
+                }
             }
         }
     }
 
-    /// Removes a character from its duel, refreshing the client cursor for everyone whose duel ended.
-    pub(crate) fn leave_duel(&self, state: &mut ServerState, char_id: u32) {
-        let remaining = state.duels.leave(char_id);
-        self.notify_map_property(state, char_id);
-        for member in remaining.unwrap_or_default() {
-            self.duel_message(member, "The duel has ended");
-            self.notify_map_property(state, member);
-        }
+    /// Removes a character from its duel and discards any pending invitation, as for a death.
+    pub(crate) fn leave_duel(&self, char_id: u32) {
+        let actor = self.duel_actor();
+        actor.send(DuelRequest::Leave { char_id, explicit: false });
+        actor.send(DuelRequest::Reject { char_id, silent: true });
     }
 
     fn duel_message(&self, char_id: u32, text: &str) {

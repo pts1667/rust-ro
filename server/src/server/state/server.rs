@@ -30,7 +30,7 @@ pub struct ServerState {
     pub runtime_map_flags: HashMap<(String, u8), crate::server::model::map_flags::MapFlags>,
     pub siege_active: bool,
     pub guild_alliance_requests: HashMap<u32, (u32, u32)>,
-    pub duels: crate::server::model::duel::Duels,
+    pub duels: crate::server::model::duel::DuelDirectory,
     pub battlegrounds: crate::server::model::battleground::Battlegrounds,
     pub cell_basilica: std::collections::HashSet<u32>,
     pub party_bookings: crate::server::model::party_booking::PartyBookings,

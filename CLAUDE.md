@@ -87,6 +87,10 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/mod.rs` contains implementation of `client_notification_thread` which route and send packet to the right socket(s) 
 
 ### Server state
+- `ServerState` (characters and the data handlers touch) is owned by the game loop; the movement loop shares it through `Server::lock_state_loops()`. Other threads must not call `server.state()`/`state_mut()`.
+- Request-handler and notification threads read `Server::sessions()` (`SessionRegistry`, a DashMap) and `Server::directory()` (`CharacterDirectory`, positions published at the end of each loop iteration, up to one tick stale). For anything else, enqueue a `GameEvent`.
+- `MapInstanceState` is behind a `parking_lot::RwLock` (`state()`/`state_mut()` panic after a 10s timeout instead of hanging).
+- Duels are an actor (`model/duel.rs`): `DuelActor` owns `Duels` on its own thread, `ServerState.duels` is a `DuelDirectory` read replica, and results come back to the game loop as `GameEvent::DuelOutcome`. Reads are one actor message late; mutations must go through `Server::duel_actor()`.
 
 
 ## Files to read or to avoid

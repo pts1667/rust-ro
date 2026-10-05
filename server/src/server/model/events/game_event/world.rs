@@ -123,6 +123,13 @@ impl GameEventHandler for crate::server::model::duel::DuelCommand {
     }
 }
 
+impl GameEventHandler for crate::server::model::duel::DuelOutcome {
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.apply_duel_outcome(state, self);
+        Ok(())
+    }
+}
+
 impl GameEventHandler for crate::server::model::battleground_queue::BattlegroundQueueCommand {
     fn required_character(&self) -> Option<u32> {
         Some(self.char_id)
