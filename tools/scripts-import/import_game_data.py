@@ -13,10 +13,39 @@ LEGACY_GROUPS = [
 ]
 SUMMON_GROUPS = ["BRANCH_OF_DEAD_TREE", "PORING_BOX", "BLOODY_DEAD_BRANCH", "RED_POUCH_OF_SURPRISE", "CLASSCHANGE", "TAEKWON_MISSION"]
 ITEM_USE_GROUPS = {"MF_NOTELEPORT", "MF_NORETURN", "GIANT_FLY_WING"}
+MOB_CAPABILITIES = {
+    "Detector": "Detector", "StatusImmune": "StatusImmune", "SkillImmune": "SkillImmune",
+    "KnockbackImmune": "KnockbackImmune", "KnockBackImmune": "KnockbackImmune",
+    "NoCast": "NoCast", "NoRandomWalk": "NoRandomWalk", "TeleportBlock": "TeleportBlocked",
+    "FixedItemDrop": "FixedItemDrop", "Mvp": "Mvp",
+}
 
 
 def load(path):
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def annotate_mobs(reference):
+    path = ROOT / "config/mobs.json"
+    catalog = json.loads(path.read_text(encoding="utf-8"))
+    mobs = {mob["id"]: mob for mob in catalog["mobs"]}
+    aliases = {mob["name"]: mob["id"] for mob in mobs.values()}
+    matched = 0
+    for source in load(reference / "mob_db.yml").get("Body", []):
+        aliases[source["AegisName"]] = source["Id"]
+        if source["Id"] not in mobs:
+            continue
+        target = mobs[source["Id"]]
+        target["monster_class"] = source.get("Class", "Normal")
+        modes = source.get("Modes", {})
+        target["capabilities"] = sorted({capability for name, capability in MOB_CAPABILITIES.items() if modes.get(name)})
+        target["damage_modes"] = [name for name in ("IgnoreMelee", "IgnoreRanged", "IgnoreMagic", "IgnoreMisc") if modes.get(name)]
+        groups = [name for name, enabled in source.get("RaceGroups", {}).items() if enabled]
+        if groups:
+            target["race_groups"] = groups
+        matched += 1
+    path.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return mobs, aliases, matched
 
 
 def item_use_groups(groups, aliases):
@@ -62,8 +91,13 @@ def missing_item(source):
 def main():
     parser = argparse.ArgumentParser(description="Import pre-renewal script reward, summon and crafting data.")
     parser.add_argument("--rathena", type=pathlib.Path, default=ROOT.parent / "rathena")
+    parser.add_argument("--mobs-only", action="store_true", help="Refresh only pre-renewal monster class, capability and damage-mode metadata.")
     args = parser.parse_args()
     reference = args.rathena / "db/pre-re"
+    if args.mobs_only:
+        _, _, matched = annotate_mobs(reference)
+        print(f"Annotated {matched} pre-renewal monsters; unmatched legacy rows retain their fallback metadata")
+        return
     catalog_path = ROOT / "config/items.json"
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     items = {item["id"]: item for item in catalog["items"]}
@@ -118,18 +152,7 @@ def main():
                        for entry in subgroup.get("List", [])]
             subgroups.append({"id": subgroup["SubGroup"], "algorithm": subgroup.get("Algorithm", "SharedPool"), "entries": entries})
         groups.append({"id": group_id, "name": name, "subgroups": subgroups})
-    mob_catalog_path = ROOT / "config/mobs.json"
-    mob_catalog = json.loads(mob_catalog_path.read_text(encoding="utf-8"))
-    mobs = {mob["id"]: mob for mob in mob_catalog["mobs"]}
-    mob_aliases = {mob["name"]: mob["id"] for mob in mobs.values()}
-    for mob in load(reference / "mob_db.yml").get("Body", []):
-        mob_aliases[mob["AegisName"]] = mob["Id"]
-        if mob["Id"] in mobs:
-            mobs[mob["Id"]]["monster_class"] = mob.get("Class", "Normal")
-            groups_for_mob = [name for name, enabled in mob.get("RaceGroups", {}).items() if enabled]
-            if groups_for_mob:
-                mobs[mob["Id"]]["race_groups"] = groups_for_mob
-    mob_catalog_path.write_text(json.dumps(mob_catalog, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    mobs, mob_aliases, _ = annotate_mobs(reference)
     summons = []
     for group in load(reference / "mob_summon.yml").get("Body", []):
         name = group["Group"].upper()

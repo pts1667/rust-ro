@@ -24,11 +24,12 @@ use crate::tests::common;
 const NPC_ID: u32 = 80_001;
 const MOB_ID: u32 = 80_002;
 
-fn fixture() -> (ServerServiceTestContext, Arc<MapInstance>, MapInstanceService, u32) {
+pub(super) fn fixture() -> (ServerServiceTestContext, Arc<MapInstance>, MapInstanceService, u32) {
     let (context, _, owner) = super::native_payment_tests::fixture(false, true);
     let target_id = owner.char_id + 1;
     let script = Script {
         id: NPC_ID,
+        scope_instance: 0,
         map_name: "empty".into(),
         name: "Caster".into(),
         sprite: 46,
@@ -119,7 +120,7 @@ fn request(source_id: u32, target_id: u32, skill: SkillEnum) -> ScriptSkillCast 
     }
 }
 
-fn start(
+pub(super) fn start(
     context: &ServerServiceTestContext,
     instance: &MapInstance,
     service: &MapInstanceService,
@@ -139,7 +140,7 @@ fn start(
     Err("No actor cast was queued".into())
 }
 
-fn complete(context: &ServerServiceTestContext, instance: &MapInstance, service: &MapInstanceService, tick: u128) -> Result<usize, String> {
+pub(super) fn complete(context: &ServerServiceTestContext, instance: &MapInstance, service: &MapInstanceService, tick: u128) -> Result<usize, String> {
     service.tick_actor_skills(&mut instance.state_mut(), tick);
     let mut count = 0;
     let mut retained = vec![];
@@ -169,13 +170,18 @@ fn damage_event(context: &ServerServiceTestContext) -> Damage {
             if let GameEvent::CharacterDamage(damage) = event {
                 return damage;
             }
+            if let GameEvent::ScriptMapDamage(request) = event {
+                return request.damage;
+            }
         }
     }
     panic!("Actor did not queue damage");
 }
 
 fn incoming_damage(target_id: u32, attacker_id: u32, tick: u128) -> Damage {
-    Damage {
+    Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id,
         attacker_id,
         damage: 1,

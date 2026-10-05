@@ -23,6 +23,7 @@ pub enum MapItemType {
     Pet,
     Homunculus,
     Mercenary,
+    SkillUnit,
 }
 
 impl Display for MapItemType {
@@ -43,6 +44,7 @@ impl MapItemType {
             MapItemType::Pet => 7,
             MapItemType::Homunculus => 8,
             MapItemType::Mercenary => 9,
+            MapItemType::SkillUnit => 0,
         }
     }
 }
@@ -167,7 +169,7 @@ impl MapItems {
     }
 
     pub fn insert(&mut self, id: u32, map_item: MapItem) {
-        self.items.insert_unique_unchecked(id, map_item);
+        self.items.insert(id, map_item);
     }
 
     pub fn remove(&mut self, id: u32) {

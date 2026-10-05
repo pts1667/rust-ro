@@ -4,7 +4,7 @@ use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
-use packets::packets::{Packet, PacketZcNotifySkill2, PacketZcUseSkill};
+use packets::packets::{Packet, PacketZcUseSkill};
 use script_sdk::Value;
 
 use super::ScriptSkillService;
@@ -22,6 +22,8 @@ use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 
+const PALM_STRIKE_DELAY: u128 = 1000;
+
 impl ScriptSkillService {
     pub(super) fn after_actor_skill_damage(
         &self,
@@ -30,7 +32,7 @@ impl ScriptSkillService {
         hit: super::ScriptSkillHit,
         tick: u128,
     ) -> Result<(), String> {
-        let Some(source) = self.find_script_skill_actor(state, hit.source_id) else {
+        let Some(source) = self.find_script_skill_actor_in(state, hit.source_id, hit.source_map.as_deref(), hit.source_instance)? else {
             return Ok(());
         };
         if !matches!(source.object_type, MapItemType::Mob | MapItemType::Npc) {
@@ -108,6 +110,18 @@ impl ScriptSkillService {
             if metadata.name == "BS_HAMMERFALL" {
                 return self.cast_actor_area_status(server, state, source, metadata, level, x, y, tick);
             }
+            if metadata.name == "RG_CLEANER" {
+                self.erase_graffiti(
+                    &source.map,
+                    source.instance,
+                    x,
+                    y,
+                    metadata.splash(level).unwrap_or(5).max(0) as u16,
+                    tick,
+                )?;
+                self.notify_actor_support(source, request, true);
+                return Ok(());
+            }
             self.place_script_actor_ground(server, state, source, request, x, y, tick)?;
             self.notify_actor_support(source, request, true);
             return Ok(());
@@ -120,11 +134,18 @@ impl ScriptSkillService {
                 | "NPC_WIDECONFUSE"
                 | "NPC_WIDECURSE"
                 | "NPC_WIDESILENCE"
+                | "NPC_WIDESLEEP"
+                | "NPC_WIDESTONE"
+                | "NPC_WIDEFREEZE"
+                | "NPC_WIDESTUN"
                 | "NPC_DRAGONFEAR"
                 | "AL_CRUCIS"
                 | "NPC_WIDESOULDRAIN"
         ) {
             return self.cast_actor_area_status(server, state, source, metadata, level, source.x, source.y, tick);
+        }
+        if metadata.name == "NPC_SELFDESTRUCTION" {
+            return self.execute_actor_self_destruct(server, state, source, request, metadata, tick);
         }
         let (target, status) = self.actor_target_status(state, source, request.target_id)?;
         if status.hp() == 0 && metadata.name != "ALL_RESURRECTION" {
@@ -287,7 +308,10 @@ impl ScriptSkillService {
                 if source.object_type == MapItemType::Mob {
                     instance.add_to_next_tick(MapEvent::MobRandomWarp { mob_id: source.id });
                 } else {
-                    return Err("NPC teleport movement has no configured save point".into());
+                    instance.add_to_next_tick(MapEvent::NpcEffect(crate::server::service::map_npc_effect::MapNpcEffect {
+                        actor_id: source.id,
+                        effect: crate::server::service::map_npc_effect::NpcEffect::RandomWarp,
+                    }));
                 }
             }
             name if Self::status_for_skill(name).is_some()
@@ -443,6 +467,9 @@ impl ScriptSkillService {
 
     fn actor_damage(source: &ScriptSkillActor, request: &ScriptSkillCast, target_id: u32, tick: u128, flags: u32, landed: bool) -> Damage {
         Damage {
+            notification: None,
+            source_kind: *source.status.combat_actor_kind(),
+            skill_damage_adjusted: false,
             target_id,
             attacker_id: source.id,
             credit_id: source.credit_id,
@@ -464,13 +491,222 @@ impl ScriptSkillService {
     fn execute_actor_damage(
         &self,
         server: &Server,
-        state: &ServerState,
+        state: &mut ServerState,
         source: &ScriptSkillActor,
         request: &ScriptSkillCast,
         target: &StatusSnapshot,
         player: bool,
         tick: u128,
     ) -> Result<(), String> {
+        let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill metadata is unavailable")?;
+        if Self::uses_metadata_magic(&metadata.name) || Self::actor_npc_magic(metadata) {
+            let level = request.level as u8;
+            if metadata.name == "SL_SMA" {
+                self.end_actor_target_status(server, state, source, source.id, StatusChangeKind::Sma);
+            }
+            let (amount, context) = server
+                .battle_service()
+                .metadata_magic_damage(&source.status, target, metadata, level)?;
+            let mut damage = Self::actor_damage(source, request, request.target_id, tick, metadata.battle_flags(true), true);
+            damage.magic_context = Some(context);
+            damage.set_signed_damage(amount);
+            self.queue_actor_damage(server, state, source, damage)?;
+            if metadata.name == "NPC_MAGICALATTACK" {
+                self.start_actor_target_status(
+                    server,
+                    state,
+                    source,
+                    source.id,
+                    StatusChangeRequest::guaranteed(
+                        StatusChangeKind::MagicalAttack,
+                        metadata.duration(level, false).unwrap_or(0),
+                        i32::from(level),
+                    ),
+                    0,
+                    tick,
+                )?;
+            } else if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN")
+                && level >= 7
+                && !source
+                    .status
+                    .status_change(StatusChangeKind::Sma)
+                    .is_some_and(|ready| !ready.expired(tick))
+            {
+                let duration = SkillMetadata::find(SkillEnum::SlSma.id())
+                    .and_then(|metadata| metadata.duration(level, false))
+                    .unwrap_or(3000);
+                self.start_actor_target_status(
+                    server,
+                    state,
+                    source,
+                    source.id,
+                    StatusChangeRequest::guaranteed(StatusChangeKind::Sma, duration, i32::from(level)),
+                    0,
+                    tick,
+                )?;
+            }
+            return Ok(());
+        }
+        if let Some(radius) = Self::actor_splash_radius(metadata, request.level as u8) {
+            return self.execute_actor_splash(server, state, source, request, metadata, radius, tick);
+        }
+        let mut damage = self.build_actor_offensive_damage(server, source, request, request.target_id, target, player, tick, None)?;
+        if request.skill_id == SkillEnum::ChPalmstrike.id() {
+            damage.attacked_at += PALM_STRIKE_DELAY;
+            return self.queue_actor_damage_after(server, state, source, damage, PALM_STRIKE_DELAY);
+        }
+        self.queue_actor_damage(server, state, source, damage)
+    }
+
+    pub(super) fn actor_npc_weapon(metadata: &SkillMetadata) -> bool {
+        metadata.name.starts_with("NPC_")
+            && metadata.damage_type.as_deref() == Some("Weapon")
+            && matches!(metadata.target_type.as_deref(), Some("Attack" | "Self"))
+            && metadata.name != "NPC_VAMPIRE_GIFT"
+    }
+
+    fn execute_actor_self_destruct(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        metadata: &SkillMetadata,
+        tick: u128,
+    ) -> Result<(), String> {
+        let radius = metadata.splash(request.level as u8).unwrap_or(5).clamp(0, i32::from(u16::MAX)) as u16;
+        let hp = source.status.hp().min(i32::MAX as u32) as i32;
+        let flags = BattleFlag::Misc.as_flag() | BattleFlag::Short.as_flag() | BattleFlag::Skill.as_flag();
+        for (id, status, _) in self.actor_area_targets(server, state, source, request.skill_id, source.x, source.y, radius) {
+            let mut damage = Self::actor_damage(source, request, id, tick, flags, true);
+            damage.set_signed_damage((hp as f32 * BattleService::element_modifier(&Element::Fire, &status)).floor() as i32);
+            self.queue_actor_damage(server, state, source, damage)?;
+        }
+        let mut suicide = Self::actor_damage(source, request, source.id, tick, flags, true);
+        suicide.set_signed_damage(hp);
+        self.queue_actor_damage(server, state, source, suicide)
+    }
+
+    pub(super) fn actor_metadata_status(metadata: &SkillMetadata) -> bool {
+        metadata.damage_flags.get("NoDamage").copied().unwrap_or(false)
+            && metadata.name.starts_with("NPC_")
+            && !metadata.name.starts_with("NPC_WIDE")
+            && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_some()
+    }
+
+    pub(super) fn actor_npc_magic(metadata: &SkillMetadata) -> bool {
+        metadata.name.starts_with("NPC_")
+            && metadata.damage_type.as_deref() == Some("Magic")
+            && metadata.target_type.as_deref() == Some("Attack")
+            && !matches!(metadata.name.as_str(), "NPC_DARKBREATH" | "NPC_GRANDDARKNESS" | "NPC_EARTHQUAKE")
+    }
+
+    fn actor_splash_radius(metadata: &SkillMetadata, level: u8) -> Option<u16> {
+        if !matches!(metadata.name.as_str(), "MG_FIREBALL" | "WZ_FROSTNOVA" | "SM_MAGNUM") && !Self::actor_npc_weapon(metadata) {
+            return None;
+        }
+        metadata
+            .splash(level)
+            .filter(|radius| *radius > 0)
+            .map(|radius| radius.min(i32::from(u16::MAX)) as u16)
+    }
+
+    fn execute_actor_splash(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        metadata: &SkillMetadata,
+        radius: u16,
+        tick: u128,
+    ) -> Result<(), String> {
+        let self_centered = metadata.target_type.as_deref() == Some("Self");
+        let (x, y) = if self_centered {
+            (source.x, source.y)
+        } else {
+            let (target, _) = self.actor_target_status(state, source, request.target_id)?;
+            (target.x(), target.y())
+        };
+        let level = request.level as u8;
+        if metadata.name == "SM_MAGNUM" {
+            self.start_actor_target_status(
+                server,
+                state,
+                source,
+                source.id,
+                StatusChangeRequest::guaranteed(
+                    StatusChangeKind::WeaponAttackElement,
+                    metadata.duration(level, true).unwrap_or(10000),
+                    Element::Fire.value() as i32,
+                ),
+                0,
+                tick,
+            )?;
+        }
+        let mut recipients = self.actor_area_targets(server, state, source, request.skill_id, x, y, radius);
+        if !self_centered && !recipients.iter().any(|(id, ..)| *id == request.target_id) {
+            let (_, status) = self.actor_target_status(state, source, request.target_id)?;
+            let player = state.characters().contains_key(&request.target_id);
+            recipients.push((request.target_id, status, player));
+        }
+        for (id, status, player) in recipients {
+            let position = state.characters().get(&id).map(|character| (character.x, character.y)).or_else(|| {
+                state
+                    .get_map_instance(&source.map, source.instance)?
+                    .state()
+                    .get_mob(id)
+                    .map(|mob| (mob.x, mob.y))
+            });
+            let distance = position.map_or(0, |(tx, ty)| tx.abs_diff(x).max(ty.abs_diff(y)));
+            let damage = self.build_actor_offensive_damage(server, source, request, id, &status, player, tick, Some(distance))?;
+            let landed = damage.landed;
+            self.queue_actor_damage(server, state, source, damage)?;
+            if metadata.name == "SM_MAGNUM" && landed {
+                self.knock_back_actor_target(server, state, source, id, player, 2);
+            }
+        }
+        self.notify_actor_support(source, request, true);
+        Ok(())
+    }
+
+    fn knock_back_actor_target(&self, server: &Server, state: &ServerState, source: &ScriptSkillActor, target_id: u32, player: bool, cells: u16) {
+        if !player {
+            if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
+                instance.add_to_next_tick(MapEvent::MobKnockback {
+                    mob_id: target_id,
+                    source_x: source.x,
+                    source_y: source.y,
+                    cells,
+                });
+            }
+            return;
+        }
+        server.add_to_next_tick(GameEvent::GroundTrapEffect(super::trap::GroundTrapEffect {
+            map: crate::server::model::map_instance::MapInstanceKey::new(source.map.clone(), source.instance),
+            target_id,
+            kind: super::trap::GroundTrapEffectKind::Knockback {
+                source_x: source.x,
+                source_y: source.y,
+                cells,
+            },
+        }));
+    }
+
+    fn build_actor_offensive_damage(
+        &self,
+        server: &Server,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        target_id: u32,
+        target: &StatusSnapshot,
+        player: bool,
+        tick: u128,
+        distance: Option<u16>,
+    ) -> Result<Damage, String> {
+        if let Some(metadata) = SkillMetadata::find(request.skill_id).filter(|metadata| Self::actor_npc_weapon(metadata)) {
+            return Ok(self.build_actor_npc_weapon_damage(server, source, request, metadata, target_id, target, player, tick));
+        }
         let skill_enum = SkillEnum::try_from_value(request.skill_id).map_err(|_| "Unknown classic offensive skill")?;
         let object = skills::skill_enums::to_object(skill_enum, request.level as u8)
             .ok_or("Unit skill has no executable offensive implementation")?;
@@ -499,10 +735,11 @@ impl ScriptSkillService {
             .as_flag()
             | BattleFlag::Skill.as_flag();
         let landed = !weapon
+            || request.skill_id == SkillEnum::ChPalmstrike.id()
             || server
                 .battle_service()
                 .skill_hits(&source.status, target, request.skill_id, request.level as u8);
-        let mut damage = Self::actor_damage(source, request, request.target_id, tick, flags, landed);
+        let mut damage = Self::actor_damage(source, request, target_id, tick, flags, landed);
         let amount = if !landed {
             0
         } else if request.skill_id == SkillEnum::TfThrowstone.id() {
@@ -511,14 +748,23 @@ impl ScriptSkillService {
                 .actor_misc_skill_damage(30, &source.status, target, &Element::Neutral, flags, request.skill_id)
                 .min(i32::MAX as u32) as i32
         } else if weapon {
+            let magnum = request.skill_id == SkillEnum::SmMagnum.id();
+            let ratio = match (magnum, distance) {
+                (true, Some(distance)) => 1.0 + f32::from(request.level) * if distance <= 1 { 0.2 } else { 0.1 },
+                _ => offensive.dmg_atk().unwrap_or(1.0),
+            };
             server.battle_service().actor_physical_skill_damage_signed(
                 source.raw_attack,
                 &source.status,
                 target,
                 player,
-                offensive.dmg_atk().unwrap_or(1.0),
-                offensive.hit_count() as i16,
-                &server.battle_service().attack_element(&source.status, Some(offensive)),
+                ratio,
+                if magnum { 1 } else { offensive.hit_count() as i16 },
+                &if magnum {
+                    Element::Fire
+                } else {
+                    server.battle_service().attack_element(&source.status, Some(offensive))
+                },
                 flags,
                 request.skill_id,
             )
@@ -527,38 +773,103 @@ impl ScriptSkillService {
                 .battle_service()
                 .calculate_damage_with_context(&source.status, target, Some(offensive));
             damage.magic_context = context;
-            amount
+            match damage.magic_context {
+                Some(mut context) if request.skill_id == SkillEnum::MgFireball.id() && distance == Some(2) => {
+                    context.modifier *= 0.75;
+                    damage.magic_context = Some(context);
+                    server.battle_service().magic_damage_from_context(&source.status, target, context)
+                }
+                _ => amount,
+            }
         };
         damage.set_signed_damage(amount);
-        self.queue_actor_damage(server, state, source, damage)
+        Ok(damage)
+    }
+
+    fn build_actor_npc_weapon_damage(
+        &self,
+        server: &Server,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        metadata: &SkillMetadata,
+        target_id: u32,
+        target: &StatusSnapshot,
+        player: bool,
+        tick: u128,
+    ) -> Damage {
+        let level = request.level as u8;
+        let long_range = metadata.range(level).is_some_and(|range| range > 3);
+        let flags = BattleFlag::Weapon.as_flag()
+            | (if long_range { BattleFlag::Long } else { BattleFlag::Short }).as_flag()
+            | BattleFlag::Skill.as_flag();
+        let landed = metadata.name == "NPC_CRITICALSLASH"
+            || server.battle_service().skill_hits(&source.status, target, request.skill_id, level);
+        let mut damage = Self::actor_damage(source, request, target_id, tick, flags, landed);
+        let hits = metadata
+            .hit_count
+            .as_ref()
+            .and_then(|count| count.value(level, "Count"))
+            .unwrap_or(1)
+            .unsigned_abs()
+            .clamp(1, i16::MAX as u32) as i16;
+        let element = metadata.element(level).and_then(|name| <Element as models::enums::EnumWithStringValue>::try_from_string(name).ok());
+        let amount = if landed {
+            server.battle_service().actor_physical_skill_damage_signed(
+                source.raw_attack,
+                &source.status,
+                target,
+                player,
+                1.0,
+                hits,
+                &server.battle_service().metadata_weapon_element(&source.status, element, request.skill_id),
+                flags,
+                request.skill_id,
+            )
+        } else {
+            0
+        };
+        damage.set_signed_damage(amount);
+        damage
     }
 
     fn queue_actor_damage(&self, server: &Server, state: &ServerState, source: &ScriptSkillActor, damage: Damage) -> Result<(), String> {
-        let mut packet = PacketZcNotifySkill2::new(self.configuration.packetver());
-        packet.set_aid(source.id);
-        packet.set_target_id(damage.target_id);
-        packet.set_skid(damage.skill_id as u16);
-        packet.set_level(i16::from(damage.skill_level));
-        packet.set_damage(if damage.healing > 0 {
-            -(damage.healing.min(i32::MAX as u32) as i32)
-        } else {
-            damage.damage.min(i32::MAX as u32) as i32
-        });
-        packet.set_count(
-            SkillMetadata::find(damage.skill_id)
-                .and_then(|metadata| metadata.hit_count.as_ref()?.value(damage.skill_level, "Count"))
-                .unwrap_or(1)
-                .unsigned_abs()
-                .clamp(1, i16::MAX as u32) as i16,
+        self.queue_actor_damage_after(server, state, source, damage, 0)
+    }
+
+    fn queue_actor_damage_after(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        source: &ScriptSkillActor,
+        damage: Damage,
+        extra_delay: u128,
+    ) -> Result<(), String> {
+        let count = SkillMetadata::find(damage.skill_id)
+            .and_then(|metadata| metadata.hit_count.as_ref()?.value(damage.skill_level, "Count"))
+            .unwrap_or(1)
+            .unsigned_abs()
+            .clamp(1, i16::MAX as u32) as i16;
+        let damage = damage.with_skill_notification(
+            &source.map,
+            source.instance,
+            source.x,
+            source.y,
+            damage.attacked_at,
+            count,
+            source.attack_motion,
         );
-        packet.set_action(6);
-        packet.fill_raw();
-        actor::notify_actor(&self.client_notification_sender, source, packet.raw);
-        let delay = u128::from(source.attack_motion);
+        let delay = u128::from(source.attack_motion) + extra_delay;
         if state.get_character(damage.target_id).is_some()
+            || state.ground_unit(damage.target_id, &source.map, source.instance).is_some()
             || state.companion_owner(damage.target_id, &source.map, source.instance).is_some()
         {
-            server.add_to_delayed_tick(GameEvent::CharacterDamage(damage), delay);
+            server.add_to_delayed_tick(
+                GameEvent::ScriptMapDamage(crate::server::model::events::game_event::ScriptMapDamage {
+                    map: crate::server::model::map_instance::MapInstanceKey::new(source.map.clone(), source.instance),
+                    damage,
+                }),
+                delay,
+            );
         } else {
             state
                 .get_map_instance(&source.map, source.instance)

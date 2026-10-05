@@ -229,7 +229,7 @@ impl Database {
                         let mut records = inventory.items.clone();
                         let mut identities = HashSet::new();
                         for item in &mut records {
-                            if item.item_id <= 0 || item.amount <= 0 || !identities.insert((item.item_id, item.unique_id)) {
+                            if item.item_id <= 0 || item.amount <= 0 || (item.unique_id != 0 && !identities.insert(item.unique_id)) {
                                 return abort("Invalid or duplicate seed inventory item");
                             }
                             if item.id == 0 {

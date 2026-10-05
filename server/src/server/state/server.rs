@@ -17,6 +17,7 @@ use crate::server::state::character::Character;
 use crate::util::hasher::NoopHasherU32;
 
 pub struct ServerState {
+    pub(crate) ground_units: HashMap<u32, crate::server::model::ground_unit::GroundUnitSnapshot>,
     map_items: MapItems,
     map_instances: HashMap<String, Vec<Arc<MapInstance>>>,
     map_instances_count: AtomicI8,
@@ -26,7 +27,13 @@ pub struct ServerState {
                                                    * meanwhile. */
     pub runtime_map_flags: HashMap<(String, u8), crate::server::model::map_flags::MapFlags>,
     pub siege_active: bool,
+    pub guild_alliance_requests: HashMap<u32, (u32, u32)>,
+    pub duels: crate::server::model::duel::Duels,
     pub pending_map_notifications: std::collections::VecDeque<crate::server::model::events::client_notification::Notification>,
+    pub(crate) script_timers: crate::server::model::script_timer::ScriptTimers,
+    pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
+    pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
+    pub(crate) character_selection_waiters: Vec<crate::server::model::character_lifecycle::CharacterSelectionGate>,
 }
 
 #[cfg(test)]
@@ -111,8 +118,16 @@ unsafe impl Sync for ServerState {}
 unsafe impl Send for ServerState {}
 
 impl ServerState {
+    pub(crate) fn ground_unit(&self, id: u32, map: &str, instance: u8) -> Option<&crate::server::model::ground_unit::GroundUnitSnapshot> {
+        self.ground_units.get(&id).filter(|unit| {
+            unit.map == crate::server::model::map_instance::MapInstanceKey::new(map.into(), instance)
+                && unit.alive(crate::util::tick::get_tick())
+        })
+    }
+
     pub fn new(map_items: MapItems) -> Self {
         Self {
+            ground_units: Default::default(),
             map_items,
             map_instances: Default::default(),
             map_instances_count: Default::default(),
@@ -121,7 +136,13 @@ impl ServerState {
             locked_map_item: Default::default(),
             runtime_map_flags: Default::default(),
             siege_active: false,
+            guild_alliance_requests: Default::default(),
+            duels: Default::default(),
             pending_map_notifications: Default::default(),
+            script_timers: Default::default(),
+            character_logins: Default::default(),
+            pending_character_logouts: Default::default(),
+            character_selection_waiters: Default::default(),
         }
     }
 
@@ -161,8 +182,15 @@ impl ServerState {
     }
 
     pub fn insert_character(&mut self, character: Character) {
-        self.map_items.insert(character.char_id, character.to_map_item());
+        if !self.pending_character_logouts.contains_key(&character.char_id) {
+            self.map_items.insert(character.char_id, character.to_map_item());
+        }
         self.characters.insert(character.char_id, character);
+    }
+
+    pub(crate) fn retire_character_items(&mut self, char_id: u32, account_id: u32) {
+        self.map_items.remove(char_id);
+        self.map_items.remove(account_id);
     }
 
     pub fn get_map_socket_for_char_id(&self, char_id: u32) -> Option<Arc<RwLock<TcpStream>>> {
@@ -258,6 +286,9 @@ impl ServerState {
     #[inline]
     pub fn map_item_x_y(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<Position> {
         match map_item.object_type() {
+            MapItemType::SkillUnit => self
+                .ground_unit(map_item.id(), map_name, map_instance_id)
+                .map(|unit| unit.snapshot().position()),
             MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary => self
                 .companion_snapshot(map_item.id(), map_name, map_instance_id)
                 .map(|snapshot| snapshot.position()),
@@ -299,6 +330,13 @@ impl ServerState {
             MapItemType::Unknown => None,
             MapItemType::Npc => {
                 if let Some(map_instance) = self.get_map_instance(map_name, map_instance_id) {
+                    if let Some(npc) = map_instance.state().script_skill_state.npcs.get(&map_item.id()) {
+                        return Some(Position {
+                            x: npc.x,
+                            y: npc.y,
+                            dir: npc.dir,
+                        });
+                    }
                     if let Some(script) = map_instance.get_script(map_item.id()) {
                         return Some(Position {
                             x: script.x(),
@@ -327,6 +365,9 @@ impl ServerState {
     #[inline]
     pub fn map_item_name(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<String> {
         match map_item.object_type() {
+            MapItemType::SkillUnit => self.ground_unit(map_item.id(), map_name, map_instance_id).and_then(|unit| {
+                crate::server::script::skill::metadata::SkillMetadata::find(unit.skill_id).map(|metadata| metadata.name.clone())
+            }),
             MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary => self
                 .companion_owner(map_item.id(), map_name, map_instance_id)
                 .and_then(|owner| companion_name(owner, map_item.id())),
@@ -375,6 +416,9 @@ impl ServerState {
 
     #[inline]
     pub fn map_item(&self, map_item_id: u32, map_name: &String, map_instance_id: u8) -> Option<MapItem> {
+        if let Some(unit) = self.ground_unit(map_item_id, map_name, map_instance_id) {
+            return Some(unit.map_item());
+        }
         let characters = self.characters();
         if let Some(character) = characters.get(&map_item_id) {
             return Some(character.to_map_item());
@@ -419,15 +463,23 @@ impl ServerState {
 
     pub fn map_item_mob_status(&self, map_item: &MapItem, map_name: &String, map_instance_id: u8) -> Option<StatusSnapshot> {
         match map_item.object_type() {
+            MapItemType::SkillUnit => self.ground_unit(map_item.id(), map_name, map_instance_id).map(|unit| unit.status()),
             MapItemType::Homunculus | MapItemType::Mercenary => self
                 .companion_owner(map_item.id(), map_name, map_instance_id)
                 .and_then(|owner| companion_status_snapshot(owner, map_item.id())),
             MapItemType::Npc => {
                 let instance = self.get_map_instance(map_name, map_instance_id)?;
                 let state = instance.state();
-                state.script_skill_state.npcs.get(&map_item.id())
+                state
+                    .script_skill_state
+                    .npcs
+                    .get(&map_item.id())
                     .map(crate::server::script::skill::actor::NpcSkillState::snapshot)
-                    .or_else(|| instance.get_script(map_item.id()).map(|script| crate::server::script::skill::actor::NpcSkillState::new(script.as_ref()).snapshot()))
+                    .or_else(|| {
+                        instance
+                            .get_script(map_item.id())
+                            .map(|script| crate::server::script::skill::actor::NpcSkillState::uninitialized(script.as_ref()).snapshot())
+                    })
             }
             MapItemType::Mob => {
                 if let Some(map_instance) = self.get_map_instance(map_name, map_instance_id) {
@@ -442,6 +494,9 @@ impl ServerState {
     }
 
     pub fn map_item_snapshot(&self, map_item_id: u32, map_name: &String, map_instance_id: u8) -> Option<MapItemSnapshot> {
+        if let Some(unit) = self.ground_unit(map_item_id, map_name, map_instance_id) {
+            return Some(unit.snapshot());
+        }
         let characters = self.characters();
         if let Some(character) = characters.get(&map_item_id) {
             return Some(character.to_map_item_snapshot());
@@ -456,9 +511,25 @@ impl ServerState {
             if let Some(_warp) = map_instance.get_warp(map_item_id) {
                 return None;
             }
+            if let Some(npc) = map_instance.state().script_skill_state.npcs.get(&map_item_id) {
+                return Some(MapItemSnapshot::new(
+                    MapItem::new(npc.id, npc.sprite as i16, MapItemType::Npc),
+                    movement::position::Position {
+                        x: npc.x,
+                        y: npc.y,
+                        dir: npc.dir,
+                    },
+                ));
+            }
             if let Some(script) = map_instance.get_script(map_item_id) {
-                return Some(MapItemSnapshot::new(MapItem::new(script.id, script.sprite as i16, MapItemType::Npc),
-                    movement::position::Position { x: script.x, y: script.y, dir: script.dir }));
+                return Some(MapItemSnapshot::new(
+                    MapItem::new(script.id, script.sprite as i16, MapItemType::Npc),
+                    movement::position::Position {
+                        x: script.x,
+                        y: script.y,
+                        dir: script.dir,
+                    },
+                ));
             }
         }
         None

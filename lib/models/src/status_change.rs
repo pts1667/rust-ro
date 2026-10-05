@@ -93,6 +93,7 @@ status_changes! {
     HomAvoid = 241 => "AVOID", HomChange = 242 => "CHANGE", Bloodlust = 243 => "BLOODLUST", Fleet = 244 => "FLEET", HomSpeed = 245 => "SPEED", HomDefence = 246 => "DEFENCE",
     AutoBerserk = 85 => "AUTOBERSERK", Defender = 80 => "DEFENDER", Devotion = 134 => "DEVOTION", Berserk = 112 => "BERSERK", Parrying = 109 => "PARRYING", ReflectShield = 77 => "REFLECTSHIELD",
     Regeneration = 153 => "REGENERATION", Basilica = 116 => "BASILICA", ChaseWalk = 124 => "CHASEWALK", ChaseWalkStrength = 596 => "CHASEWALK2",
+    Sma = 239 => "SMA", MagicalAttack = 251 => "MAGICALATTACK",
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, WithMaskValueU32)]
@@ -217,6 +218,7 @@ impl StatusChangeKind {
 
     pub fn icon(self) -> Option<u16> {
         match self {
+            Self::Sma => Some(crate::enums::client_effect_icon::ClientEffectIcon::SmaReady.value() as u16),
             Self::Provoke => Some(0), Self::Endure => Some(1), Self::TwoHandQuicken => Some(2),
             Self::Concentrate => Some(3), Self::Hiding => Some(4), Self::Cloaking => Some(5),
             Self::EnchantPoison => Some(6), Self::Quagmire => Some(8), Self::Angelus => Some(9),

@@ -158,6 +158,9 @@ impl ScriptSkillService {
         let context = MagicAttackContext::new(fastrand::u16(lower..=upper), 1.45, Element::Ghost, 1, SkillEnum::AlRuwach.id());
         let amount = server.battle_service().magic_damage_from_context(&source.status, target, context);
         let mut damage = Damage {
+            notification: None,
+            source_kind: *source.status.combat_actor_kind(),
+            skill_damage_adjusted: false,
             healing: 0,
             right_hand_damage: None,
             target_id,
@@ -175,6 +178,6 @@ impl ScriptSkillService {
             magic_context: Some(context),
         };
         damage.set_signed_damage(amount);
-        damage
+        damage.with_skill_notification(&source.map, source.instance, source.x, source.y, tick, 1, 0)
     }
 }

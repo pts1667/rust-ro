@@ -24,9 +24,26 @@ pub struct ScriptService {
 }
 
 impl ScriptService {
-    pub fn event_entry(label: &str) -> Option<u32> {
+    fn compiled_events() -> &'static HashMap<String, u32> {
         static EVENTS: std::sync::OnceLock<HashMap<String, u32>> = std::sync::OnceLock::new();
-        EVENTS.get_or_init(|| serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry")).get(label).copied()
+        EVENTS.get_or_init(|| serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry"))
+    }
+
+    pub fn event_entry(label: &str) -> Option<u32> {
+        Self::compiled_events().get(label).copied()
+    }
+
+    pub(crate) fn npc_timer_entries(name: &str) -> Vec<(u64, u32)> {
+        let prefix = format!("{name}::OnTimer");
+        let mut entries = Self::compiled_events().iter().filter_map(|(label, entry_id)| {
+            let suffix = label.strip_prefix(&prefix)?;
+            if suffix.is_empty() || !suffix.bytes().all(|byte| byte.is_ascii_digit()) { return None; }
+            let time = suffix.parse::<u64>().ok().filter(|time| *time > 0 && *time <= i32::MAX as u64)?;
+            Some((time, *entry_id))
+        }).collect::<Vec<_>>();
+        entries.sort_unstable();
+        entries.dedup_by_key(|entry| entry.0);
+        entries
     }
 
     pub(crate) fn install_temporary_variables(&self, char_id: u32, variables: &[script_sdk::Variable]) {

@@ -10,6 +10,20 @@ pub enum MobDamageMode {
     IgnoreMisc,
 }
 
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum MobCapability {
+    #[mask_value = 1]
+    Detector,
+    StatusImmune,
+    SkillImmune,
+    KnockbackImmune,
+    NoCast,
+    NoRandomWalk,
+    TeleportBlocked,
+    FixedItemDrop,
+    Mvp,
+}
+
 #[derive(WithStringValue, WithNumberValue, Debug, Copy, Clone, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub enum MobClass {
     #[value = 0]

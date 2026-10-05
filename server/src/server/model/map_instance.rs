@@ -87,7 +87,8 @@ impl MapInstance {
     ) -> MapInstance {
         let mut scripts = vec![];
         map.scripts().iter().for_each(|script| {
-            let script = script.clone();
+            let mut script = script.clone();
+            script.scope_instance = id;
             let script_arc = Arc::new(script);
             map_items.insert(script_arc.id(), script_arc.to_map_item());
             scripts.push(script_arc);
@@ -113,6 +114,9 @@ impl MapInstance {
             shutdown: AtomicBool::new(false),
         };
         instance.state_mut().flags = map.flags().clone();
+        instance.state_mut().script_skill_state.npcs = instance.scripts.iter()
+            .map(|script| (script.id, crate::server::script::skill::actor::NpcSkillState::uninitialized(script)))
+            .collect();
         instance
     }
 
@@ -167,12 +171,8 @@ impl MapInstance {
     }
 
     pub fn get_script(&self, script_id: u32) -> Option<Arc<Script>> {
-        for script in self.scripts.iter() {
-            if script.id() == script_id {
-                return Some(script.clone());
-            }
-        }
-        None
+        self.state().script_skill_state.npcs.get(&script_id)
+            .map(|npc| npc.current_script(self.name()))
     }
 
     #[inline]

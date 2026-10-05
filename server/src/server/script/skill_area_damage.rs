@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use models::enums::cell::CellType;
-use models::enums::mob::MobMode;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue};
 
@@ -27,6 +26,15 @@ pub(super) struct WaterBallSequence {
     pub instance: u8,
     pub count: u16,
     pub expires_at: u128,
+}
+
+struct AreaDamageTarget {
+    id: u32,
+    x: u16,
+    y: u16,
+    status: models::status::StatusSnapshot,
+    kind: MapItemType,
+    immovable: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -108,48 +116,129 @@ impl ScriptSkillService {
         let skill = skills::skill_enums::to_object(SkillEnum::from_id(original.skill_id), original.skill_level)
             .ok_or("Splash skill has no damage implementation")?;
         let offensive = skill.as_offensive_skill().ok_or("Splash skill has no offensive implementation")?;
-        let mut collisions = None;
-        if metadata.name == "KN_BOWLINGBASH" {
-            let targets = map_state
-                .mobs()
-                .values()
-                .filter(|mob| mob.status.hp() > 0)
-                .map(|mob| BowlingTarget {
-                    id: mob.id,
-                    x: mob.x,
-                    y: mob.y,
-                    immovable: mob.mode & MobMode::Boss.as_flag() != 0,
-                })
-                .collect::<Vec<_>>();
-            collisions = Some(Self::bowling_collisions(
+        let bowling_distance = (i32::from(original.skill_level) + 1) / 2;
+        let bowling_min_x = ((i32::from(character.x) - bowling_distance) / 40 * 40).max(0);
+        let bowling_min_y = ((i32::from(character.y) - bowling_distance) / 40 * 40).max(0);
+        let near = |id: u32, tx: u16, ty: u16| {
+            if metadata.name == "KN_BOWLINGBASH" {
+                id == original.target_id
+                    || (bowling_min_x..=bowling_min_x + 39).contains(&i32::from(tx))
+                        && (bowling_min_y..=bowling_min_y + 39).contains(&i32::from(ty))
+            } else {
+                tx.abs_diff(x).max(ty.abs_diff(y)) <= splash
+            }
+        };
+        let mut candidates = map_state
+            .mobs()
+            .values()
+            .filter(|mob| mob.is_present() && mob.status.hp() > 0 && (!mob.summoned || mob.summon_ai == 0) && near(mob.id, mob.x, mob.y))
+            .map(|mob| AreaDamageTarget {
+                id: mob.id,
+                x: mob.x,
+                y: mob.y,
+                status: mob.status.clone(),
+                kind: MapItemType::Mob,
+                immovable: mob.status.has_mob_capability(models::enums::mob::MobCapability::KnockbackImmune),
+            })
+            .collect::<Vec<_>>();
+        for player in state
+            .characters()
+            .values()
+            .filter(|player| player.map_instance_key == character.map_instance_key && player.status.hp > 0)
+        {
+            if near(player.char_id, player.x, player.y) && server.player_combat_target_allowed(state, character, player.char_id) {
+                let status = StatusService::instance().to_snapshot(&player.status);
+                candidates.push(AreaDamageTarget {
+                    id: player.char_id,
+                    x: player.x,
+                    y: player.y,
+                    immovable: status
+                        .bonuses_raw()
+                        .iter()
+                        .any(|bonus| matches!(bonus, models::enums::bonus::BonusType::EnableNoKnockback)),
+                    status,
+                    kind: MapItemType::Character,
+                });
+            }
+            for actor in crate::server::service::script_world_service::companion_snapshots(player) {
+                let id = actor.map_item().id();
+                if !near(id, actor.x(), actor.y()) || !server.player_combat_target_allowed(state, character, id) {
+                    continue;
+                }
+                if let Some(status) =
+                    crate::server::service::script_world_service::companion_status_snapshot(player, id).filter(|status| status.hp() > 0)
+                {
+                    candidates.push(AreaDamageTarget {
+                        id,
+                        x: actor.x(),
+                        y: actor.y(),
+                        kind: *actor.map_item().object_type(),
+                        immovable: status
+                            .bonuses_raw()
+                            .iter()
+                            .any(|bonus| matches!(bonus, models::enums::bonus::BonusType::EnableNoKnockback)),
+                        status,
+                    });
+                }
+            }
+        }
+        if metadata.flags.get("TargetTrap").copied().unwrap_or(false) {
+            candidates.extend(
+                state
+                    .ground_units
+                    .values()
+                    .filter(|unit| {
+                        unit.map == character.map_instance_key && unit.alive(tick) && !unit.used && near(unit.id, unit.x, unit.y)
+                    })
+                    .map(|unit| AreaDamageTarget {
+                        id: unit.id,
+                        x: unit.x,
+                        y: unit.y,
+                        status: unit.status(),
+                        kind: MapItemType::SkillUnit,
+                        immovable: SkillMetadata::find(unit.skill_id)
+                            .and_then(|metadata| metadata.unit.as_ref()?.get("Flag")?.get("NoKnockback")?.as_bool())
+                            .unwrap_or(false),
+                    }),
+            );
+        }
+        candidates.retain(|target| Self::area_skill_target_allowed(&source, &target.status, original.skill_id));
+        let collisions = if metadata.name == "KN_BOWLINGBASH" {
+            Some(Self::bowling_collisions(
                 character.x,
                 character.y,
                 character.dir,
                 original.skill_level,
                 original.target_id,
-                targets,
+                candidates
+                    .iter()
+                    .map(|target| BowlingTarget {
+                        id: target.id,
+                        x: target.x,
+                        y: target.y,
+                        immovable: target.immovable,
+                    })
+                    .collect(),
                 |x, y| {
                     x < instance.x_size()
                         && y < instance.y_size()
                         && map_state.cells()[y as usize * instance.x_size() as usize + x as usize] & CellType::Walkable.as_flag() != 0
                 },
-            ));
-        }
-        let targets = map_state
-            .mobs()
-            .values()
-            .filter(|mob| {
-                mob.status.hp() > 0
-                    && (!mob.summoned || mob.summon_ai == 0)
-                    && Self::area_skill_target_allowed(&source, &mob.status, original.skill_id)
-                    && collisions.as_ref().map_or_else(
-                        || mob.x.abs_diff(x).max(mob.y.abs_diff(y)) <= splash,
-                        |collisions| collisions.iter().any(|hit| hit.id == mob.id),
-                    )
+            ))
+        } else {
+            None
+        };
+        let targets = candidates
+            .into_iter()
+            .filter(|target| {
+                collisions.as_ref().map_or_else(
+                    || target.x.abs_diff(x).max(target.y.abs_diff(y)) <= splash,
+                    |collisions| collisions.iter().any(|hit| hit.id == target.id),
+                )
             })
             .collect::<Vec<_>>();
         let divisor = if metadata.damage_flags.get("SplashSplit").copied().unwrap_or(false) {
-            targets.len().max(1) as u32
+            targets.iter().filter(|target| target.kind != MapItemType::SkillUnit).count().max(1) as u32
         } else {
             1
         };
@@ -159,7 +248,8 @@ impl ScriptSkillService {
             let landed = if use_original {
                 original.landed
             } else {
-                !crate::server::service::battle_service::BattleService::is_weapon_skill(offensive) || battle.skill_hits(&source, &target.status, original.skill_id, original.skill_level)
+                !crate::server::service::battle_service::BattleService::is_weapon_skill(offensive)
+                    || battle.skill_hits(&source, &target.status, original.skill_id, original.skill_level)
             };
             let (damage, magic_context) = if use_original {
                 (
@@ -213,22 +303,33 @@ impl ScriptSkillService {
                 damage_event.damage /= hits;
                 damage_event.healing /= hits;
                 for _ in 0..collision.hits {
-                    damages.push((MapItemType::Mob, damage_event.clone()));
+                    damages.push((target.kind, damage_event.clone()));
                 }
                 if landed && collision.moved > 0 {
-                    instance.add_to_next_tick(MapEvent::MobKnockback {
-                        mob_id: target.id,
-                        source_x: (collision.origin.0 as i32 - collision.direction.0).clamp(0, u16::MAX as i32) as u16,
-                        source_y: (collision.origin.1 as i32 - collision.direction.1).clamp(0, u16::MAX as i32) as u16,
-                        cells: collision.moved,
-                    });
+                    let source_x = (collision.origin.0 as i32 - collision.direction.0).clamp(0, u16::MAX as i32) as u16;
+                    let source_y = (collision.origin.1 as i32 - collision.direction.1).clamp(0, u16::MAX as i32) as u16;
+                    if target.kind == MapItemType::Mob {
+                        instance.add_to_next_tick(MapEvent::MobKnockback {
+                            mob_id: target.id,
+                            source_x,
+                            source_y,
+                            cells: collision.moved,
+                        });
+                    } else {
+                        server.add_to_next_tick(GameEvent::GroundTrapEffect(super::trap::GroundTrapEffect {
+                            map: character.map_instance_key.clone(),
+                            target_id: target.id,
+                            kind: super::trap::GroundTrapEffectKind::Knockback {
+                                source_x,
+                                source_y,
+                                cells: collision.moved,
+                            },
+                        }));
+                    }
                 }
             } else {
-                damages.push((MapItemType::Mob, damage_event));
+                damages.push((target.kind, damage_event));
             }
-        }
-        if !self_area && target_kind == MapItemType::Character {
-            damages.push((target_kind, original));
         }
         let _ = tick;
         Ok(damages)
@@ -243,8 +344,15 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         Self::validate_stealth_cast(state, character, skill_id)?;
-        let issued = character.pending_item_skill.as_ref().is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
+        let issued = character
+            .pending_item_skill
+            .as_ref()
+            .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
+        if skill_id == SkillEnum::SlSma.id()
+            && !character.status.status_change(models::status_change::StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
+            return Err("Esma requires an active Estin or Estun readiness effect".into());
+        }
         if skill_id == SkillEnum::WzWaterball.id() {
             let instance = state
                 .get_map_instance_from_character(character)
@@ -468,6 +576,9 @@ impl ScriptSkillService {
                 .battle_service()
                 .calculate_damage_with_context(&snapshot, &target.2, Some(offensive));
             let mut damage = Damage {
+                notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 healing: 0,
                 right_hand_damage: None,
                 target_id: effect.target_id,
@@ -487,12 +598,20 @@ impl ScriptSkillService {
                 landed: true,
             };
             damage.set_signed_damage(amount);
+            damage = damage.with_skill_notification(
+                source.current_map_name(),
+                source.current_map_instance(),
+                source.x,
+                source.y,
+                tick,
+                1,
+                0,
+            );
             if target.3 == MapItemType::Mob {
                 instance.add_to_next_tick(MapEvent::MobDamage(damage));
             } else {
                 server.add_to_next_tick(GameEvent::CharacterDamage(damage));
             }
-            self.notify_attack_skill(source, effect.target_id, effect.skill_id, effect.level, amount);
         }
         if let Ok(mut sequences) = self.water_ball_sequences.lock() {
             if sequences.get(&source.char_id).is_some_and(|active| cell + 1 == active.count) {

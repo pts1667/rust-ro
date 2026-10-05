@@ -1128,7 +1128,7 @@ fn teleport_pays_at_menu_opening_and_cancel_does_not_refund_or_repay() {
         assert_eq!(stored_sp(&repository, source), remaining_sp);
         assert_eq!(source.script_skill_state.pending_teleport.as_ref().unwrap().level, level);
         let mut source = context.server.state_mut().characters_mut().remove(&char_id).unwrap();
-        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: "cancel".into() };
+        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: "cancel".into(), session: None };
         let selection_tick = if level == 1 { 80 } else { 120040 };
         context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, selection_tick).unwrap();
         assert!(source.script_skill_state.pending_teleport.is_none());
@@ -1167,7 +1167,7 @@ fn teleport_selection_warps_once_without_repayment_and_preserves_random_instance
         let instance = context.server.state().get_map_instance_from_character(&source).unwrap();
         instance.state_mut().cells_mut().fill(CellType::Shootable.as_flag());
         instance.state_mut().cells_mut()[10 * 100 + 10] |= CellType::Walkable.as_flag();
-        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: destination.into() };
+        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: destination.into(), session: None };
         context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, 80).unwrap();
         assert!(source.script_skill_state.pending_teleport.is_none());
         assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, 80).is_err());
@@ -1199,7 +1199,7 @@ fn teleport_rejects_cleared_dead_changed_map_and_unoffered_selections_without_re
             flags.set(MapFlag::NoTeleport, true, &[]).unwrap();
             context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
         }
-        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: if rejection == "unoffered" { "prontera" } else { "Random" }.into() };
+        let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: if rejection == "unoffered" { "prontera" } else { "Random" }.into(), session: None };
         assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, tick).is_err(), "{rejection}");
         assert!(source.script_skill_state.pending_teleport.is_none());
         assert_eq!(stored_sp(&repository, &source), 990);

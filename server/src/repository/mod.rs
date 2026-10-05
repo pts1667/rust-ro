@@ -7,8 +7,8 @@ pub mod item_repository;
 mod login_repository;
 pub mod mob_repository;
 pub mod model;
-pub mod script_variable_repository;
 pub mod script_inventory_repository;
+pub mod script_variable_repository;
 pub use script_inventory_repository::ScriptInventoryRepository;
 pub mod script_character_repository;
 pub use script_character_repository::ScriptCharacterRepository;
@@ -81,11 +81,24 @@ pub trait LoginRepository {
 }
 
 #[async_trait]
-pub trait CharacterRepository {
-    fn character_commit_skill_reset(&self, _char_id: u32, _account_id: u32, _plan: &crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(), Error> {
+pub trait CharacterRepository: ScriptCharacterRepository {
+    fn character_commit_skill_reset(
+        &self,
+        _char_id: u32,
+        _account_id: u32,
+        _plan: &crate::repository::script_character_repository::ScriptSkillResetPlan,
+    ) -> Result<(), Error> {
         Err(Error::InvalidInput("Character skill transactions are unavailable".into()))
     }
-    fn character_commit_skill_allocation(&self, _char_id: u32, _account_id: u32, _skill_id: u32, _expected_level: u8, _expected_points: u32, _max_level: u8) -> Result<u8, Error> {
+    fn character_commit_skill_allocation(
+        &self,
+        _char_id: u32,
+        _account_id: u32,
+        _skill_id: u32,
+        _expected_level: u8,
+        _expected_points: u32,
+        _max_level: u8,
+    ) -> Result<u8, Error> {
         Err(Error::InvalidInput("Character skill transactions are unavailable".into()))
     }
     async fn characters_list_for_simulator(&self) -> Result<Vec<CharSelectModel>, Error> {
@@ -105,6 +118,13 @@ pub trait CharacterRepository {
     }
     async fn character_save_position(&self, _char_id: u32, _map_name: String, _x: u16, _y: u16) -> Result<(), Error> {
         todo!()
+    }
+    async fn character_save_position_guarded(
+        &self,
+        position: crate::server::model::events::persistence_event::SavePositionUpdate,
+    ) -> Result<(), Error> {
+        self.character_save_position(position.char_id, position.map_name, position.x, position.y)
+            .await
     }
     async fn character_update_status(&self, _char_id: u32, _field: String, _value: u32) -> Result<(), Error> {
         todo!()
@@ -140,6 +160,22 @@ pub trait CharacterRepository {
         _maps: Vec<String>,
     ) -> Result<(), Error> {
         todo!()
+    }
+    async fn characters_update_with_positions(
+        &self,
+        statuses: Vec<&Status>,
+        snapshots: Vec<StatusSnapshot>,
+        positions: Vec<crate::server::model::events::persistence_event::SavePositionUpdate>,
+    ) -> Result<(), Error> {
+        self.characters_update(
+            statuses,
+            snapshots,
+            positions.iter().map(|position| position.char_id as i32).collect(),
+            positions.iter().map(|position| position.x as i16).collect(),
+            positions.iter().map(|position| position.y as i16).collect(),
+            positions.into_iter().map(|position| position.map_name).collect(),
+        )
+        .await
     }
     async fn character_save_temporary_bonus(
         &self,
@@ -189,6 +225,9 @@ pub trait InventoryRepository {
     async fn character_inventory_wearable_item_update(&self, _items: Vec<InventoryItemModel>) -> Result<(), Error> {
         todo!()
     }
+    async fn character_inventory_commit_equipment(&self, _char_id: u32, _items: Vec<InventoryItemModel>) -> Result<(), Error> {
+        Err(Error::InvalidInput("Authenticated equipment persistence is unavailable".into()))
+    }
     async fn character_slot_card(
         &self,
         _char_id: i32,
@@ -236,7 +275,12 @@ pub trait MobRepository {
 }
 
 pub trait ScriptVariableRepository {
-    fn script_variables_increment_batch(&self, _char_id: u32, _account_id: u32, _variables: &[script_sdk::Variable]) -> Result<Vec<i32>, Error> {
+    fn script_variables_increment_batch(
+        &self,
+        _char_id: u32,
+        _account_id: u32,
+        _variables: &[script_sdk::Variable],
+    ) -> Result<Vec<i32>, Error> {
         Err(Error::InvalidInput("Atomic script counters are unavailable".into()))
     }
     fn script_variables_save_batch(&self, _char_id: u32, _account_id: u32, _variables: &[script_sdk::Variable]) -> Result<(), Error> {

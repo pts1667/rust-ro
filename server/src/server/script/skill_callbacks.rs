@@ -33,7 +33,7 @@ impl ScriptSkillService {
         Some(match name {
             "AL_HEAL" | "ALL_RESURRECTION" | "NV_FIRSTAID" | "AL_CURE" | "TF_DETOXIFY" | "PR_STRECOVERY" => Recovery,
             "MC_IDENTIFY" | "TF_PICKSTONE" | "BS_GREED" | "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST"
-            | "AM_RESURRECTHOMUN" => Inventory,
+            | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" => Inventory,
             "AL_TELEPORT" | "TF_BACKSLIDING" | "TK_HIGHJUMP" | "TK_RUN" | "RG_INTIMIDATE" => Movement,
             "MO_CALLSPIRITS" | "CH_SOULCOLLECT" | "GS_GLITTERING" => Spirit,
             "SA_DISPELL" | "SA_SPELLBREAKER" => Dispel,
@@ -42,8 +42,13 @@ impl ScriptSkillService {
             "CG_TAROTCARD" => Tarot,
             "WZ_ESTIMATION" => Estimate,
             "NPC_EARTHQUAKE" => Ground,
+            "AL_WARP" | "RG_GRAFFITI" | "RG_CLEANER" => Ground,
+            "NPC_MAGICALATTACK" | "SL_STIN" | "SL_STUN" | "SL_SMA" => Damage,
+            "HT_ANKLESNARE" | "HT_SKIDTRAP" | "HT_LANDMINE" | "HT_SANDMAN" | "HT_FREEZINGTRAP" | "HT_BLASTMINE" | "HT_CLAYMORETRAP"
+            | "HT_SHOCKWAVE" | "HT_FLASHER" | "HT_TALKIEBOX" => Ground,
             "CR_DEVOTION" => Status,
             "TK_MISSION" => Inventory,
+            "HT_REMOVETRAP" | "HT_SPRINGTRAP" => Inventory,
             "BA_FROSTJOKER" | "DC_SCREAM" | "NPC_WIDEBLEEDING" | "NPC_WIDECONFUSE" | "NPC_WIDECURSE" | "NPC_WIDESILENCE"
             | "NPC_DRAGONFEAR" | "AL_CRUCIS" | "NPC_WIDESOULDRAIN" => AreaStatus,
             "MG_FIREWALL" | "MG_THUNDERSTORM" | "WZ_HEAVENDRIVE" | "WZ_METEOR" | "WZ_VERMILION" | "WZ_STORMGUST" | "WZ_QUAGMIRE"
@@ -76,6 +81,10 @@ impl ScriptSkillService {
             "NPC_WIDECONFUSE" => (Confusion, 10_000, 0),
             "NPC_WIDECURSE" => (Curse, 10_000, 0),
             "NPC_WIDESILENCE" => (Silence, 10_000, 0),
+            "NPC_WIDESLEEP" => (Sleep, 10_000, 0),
+            "NPC_WIDESTONE" => (Stone, 10_000, 0),
+            "NPC_WIDEFREEZE" => (Freeze, 10_000, 0),
+            "NPC_WIDESTUN" => (Stun, 10_000, 0),
             "NPC_DRAGONFEAR" => ([Stun, Silence, Confusion, Bleeding][dragon_choice % 4], 10_000, 0),
             "AL_CRUCIS" => (SignumCrucis, 2500 + 400 * level as i32, 0),
             "BS_HAMMERFALL" => (Stun, (2000 + 1000 * level as i32).min(5000 + 500 * level as i32), 1000),

@@ -1,6 +1,6 @@
 use models::status::StatusSnapshot;
 use movement::position::Position;
-use packets::packets::{Packet, PacketZcNotifySkill2, PacketZcUseSkill};
+use packets::packets::{Packet, PacketZcUseSkill};
 
 use super::{
     ScriptWorldService, companion_status_snapshot, homunculus, homunculus_world_id, mercenary_status, mercenary_world_id, protocol,
@@ -49,6 +49,53 @@ impl ScriptWorldService {
         Ok(())
     }
 
+    pub(crate) fn handle_companion_trap_effect(&self, server: &Server, state: &mut ServerState,
+        request: &crate::server::script::skill::trap::GroundTrapEffect, now: u128) -> Result<(), String> {
+        use crate::server::script::skill::trap::GroundTrapEffectKind;
+        let Some(owner_id) = state.companion_owner(request.target_id, request.map.map_name(), request.map.map_instance()).map(|owner| owner.char_id) else { return Ok(()); };
+        if let GroundTrapEffectKind::Status(status) = &request.kind {
+            self.handle_companion_status_change(server, state, request.target_id, status.clone(), now)?;
+            return Ok(());
+        }
+        let owner = state.characters().get(&owner_id).unwrap();
+        let Some(snapshot) = companion_status_snapshot(owner, request.target_id).filter(|snapshot| snapshot.hp() > 0) else { return Ok(()); };
+        match request.kind {
+            GroundTrapEffectKind::DrainSp { percent } => {
+                let amount = (u64::from(snapshot.max_sp()) * u64::from(percent.min(100)) / 100).max(1).min(u64::from(u32::MAX)) as u32;
+                let owner = state.characters_mut().get_mut(&owner_id).unwrap();
+                let mut systems = owner.game_systems.clone();
+                if let Some(homunculus) = systems.homunculus.as_mut().filter(|actor| homunculus_world_id(actor) == request.target_id) {
+                    homunculus.sp = homunculus.sp.saturating_sub(amount);
+                } else if let Some(mercenary) = systems.mercenary.as_mut().filter(|actor| mercenary_world_id(actor) == request.target_id) {
+                    mercenary.sp = mercenary.sp.saturating_sub(amount);
+                }
+                if systems != owner.game_systems {
+                    let saved = self.repository.save_character_game_systems(owner_id, &systems).map_err(|error| error.to_string())?;
+                    super::install_state(owner, saved);
+                    self.send_homunculus(owner)?;
+                    self.send_mercenary(owner, now as u64)?;
+                }
+            }
+            GroundTrapEffectKind::Knockback { source_x, source_y, cells } => {
+                use models::enums::{EnumWithMaskValueU16, bonus::BonusType, cell::CellType};
+                if snapshot.bonuses_raw().iter().any(|bonus| matches!(bonus, BonusType::EnableNoKnockback)) { return Ok(()); }
+                let Some(position) = super::companion_snapshots(owner).into_iter().find(|actor| actor.map_item().id() == request.target_id) else { return Ok(()); };
+                let Some(map) = state.get_map_instance(request.map.map_name(), request.map.map_instance()) else { return Ok(()); };
+                let map_state = map.state();
+                let (x, y) = crate::server::script::skill::ScriptSkillService::knockback_destination(position.x(), position.y(), source_x, source_y, cells,
+                    |x, y| x < map.x_size() && y < map.y_size() && map_state.cells()[y as usize * map.x_size() as usize + x as usize] & CellType::Walkable.as_flag() != 0);
+                if (x, y) == (position.x(), position.y()) { return Ok(()); }
+                let owner = state.characters_mut().get_mut(&owner_id).unwrap();
+                owner.game_systems.rendered_companions.insert(request.target_id, crate::server::model::game_systems::CompanionPosition { x, y, map_instance: request.map.map_instance() });
+                owner.game_systems.companion_commands.entry(request.target_id).or_default().destination = None;
+                self.render_companions(server, owner, now as u64)?;
+                self.area(owner, crate::server::service::ground_trap_service::trap_fix_position(request.target_id, x, y))?;
+            }
+            GroundTrapEffectKind::Status(_) => {}
+        }
+        Ok(())
+    }
+
     pub fn handle_companion_status_change(
         &self,
         server: &Server,
@@ -66,20 +113,44 @@ impl ScriptWorldService {
         )
     }
 
-    pub fn handle_companion_status_alternatives(&self, server: &Server, state: &mut ServerState, target_id: u32,
-        requests: Vec<models::status_change::StatusChangeRequest>, now: u128) -> Result<bool, String> {
-        let owner = state.characters().values().find_map(|character| super::companion_health(character, target_id).map(|_| character.char_id));
-        let Some(owner) = owner else { return Ok((1_000_000_000..1_300_000_000).contains(&target_id)); };
+    pub fn handle_companion_status_alternatives(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        target_id: u32,
+        requests: Vec<models::status_change::StatusChangeRequest>,
+        now: u128,
+    ) -> Result<bool, String> {
+        let owner = state
+            .characters()
+            .values()
+            .find_map(|character| super::companion_health(character, target_id).map(|_| character.char_id));
+        let Some(owner) = owner else {
+            return Ok((1_000_000_000..1_300_000_000).contains(&target_id));
+        };
         let character = state.characters_mut().get_mut(&owner).unwrap();
-        if character.game_systems.pet.as_ref().is_some_and(|pet| super::pet_world_id(pet.id) == target_id) { return Ok(true); }
+        if character
+            .game_systems
+            .pet
+            .as_ref()
+            .is_some_and(|pet| super::pet_world_id(pet.id) == target_id)
+        {
+            return Ok(true);
+        }
         for request in requests {
             let mut staged = character.game_systems.clone();
-            if !apply_local_effect(&mut staged, &CompanionSkillEffect::Status { target_id, request }, now as u64)? { continue; }
+            if !apply_local_effect(&mut staged, &CompanionSkillEffect::Status { target_id, request }, now as u64)? {
+                continue;
+            }
             if staged != character.game_systems {
-                let saved = self.repository.save_character_game_systems(character.char_id, &staged).map_err(|error| error.to_string())?;
+                let saved = self
+                    .repository
+                    .save_character_game_systems(character.char_id, &staged)
+                    .map_err(|error| error.to_string())?;
                 super::install_state(character, saved);
-                if companion_status_snapshot(character, target_id).is_some_and(|status|
-                    status.active_statuses().iter().any(|status| status.kind.blocks_casting())) {
+                if companion_status_snapshot(character, target_id)
+                    .is_some_and(|status| status.active_statuses().iter().any(|status| status.kind.blocks_casting()))
+                {
                     self.interrupt_companion_cast(character, target_id, true)?;
                 }
                 self.send_homunculus(character)?;
@@ -230,23 +301,58 @@ impl ScriptWorldService {
         self.prepare_companion_cast_with_options(server, state, character, skill_id, level, target_id, ground, now, None)
     }
 
-    pub fn start_scripted_companion_skill(&self, server: &Server, state: &mut ServerState,
-        request: crate::server::model::events::game_event::ScriptSkillCast, tick: u128) -> Result<(), String> {
-        if request.message_id.is_some_and(|message| message > 0) { return Err("Unit skill messages require a monster caster".into()); }
-        let owner_id = state.characters().values().find(|owner| companion_status_snapshot(owner, request.source_id).is_some())
-            .map(|owner| owner.char_id).ok_or("Companion caster is unavailable")?;
+    pub fn start_scripted_companion_skill(
+        &self,
+        server: &Server,
+        state: &mut ServerState,
+        request: crate::server::model::events::game_event::ScriptSkillCast,
+        tick: u128,
+    ) -> Result<(), String> {
+        if request.message_id.is_some_and(|message| message > 0) {
+            return Err("Unit skill messages require a monster caster".into());
+        }
+        let owner_id = state
+            .characters()
+            .values()
+            .find(|owner| companion_status_snapshot(owner, request.source_id).is_some())
+            .map(|owner| owner.char_id)
+            .ok_or("Companion caster is unavailable")?;
         let mut character = state.characters_mut().remove(&owner_id).ok_or("Companion owner disconnected")?;
-        let result = u8::try_from(request.level).map_err(|_| "Invalid companion skill level".to_string()).and_then(|level|
-            self.prepare_companion_cast_with_options(server, state, &mut character, request.skill_id, level,
-                request.target_id, request.ground, tick as u64, Some(&request)));
+        let result = u8::try_from(request.level)
+            .map_err(|_| "Invalid companion skill level".to_string())
+            .and_then(|level| {
+                self.prepare_companion_cast_with_options(
+                    server,
+                    state,
+                    &mut character,
+                    request.skill_id,
+                    level,
+                    request.target_id,
+                    request.ground,
+                    tick as u64,
+                    Some(&request),
+                )
+            });
         state.insert_character(character);
         result
     }
 
-    fn prepare_companion_cast_with_options(&self, server: &Server, state: &ServerState, character: &mut Character,
-        skill_id: u32, level: u8, target_id: u32, ground: Option<(u16, u16)>, now: u64,
-        options: Option<&crate::server::model::events::game_event::ScriptSkillCast>) -> Result<(), String> {
-        if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoSkill) {
+    fn prepare_companion_cast_with_options(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        character: &mut Character,
+        skill_id: u32,
+        level: u8,
+        target_id: u32,
+        ground: Option<(u16, u16)>,
+        now: u64,
+        options: Option<&crate::server::model::events::game_event::ScriptSkillCast>,
+    ) -> Result<(), String> {
+        if state
+            .map_flags(&character.map_instance_key)
+            .enabled(crate::server::model::map_flags::MapFlag::NoSkill)
+        {
             return Err("Skills are disabled on this map".into());
         }
         if super::resume_companion_timers(&mut character.game_systems, now) {
@@ -254,9 +360,14 @@ impl ScriptWorldService {
         }
         let (id, learned) = if let Some(options) = options {
             let status = companion_status_snapshot(character, options.source_id).ok_or("Scripted companion is unavailable")?;
-            if status.hp() == 0 { return Err("A dead companion cannot cast".into()); }
+            if status.hp() == 0 {
+                return Err("A dead companion cannot cast".into());
+            }
             (options.source_id, level)
-        } else { self.companion_skill_source(character, skill_id).ok_or("Companion skill is not learned or granted by the contract")? };
+        } else {
+            self.companion_skill_source(character, skill_id)
+                .ok_or("Companion skill is not learned or granted by the contract")?
+        };
         if character
             .game_systems
             .mercenary
@@ -290,10 +401,17 @@ impl ScriptWorldService {
         };
         let (target, target_position) = if let Some((x, y)) = ground {
             let ground_source = companion_ground_source(character, id, &source, 0);
-            server
-                .script_skill_service()
-                .validate_actor_ground_with_options(state, &ground_source, skill_id, level, x, y, now as u128,
-                    options.is_some_and(|options| options.ignore_range), options.is_some())?;
+            server.script_skill_service().validate_actor_ground_with_options(
+                state,
+                &ground_source,
+                skill_id,
+                level,
+                x,
+                y,
+                now as u128,
+                options.is_some_and(|options| options.ignore_range),
+                options.is_some(),
+            )?;
             (source.clone(), Position { x, y, dir: 0 })
         } else {
             let (target, position, _) = if metadata.name == "MA_REMOVETRAP" {
@@ -319,12 +437,12 @@ impl ScriptWorldService {
         }
         let position = companion_position(character, id);
         let range = metadata.range(level).unwrap_or(1).unsigned_abs().max(1);
-        if !options.is_some_and(|options| options.ignore_range) && u32::from(position.x.abs_diff(target_position.x).max(position.y.abs_diff(target_position.y))) > range {
+        if !options.is_some_and(|options| options.ignore_range)
+            && u32::from(position.x.abs_diff(target_position.x).max(position.y.abs_diff(target_position.y))) > range
+        {
             return Err("Companion skill target is out of range".into());
         }
-        if metadata.target_type.as_deref() == Some("Attack")
-            && !server.player_combat_target_allowed(state, character, target_id)
-        {
+        if metadata.target_type.as_deref() == Some("Attack") && !server.player_combat_target_allowed(state, character, target_id) {
             return Err("Companion target is not an enemy on this map".into());
         }
         if metadata.target_type.as_deref() == Some("Attack")
@@ -336,7 +454,8 @@ impl ScriptWorldService {
         }
         validate_cost(&source, metadata, level)?;
         let cast_time = (companion_cast_time(&source, metadata, level).min(i64::MAX as u64) as i64
-            + i64::from(options.map_or(0, |options| options.cast_time_adjust_ms))).max(0) as u64;
+            + i64::from(options.map_or(0, |options| options.cast_time_adjust_ms)))
+        .max(0) as u64;
         character.game_systems.companion_commands.entry(id).or_default().cast = Some(CompanionCast {
             skill_id,
             level,
@@ -379,11 +498,12 @@ impl ScriptWorldService {
         let Some(command) = character.game_systems.companion_commands.get_mut(&id) else {
             return Ok(());
         };
-        if command
-            .cast
-            .as_ref()
-            .is_none_or(|cast| !forced && !cast.cast_cancel.unwrap_or_else(|| SkillMetadata::find(cast.skill_id).is_none_or(|metadata| metadata.cast_cancel.unwrap_or(true))))
-        {
+        if command.cast.as_ref().is_none_or(|cast| {
+            !forced
+                && !cast
+                    .cast_cancel
+                    .unwrap_or_else(|| SkillMetadata::find(cast.skill_id).is_none_or(|metadata| metadata.cast_cancel.unwrap_or(true)))
+        }) {
             return Ok(());
         }
         command.cast = None;
@@ -407,14 +527,21 @@ impl ScriptWorldService {
             .and_then(|command| command.cast.take())
             .ok_or("No companion cast is pending")?;
         let metadata = SkillMetadata::find(cast.skill_id).ok_or("Unknown companion skill")?;
-        if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoSkill) {
+        if state
+            .map_flags(&character.map_instance_key)
+            .enabled(crate::server::model::map_flags::MapFlag::NoSkill)
+        {
             return Err("Skills became disabled while the companion was casting".into());
         }
         if metadata.target_type.as_deref() == Some("Attack") && !server.player_combat_target_allowed(state, character, cast.target_id) {
             return Err("Companion target is no longer an enemy on this map".into());
         }
-        let (source_id, learned) = if cast.scripted { (id, cast.level) }
-            else { self.companion_skill_source(character, cast.skill_id).ok_or("Companion is unavailable")? };
+        let (source_id, learned) = if cast.scripted {
+            (id, cast.level)
+        } else {
+            self.companion_skill_source(character, cast.skill_id)
+                .ok_or("Companion is unavailable")?
+        };
         if source_id != id || cast.level > learned {
             return Err("Companion skill source changed while casting".into());
         }
@@ -456,8 +583,9 @@ impl ScriptWorldService {
             return Err("Companion skill target became hidden".into());
         }
         let position = companion_position(character, id);
-        if !cast.ignore_range && u32::from(position.x.abs_diff(target_position.x).max(position.y.abs_diff(target_position.y)))
-            > metadata.range(cast.level).unwrap_or(1).unsigned_abs().max(1)
+        if !cast.ignore_range
+            && u32::from(position.x.abs_diff(target_position.x).max(position.y.abs_diff(target_position.y)))
+                > metadata.range(cast.level).unwrap_or(1).unsigned_abs().max(1)
         {
             return Err("Companion target moved out of range".into());
         }
@@ -553,9 +681,17 @@ impl ScriptWorldService {
                     let (_, position, _) = self.skill_target(server, state, character, *target_id)?;
                     (position.x, position.y)
                 };
-                server
-                    .script_skill_service()
-                    .validate_actor_ground_with_options(state, &ground_source, *skill_id, *level, x, y, now as u128, cast.ignore_range, cast.scripted)?;
+                server.script_skill_service().validate_actor_ground_with_options(
+                    state,
+                    &ground_source,
+                    *skill_id,
+                    *level,
+                    x,
+                    y,
+                    now as u128,
+                    cast.ignore_range,
+                    cast.scripted,
+                )?;
             }
         }
         let (hp_cost, sp_cost) = validate_cost(&source, metadata, cast.level)?;
@@ -662,22 +798,22 @@ impl ScriptWorldService {
                     )?;
                 }
                 CompanionSkillEffect::Damage(damage) => {
+                    let count = SkillMetadata::find(damage.skill_id).and_then(|metadata| metadata.hit_count.as_ref()?.value(damage.skill_level, "Count"))
+                        .unwrap_or(1).unsigned_abs().clamp(1, i16::MAX as u32) as i16;
+                    let damage = damage.with_skill_notification(
+                        character.current_map_name(),
+                        character.current_map_instance(),
+                        ground_source.x,
+                        ground_source.y,
+                        now as u128,
+                        count,
+                        0,
+                    );
                     if map.state().get_mob(damage.target_id).is_some() {
                         map.add_to_next_tick(MapEvent::MobDamage(damage));
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterDamage(damage));
                     }
-                    let mut packet = PacketZcNotifySkill2::new(server.packetver());
-                    packet.set_aid(id);
-                    packet.set_target_id(damage.target_id);
-                    packet.set_skid(cast.skill_id as u16);
-                    packet.set_level(i16::from(cast.level));
-                    packet.set_damage(if damage.healing > 0 { -(damage.healing.min(i32::MAX as u32) as i32) }
-                        else { damage.damage.min(i32::MAX as u32) as i32 });
-                    packet.set_count(1);
-                    packet.set_action(6);
-                    packet.fill_raw();
-                    self.area(character, packet.raw)?;
                 }
                 CompanionSkillEffect::Status { target_id, request } if !is_local_companion(&character.game_systems, target_id) => {
                     if map.state().get_mob(target_id).is_some() {
@@ -784,7 +920,9 @@ impl ScriptWorldService {
                     character.y = source.y;
                     character.clear_attack();
                     character.movements.clear();
-                    server.character_service().defer_position_update(character);
+                    server
+                        .character_service()
+                        .defer_position_update_with_flags(character, &state.map_flags(&character.map_instance_key));
                     for (actor, x, y) in [(source_id, owner.x, owner.y), (character.char_id, source.x, source.y)] {
                         let mut packet = protocol::header(0x0088);
                         packet.extend_from_slice(&actor.to_le_bytes());
@@ -1025,13 +1163,19 @@ fn validate_cost(source: &StatusSnapshot, metadata: &SkillMetadata, level: u8) -
     if maximum_hp_percent > 0 && u64::from(source.hp()) * 100 / u64::from(source.max_hp().max(1)) > maximum_hp_percent as u64 {
         return Err("Companion has too much HP for this skill".into());
     }
-    let hp = (cost("HpCost").max(0) as u32)
-        .saturating_add(percentage(cost("HpRateCost"), source.hp(), source.max_hp()));
+    let hp = (cost("HpCost").max(0) as u32).saturating_add(percentage(cost("HpRateCost"), source.hp(), source.max_hp()));
     let sp = (cost("SpCost").max(0) as u32).saturating_add(percentage(cost("SpRateCost"), source.sp(), source.max_sp()));
     if source.sp() < sp || (hp > 0 && source.hp() <= hp) {
         Err("Companion has insufficient HP or SP".into())
     } else {
-        Ok((if matches!(metadata.name.as_str(), "SM_MAGNUM" | "MS_MAGNUM") { 0 } else { hp }, sp))
+        Ok((
+            if matches!(metadata.name.as_str(), "SM_MAGNUM" | "MS_MAGNUM") {
+                0
+            } else {
+                hp
+            },
+            sp,
+        ))
     }
 }
 
@@ -1101,11 +1245,14 @@ fn apply_local_effect(systems: &mut CharacterGameSystems, effect: &CompanionSkil
         let mut berserk_refill = false;
         match effect {
             CompanionSkillEffect::Status { request, .. } => {
-                if homunculus.hp == 0 { return Ok(false); }
+                if homunculus.hp == 0 {
+                    return Ok(false);
+                }
                 berserk_refill = request.values[1] == 0;
                 let snapshot = homunculus::homunculus_snapshot(homunculus, 150).ok_or("Homunculus status data is unavailable")?;
                 let normalized = StatusEffectService::normalize_request_for_target(request.clone(), &snapshot, false);
-                let outcome = StatusEffectService::apply_status_for_target(&mut status, normalized, now as u128, fastrand::u16(0..10_000), false)?;
+                let outcome =
+                    StatusEffectService::apply_status_for_target(&mut status, normalized, now as u128, fastrand::u16(0..10_000), false)?;
                 accepted = outcome.started;
                 berserk_entry = outcome.started
                     && request.kind == models::status_change::StatusChangeKind::Berserk
@@ -1123,7 +1270,9 @@ fn apply_local_effect(systems: &mut CharacterGameSystems, effect: &CompanionSkil
             }
             _ => {}
         }
-        if !accepted { return Ok(false); }
+        if !accepted {
+            return Ok(false);
+        }
         homunculus.hp = status.hp;
         homunculus.sp = status.sp;
         homunculus.statuses = status.active_statuses;
@@ -1145,10 +1294,14 @@ fn apply_local_effect(systems: &mut CharacterGameSystems, effect: &CompanionSkil
         let mut berserk_refill = false;
         match effect {
             CompanionSkillEffect::Status { request, .. } => {
-                if mercenary.hp == 0 { return Ok(false); }
+                if mercenary.hp == 0 {
+                    return Ok(false);
+                }
                 berserk_refill = request.values[1] == 0;
-                let normalized = StatusEffectService::normalize_request_for_target(request.clone(), &super::mercenary_snapshot(mercenary), false);
-                let outcome = StatusEffectService::apply_status_for_target(&mut status, normalized, now as u128, fastrand::u16(0..10_000), false)?;
+                let normalized =
+                    StatusEffectService::normalize_request_for_target(request.clone(), &super::mercenary_snapshot(mercenary), false);
+                let outcome =
+                    StatusEffectService::apply_status_for_target(&mut status, normalized, now as u128, fastrand::u16(0..10_000), false)?;
                 accepted = outcome.started;
                 berserk_entry = outcome.started
                     && request.kind == models::status_change::StatusChangeKind::Berserk
@@ -1166,7 +1319,9 @@ fn apply_local_effect(systems: &mut CharacterGameSystems, effect: &CompanionSkil
             }
             _ => {}
         }
-        if !accepted { return Ok(false); }
+        if !accepted {
+            return Ok(false);
+        }
         mercenary.hp = status.hp;
         mercenary.sp = status.sp;
         mercenary.statuses = status.active_statuses;
@@ -1278,7 +1433,13 @@ mod tests {
     #[test]
     fn mercenary_magnum_requires_its_primary_hp_amount_without_consuming_it() {
         let metadata = SkillMetadata::all().iter().find(|metadata| metadata.name == "MS_MAGNUM").unwrap();
-        let hp = metadata.requires.as_ref().unwrap().get("HpCost").and_then(|value| SkillMetadata::json_level_value(value, 1, "Amount")).unwrap() as u32;
+        let hp = metadata
+            .requires
+            .as_ref()
+            .unwrap()
+            .get("HpCost")
+            .and_then(|value| SkillMetadata::json_level_value(value, 1, "Amount"))
+            .unwrap() as u32;
         assert!(hp > 0);
         let systems = systems();
         let mut source = homunculus::homunculus_snapshot(systems.homunculus.as_ref().unwrap(), 150).unwrap();
@@ -1293,20 +1454,42 @@ mod tests {
         let mut systems = systems();
         systems.homunculus.as_mut().unwrap().stats[1] = 40;
         let id = homunculus_world_id(systems.homunculus.as_ref().unwrap());
-        apply_local_effect(&mut systems, &CompanionSkillEffect::Status {
-            target_id: id, request: StatusChangeRequest::guaranteed(StatusChangeKind::Quagmire, 1000, 3),
-        }, 0).unwrap();
+        apply_local_effect(
+            &mut systems,
+            &CompanionSkillEffect::Status {
+                target_id: id,
+                request: StatusChangeRequest::guaranteed(StatusChangeKind::Quagmire, 1000, 3),
+            },
+            0,
+        )
+        .unwrap();
         let homunculus = systems.homunculus.as_ref().unwrap();
-        let change = homunculus.statuses.iter().find(|change| change.kind == StatusChangeKind::Quagmire).unwrap();
+        let change = homunculus
+            .statuses
+            .iter()
+            .find(|change| change.kind == StatusChangeKind::Quagmire)
+            .unwrap();
         assert_eq!((change.values[1], change.values[2]), (30, 0));
         let snapshot = homunculus::homunculus_snapshot(homunculus, 150).unwrap();
         assert_eq!((snapshot.agi(), snapshot.dex()), (10, 20));
-        apply_local_effect(&mut systems, &CompanionSkillEffect::Status {
-            target_id: id, request: StatusChangeRequest::guaranteed(StatusChangeKind::Curse, 1000, 1),
-        }, 0).unwrap();
-        apply_local_effect(&mut systems, &CompanionSkillEffect::Status {
-            target_id: id, request: StatusChangeRequest::guaranteed(StatusChangeKind::Blessing, 1000, 5),
-        }, 0).unwrap();
+        apply_local_effect(
+            &mut systems,
+            &CompanionSkillEffect::Status {
+                target_id: id,
+                request: StatusChangeRequest::guaranteed(StatusChangeKind::Curse, 1000, 1),
+            },
+            0,
+        )
+        .unwrap();
+        apply_local_effect(
+            &mut systems,
+            &CompanionSkillEffect::Status {
+                target_id: id,
+                request: StatusChangeRequest::guaranteed(StatusChangeKind::Blessing, 1000, 5),
+            },
+            0,
+        )
+        .unwrap();
         let homunculus = systems.homunculus.as_ref().unwrap();
         assert!(homunculus.statuses.iter().any(|change| change.kind == StatusChangeKind::Curse));
         assert!(homunculus.statuses.iter().any(|change| change.kind == StatusChangeKind::Blessing));
@@ -1332,26 +1515,59 @@ mod tests {
         character.game_systems = systems();
         let id = homunculus_world_id(character.game_systems.homunculus.as_ref().unwrap());
         let before = super::super::companion_attack_damage(&character, id, true, &mut fastrand::Rng::with_seed(42)).unwrap();
-        apply_local_effect(&mut character.game_systems, &CompanionSkillEffect::Status {
-            target_id: id, request: StatusChangeRequest::guaranteed(StatusChangeKind::Berserk, 60000, 1),
-        }, 0).unwrap();
+        apply_local_effect(
+            &mut character.game_systems,
+            &CompanionSkillEffect::Status {
+                target_id: id,
+                request: StatusChangeRequest::guaranteed(StatusChangeKind::Berserk, 60000, 1),
+            },
+            0,
+        )
+        .unwrap();
         let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::Overthrust, 60000, 5);
         request.flags |= models::status_change::StatusStartFlag::Loaded.as_flag();
         request.values[2] = 25;
-        apply_local_effect(&mut character.game_systems, &CompanionSkillEffect::Status { target_id: id, request }, 0).unwrap();
-        assert_eq!(super::super::companion_attack_damage(&character, id, true, &mut fastrand::Rng::with_seed(42)).unwrap(), before);
+        apply_local_effect(
+            &mut character.game_systems,
+            &CompanionSkillEffect::Status { target_id: id, request },
+            0,
+        )
+        .unwrap();
+        assert_eq!(
+            super::super::companion_attack_damage(&character, id, true, &mut fastrand::Rng::with_seed(42)).unwrap(),
+            before
+        );
         let snapshot = companion_status_snapshot(&character, id).unwrap();
-        assert_eq!(crate::server::service::battle_service::BattleService::weapon_skill_ratio(&snapshot, 1.0, 0), 2.25);
-        assert_eq!(crate::server::service::battle_service::BattleService::weapon_skill_ratio(&snapshot, 3.0,
-            models::enums::skill_enums::SkillEnum::MsBash.id()), 4.25);
+        assert_eq!(
+            crate::server::service::battle_service::BattleService::weapon_skill_ratio(&snapshot, 1.0, 0),
+            2.25
+        );
+        assert_eq!(
+            crate::server::service::battle_service::BattleService::weapon_skill_ratio(
+                &snapshot,
+                3.0,
+                models::enums::skill_enums::SkillEnum::MsBash.id()
+            ),
+            4.25
+        );
     }
 
     #[test]
     fn homunculus_and_mercenary_snapshots_use_strongest_quicken_and_add_potion_and_berserk_haste() {
         let mut character = crate::tests::common::character_helper::create_character();
-        let mercenary = super::super::plan_persistent_effects(&character,
-            &[(script_sdk::Function::MercenaryCreate, vec![script_sdk::Value::Number(6017), script_sdk::Value::Number(60000)])], 0)
-            .unwrap().systems.unwrap().mercenary.unwrap();
+        let mercenary = super::super::plan_persistent_effects(
+            &character,
+            &[(script_sdk::Function::MercenaryCreate, vec![
+                script_sdk::Value::Number(6017),
+                script_sdk::Value::Number(60000),
+            ])],
+            0,
+        )
+        .unwrap()
+        .systems
+        .unwrap()
+        .mercenary
+        .unwrap();
         character.game_systems = systems();
         character.game_systems.mercenary = Some(mercenary);
         character.game_systems.mercenary.as_mut().unwrap().id = 2;
@@ -1359,20 +1575,46 @@ mod tests {
         let merc_id = mercenary_world_id(character.game_systems.mercenary.as_ref().unwrap());
         for id in [hom_id, merc_id] {
             let base = companion_status_snapshot(&character, id).unwrap().aspd();
-            for (kind, level) in [(StatusChangeKind::Fleet, 5), (StatusChangeKind::MercQuicken, 1), (StatusChangeKind::AspdPotion0, 1)] {
-                apply_local_effect(&mut character.game_systems, &CompanionSkillEffect::Status {
-                    target_id: id, request: StatusChangeRequest::guaranteed(kind, 60000, level),
-                }, 0).unwrap();
+            for (kind, level) in [
+                (StatusChangeKind::Fleet, 5),
+                (StatusChangeKind::MercQuicken, 1),
+                (StatusChangeKind::AspdPotion0, 1),
+            ] {
+                apply_local_effect(
+                    &mut character.game_systems,
+                    &CompanionSkillEffect::Status {
+                        target_id: id,
+                        request: StatusChangeRequest::guaranteed(kind, 60000, level),
+                    },
+                    0,
+                )
+                .unwrap();
             }
             let snapshot = companion_status_snapshot(&character, id).unwrap();
             let expected = 200.0 - (200.0 - base) * 0.6;
-            assert!((snapshot.aspd() - expected).abs() < 0.001, "{} != {}", snapshot.aspd(), expected);
-            apply_local_effect(&mut character.game_systems, &CompanionSkillEffect::Status {
-                target_id: id, request: StatusChangeRequest::guaranteed(StatusChangeKind::Berserk, 60000, 1),
-            }, 0).unwrap();
+            assert!(
+                (snapshot.aspd() - expected).abs() < 0.001,
+                "{} != {}",
+                snapshot.aspd(),
+                expected
+            );
+            apply_local_effect(
+                &mut character.game_systems,
+                &CompanionSkillEffect::Status {
+                    target_id: id,
+                    request: StatusChangeRequest::guaranteed(StatusChangeKind::Berserk, 60000, 1),
+                },
+                0,
+            )
+            .unwrap();
             let expected = 200.0 - (200.0 - base) * 0.3;
             let snapshot = companion_status_snapshot(&character, id).unwrap();
-            assert!((snapshot.aspd() - expected).abs() < 0.001, "{} != {}", snapshot.aspd(), expected);
+            assert!(
+                (snapshot.aspd() - expected).abs() < 0.001,
+                "{} != {}",
+                snapshot.aspd(),
+                expected
+            );
         }
     }
 

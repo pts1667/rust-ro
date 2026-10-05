@@ -37,6 +37,7 @@ pub struct CharacterRecord {
     pub last_map: String,
     pub last_x: i16,
     pub last_y: i16,
+    pub position_revision: u64,
     pub save_map: String,
     pub save_x: i16,
     pub save_y: i16,

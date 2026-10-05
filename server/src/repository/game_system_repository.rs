@@ -13,17 +13,21 @@ use crate::server::service::script_world_service::{WorldEffectPlan, world_data};
 
 #[path = "game_system_guild_storage_repository.rs"]
 mod guild_storage;
+#[path = "game_system_guild_management_repository.rs"]
+mod guild_management;
 #[path = "game_system_party_repository.rs"]
 mod party;
 #[path = "game_system_pet_loot_repository.rs"]
 mod pet_loot;
+#[path = "game_system_pet_custody_repository.rs"]
+mod pet_custody;
 pub use pet_loot::PetLootReturn;
 #[path = "player_trade_repository.rs"]
 mod player_trade;
 pub use player_trade::{PlayerTradeCommit, PlayerTradeSide, PlayerTradeResult, restrictions_allow};
 #[path = "game_system_trade_repository.rs"]
 mod trade;
-pub use trade::{ContainerTransfer, VendingTrade};
+pub use trade::{ContainerTransfer, VendingTrade, StoreMove, StoreMoveResult};
 
 use crate::server::model::game_systems::{ItemContainer, VendingStore};
 
@@ -122,6 +126,9 @@ pub struct StorageTransfer {
 }
 
 pub trait GameSystemRepository: Send + Sync {
+    fn allocate_player_trade_session_id(&self) -> Result<u64, Error> {
+        Err(Error::new("Player trade session persistence is unavailable".into()))
+    }
     fn commit_player_trade(&self, _change: &PlayerTradeCommit) -> Result<PlayerTradeResult, Error> {
         Err(Error::new("Player trade persistence is unavailable".into()))
     }
@@ -198,6 +205,9 @@ pub trait GameSystemRepository: Send + Sync {
     fn clear_character_stores(&self, _char_id: u32) -> Result<(), Error> {
         Ok(())
     }
+    fn move_character_stores(&self, _change: &StoreMove) -> Result<StoreMoveResult, Error> {
+        Err(Error::new("Store movement persistence is unavailable".into()))
+    }
     fn commit_world_effects(&self, _char_id: u32, _plan: &WorldEffectPlan) -> Result<CommittedWorldEffects, Error> {
         Err(Error::new("World effect persistence is unavailable".into()))
     }
@@ -258,6 +268,9 @@ pub trait GameSystemRepository: Send + Sync {
     fn marry_characters(&self, _first: u32, _second: u32) -> Result<(), Error> {
         Err(Error::new("Marriage persistence is unavailable".into()))
     }
+    fn divorce_character(&self, _char_id: u32) -> Result<u32, Error> {
+        Err(Error::new("Marriage persistence is unavailable".into()))
+    }
     fn create_guild(&self, _master: u32, _name: String) -> Result<GuildRecord, Error> {
         Err(Error::new("Guild persistence is unavailable".into()))
     }
@@ -278,6 +291,42 @@ pub trait GameSystemRepository: Send + Sync {
     }
     fn guild_add_experience(&self, _char_id: u32, _amount: u64, _requirements: &[u64]) -> Result<Option<GuildRecord>, Error> {
         Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_set_positions(&self, _actor: u32, _positions: Vec<crate::server::model::game_systems::GuildPosition>) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_set_member_position(&self, _actor: u32, _target: u32, _position: u8) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_upgrade_skill(&self, _actor: u32, _skill_id: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_set_notice(&self, _actor: u32, _notice: crate::server::model::game_systems::GuildNotice) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_set_emblem(&self, _actor: u32, _emblem: Vec<u8>) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_invite_member(&self, _inviter: u32, _target: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_expel_member(&self, _actor: u32, _target: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_form_alliance(&self, _master_a: u32, _master_b: u32) -> Result<(GuildRecord, GuildRecord), Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_declare_opposition(&self, _master: u32, _target_guild: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn guild_break_relation(&self, _master: u32, _other_guild: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
+    fn castle_value(&self, _map: &str, _field: u8) -> Result<i32, Error> {
+        Err(Error::new("Castle persistence is unavailable".into()))
+    }
+    fn set_castle_value(&self, _map: &str, _field: u8, _value: i32) -> Result<(), Error> {
+        Err(Error::new("Castle persistence is unavailable".into()))
     }
     fn create_pet_egg(&self, _char_id: u32, _pet: &PetRecord, _max_weight: u32) -> Result<(PetRecord, InventoryItemModel), Error> {
         Err(Error::new("Pet persistence is unavailable".into()))
@@ -369,6 +418,9 @@ fn inventory_weight(records: &[InventoryRecord], items: &TransactionalTree) -> C
 }
 
 impl GameSystemRepository for SledRepository {
+    fn allocate_player_trade_session_id(&self) -> Result<u64, Error> {
+        player_trade::allocate_session(self)
+    }
     fn commit_player_trade(&self, change: &PlayerTradeCommit) -> Result<PlayerTradeResult, Error> {
         player_trade::commit(self, change)
     }
@@ -501,6 +553,9 @@ impl GameSystemRepository for SledRepository {
             Ok(())
         })?;
         Ok(())
+    }
+    fn move_character_stores(&self, change: &StoreMove) -> Result<StoreMoveResult, Error> {
+        trade::move_character_stores(self, change)
     }
 
     fn commit_world_effects(&self, char_id: u32, plan: &WorldEffectPlan) -> Result<CommittedWorldEffects, Error> {
@@ -691,6 +746,24 @@ impl GameSystemRepository for SledRepository {
         Ok(())
     }
 
+    fn divorce_character(&self, char_id: u32) -> Result<u32, Error> {
+        Ok(self.database.game_systems.transaction(|systems| {
+            let mut own: CharacterGameSystems = tx_read(systems, &character_key(char_id))?.unwrap_or_default();
+            let partner_id = own.partner_id;
+            if partner_id == 0 {
+                return abort("Character is not married");
+            }
+            let mut partner: CharacterGameSystems = tx_read(systems, &character_key(partner_id))?.unwrap_or_default();
+            if partner.partner_id == char_id {
+                partner.partner_id = 0;
+                write_state(systems, partner_id, &mut partner)?;
+            }
+            own.partner_id = 0;
+            write_state(systems, char_id, &mut own)?;
+            Ok(partner_id)
+        })?)
+    }
+
     fn create_guild(&self, master: u32, name: String) -> Result<GuildRecord, Error> {
         let name = name.trim().to_string();
         if name.is_empty() || name.len() > 23 || name.chars().any(char::is_control) {
@@ -734,6 +807,14 @@ impl GameSystemRepository for SledRepository {
                     level: 1,
                     experience: 0,
                     skill_points: 0,
+                    positions: crate::server::model::game_systems::GuildPosition::defaults(),
+                    member_positions: Default::default(),
+                    notice: Default::default(),
+                    emblem: Vec::new(),
+                    emblem_version: 0,
+                    allies: Vec::new(),
+                    opposition: Vec::new(),
+                    skills: Default::default(),
                 };
                 member.guild_id = id;
                 write_state(systems, master, &mut member)?;
@@ -750,7 +831,7 @@ impl GameSystemRepository for SledRepository {
                 tx_required::<CharacterRecord>(characters, &(char_id as i32).to_be_bytes())?;
                 let mut member: CharacterGameSystems = tx_read(systems, &character_key(char_id))?.unwrap_or_default();
                 let mut guild: GuildRecord = tx_required(systems, &key(b"guild/", guild_id))?;
-                if member.guild_id != 0 || guild.members.len() >= 16 {
+                if member.guild_id != 0 || guild.members.len() >= guild.max_members() {
                     return abort("Character already joined a guild or this guild is full");
                 }
                 member.guild_id = guild_id;
@@ -792,6 +873,7 @@ impl GameSystemRepository for SledRepository {
             member_state.guild_id = 0;
             guild_storage::release_member_lock(systems, member, guild_id)?;
             guild.members.retain(|id| *id != member);
+            guild.member_positions.remove(&member);
             write_state(systems, member, &mut member_state)?;
             tx_write(systems, &key(b"guild/", guild_id), &guild)?;
             Ok(guild)
@@ -817,6 +899,7 @@ impl GameSystemRepository for SledRepository {
                 guild_storage::release_member_lock(systems, *member, guild.id)?;
                 write_state(systems, *member, &mut state)?;
             }
+            guild_management::clear_relations(systems, &guild)?;
             systems.remove(key(b"guild/", guild.id))?;
             systems.remove(key(b"guild_storage/", guild.id))?;
             systems.remove([b"guild_name/".as_slice(), guild.name.as_bytes()].concat())?;
@@ -853,6 +936,44 @@ impl GameSystemRepository for SledRepository {
             tx_write(systems, &key(b"guild/", guild.id), &guild)?;
             Ok(Some(guild))
         })?)
+    }
+
+    fn guild_set_positions(&self, actor: u32, positions: Vec<crate::server::model::game_systems::GuildPosition>) -> Result<GuildRecord, Error> {
+        guild_management::set_positions(self, actor, positions)
+    }
+    fn guild_set_member_position(&self, actor: u32, target: u32, position: u8) -> Result<GuildRecord, Error> {
+        guild_management::set_member_position(self, actor, target, position)
+    }
+    fn guild_upgrade_skill(&self, actor: u32, skill_id: u32) -> Result<GuildRecord, Error> {
+        guild_management::upgrade_skill(self, actor, skill_id)
+    }
+    fn guild_set_notice(&self, actor: u32, notice: crate::server::model::game_systems::GuildNotice) -> Result<GuildRecord, Error> {
+        guild_management::set_notice(self, actor, notice)
+    }
+    fn guild_set_emblem(&self, actor: u32, emblem: Vec<u8>) -> Result<GuildRecord, Error> {
+        guild_management::set_emblem(self, actor, emblem)
+    }
+    fn guild_invite_member(&self, inviter: u32, target: u32) -> Result<GuildRecord, Error> {
+        guild_management::invite_member(self, inviter, target)
+    }
+    fn guild_expel_member(&self, actor: u32, target: u32) -> Result<GuildRecord, Error> {
+        guild_management::expel_member(self, actor, target)
+    }
+    fn guild_form_alliance(&self, master_a: u32, master_b: u32) -> Result<(GuildRecord, GuildRecord), Error> {
+        guild_management::form_alliance(self, master_a, master_b)
+    }
+    fn guild_declare_opposition(&self, master: u32, target_guild: u32) -> Result<GuildRecord, Error> {
+        guild_management::declare_opposition(self, master, target_guild)
+    }
+    fn guild_break_relation(&self, master: u32, other_guild: u32) -> Result<GuildRecord, Error> {
+        guild_management::break_relation(self, master, other_guild)
+    }
+
+    fn castle_value(&self, map: &str, field: u8) -> Result<i32, Error> {
+        guild_management::castle_value(self, map, field)
+    }
+    fn set_castle_value(&self, map: &str, field: u8, value: i32) -> Result<(), Error> {
+        guild_management::set_castle_value(self, map, field, value)
     }
 
     fn create_pet_egg(&self, char_id: u32, pet: &PetRecord, max_weight: u32) -> Result<(PetRecord, InventoryItemModel), Error> {
@@ -892,8 +1013,9 @@ impl GameSystemRepository for SledRepository {
             &self.database.game_systems,
             &self.database.inventories,
             &self.database.inventory_owners,
+            &self.database.items,
         )
-            .transaction(|(systems, inventories, owners)| {
+            .transaction(|(systems, inventories, owners, items)| {
                 let mut state: CharacterGameSystems = tx_read(systems, &character_key(char_id))?.unwrap_or_default();
                 if state.pet.is_some() {
                     return abort("A pet is already active");
@@ -903,11 +1025,12 @@ impl GameSystemRepository for SledRepository {
                     .iter()
                     .position(|item| item.id == inventory_id && item.card0 == 256 && item.amount == 1 && item.equip == 0)
                     .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
-                let pet_id = records[index].card1 as u16 as u32 | ((records[index].card2 as u16 as u32) << 16);
-                let mut pet: PetRecord = tx_required(systems, &key(b"pet/", pet_id))?;
-                if !pet.incubating || pet.egg_item_id != records[index].item_id {
+                let item: ItemModel = tx_required(items, &records[index].item_id.to_be_bytes())?;
+                let owner: i32 = tx_required(owners, &inventory_id.to_be_bytes())?;
+                if item.item_type != ItemType::PetEgg || owner != char_id as i32 {
                     return abort("Invalid pet egg");
                 }
+                let mut pet = pet_custody::incubating_pet(systems, &records[index])?;
                 pet.owner_char_id = char_id;
                 pet.egg_inventory_id = inventory_id;
                 pet.incubating = false;
@@ -1261,12 +1384,16 @@ impl GameSystemRepository for SledRepository {
                     .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
                 let record = source[index].clone();
                 let item: ItemModel = tx_required(items, &record.item_id.to_be_bytes())?;
+                let masks = trade::trade_masks(items, &item, &record)?;
                 if record.equip != 0
                     || record.amount < amount as i16
-                    || (!item.item_type.is_stackable() && amount != 1)
-                    || (deposit && item.trade_flags & ItemTradeFlag::NoStorage.as_flag() != 0)
+                    || (!item.item_type.is_stackable() && (record.amount != 1 || amount != 1))
+                    || (deposit && masks.iter().any(|mask| mask & ItemTradeFlag::NoStorage.as_flag() != 0))
                 {
                     return abort("Item cannot be moved to or from storage");
+                }
+                if deposit && tx_required::<i32>(owners, &record.id.to_be_bytes())? != char_id as i32 {
+                    return abort("Storage item ownership changed");
                 }
                 let stack = item.item_type.is_stackable() && record.unique_id == 0;
                 let existing = if stack {
@@ -1292,6 +1419,9 @@ impl GameSystemRepository for SledRepository {
                     })?;
                     moved_id = destination[existing].id;
                 } else {
+                    if destination.iter().any(|target| target.id == record.id || (record.unique_id != 0 && target.unique_id == record.unique_id)) {
+                        return abort("Storage item identity already exists at the destination");
+                    }
                     let mut moved = record.clone();
                     moved.amount = amount as i16;
                     if !whole {
@@ -1299,6 +1429,9 @@ impl GameSystemRepository for SledRepository {
                     }
                     moved_id = moved.id;
                     destination.push(moved);
+                }
+                if item.item_type == ItemType::PetEgg && record.card0 == 256 {
+                    pet_custody::transfer_egg(systems, &record, moved_id, if deposit { 0 } else { char_id }, char_id)?;
                 }
                 if whole {
                     source.remove(index);

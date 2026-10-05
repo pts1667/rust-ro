@@ -119,6 +119,9 @@ pub fn run_support(ctx: &Context, id: u32) -> Result<(), String> { match id {
 2081 => pet_support_2081(ctx),
 _ => Err(format!("Unknown pre-renewal pet class {id}")),
 } }
+pub fn run_auto_bonus(_ctx: &Context, id: u32) -> Result<(), String> { match id {
+_ => Err(format!("Unknown pre-renewal pet automatic bonus {id}")),
+} }
 #[inline(never)]
 #[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
 fn pet_bonus_1002(ctx: &Context) -> Result<(), String> { let mut local_i = Value::default();

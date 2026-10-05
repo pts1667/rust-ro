@@ -86,6 +86,7 @@ impl ScriptLoader {
                 .ok_or_else(|| format!("Unknown NPC sprite {}", definition.sprite))?;
             scripts.entry(definition.map_name.clone()).or_default().push(Script {
                 id: 0,
+                scope_instance: 0,
                 map_name: definition.map_name,
                 name: definition.name,
                 sprite,

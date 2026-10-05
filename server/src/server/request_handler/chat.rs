@@ -1,6 +1,7 @@
 use packets::packets::PacketCzPlayerChat;
 
 use crate::server::Server;
+use crate::server::model::map_flags::MapFlag;
 use crate::server::model::request::Request;
 use crate::server::request_handler::atcommand::handle_atcommand;
 
@@ -10,6 +11,10 @@ pub fn handle_chat(server: &Server, context: Request) {
     let character = server.state().get_character_unsafe(char_id);
     debug!("Received chat from {}: {:?}", character.name, packet_player_chat.msg);
     if packet_player_chat.msg.starts_with(format!("{} : @", character.name).as_str()) {
+        if server.state().map_flags(&character.map_instance_key).enabled(MapFlag::NoCommand) {
+            debug!("Command rejected on a map with nocommand: {}", character.name);
+            return;
+        }
         // TODO make symbol configurable
         handle_atcommand(server, context, packet_player_chat);
     }

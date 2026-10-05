@@ -8,6 +8,15 @@ use crate::server::service::script_combat_service::MobCombatEffect;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum MapEvent {
+    GroundTrapCapture(crate::server::script::skill::trap::GroundTrapCapture),
+    GroundTrapRelease(crate::server::script::skill::trap::GroundTrapRelease),
+    GroundTrapEffect(crate::server::script::skill::trap::GroundTrapEffect),
+    GroundTrapRecover {
+        item_id: i32,
+        amount: u16,
+        x: u16,
+        y: u16,
+    },
     SetMapFlags(crate::server::model::map_flags::MapFlags),
     UpdateMobsFov(Vec<MapItemSnapshot>),
     UpdateActorVisibility(Vec<(u32, crate::server::service::visibility_service::StealthState)>),
@@ -16,6 +25,10 @@ pub enum MapEvent {
     RemoveDroppedItemFromMap(u32),
     MobDamage(Damage),
     ActorSkillCast(crate::server::script::skill::actor::MapActorSkillCast),
+    UnitData(crate::server::script::unit_data::MapUnitDataRequest),
+    InstallScriptNpc(crate::server::script::unit_data::ScriptNpcTransfer),
+    ReleaseScriptNpc(u32),
+    NpcEffect(crate::server::service::map_npc_effect::MapNpcEffect),
     MobStatusChange {
         mob_id: u32,
         request: StatusChangeRequest,
@@ -166,9 +179,17 @@ pub struct ScriptSpawn {
     pub name: String,
     pub amount: u16,
     pub event: String,
+    pub event_npc: Option<ScriptNpcCallback>,
     pub size: Option<u8>,
     pub ai: Option<u16>,
     pub owner_id: u32,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct ScriptNpcCallback {
+    pub npc_id: u32,
+    pub scope_instance: u8,
+    pub entry_id: u32,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]

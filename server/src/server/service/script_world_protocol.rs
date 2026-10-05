@@ -42,6 +42,20 @@ fn world_packet_id(id: u16, packetver: u32) -> Option<u16> {
             | 0x0159
             | 0x015B
             | 0x015D
+            | 0x0161
+            | 0x017E
+            | 0x0155
+            | 0x0153
+            | 0x0217
+            | 0x0218
+            | 0x0225
+            | 0x097C
+            | 0x0170
+            | 0x0172
+            | 0x0180
+            | 0x0183
+            | 0x0151
+            | 0x016E
             | 0x00F9
             | 0x01E8
             | 0x00FC
@@ -148,11 +162,20 @@ pub fn world_frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
         0x0108 => FrameLength::Variable { minimum: 5 },
         0x0165 => FrameLength::Fixed(30),
         0x0168 => FrameLength::Fixed(14),
+        0x0170 => FrameLength::Fixed(14),
+        0x0217 | 0x0218 | 0x0225 => FrameLength::Fixed(2),
+        0x097C => FrameLength::Fixed(4),
+        0x0172 | 0x0183 => FrameLength::Fixed(10),
+        0x0180 => FrameLength::Fixed(6),
         0x016B => FrameLength::Fixed(10),
         0x014D => FrameLength::Fixed(2),
         0x014F => FrameLength::Fixed(6),
         0x0159 | 0x015B => FrameLength::Fixed(54),
         0x015D => FrameLength::Fixed(42),
+        0x0151 => FrameLength::Fixed(6),
+        0x017E => FrameLength::Variable { minimum: 5 },
+        0x016E => FrameLength::Fixed(186),
+        0x0161 | 0x0155 | 0x0153 => FrameLength::Variable { minimum: 4 },
         0x019F | 0x01A9 | 0x0817 | 0x0130 | 0x0234 => FrameLength::Fixed(6),
         0x01A7 | 0x01AF => FrameLength::Fixed(4),
         0x01A1 | 0x029F => FrameLength::Fixed(3),
@@ -281,6 +304,36 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 accept: answer == 1,
             }
         }
+        0x0217 => ScriptWorldRequest::FameList(0),
+        0x0218 => ScriptWorldRequest::FameList(1),
+        0x0225 => ScriptWorldRequest::FameList(2),
+        0x097C => {
+            exact_length(bytes, 4)?;
+            let kind = u16_at(bytes, 2)?;
+            ScriptWorldRequest::FameList(u8::try_from(kind).map_err(|_| "Invalid ranking type")?)
+        }
+        0x0170 => {
+            exact_length(bytes, 14)?;
+            ScriptWorldRequest::GuildAllianceRequest(u32_at(bytes, 2)?)
+        }
+        0x0172 => {
+            exact_length(bytes, 10)?;
+            ScriptWorldRequest::GuildAllianceReply {
+                inviter: u32_at(bytes, 2)?,
+                accept: u32_at(bytes, 6)? == 1,
+            }
+        }
+        0x0180 => {
+            exact_length(bytes, 6)?;
+            ScriptWorldRequest::GuildOpposition(u32_at(bytes, 2)?)
+        }
+        0x0183 => {
+            exact_length(bytes, 10)?;
+            ScriptWorldRequest::GuildRelationBreak {
+                guild_id: u32_at(bytes, 2)?,
+                hostile: u32_at(bytes, 6)? == 1,
+            }
+        }
         0x014D => {
             exact_length(bytes, 2)?;
             ScriptWorldRequest::GuildMenu
@@ -307,6 +360,56 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
         0x015D => {
             exact_length(bytes, 42)?;
             ScriptWorldRequest::DisbandGuild(text(&bytes[2..42])?)
+        }
+        0x016E => {
+            exact_length(bytes, 186)?;
+            ScriptWorldRequest::GuildNotice {
+                subject: text(&bytes[6..66])?,
+                body: text(&bytes[66..186])?,
+            }
+        }
+        0x0161 => {
+            variable_length(bytes, 4, 40)?;
+            let mut positions = Vec::new();
+            for record in bytes[4..].chunks_exact(40) {
+                let mode = u32_at(record, 4)?;
+                let tax = u32_at(record, 12)?;
+                positions.push((
+                    u32_at(record, 0)?,
+                    crate::server::model::game_systems::GuildPosition {
+                        name: text(&record[16..40])?,
+                        invite: mode & 0x01 != 0,
+                        punish: mode & 0x10 != 0,
+                        exp_tax: u8::try_from(tax).map_err(|_| "Invalid guild experience tax")?,
+                    },
+                ));
+            }
+            ScriptWorldRequest::GuildPositions(positions)
+        }
+        0x0155 => {
+            variable_length(bytes, 4, 12)?;
+            let mut members = Vec::new();
+            for record in bytes[4..].chunks_exact(12) {
+                members.push((u32_at(record, 4)?, u32_at(record, 8)?));
+            }
+            ScriptWorldRequest::GuildMemberPositions(members)
+        }
+        0x0153 => {
+            if bytes.len() < 4 || usize::from(u16_at(bytes, 2)?) != bytes.len() {
+                return Err("Malformed guild emblem packet".into());
+            }
+            ScriptWorldRequest::GuildEmblem(bytes[4..].to_vec())
+        }
+        0x017E => {
+            variable_length(bytes, 5, 1)?;
+            if bytes.len() > 259 || bytes.last() != Some(&0) {
+                return Err("Invalid guild chat length or terminator".into());
+            }
+            ScriptWorldRequest::GuildMessage(text(&bytes[4..])?)
+        }
+        0x0151 => {
+            exact_length(bytes, 6)?;
+            ScriptWorldRequest::GuildEmblemRequest(u32_at(bytes, 2)?)
         }
         0x022D => {
             exact_length(bytes, 5)?;
@@ -1141,4 +1244,30 @@ mod tests {
         answer.extend_from_slice(&2u32.to_le_bytes());
         assert!(decode_request(&answer, 20120229).is_err());
     }
+}
+
+pub fn fame_list(kind: u8, rankings: &[crate::repository::fame_repository::FameEntry], own_points: u32, packetver: u32) -> Vec<u8> {
+    let modern = packetver >= 20130605;
+    let mut packet = if modern {
+        let mut packet = header(0x097D);
+        packet.extend_from_slice(&u16::from(kind).to_le_bytes());
+        packet
+    } else {
+        header(match kind {
+            0 => 0x0219,
+            1 => 0x021A,
+            2 => 0x0226,
+            _ => 0x0238,
+        })
+    };
+    for index in 0..10 {
+        fixed_string(&mut packet, rankings.get(index).map_or("", |entry| entry.name.as_str()), 24);
+    }
+    for index in 0..10 {
+        packet.extend_from_slice(&rankings.get(index).map_or(0, |entry| entry.points).to_le_bytes());
+    }
+    if modern {
+        packet.extend_from_slice(&own_points.to_le_bytes());
+    }
+    packet
 }

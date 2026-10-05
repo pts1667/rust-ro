@@ -146,12 +146,14 @@ pub async fn main() {
     let server_ref_clone = server_ref;
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
 
-    // Create proxies for other emulator (rathena/hercules). TODO: add a
-    // configuration to disable this.
-    let char_proxy = CharProxy::new(&configs().proxy);
-    let map_proxy = MapProxy::new(&configs().proxy);
-    let _ = &handles.push(char_proxy.proxy(configs().server.packetver));
-    let _ = &handles.push(map_proxy.proxy(configs().server.packetver));
+    let proxies = configs().server.enable_legacy_proxy.then(|| {
+        let char_proxy = CharProxy::new(&configs().proxy);
+        let map_proxy = MapProxy::new(&configs().proxy);
+        handles.push(char_proxy.proxy(configs().server.packetver));
+        handles.push(map_proxy.proxy(configs().server.packetver));
+        (char_proxy, map_proxy)
+    });
+
 
     if configs().server.enable_visual_debugger {
         #[cfg(feature = "visual_debugger")]
@@ -175,8 +177,10 @@ pub async fn main() {
         persistence_event_sender,
         true,
     );
-    map_proxy.shutdown();
-    char_proxy.shutdown();
+    if let Some((char_proxy, map_proxy)) = proxies {
+        map_proxy.shutdown();
+        char_proxy.shutdown();
+    }
 }
 
 fn update_item_and_mob_static_db(items: &mut Vec<ItemModel>, mobs: &Vec<MobModel>) {

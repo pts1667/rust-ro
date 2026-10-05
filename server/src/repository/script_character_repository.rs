@@ -112,6 +112,18 @@ pub fn apply_experience_tx(character: &mut CharacterRecord, plan: &ScriptExperie
 }
 
 pub trait ScriptCharacterRepository: Send + Sync {
+    fn character_set_save_point(
+        &self,
+        _char_id: u32,
+        _account_id: u32,
+        _expected: &(String, u16, u16),
+        _point: &(String, u16, u16),
+    ) -> Result<(), Error> {
+        Err(Error::InvalidInput("Character save point transactions are unavailable".into()))
+    }
+    fn character_adjust_zeny(&self, _char_id: u32, _account_id: u32, _expected: u32, _delta: i64) -> Result<u32, Error> {
+        Err(Error::InvalidInput("Character wallet transactions are unavailable".into()))
+    }
     fn character_commit_experience_awards(&self, _awards: &[ScriptExperienceAward]) -> Result<(), Error> {
         Err(Error::InvalidInput("Character experience transactions are unavailable".into()))
     }
@@ -168,6 +180,47 @@ pub fn apply_skill_reset_tx(
 }
 
 impl ScriptCharacterRepository for SledRepository {
+    fn character_set_save_point(
+        &self,
+        char_id: u32,
+        account_id: u32,
+        expected: &(String, u16, u16),
+        point: &(String, u16, u16),
+    ) -> Result<(), Error> {
+        let x = i16::try_from(point.1).map_err(|_| Error::InvalidInput("Save point x coordinate is out of range".into()))?;
+        let y = i16::try_from(point.2).map_err(|_| Error::InvalidInput("Save point y coordinate is out of range".into()))?;
+        self.database.characters.transaction(|characters| {
+            let key = char_id.to_be_bytes();
+            let mut character: CharacterRecord = tx_required(characters, &key)?;
+            if character.account_id as u32 != account_id
+                || crate::server::service::map_flag_service::normalize_map(&character.save_map) != expected.0
+                || character.save_x as u16 != expected.1
+                || character.save_y as u16 != expected.2
+            {
+                return abort("Character save point changed before it could be persisted");
+            }
+            character.save_map = point.0.clone();
+            character.save_x = x;
+            character.save_y = y;
+            tx_write(characters, &key, &character)
+        })?;
+        Ok(())
+    }
+
+    fn character_adjust_zeny(&self, char_id: u32, account_id: u32, expected: u32, delta: i64) -> Result<u32, Error> {
+        Ok(self.database.characters.transaction(|characters| {
+            let key = char_id.to_be_bytes();
+            let mut character: CharacterRecord = tx_required(characters, &key)?;
+            if character.account_id as u32 != account_id || character.zeny as u32 != expected {
+                return abort("Character wallet changed before the combat bonus committed");
+            }
+            let zeny = i64::from(character.zeny).saturating_add(delta).clamp(0, i32::MAX as i64) as u32;
+            character.zeny = zeny as i32;
+            tx_write(characters, &key, &character)?;
+            Ok(zeny)
+        })?)
+    }
+
     fn character_commit_experience_awards(&self, awards: &[ScriptExperienceAward]) -> Result<(), Error> {
         let unique_ids: std::collections::BTreeSet<_> = awards.iter().map(|award| award.char_id).collect();
         if unique_ids.len() != awards.len() {

@@ -149,6 +149,10 @@ impl MapFlags {
         if flag == MapFlag::SkillDamage {
             if enabled {
                 match arguments {
+                    [] => {
+                        self.skill_damage_caster |= MapActorType::All.as_flag();
+                        self.skill_damage = [0; 4];
+                    }
                     [rate, kind] => {
                         let index = usize::try_from(*kind)
                             .ok()
@@ -288,6 +292,12 @@ impl MapFlags {
             .filter(|(mask, _)| *mask & caster.as_flag() != 0)
             .map_or(0, |(_, rates)| rates[target_kind]);
         general.saturating_add(specific)
+    }
+
+    pub(crate) fn skill_duration_rate(&self, skill_id: u32) -> Option<u16> {
+        self.enabled(MapFlag::SkillDuration)
+            .then(|| self.skill_duration.get(&skill_id).copied())
+            .flatten()
     }
 }
 #[derive(Deserialize)]

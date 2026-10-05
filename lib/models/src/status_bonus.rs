@@ -193,6 +193,8 @@ pub struct AutoBonus {
     pub source_item_id: u32,
     #[serde(default)]
     pub source_location: u64,
+    #[serde(default)]
+    pub source_pet_id: u32,
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -55,3 +55,8 @@ pub extern "C" fn run_pet(id: u32) -> i32 {
 pub extern "C" fn run_pet_support(id: u32) -> i32 {
     finish(pets::run_support(&Context, id))
 }
+
+#[no_mangle]
+pub extern "C" fn run_pet_auto_bonus(id: u32) -> i32 {
+    finish(pets::run_auto_bonus(&Context, id))
+}

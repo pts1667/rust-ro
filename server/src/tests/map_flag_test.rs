@@ -10,7 +10,9 @@ use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 
 fn damage(source: u32, target: u32) -> Damage {
-    Damage {
+    Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id: target,
         attacker_id: source,
         credit_id: source,

@@ -1,4 +1,17 @@
 {
+  "MAGICALATTACK": {
+    "DurationLookup": "NPC_MAGICALATTACK"
+  },
+  "SMA": {
+    "Icon": "EFST_SMA_READY",
+    "DurationLookup": "SL_SMA",
+    "Flags": {
+      "NoClearbuff": true,
+      "NoDispell": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true
+    }
+  },
   "ADRENALINE": {
     "DurationLookup": "BS_ADRENALINE",
     "Fail": {

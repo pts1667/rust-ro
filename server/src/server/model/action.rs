@@ -20,6 +20,9 @@ pub struct PendingSkill {
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Damage {
+    pub notification: Option<crate::server::model::damage_notification::DamageNotification>,
+    pub source_kind: models::enums::actor::CombatActorKind,
+    pub skill_damage_adjusted: bool,
     pub target_id: u32,
     pub attacker_id: u32,
     pub damage: u32,
@@ -56,7 +59,7 @@ impl Damage {
             if self.damage == 0 {
                 0
             } else {
-                (u64::from(right.min(self.damage)) * u64::from(admitted.min(self.damage)) / u64::from(self.damage)) as u32
+                (u64::from(right.min(self.damage)) * u64::from(admitted) / u64::from(self.damage)) as u32
             }
         })
     }
@@ -113,6 +116,7 @@ impl SkillCasted {
 }
 
 pub struct SkillUsed {
+    pub notification: Option<crate::server::model::damage_notification::DamageNotification>,
     pub skill_type: SkillType,
     pub source_id: u32,
     pub target_id: u32,
@@ -138,10 +142,17 @@ pub struct SkillUsed {
 impl SkillUsed {
     pub fn to_damage(&self) -> Damage {
         Damage {
+            notification: self.notification,
+            source_kind: models::enums::actor::CombatActorKind::Player,
+            skill_damage_adjusted: false,
             target_id: self.target_id,
             attacker_id: self.source_id,
             damage: self.damage_to_target.max(0) as u32,
-            healing: if self.damage_to_target < 0 { self.damage_to_target.unsigned_abs() } else { 0 },
+            healing: if self.damage_to_target < 0 {
+                self.damage_to_target.unsigned_abs()
+            } else {
+                0
+            },
             right_hand_damage: None,
             attacked_at: self.attacked_at,
             damage_motion: self.damage_motion,

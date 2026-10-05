@@ -543,6 +543,7 @@ pub(crate) fn homunculus_snapshot(homunculus: &HomunculusRecord, speed: u16) -> 
         1,
     );
     snapshot.set_base_level(u32::from(homunculus.level));
+    snapshot.set_combat_actor_kind(models::enums::actor::CombatActorKind::Homunculus);
     let bonuses = homunculus.statuses.iter().flat_map(|status| status.bonuses()).collect::<Vec<_>>();
     let (max_hp, max_sp) = super::companion_maximum_pools(
         max_hp,

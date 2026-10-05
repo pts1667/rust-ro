@@ -212,6 +212,15 @@ pub enum BonusType {
     ConditionalWeaponAtk(WeaponType, i32),
     ConditionalWeaponDamagePercentage(WeaponType, i32),
     ResistanceMiscAttackPercentage(i32),
+    MagicalDamageAgainstElementPercentage(Element, i32),
+    MagicalDamageAgainstClassPercentage(MobClass, i32),
+    MagicalDamageAgainstMobGroupPercentage(MobGroup, i32),
+    MagicalDamageAgainstMobIdPercentage(u32, i32),
+    ResistanceMagicAttackFromMobIdPercentage(u32, i32),
+    ResistanceMeleeAttackPercentage(i32),
+    ResistancePhysicalAttackFromSizePercentage(Size, i32),
+    ResistanceMagicAttackFromSizePercentage(Size, i32),
+    DamageMeleeAtkPercentage(i32),
 }
 
 impl Eq for BonusType {}
@@ -498,11 +507,29 @@ impl BonusType {
             BonusType::ConditionalWeaponAtk(..) => 171usize,
             BonusType::ConditionalWeaponDamagePercentage(..) => 172usize,
             BonusType::ResistanceMiscAttackPercentage(..) => 173usize,
+            BonusType::MagicalDamageAgainstElementPercentage(..) => 174,
+            BonusType::MagicalDamageAgainstClassPercentage(..) => 175,
+            BonusType::MagicalDamageAgainstMobGroupPercentage(..) => 176,
+            BonusType::MagicalDamageAgainstMobIdPercentage(..) => 177,
+            BonusType::ResistanceMagicAttackFromMobIdPercentage(..) => 178,
+            BonusType::ResistanceMeleeAttackPercentage(..) => 179,
+            BonusType::ResistancePhysicalAttackFromSizePercentage(..) => 180,
+            BonusType::ResistanceMagicAttackFromSizePercentage(..) => 181,
+            BonusType::DamageMeleeAtkPercentage(..) => 182,
         }
     }
 
     pub fn serialize_to_sc_data(&self) -> (i32, i32, i32) {
         match self {
+            BonusType::MagicalDamageAgainstElementPercentage(element, value) => (self.id() as i32, element.value() as i32, *value),
+            BonusType::MagicalDamageAgainstClassPercentage(class, value) => (self.id() as i32, class.value() as i32, *value),
+            BonusType::MagicalDamageAgainstMobGroupPercentage(group, value) => (self.id() as i32, group.value() as i32, *value),
+            BonusType::MagicalDamageAgainstMobIdPercentage(id, value) | BonusType::ResistanceMagicAttackFromMobIdPercentage(id, value) => {
+                (self.id() as i32, *id as i32, *value)
+            }
+            BonusType::ResistanceMeleeAttackPercentage(value) | BonusType::DamageMeleeAtkPercentage(value) => (self.id() as i32, *value, 0),
+            BonusType::ResistancePhysicalAttackFromSizePercentage(size, value)
+            | BonusType::ResistanceMagicAttackFromSizePercentage(size, value) => (self.id() as i32, size.value() as i32, *value),
             BonusType::FleePercentage(value) | BonusType::ResistanceMiscAttackPercentage(value) => (self.id() as i32, *value, 0),
             BonusType::ResistanceSkillIdPercentage(skill, value) => (self.id() as i32, *skill as i32, *value),
             BonusType::ConditionalWeaponAtk(weapon, value) | BonusType::ConditionalWeaponDamagePercentage(weapon, value) => {
@@ -694,6 +721,30 @@ impl BonusType {
 
     pub fn deserialize_from_sc_data(bonus_type: i32, val1: i32, val2: i32) -> Option<BonusType> {
         match bonus_type {
+            174 => Some(Self::MagicalDamageAgainstElementPercentage(
+                Element::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            175 => Some(Self::MagicalDamageAgainstClassPercentage(
+                MobClass::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            176 => Some(Self::MagicalDamageAgainstMobGroupPercentage(
+                MobGroup::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            177 => Some(Self::MagicalDamageAgainstMobIdPercentage(val1 as u32, val2)),
+            178 => Some(Self::ResistanceMagicAttackFromMobIdPercentage(val1 as u32, val2)),
+            179 => Some(Self::ResistanceMeleeAttackPercentage(val1)),
+            180 => Some(Self::ResistancePhysicalAttackFromSizePercentage(
+                Size::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            181 => Some(Self::ResistanceMagicAttackFromSizePercentage(
+                Size::try_from_value(val1 as usize).ok()?,
+                val2,
+            )),
+            182 => Some(Self::DamageMeleeAtkPercentage(val1)),
             169 => Some(BonusType::FleePercentage(val1)),
             170 => Some(BonusType::ResistanceSkillIdPercentage(val1 as u32, val2)),
             171 => Some(BonusType::ConditionalWeaponAtk(

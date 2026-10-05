@@ -34,6 +34,7 @@ use crate::server::model::events::persistence_event::{
     IncreaseSkillLevel, PersistenceEvent, ResetSkills, SavePositionUpdate, StatusUpdate,
 };
 use crate::server::model::hotkey::Hotkey;
+use crate::server::model::map_flags::MapFlags;
 use crate::server::model::map_instance::{MapInstance, MapInstanceKey};
 use crate::server::model::map_item::{MapItem, MapItemType};
 use crate::server::model::movement::Movable;
@@ -41,8 +42,11 @@ use crate::server::model::path::manhattan_distance;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::character::skill_tree_service::SkillTreeService;
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::service::script_world_service::{
+    buying_store_sign_packet, companion_health, companion_snapshots, companion_status_snapshot, companion_visual_packet,
+    guild_actor_packet, pet_accessory_packet, vending_store_sign_packet,
+};
 use crate::server::service::status_service::StatusService;
-use crate::server::service::script_world_service::{buying_store_sign_packet, companion_health, companion_snapshots, companion_status_snapshot, companion_visual_packet, guild_actor_packet, pet_accessory_packet, vending_store_sign_packet};
 use crate::server::state::character::Character;
 use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::server::ServerState;
@@ -62,13 +66,19 @@ pub struct CharacterService {
 
 impl CharacterService {
     pub fn defer_position_update(&self, character: &Character) {
-        self.persistence_event_sender.send(SaveCharacterPosition(SavePositionUpdate {
-            account_id: character.account_id,
-            char_id: character.char_id,
-            map_name: character.current_map_name().clone(),
-            x: character.x,
-            y: character.y,
-        })).unwrap_or_else(|_| error!("Failed to queue character position persistence"));
+        self.persistence_event_sender
+            .send(SaveCharacterPosition(
+                crate::server::service::map_position_service::configured_position_update(character),
+            ))
+            .unwrap_or_else(|_| error!("Failed to queue character position persistence"));
+    }
+
+    pub(crate) fn defer_position_update_with_flags(&self, character: &Character, flags: &MapFlags) {
+        self.persistence_event_sender
+            .send(SaveCharacterPosition(
+                crate::server::service::map_position_service::position_update(character, flags),
+            ))
+            .unwrap_or_else(|_| error!("Failed to queue character position persistence"));
     }
 
     pub fn new(
@@ -93,7 +103,12 @@ impl CharacterService {
 
     pub fn max_weight(&self, character: &Character) -> u32 {
         let base_weight = self.configuration_service.get_job_config(character.status.job).base_weight();
-        base_weight + (character.status.str * 300) as u32
+        let riding = if character.status.riding && character.status.known_skills.iter().any(|skill| skill.value == SkillEnum::KnRiding && skill.level > 0) {
+            10_000
+        } else {
+            0
+        };
+        base_weight + (character.status.str * 300) as u32 + riding
     }
 
     pub fn can_carry_weight(&self, character: &Character, additional_weight: u32) -> bool {
@@ -163,6 +178,21 @@ impl CharacterService {
     }
 
     pub fn change_map(&self, new_map_instance_key: &MapInstanceKey, new_position: Position, character: &mut Character) {
+        let flags = self
+            .configuration_service
+            .find_map(&new_map_instance_key.map_without_ext())
+            .map(|map| map.flags().clone())
+            .unwrap_or_default();
+        self.change_map_with_flags(new_map_instance_key, new_position, character, &flags);
+    }
+
+    pub(crate) fn change_map_with_flags(
+        &self,
+        new_map_instance_key: &MapInstanceKey,
+        new_position: Position,
+        character: &mut Character,
+        flags: &MapFlags,
+    ) {
         character.set_current_map_with_key(new_map_instance_key.clone());
         character.movements = vec![];
         let mut packet_zc_npcack_mapmove = PacketZcNpcackMapmove::new(self.configuration_service.packetver());
@@ -183,15 +213,7 @@ impl CharacterService {
         character.update_position(new_position.x, new_position.y);
         character.clear_map_view();
         character.loaded_from_client_side = false;
-        self.persistence_event_sender
-            .send(SaveCharacterPosition(SavePositionUpdate {
-                account_id: character.account_id,
-                char_id: character.char_id,
-                map_name: new_map_instance_key.map_name().clone(),
-                x: character.x(),
-                y: character.y(),
-            }))
-            .expect("Fail to send persistence notification");
+        self.defer_position_update_with_flags(character, flags);
         self.character_join_map_effect(character);
     }
 
@@ -236,14 +258,17 @@ impl CharacterService {
 
     pub fn update_zeny(&self, runtime: &Runtime, zeny_update: CharacterZeny, character: &mut Character) {
         let zeny = if let Some(zeny) = zeny_update.zeny {
-            self.persistence_event_sender
-                .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
-                    char_id: zeny_update.char_id,
-                    value: zeny,
-                    field: "zeny".to_string(),
-                }))
-                .expect("Fail to send persistence notification");
-            zeny
+            let delta = i64::from(zeny) - i64::from(character.status.zeny);
+            match self
+                .repository
+                .character_adjust_zeny(character.char_id, character.account_id, character.status.zeny, delta)
+            {
+                Ok(committed) => committed,
+                Err(error) => {
+                    error!("Failed to update character wallet: {error}");
+                    return;
+                }
+            }
         } else {
             runtime.block_on(async {
                 self.repository
@@ -294,7 +319,9 @@ impl CharacterService {
         // actual damage
         let new_hp = if damage >= current_hp { 0 } else { current_hp - damage };
         character.status.set_hp(new_hp);
-        if new_hp == 0 { character.transition_to_dead(); }
+        if new_hp == 0 {
+            character.transition_to_dead();
+        }
 
         let mut packet_hp_change = PacketZcParChange::new(self.configuration_service.packetver());
         packet_hp_change.set_var_id(StatusTypes::Hp.value() as u16);
@@ -358,7 +385,8 @@ impl CharacterService {
     pub fn regen_hp(&self, character: &mut Character, tick: u128) {
         let character_status = self.status_service.to_snapshot_cached(&character.status, tick);
         let delay = if character.is_sitting() { 3000 } else { 6000 };
-        if character.status.hp > 0 && tick > character.last_moved_at
+        if character.status.hp > 0
+            && tick > character.last_moved_at
             && tick - character.last_moved_at >= delay
             && tick > character.last_regen_hp_at
             && tick - character.last_regen_hp_at >= delay
@@ -384,8 +412,16 @@ impl CharacterService {
     pub fn regen_sp(&self, character: &mut Character, tick: u128) {
         let character_status = self.status_service.to_snapshot_cached(&character.status, tick);
         let delay = if character.is_sitting() { 4000 } else { 8000 };
-        let delay = if character.status.has_status_change(models::status_change::StatusChangeKind::Magnificat) { delay / 2 } else { delay };
-        if character.status.hp > 0 && tick > character.last_moved_at
+        let delay = if character
+            .status
+            .has_status_change(models::status_change::StatusChangeKind::Magnificat)
+        {
+            delay / 2
+        } else {
+            delay
+        };
+        if character.status.hp > 0
+            && tick > character.last_moved_at
             && tick - character.last_moved_at >= delay
             && tick > character.last_regen_sp_at
             && tick - character.last_regen_sp_at >= delay
@@ -409,21 +445,45 @@ impl CharacterService {
     }
 
     pub async fn save_characters_state(&self, characters: Vec<&Character>, tick: u128) {
-        let character_statuses = characters
+        let positions = characters
             .iter()
-            .map(|c| self.status_service.to_snapshot_cached(&c.status, tick))
+            .map(|character| crate::server::service::map_position_service::configured_position_update(character))
+            .collect();
+        self.save_characters_state_with_positions(characters, positions, tick).await;
+    }
+
+    pub(crate) async fn save_characters_state_with_positions(
+        &self,
+        characters: Vec<&Character>,
+        positions: Vec<SavePositionUpdate>,
+        tick: u128,
+    ) {
+        let statuses: Vec<std::borrow::Cow<'_, Status>> = characters
+            .iter()
+            .map(|character| {
+                let mut status = std::borrow::Cow::Borrowed(&character.status);
+                if character.status.hp == 0 {
+                    let snapshot = self.status_service.to_snapshot(&character.status);
+                    let (hp, sp) = crate::server::service::map_position_service::respawn_resources(
+                        &snapshot,
+                        &self.configuration_service.config().game,
+                    );
+                    let saved = status.to_mut();
+                    saved.hp = hp;
+                    saved.sp = sp;
+                }
+                status
+            })
+            .collect();
+        let character_statuses = statuses
+            .iter()
+            .map(|status| self.status_service.to_snapshot_cached(status, tick))
             .collect::<Vec<StatusSnapshot>>();
         self.repository
-            .characters_update(
-                characters.iter().map(|c| &c.status).collect(),
+            .characters_update_with_positions(
+                statuses.iter().map(|status| status.as_ref()).collect(),
                 character_statuses,
-                characters.iter().map(|c| c.char_id as i32).collect(),
-                characters.iter().map(|c| c.x() as i16).collect(),
-                characters.iter().map(|c| c.y() as i16).collect(),
-                characters
-                    .iter()
-                    .map(|c| c.map_instance_key.map_without_ext().chars().take(11).collect())
-                    .collect(),
+                positions,
             )
             .await
             .unwrap();
@@ -728,27 +788,50 @@ impl CharacterService {
         if !self.skill_tree_service.skill_tree(character).iter().any(|s| s.value == skill) {
             return false;
         }
-        if skill.is_platinium() || character.game_systems.permanent_skill_grants.contains_key(&skill.id())
-            || character.status.script_skill_grants.contains_key(&skill.id()) {
+        if skill.is_platinium()
+            || character.game_systems.permanent_skill_grants.contains_key(&skill.id())
+            || character.status.script_skill_grants.contains_key(&skill.id())
+        {
             return false;
         }
-        let Some(config) = self.configuration_service.find_skill_config(&(skill.id() as i32).into()) else { return false; };
+        let Some(config) = self.configuration_service.find_skill_config(&(skill.id() as i32).into()) else {
+            return false;
+        };
         let max_level = config.max_level().min(u8::MAX as u32) as u8;
         let old_level = crate::server::service::script_character_service::learned_level(&character.status, skill.id());
-        if old_level >= max_level { return false; }
-        let new_level = match self.repository.character_commit_skill_allocation(character.char_id, character.account_id, skill.id(), old_level, skill_point, max_level) {
+        if old_level >= max_level {
+            return false;
+        }
+        let new_level = match self.repository.character_commit_skill_allocation(
+            character.char_id,
+            character.account_id,
+            skill.id(),
+            old_level,
+            skill_point,
+            max_level,
+        ) {
             Ok(level) => level,
-            Err(error) => { error!("Failed to allocate character skill point: {error}"); return false; }
+            Err(error) => {
+                error!("Failed to allocate character skill point: {error}");
+                return false;
+            }
         };
         character.status.skill_point -= 1;
         character.status.known_skills.retain(|known| known.value != skill);
-        character.status.known_skills.push(KnownSkill { value: skill, level: new_level });
+        character.status.known_skills.push(KnownSkill {
+            value: skill,
+            level: new_level,
+        });
         let mut packet = PacketZcParChange::new(self.configuration_service.packetver());
-        packet.set_var_id(StatusTypes::Skillpoint.value() as u16); packet.set_count(character.status.skill_point as i32); packet.fill_raw();
-        self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, packet.raw)))
+        packet.set_var_id(StatusTypes::Skillpoint.value() as u16);
+        packet.set_count(character.status.skill_point as i32);
+        packet.fill_raw();
+        self.client_notification_sender
+            .send(Notification::Char(CharNotification::new(character.char_id, packet.raw)))
             .unwrap_or_else(|_| error!("Failed to notify skill points"));
         self.skill_tree_service.send_skill_tree(character);
-        self.server_task_queue.add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
+        self.server_task_queue
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
         true
     }
 
@@ -884,15 +967,22 @@ impl CharacterService {
     pub fn reset_skills(&self, character: &mut Character, should_persist_skill_points: bool) {
         let plan = match crate::server::service::script_character_service::plan_reset_skills(character, should_persist_skill_points) {
             Ok(plan) => plan,
-            Err(error) => { error!("Failed to plan character skill reset: {error}"); return; }
+            Err(error) => {
+                error!("Failed to plan character skill reset: {error}");
+                return;
+            }
         };
-        if let Err(error) = self.repository.character_commit_skill_reset(character.char_id, character.account_id, &plan) {
-            error!("Failed to reset character skills: {error}"); return;
+        if let Err(error) = self
+            .repository
+            .character_commit_skill_reset(character.char_id, character.account_id, &plan)
+        {
+            error!("Failed to reset character skills: {error}");
+            return;
         }
         character.status.known_skills = plan.known_skills;
         character.status.script_skill_grants = plan.temporary_grants;
         character.status.skill_point = plan.skill_points;
-        character.options = plan.options;
+        character.set_options(plan.options);
         self.skill_tree_service.send_skill_tree(character);
         self.reload_client_side_status(character);
     }
@@ -902,7 +992,8 @@ impl CharacterService {
     }
 
     pub fn should_reset_skills(&self, character: &Character) -> bool {
-        self.get_allocated_skills_point(character) + character.status.skill_point > u32::from(self.get_skill_point_count_for_level(character))
+        self.get_allocated_skills_point(character) + character.status.skill_point
+            > u32::from(self.get_skill_point_count_for_level(character))
     }
 
     pub fn next_base_level_required_exp(&self, status: &Status) -> u32 {
@@ -1272,9 +1363,25 @@ impl CharacterService {
         let observer = VisibilityObserver::player(&self.status_service.to_snapshot(&character.status));
         let mut new_map_view: HashSet<MapItem> = HashSet::with_capacity(2048);
         for (_, item) in map_instance_state.map_items().iter() {
-            let stealth = server_state.get_character(item.id()).map(|target| StealthState::from_status_options(&target.status, target.options))
-                .or_else(|| map_instance_state.get_mob(item.id()).map(|mob| StealthState::from_status(&mob.status_effects))).unwrap_or_default();
-            if !can_see(observer, stealth) { continue; }
+            let stealth = server_state
+                .get_character(item.id())
+                .map(|target| StealthState::from_status_options(&target.status, target.options))
+                .or_else(|| {
+                    map_instance_state
+                        .get_mob(item.id())
+                        .map(|mob| StealthState::from_status(&mob.status_effects))
+                })
+                .or_else(|| {
+                    map_instance_state
+                        .script_skill_state
+                        .npcs
+                        .get(&item.id())
+                        .map(|npc| StealthState::from_status(&npc.status()))
+                })
+                .unwrap_or_default();
+            if !can_see(observer, stealth) {
+                continue;
+            }
             if let Some(position) = server_state.map_item_x_y(item, character.current_map_name(), character.current_map_instance()) {
                 if item.id() != character.char_id && manhattan_distance(character.x(), character.y(), position.x, position.y) <= PLAYER_FOV
                 {
@@ -1284,10 +1391,17 @@ impl CharacterService {
             }
         }
 
-        for owner in server_state.characters().values().filter(|owner| owner.loaded_from_client_side && owner.current_map_name() == character.current_map_name()
-            && owner.current_map_instance() == character.current_map_instance()) {
+        for owner in server_state.characters().values().filter(|owner| {
+            owner.loaded_from_client_side
+                && owner.current_map_name() == character.current_map_name()
+                && owner.current_map_instance() == character.current_map_instance()
+        }) {
             for companion in companion_snapshots(owner) {
-                if companion_status_snapshot(owner, companion.map_item().id()).is_some_and(|status| !can_see(observer, StealthState::from_snapshot(&status))) { continue; }
+                if companion_status_snapshot(owner, companion.map_item().id())
+                    .is_some_and(|status| !can_see(observer, StealthState::from_snapshot(&status)))
+                {
+                    continue;
+                }
                 if manhattan_distance(character.x, character.y, companion.x(), companion.y()) <= PLAYER_FOV {
                     new_map_view.insert(companion.map_item());
                 }
@@ -1320,8 +1434,15 @@ impl CharacterService {
                         packet_zc_item_entry.fill_raw();
                         packets.extend(packet_zc_item_entry.raw);
                     }
-                } else if matches!(map_item.object_type(), MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary) {
-                    if let Some(owner) = server_state.characters().values().find(|owner| companion_health(owner, map_item.id()).is_some()) {
+                } else if matches!(
+                    map_item.object_type(),
+                    MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary
+                ) {
+                    if let Some(owner) = server_state
+                        .characters()
+                        .values()
+                        .find(|owner| companion_health(owner, map_item.id()).is_some())
+                    {
                         let (hp, max_hp, level) = companion_health(owner, map_item.id()).unwrap();
                         let mut packet = PacketZcNotifyStandentry7::new(self.configuration_service.packetver());
                         packet.set_job(map_item.client_item_class());
@@ -1331,12 +1452,16 @@ impl CharacterService {
                         packet.set_aid(map_item.id());
                         packet.set_gid(map_item.id());
                         packet.set_clevel(level as i16);
-                        packet.set_speed(companion_status_snapshot(owner, map_item.id()).map_or(owner.status.speed, |snapshot| snapshot.speed()) as i16);
+                        packet.set_speed(
+                            companion_status_snapshot(owner, map_item.id()).map_or(owner.status.speed, |snapshot| snapshot.speed()) as i16,
+                        );
                         packet.set_hp(hp);
                         packet.set_max_hp(max_hp);
                         packet.fill_raw_with_packetver(Some(self.configuration_service.packetver()));
                         packets.extend(packet.raw);
-                        if let Some(packet) = companion_visual_packet(owner, map_item.id()) { packets.extend(packet); }
+                        if let Some(packet) = companion_visual_packet(owner, map_item.id()) {
+                            packets.extend(packet);
+                        }
                         if matches!(map_item.object_type(), MapItemType::Pet) {
                             if let Some(packet) = pet_accessory_packet(owner, self.configuration_service) {
                                 packets.extend(packet);
@@ -1419,9 +1544,15 @@ impl CharacterService {
                         packet_zc_notify_standentry.fill_raw_with_packetver(Some(self.configuration_service.packetver()));
                         packets.extend(packet_zc_notify_standentry.raw);
                         if other_character.game_systems.guild_id != 0 {
-                            packets.extend(guild_actor_packet(other_character.char_id, other_character.game_systems.guild_id));
+                            packets.extend(guild_actor_packet(
+                                other_character.char_id,
+                                other_character.game_systems.guild_id,
+                            ));
                         }
-                        let mut visual = crate::server::service::status_effect_service::StatusEffectService::visual_state_packet(other_character.char_id, &other_character.status);
+                        let mut visual = crate::server::service::status_effect_service::StatusEffectService::visual_state_packet(
+                            other_character.char_id,
+                            &other_character.status,
+                        );
                         let options = u32::from_le_bytes(visual[10..14].try_into().unwrap()) | other_character.options as u32;
                         visual[10..14].copy_from_slice(&options.to_le_bytes());
                         packets.extend(visual);
@@ -1456,6 +1587,23 @@ impl CharacterService {
                         //     packets.extend(packet_zc_notify_move.raw);
                         // }
                     }
+                } else if *map_item.object_type() == MapItemType::Npc {
+                    if let Some(instance) = server_state.get_map_instance(character.current_map_name(), character.current_map_instance()) {
+                        if let Some(npc) = instance.state().script_skill_state.npcs.get(&map_item.id()) {
+                            packets.extend(crate::server::service::map_instance_service::npc_entry_packet(
+                                npc,
+                                self.configuration_service.packetver(),
+                            ));
+                            if !npc.active_statuses.is_empty() {
+                                packets.extend(
+                                    crate::server::service::status_effect_service::StatusEffectService::visual_state_packet(
+                                        npc.id,
+                                        &npc.status(),
+                                    ),
+                                );
+                            }
+                        }
+                    }
                 } else {
                     let mut packet_zc_notify_standentry = PacketZcNotifyStandentry7::new(self.configuration_service.packetver());
                     packet_zc_notify_standentry.set_job(map_item.client_item_class());
@@ -1480,7 +1628,10 @@ impl CharacterService {
         let mut packets = vec![];
         for map_item in character.map_view.iter() {
             if !new_map_view.contains(map_item) {
-                if matches!(map_item.object_type(), MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary) {
+                if matches!(
+                    map_item.object_type(),
+                    MapItemType::Pet | MapItemType::Homunculus | MapItemType::Mercenary
+                ) {
                     let mut packet = PacketZcNotifyVanish::new(self.configuration_service.packetver());
                     packet.set_gid(map_item.id());
                     packet.fill_raw();

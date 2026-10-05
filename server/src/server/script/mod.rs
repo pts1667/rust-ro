@@ -13,6 +13,8 @@ pub mod item_script_handler;
 pub(crate) mod item_dialog;
 mod shop;
 pub(crate) mod utilities;
+pub(crate) mod unit_data;
+pub(crate) mod pet_auto_bonus;
 pub mod skill;
 #[cfg(test)]
 mod tests;

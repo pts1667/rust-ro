@@ -93,12 +93,16 @@ pub struct Mob {
     pub summon_owner: Option<u32>,
     pub summon_ai: u16,
     pub event_entry: Option<u32>,
+    pub event_npc: Option<crate::server::model::events::map_event::ScriptNpcCallback>,
     pub next_summon_action: u128,
     pub script_cast_until: u128,
     pub last_attack_flags: u32,
     pub last_attacker_id: u32,
     pub last_credit_id: u32,
     pub last_attack_skill: u32,
+    pub last_damage: u32,
+    pub last_cast_skill: u32,
+    pub last_cast_at: u128,
     pub last_proc_depth: u8,
     pub status: StatusSnapshot,
     pub base_status: StatusSnapshot,
@@ -137,6 +141,8 @@ pub struct Mob {
     pub atk2: u16,
     /// Current target for passive mobs (set when attacked)
     pub target_id: Option<u32>,
+    pub skill_ready_at: HashMap<usize, u128>,
+    pub skill_spawn_done: bool,
 }
 
 pub struct MobMovement {
@@ -164,6 +170,8 @@ impl Mob {
         models::status::Status {
             base_level: snapshot.base_level(),
             mob_class: *snapshot.mob_class(),
+            mob_capabilities: snapshot.mob_capabilities(),
+            combat_actor_kind: *snapshot.combat_actor_kind(),
             hp: snapshot.hp(),
             max_hp: snapshot.max_hp(),
             sp: snapshot.sp(),
@@ -295,7 +303,7 @@ impl Mob {
         use models::enums::mob::{MobMode, MobRace};
         use models::status_change::{StatusChangeKind, StatusStartFlag};
         (!request.has_flag(StatusStartFlag::NoAvoid)
-            && self.mode & MobMode::Boss.as_flag() != 0
+            && self.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune)
             && request.kind.metadata().flags.get("BossResist").copied().unwrap_or(false))
             || (*self.status.element() == Element::Undead || *self.status.race() == MobRace::RUndead)
                 && matches!(
@@ -527,12 +535,16 @@ impl Mob {
             summon_owner: None,
             summon_ai: 0,
             event_entry: None,
+            event_npc: None,
             next_summon_action: 0,
             script_cast_until: 0,
             last_attack_flags: 0,
             last_attacker_id: 0,
             last_credit_id: 0,
             last_attack_skill: 0,
+            last_damage: 0,
+            last_cast_skill: 0,
+            last_cast_at: 0,
             last_proc_depth: 0,
             base_status: status.clone(),
             status_effects: Self::status_from_snapshot(&status),
@@ -561,6 +573,8 @@ impl Mob {
             atk1,
             atk2,
             target_id: None,
+            skill_ready_at: HashMap::new(),
+            skill_spawn_done: false,
         }
     }
 
@@ -930,6 +944,8 @@ mod status_change_tests {
     #[test]
     fn boss_mobs_resist_full_rate_ailments_unless_noavoid_is_explicit() {
         let mut mob = mob(MobMode::Boss.as_flag());
+        mob.status.set_mob_class(models::enums::mob::MobClass::Boss);
+        mob.status.set_mob_capabilities(models::enums::mob::MobCapability::StatusImmune.as_flag());
         let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::Freeze, 1000, 1);
         request.flags = 0;
         assert!(!mob.start_status(request, 0, 0).unwrap().started);

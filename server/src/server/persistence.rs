@@ -1,8 +1,9 @@
 use std::sync::Arc;
 use std::sync::mpsc::Receiver;
 
+use crate::repository::Error;
 use crate::server::Server;
-use crate::{Map, PersistenceEvent, Repository};
+use crate::{PersistenceEvent, Repository};
 
 impl Server {
     pub(crate) fn persistence_thread(
@@ -14,15 +15,7 @@ impl Server {
             server_ref.runtime.block_on(async {
                 match event {
                     PersistenceEvent::SaveCharacterPosition(save_character_position) => {
-                        repository
-                            .character_save_position(
-                                save_character_position.char_id,
-                                Map::name_without_ext(&save_character_position.map_name),
-                                save_character_position.x,
-                                save_character_position.y,
-                            )
-                            .await
-                            .unwrap();
+                        repository.character_save_position_guarded(save_character_position).await.unwrap();
                     }
                     PersistenceEvent::UpdateCharacterStatusU32(status_update) => {
                         repository
@@ -31,10 +24,18 @@ impl Server {
                             .unwrap();
                     }
                     PersistenceEvent::DeleteItemsFromInventory(delete_items) => {
-                        repository.character_inventory_delete(delete_items).await.unwrap();
+                        let char_id = delete_items.char_id;
+                        let item_id = delete_items.item_inventory_id;
+                        match repository.character_inventory_delete(delete_items).await {
+                            Ok(()) => (),
+                            Err(Error::NotFound) => tracing::debug!(char_id, item_id, "Ignoring a stale inventory deletion"),
+                            Err(error) => tracing::error!(char_id, item_id, %error, "Inventory deletion failed"),
+                        }
                     }
                     PersistenceEvent::UpdateEquippedItems(items) => {
-                        repository.character_inventory_wearable_item_update(items).await.unwrap();
+                        if let Err(error) = repository.character_inventory_wearable_item_update(items).await {
+                            tracing::error!(%error, "Unauthenticated equipment persistence was rejected");
+                        }
                     }
                     PersistenceEvent::ResetSkills(reset_skills) => {
                         repository

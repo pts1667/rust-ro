@@ -33,6 +33,7 @@ impl MapInstanceLoop {
                     }
                     let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
                     let now = Instant::now();
+                    map_instance_service_clone.tick_npc_statuses(map_instance.state_mut().as_mut(), tick);
                     map_instance_service_clone.tick_mob_statuses(
                         map_instance.state_mut().as_mut(),
                         map_instance.task_queue().as_ref(),
@@ -44,6 +45,7 @@ impl MapInstanceLoop {
                     {
                         let map_instance_state = map_instance.state_mut().as_mut();
                         map_instance_service_clone.mobs_action(map_instance_state, map_instance.task_queue(), tick);
+                        map_instance_service_clone.mobs_skill_ai(map_instance_state, tick);
                         last_mobs_action = now;
                     }
                     if last_mobs_spawn.elapsed().as_millis()
@@ -55,9 +57,48 @@ impl MapInstanceLoop {
 
                     if let Some(tasks) = map_instance.pop_task() {
                         for task in tasks {
+                            if map_instance_service_clone.handle_npc_map_event(map_instance.state_mut().as_mut(), &task, tick) {
+                                continue;
+                            }
                             match task {
+                                MapEvent::GroundTrapRecover { item_id, amount, x, y } => {
+                                    map_instance_service_clone.recover_ground_trap(
+                                        map_instance.state_mut().as_mut(),
+                                        item_id,
+                                        amount,
+                                        x,
+                                        y,
+                                    );
+                                }
+                                MapEvent::GroundTrapEffect(request) => {
+                                    map_instance_service_clone.apply_ground_trap_effect_on_map(
+                                        map_instance.state_mut().as_mut(),
+                                        request,
+                                        tick,
+                                    );
+                                }
+                                MapEvent::GroundTrapCapture(request) => {
+                                    map_instance_service_clone.capture_ground_trap_on_map(map_instance.state_mut().as_mut(), request, tick);
+                                }
+                                MapEvent::GroundTrapRelease(request) => {
+                                    map_instance_service_clone.release_ground_trap_on_map(map_instance.state_mut().as_mut(), request, tick);
+                                }
+                                MapEvent::NpcEffect(effect) => {
+                                    map_instance_service_clone.apply_npc_effect(map_instance.state_mut().as_mut(), effect, tick);
+                                }
+                                MapEvent::UnitData(request) => {
+                                    map_instance_service_clone.unit_data(map_instance.state_mut().as_mut(), request);
+                                }
+                                MapEvent::InstallScriptNpc(transfer) => {
+                                    map_instance_service_clone.install_script_npc(map_instance.state_mut().as_mut(), transfer);
+                                }
+                                MapEvent::ReleaseScriptNpc(id) => {
+                                    map_instance.state_mut().script_skill_state.transferring_npcs.remove(&id);
+                                }
                                 MapEvent::ActorSkillCast(request) => {
-                                    if let Err(error) = map_instance_service_clone.start_actor_skill(map_instance.state_mut().as_mut(), request, tick) {
+                                    if let Err(error) =
+                                        map_instance_service_clone.start_actor_skill(map_instance.state_mut().as_mut(), request, tick)
+                                    {
                                         error!("Actor skill cast failed on {}: {}", map_instance.name(), error);
                                     }
                                 }

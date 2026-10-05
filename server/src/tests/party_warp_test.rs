@@ -163,7 +163,7 @@ fn npc_character_identifier_queries_use_named_live_characters_and_zero_for_unkno
         let (sender, receiver) = tokio::sync::oneshot::channel();
         let mut arguments = vec![Value::Number(kind)]; arguments.extend(name.map(Value::from));
         context.server.script_service().handle_request(&context.server, context.server.state_mut().as_mut(), crate::server::script::ScriptRequest {
-            char_id: 150_000, account_id: account, npc_id: 77, npc_entry: 77, map_instance: 0, generation: 0, background: false,
+            char_id: 150_000, account_id: account, npc_id: 77, npc_entry: 77, npc_scope_instance: 0, map_instance: 0, generation: 0, background: false, event_depth: 0, timer_context: None, logout_token: None,
             request: Request::Call { function: Function::GetCharacterId, arguments }, response: Arc::new(Mutex::new(Some(sender))),
         });
         assert_eq!(context.runtime().block_on(receiver).unwrap().unwrap().number_value().unwrap(), expected as i32);

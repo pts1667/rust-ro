@@ -39,7 +39,7 @@ impl MapInstanceService {
                 let pet = world_data().pets.iter().find(|pet| pet.class_id == mob.mob_id as u16)?;
                 let allowed = match request.flag {
                     0 => request.lure_item_id == pet.tame_item,
-                    1 => mob.mode & MobMode::Boss.as_flag() == 0,
+                    1 => !mob.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune),
                     2 => true,
                     _ => false,
                 };

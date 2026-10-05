@@ -210,7 +210,9 @@ impl ScriptSkillService {
             return Ok(());
         }
         let source_status = StatusService::instance().to_snapshot(&source.status);
-        if !server.player_skill_target_allowed(state, source, target_id, effect.skill_id, true) { return Ok(()); }
+        if !server.player_skill_target_allowed(state, source, target_id, effect.skill_id, true) {
+            return Ok(());
+        }
         let ratio = (200 + 100 * u32::from(effect.level)) as f32 / 100.0;
         let element = server.battle_service().attack_element(&source_status, None);
         let landed = server
@@ -233,6 +235,9 @@ impl ScriptSkillService {
             .ok_or("Delayed skill metadata is missing")?
             .battle_flags(false);
         let mut damage = Damage {
+            notification: None,
+            source_kind: models::enums::actor::CombatActorKind::Player,
+            skill_damage_adjusted: false,
             healing: 0,
             right_hand_damage: None,
             target_id,
@@ -250,6 +255,15 @@ impl ScriptSkillService {
             magic_context: None,
         };
         damage.set_signed_damage(amount);
+        damage = damage.with_skill_notification(
+            source.current_map_name(),
+            source.current_map_instance(),
+            source.x,
+            source.y,
+            tick,
+            1,
+            0,
+        );
         if *target.map_item.object_type() == MapItemType::Mob {
             state
                 .get_map_instance(map, instance_id)
@@ -258,7 +272,6 @@ impl ScriptSkillService {
         } else {
             server.add_to_next_tick(GameEvent::CharacterDamage(damage));
         }
-        self.notify_attack_skill(source, target_id, effect.skill_id, effect.level, amount);
         Ok(())
     }
 
@@ -308,7 +321,9 @@ impl ScriptSkillService {
         if source.current_map_name() != map || source.current_map_instance() != instance_id {
             return Ok(());
         }
-        if !Self::snatch_map_allowed(state, source) { return Ok(()); }
+        if !Self::snatch_map_allowed(state, source) {
+            return Ok(());
+        }
         let instance = state.get_map_instance(map, instance_id).ok_or("Snatch map is unavailable")?;
         let map_state = instance.state();
         use models::enums::EnumWithMaskValueU16;

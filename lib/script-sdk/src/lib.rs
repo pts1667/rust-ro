@@ -171,6 +171,9 @@ pub enum Function {
     CheckRiding,
     IsMounting,
     CheckMadogear,
+    SetCart,
+    SetFalcon,
+    SetRiding,
     Bonus,
     Bonus2,
     Bonus3,
@@ -252,6 +255,35 @@ pub enum Function {
     GetCharacterId,
     UnitSkillToId,
     UnitSkillToPosition,
+    GetUnitData,
+    SetUnitData,
+    GetNpcId,
+    DoEvent,
+    DoNpcEvent,
+    PetAutoBonus,
+    PetAutoBonus2,
+    PetAutoBonus3,
+    AddTimer,
+    DeleteTimer,
+    AddTimerCount,
+    InitNpcTimer,
+    StartNpcTimer,
+    StopNpcTimer,
+    SetNpcTimer,
+    GetNpcTimer,
+    AttachNpcTimer,
+    DetachNpcTimer,
+    SetMapFlagNoSave,
+    SavePoint,
+    GetSavePoint,
+    WarpPortal,
+    AgitStart,
+    AgitEnd,
+    AgitCheck,
+    GetCastleData,
+    SetCastleData,
+    Marriage,
+    Divorce,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -316,28 +348,82 @@ impl Context {
         self.request(Request::Call { function, arguments })
     }
 
+    pub fn get_unit_data(&self, actor_id: u32) -> Reply {
+        self.call(Function::GetUnitData, vec![Value::Number(actor_id as i32)])
+    }
+
+    pub fn set_unit_data(&self, actor_id: u32, field: i32, value: Value) -> Reply {
+        self.call(Function::SetUnitData, vec![
+            Value::Number(actor_id as i32),
+            Value::Number(field),
+            value,
+        ])
+    }
+
+    pub fn npc_id(&self) -> Result<u32, String> {
+        self.call(Function::GetNpcId, vec![0.into()])?.number_value().map(|id| id as u32)
+    }
+
+    pub fn npc_event(&self, label: &str) -> Result<(), String> {
+        self.call(Function::DoNpcEvent, vec![label.into()]).map(|_| ())
+    }
+
+    pub fn player_event(&self, label: &str) -> Result<(), String> {
+        self.call(Function::DoEvent, vec![label.into()]).map(|_| ())
+    }
+
     pub fn get_map_flag(&self, map: &str, flag: i32, parameter: Option<i32>) -> Result<i32, String> {
-        let mut arguments=vec![map.into(),flag.into()];
+        let mut arguments = vec![map.into(), flag.into()];
         arguments.extend(parameter.map(Value::from));
-        self.call(Function::GetMapFlag,arguments)?.number_value()
+        self.call(Function::GetMapFlag, arguments)?.number_value()
     }
 
     pub fn set_map_flag(&self, map: &str, flag: i32, parameters: &[i32]) -> Result<(), String> {
-        let mut arguments=vec![map.into(),flag.into()];
+        let mut arguments = vec![map.into(), flag.into()];
         arguments.extend(parameters.iter().copied().map(Value::from));
-        self.call(Function::SetMapFlag,arguments).map(|_|())
+        self.call(Function::SetMapFlag, arguments).map(|_| ())
     }
 
     pub fn remove_map_flag(&self, map: &str, flag: i32) -> Result<(), String> {
-        self.call(Function::RemoveMapFlag,vec![map.into(),flag.into()]).map(|_|())
+        self.call(Function::RemoveMapFlag, vec![map.into(), flag.into()]).map(|_| ())
+    }
+
+    pub fn set_map_no_save(&self, map: &str, alternate_map: &str, x: i32, y: i32) -> Result<(), String> {
+        self.call(Function::SetMapFlagNoSave, vec![
+            map.into(),
+            alternate_map.into(),
+            x.into(),
+            y.into(),
+        ])
+        .map(|_| ())
+    }
+
+    pub fn save_point(&self, map: &str, x: u16, y: u16) -> Result<(), String> {
+        self.call(Function::SavePoint, vec![map.into(), i32::from(x).into(), i32::from(y).into()])
+            .map(|_| ())
+    }
+
+    pub fn get_save_point(&self, kind: i32, char_id: Option<u32>) -> Reply {
+        let mut arguments = vec![kind.into()];
+        if let Some(id) = char_id {
+            arguments.push(i32::try_from(id).map_err(|_| "Character ID is out of range")?.into());
+        }
+        self.call(Function::GetSavePoint, arguments)
+    }
+
+    pub fn warp_portal(&self, x: u16, y: u16, map: &str, destination_x: u16, destination_y: u16) -> Result<(), String> {
+        self.call(Function::WarpPortal, vec![i32::from(x).into(), i32::from(y).into(), map.into(),
+            i32::from(destination_x).into(), i32::from(destination_y).into()]).map(|_| ())
     }
 
     pub fn set_pvp(&self, map: &str, enabled: bool) -> Result<(), String> {
-        self.call(if enabled {Function::PvpOn} else {Function::PvpOff},vec![map.into()]).map(|_|())
+        self.call(if enabled { Function::PvpOn } else { Function::PvpOff }, vec![map.into()])
+            .map(|_| ())
     }
 
     pub fn set_gvg(&self, map: &str, enabled: bool) -> Result<(), String> {
-        self.call(if enabled {Function::GvgOn} else {Function::GvgOff},vec![map.into()]).map(|_|())
+        self.call(if enabled { Function::GvgOn } else { Function::GvgOff }, vec![map.into()])
+            .map(|_| ())
     }
 
     pub fn mes(&self, text: impl Into<String>) -> Result<(), String> {

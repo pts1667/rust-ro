@@ -18,6 +18,17 @@ impl ScriptWorldService {
         request: ScriptWorldRequest,
         now: u64,
     ) -> Result<(), String> {
+        if state.characters().get(&char_id).is_some_and(|character| character.game_systems.is_trading() || character.timing.skill_menu_blocked())
+            && matches!(&request, ScriptWorldRequest::ContainerTransfer { .. }
+                | ScriptWorldRequest::StorageDeposit { .. } | ScriptWorldRequest::StorageWithdraw { .. }
+                | ScriptWorldRequest::PrepareVending { .. } | ScriptWorldRequest::CreateVendingStore { .. }
+                | ScriptWorldRequest::OpenVendingStore(_) | ScriptWorldRequest::PurchaseVendingStore { .. }
+                | ScriptWorldRequest::CreateBuyingStore { .. } | ScriptWorldRequest::OpenBuyingStore(_)
+                | ScriptWorldRequest::TradeBuyingStore { .. } | ScriptWorldRequest::HatchPet(_)
+                | ScriptWorldRequest::EquipPetAccessory(_) | ScriptWorldRequest::PetMenu(1)
+                | ScriptWorldRequest::CapturePet(_)) {
+            return Err("Inventory operations are unavailable during trading".into());
+        }
         let mut character = state.characters_mut().remove(&char_id).ok_or("Character is not online")?;
         let previous_pet_bonus = super::pet_bonus_state(&character);
         let skill = match &request {
@@ -82,7 +93,18 @@ impl ScriptWorldService {
             | ScriptWorldRequest::GuildInformation(_)
             | ScriptWorldRequest::LeaveGuild { .. }
             | ScriptWorldRequest::ExpelGuild { .. }
-            | ScriptWorldRequest::DisbandGuild(_)) => self.guild_request(server, state, character, request),
+            | ScriptWorldRequest::DisbandGuild(_)
+            | ScriptWorldRequest::GuildNotice { .. }
+            | ScriptWorldRequest::GuildPositions(_)
+            | ScriptWorldRequest::GuildMemberPositions(_)
+            | ScriptWorldRequest::GuildEmblem(_)
+            | ScriptWorldRequest::GuildEmblemRequest(_)
+            | ScriptWorldRequest::GuildMessage(_)
+            | ScriptWorldRequest::GuildSkillUp(_)
+            | ScriptWorldRequest::GuildAllianceRequest(_)
+            | ScriptWorldRequest::GuildAllianceReply { .. }
+            | ScriptWorldRequest::GuildOpposition(_)
+            | ScriptWorldRequest::GuildRelationBreak { .. }) => self.guild_request(server, state, character, request),
             ScriptWorldRequest::CompanionAttackLanded { id, damage } => {
                 let Some(homunculus) = character
                     .game_systems
@@ -162,17 +184,23 @@ impl ScriptWorldService {
             | ScriptWorldRequest::CompanionMove { .. }
             | ScriptWorldRequest::CompanionMoveToOwner(_)
             | ScriptWorldRequest::CompanionAttack { .. }) => self.homunculus_request(server, character, request, now),
+            ScriptWorldRequest::FameList(kind) => self.fame_list(character, kind),
+            ScriptWorldRequest::CallPartner => self.call_partner(server, state, character),
             ScriptWorldRequest::SetCart(style) => self.set_cart(character, style, false),
             ScriptWorldRequest::ChangeCart(style) => self.set_cart(character, style, true),
-            ScriptWorldRequest::RemoveOption => self.remove_option(character),
+            ScriptWorldRequest::RemoveOption => {
+                self.remove_option(character)?;
+                server.character_service().reload_client_side_status(character);
+                Ok(())
+            }
             ScriptWorldRequest::ContainerTransfer {
                 source,
                 destination,
                 index,
                 amount,
-            } => self.move_container(server, character, source, destination, index, amount),
-            ScriptWorldRequest::PrepareVending { skill_level } => self.prepare_vending(character, skill_level),
-            ScriptWorldRequest::CreateVendingStore { title, offers } => self.create_vending(server, character, title, offers),
+            } => self.move_container(server, state, character, source, destination, index, amount),
+            ScriptWorldRequest::PrepareVending { skill_level } => self.prepare_vending(state, character, skill_level),
+            ScriptWorldRequest::CreateVendingStore { title, offers } => self.create_vending(server, state, character, title, offers),
             ScriptWorldRequest::CloseVendingStore => self.close_vending(character),
             ScriptWorldRequest::OpenVendingStore(account_id) => self.open_vending(server, state, character, account_id),
             ScriptWorldRequest::PurchaseVendingStore {
@@ -295,6 +323,9 @@ impl ScriptWorldService {
                 Ok(())
             }
             ScriptWorldRequest::CreateBuyingStore { title, zeny_limit, offers } => {
+                if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
+                    return Err("Buying stores are disabled on this map".into());
+                }
                 if character.game_systems.buying_slots == 0
                     || offers.len() > usize::from(character.game_systems.buying_slots)
                     || character.game_systems.buying_store.is_some()
@@ -347,16 +378,7 @@ impl ScriptWorldService {
                 )?;
                 self.area(character, protocol::store_sign(&store))
             }
-            ScriptWorldRequest::CloseBuyingStore => {
-                character.game_systems.buying_slots = 0;
-                if let Some(store) = character.game_systems.buying_store.take() {
-                    self.repository
-                        .close_buying_store(character.char_id, store.id)
-                        .map_err(|error| error.to_string())?;
-                    self.area(character, protocol::store_disappear(character.char_id))?;
-                }
-                Ok(())
-            }
+            ScriptWorldRequest::CloseBuyingStore => self.close_buying(character),
             ScriptWorldRequest::OpenBuyingStore(account_id) => {
                 let owner = state
                     .characters()
@@ -660,6 +682,7 @@ impl ScriptWorldService {
             }
             ScriptWorldRequest::StorageDeposit { index, amount } => self.move_container(
                 server,
+                state,
                 character,
                 crate::server::model::game_systems::ItemContainer::Inventory,
                 crate::server::model::game_systems::ItemContainer::Storage,
@@ -668,6 +691,7 @@ impl ScriptWorldService {
             ),
             ScriptWorldRequest::StorageWithdraw { index, amount } => self.move_container(
                 server,
+                state,
                 character,
                 crate::server::model::game_systems::ItemContainer::Storage,
                 crate::server::model::game_systems::ItemContainer::Inventory,

@@ -6,7 +6,9 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 FUNCTIONS = {
+    "warpportal": "WarpPortal",
     "getmapflag": "GetMapFlag", "setmapflag": "SetMapFlag", "removemapflag": "RemoveMapFlag",
+    "setmapflagnosave": "SetMapFlagNoSave", "savepoint": "SavePoint", "save": "SavePoint", "getsavepoint": "GetSavePoint",
     "pvpon": "PvpOn", "pvpoff": "PvpOff", "gvgon": "GvgOn", "gvgoff": "GvgOff",
     "bonus": "Bonus", "bonus2": "Bonus2", "bonus3": "Bonus3", "bonus4": "Bonus4", "bonus5": "Bonus5",
     "skill": "Skill", "itemskill": "ItemSkill", "getrefine": "GetRefine", "readparam": "ReadParam",
@@ -25,8 +27,12 @@ FUNCTIONS = {
     "openstorage": "OpenStorage", "guildopenstorage": "GuildOpenStorage",
     "getpetinfo": "GetPetInfo", "catchpet": "Pet", "petskillbonus": "PetSkillBonus", "petrecovery": "PetRecovery",
     "petskillattack": "PetSkillAttack", "petskillattack2": "PetSkillAttack2", "petskillsupport": "PetSkillSupport", "petloot": "PetLoot",
+    "petautobonus": "PetAutoBonus", "petautobonus2": "PetAutoBonus2", "petautobonus3": "PetAutoBonus3",
     "mes": "Mes", "close": "Close", "next": "Next", "select": "Select",
     "message": "Message", "dispbottom": "DispBottom", "cutin": "Cutin",
+    "addtimer": "AddTimer", "deltimer": "DeleteTimer", "addtimercount": "AddTimerCount",
+    "initnpctimer": "InitNpcTimer", "startnpctimer": "StartNpcTimer", "stopnpctimer": "StopNpcTimer",
+    "setnpctimer": "SetNpcTimer", "getnpctimer": "GetNpcTimer", "attachnpctimer": "AttachNpcTimer", "detachnpctimer": "DetachNpcTimer",
 }
 TOKEN = re.compile(r'\s+|/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|0[xX][0-9a-fA-F]+|\d+|(?:\.@|[.@#$\x27]+)?[A-Za-z_][\w$]*|==|!=|<=|>=|&&|\|\||<<|>>|\+=|-=|\+\+|--|[{}();,?:=+*/%<>!~&|^\-]', re.S)
 PRECEDENCE = {"||": 1, "&&": 2, "|": 3, "^": 4, "&": 5, "==": 6, "!=": 6, "<": 7, ">": 7, "<=": 7, ">=": 7, "<<": 8, ">>": 8, "+": 9, "-": 9, "*": 10, "/": 10, "%": 10}
@@ -85,7 +91,7 @@ class Parser:
             raise ValueError(f"Unknown command {name}")
         if name not in {"bonus", "bonus2", "bonus3", "bonus4", "bonus5", "skill"}:
             self.dynamic = True
-        if name in {"autobonus", "autobonus2", "autobonus3"}:
+        if name in {"autobonus", "autobonus2", "autobonus3", "petautobonus", "petautobonus2", "petautobonus3"}:
             for index in (0, 4):
                 if index >= len(values):
                     continue
@@ -96,8 +102,19 @@ class Parser:
                 if not source.strip():
                     values[index] = "Value::Number(0)"
                     continue
+                source_hash = hashlib.md5(source.encode()).hexdigest()
+                kind = "bonus" if index == 0 else "visual"
+                if name.startswith("pet"):
+                    existing = next((program for program in self.programs if program.get("source_hash") == source_hash
+                                     and program["item_id"] == self.item_id and program["kind"] == kind), None)
+                    if existing is not None:
+                        values[index] = f"Value::Number({existing['id']})"
+                        self.calls.update(existing.get("calls", []))
+                        continue
                 program_id = len(self.programs) + 1
-                program = {"id": program_id, "item_id": self.item_id, "kind": "bonus" if index == 0 else "visual"}
+                program = {"id": program_id, "item_id": self.item_id, "kind": kind}
+                if name.startswith("pet"):
+                    program["source_hash"] = source_hash
                 self.programs.append(program)
                 converter = Parser(source, self.programs, self.item_id)
                 program["body"] = converter.compile()

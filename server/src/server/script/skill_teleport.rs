@@ -50,6 +50,7 @@ impl ScriptSkillService {
         character.script_skill_state.deferred_requirements = Some(DeferredSkillPayment {
             skill_id,
             level,
+            keep_requirements: true,
             requirements,
             source_index: None,
             source_item: None,

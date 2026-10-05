@@ -33,7 +33,8 @@ impl MobService {
 
     pub fn action_move(&self, mob: &mut Mob, cells: &[u16], x_size: u16, y_size: u16, start_at: u128) -> Option<MobMovement> {
         // Check state machine - can't move if flinching or dead
-        if !mob.can_act() || mob.script_cast_until > start_at || mob.blocks_movement() || !MobMode::can_move(mob.mode) {
+        if !mob.can_act() || mob.script_cast_until > start_at || mob.blocks_movement() || !MobMode::can_move(mob.mode)
+            || mob.status.has_mob_capability(models::enums::mob::MobCapability::NoRandomWalk) {
             return None;
         }
         if !mob.is_present()

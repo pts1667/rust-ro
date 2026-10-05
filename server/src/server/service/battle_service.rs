@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-use std::mem;
 use std::sync::Once;
 use std::sync::mpsc::SyncSender;
 
@@ -15,12 +14,10 @@ use models::enums::weapon::WeaponType;
 use models::enums::{EnumStackable, EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::{BattleFlag, StatusBonus};
-use packets::packets::PacketZcNotifyAct;
 use skills::OffensiveSkill;
 
-use crate::packets::packets::Packet;
 use crate::server::model::action::Damage;
-use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
+use crate::server::model::events::client_notification::Notification;
 use crate::server::model::map_item::{MapItemSnapshot, MapItemType};
 use crate::server::service::combat_trigger_service::MagicReflectionKind;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -59,6 +56,7 @@ struct SkillDamageRules {
     ignore_attack_cards: bool,
     ignore_defense_cards: bool,
     ignore_element: bool,
+    ignore_long_cards: bool,
 }
 
 #[derive(Default, Clone, Copy)]
@@ -71,6 +69,23 @@ struct PhysicalAttackOverrides {
     skill_level: u8,
 }
 
+struct ClassicCardFix(i128);
+
+impl ClassicCardFix {
+    fn new() -> Self {
+        Self(1000)
+    }
+
+    fn multiply(&mut self, percent: i32) {
+        self.0 = self.0.saturating_mul(100 + i128::from(percent)) / 100;
+    }
+
+    fn apply(self, damage: f32) -> f32 {
+        let damage = damage.trunc() as i128;
+        damage.saturating_sub(damage.saturating_mul(1000 - self.0.max(0)) / 1000) as f32
+    }
+}
+
 impl SkillDamageRules {
     fn from_skill(skill_id: u32) -> Self {
         let metadata = crate::server::script::skill::metadata::SkillMetadata::find(skill_id);
@@ -80,6 +95,7 @@ impl SkillDamageRules {
             ignore_attack_cards: enabled("IgnoreAtkCard"),
             ignore_defense_cards: enabled("IgnoreDefCard"),
             ignore_element: enabled("IgnoreElement"),
+            ignore_long_cards: enabled("IgnoreLongCard"),
         }
     }
 }
@@ -246,7 +262,7 @@ mod equipment_bonus_tests {
         let flags = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag() | BattleFlag::Skill.as_flag();
         assert_eq!(
             service.actor_physical_skill_damage(100, &source, &target, false, 1.0, 1, &Element::Neutral, flags, physical_id),
-            28
+            29
         );
         assert_eq!(
             service.magic_damage_from_context(
@@ -254,7 +270,7 @@ mod equipment_bonus_tests {
                 &target,
                 MagicAttackContext::new(100, 1.0, Element::Neutral, 1, magic_id)
             ),
-            21
+            22
         );
         target
             .bonuses_mut()
@@ -625,7 +641,7 @@ mod equipment_bonus_tests {
             service.magic_damage_from_context(&caster, &caster, context).max(0) as u32
         );
         assert!(reflected > original);
-        assert!(reflected < 150);
+        assert_eq!(reflected, 150);
         assert_eq!(
             service
                 .reflected_magic_damage(MagicReflectionKind::Mirror, original, &caster, Some(context))
@@ -652,6 +668,7 @@ mod equipment_bonus_tests {
         source.set_bonuses(vec![StatusBonus::new(BonusType::IgnoreMDefRacePercentage(MobRace::All, 50))]);
         assert_eq!(service.magic_damage_from_context(&source, &target, context), 64);
         target.set_job(0);
+        target.set_combat_actor_kind(models::enums::actor::CombatActorKind::Player);
         assert_eq!(service.magic_damage_from_context(&source, &target, context), 59);
         source
             .bonuses_mut()
@@ -1241,6 +1258,7 @@ mod equipment_bonus_tests {
         target.set_race(MobRace::Demon);
         assert_eq!(service.learned_weapon_mastery_damage(&source, &target), 79);
         target.set_job(0);
+        target.set_combat_actor_kind(models::enums::actor::CombatActorKind::Player);
         assert_eq!(service.learned_weapon_mastery_damage(&source, &target), 0);
         source.set_known_skills(vec![models::status::KnownSkill {
             value: SkillEnum::HtBeastbane,
@@ -2016,7 +2034,7 @@ impl BattleService {
             } else {
                 self.apply_element_attack_bonus(damage, source, element, false)
             };
-            self.apply_damage_bonus_modifier_with_rules(damage, source, target, rules)
+            self.apply_weapon_attack_cardfix(damage, source, target, rules, flags, Self::attack_uses_ammo(source, skill_id))
         };
         self.apply_damage_reduction_with_rules(damage, source, target, element, flags, rules)
             .clamp(i32::MIN as f32, i32::MAX as f32)
@@ -2084,6 +2102,34 @@ impl BattleService {
         flags: u32,
         skill_id: u32,
     ) -> u32 {
+        self.actor_misc_skill_damage_value(raw, source, target, element, flags, skill_id)
+            .clamp(0.0, u32::MAX as f32)
+            .floor() as u32
+    }
+
+    pub fn actor_misc_skill_damage_signed(
+        &self,
+        raw: u32,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        element: &Element,
+        flags: u32,
+        skill_id: u32,
+    ) -> i32 {
+        self.actor_misc_skill_damage_value(raw, source, target, element, flags, skill_id)
+            .clamp(i32::MIN as f32, i32::MAX as f32)
+            .floor() as i32
+    }
+
+    fn actor_misc_skill_damage_value(
+        &self,
+        raw: u32,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        element: &Element,
+        flags: u32,
+        skill_id: u32,
+    ) -> f32 {
         let rules = SkillDamageRules::from_skill(skill_id);
         let damage = self.apply_damage_reduction_with_options(raw as f32, source, target, element, flags, rules, false);
         let damage = self.apply_skill_damage_modifiers(damage, source, target, skill_id).floor()
@@ -2093,9 +2139,9 @@ impl BattleService {
                 Self::element_modifier(element, target)
             };
         if damage > 0.0 && self.is_infinite_defense(target, flags) {
-            1
+            1.0
         } else {
-            damage.clamp(0.0, u32::MAX as f32).floor() as u32
+            damage
         }
     }
 
@@ -2712,6 +2758,11 @@ impl BattleService {
                 BattleFlag::Long.as_flag()
             } else {
                 BattleFlag::Short.as_flag()
+            }
+            | if skill_id == 0 {
+                BattleFlag::Normal.as_flag()
+            } else {
+                BattleFlag::Skill.as_flag()
             };
         if self.is_infinite_defense(target_status, flags) {
             return 1;
@@ -2760,7 +2811,7 @@ impl BattleService {
         let full_vitdef = if !ignores_def || elemental_extra.is_some() {
             self.sample_soft_defense(
                 target_status,
-                JobName::try_from_value(target_status.job() as usize).is_ok(),
+                *target_status.combat_actor_kind() == models::enums::actor::CombatActorKind::Player,
                 ignore_percentage,
                 overrides.soft_defense_roll,
             )
@@ -2909,43 +2960,7 @@ impl BattleService {
                 0.0
             };
         atk = self.apply_skill_damage_modifiers(atk, source_status, target_status, skill_id);
-        if !rules.ignore_attack_cards {
-            atk = self.apply_damage_bonus_modifier_with_rules(atk, source_status, target_status, rules);
-        }
-        if is_ranged && !rules.ignore_attack_cards {
-            atk = scale_damage(
-                atk,
-                sum_bonus(source_status, |bonus| match bonus {
-                    BonusType::DamageRangedAtkPercentage(percent) => Some(*percent as i32),
-                    _ => None,
-                }),
-            );
-        }
-        let flags = BattleFlag::Weapon.as_flag()
-            | if is_ranged {
-                BattleFlag::Long.as_flag()
-            } else {
-                BattleFlag::Short.as_flag()
-            }
-            | if skill_attack {
-                BattleFlag::Skill.as_flag()
-            } else {
-                BattleFlag::Normal.as_flag()
-            };
-        if !rules.ignore_attack_cards && !rules.ignore_element {
-            atk = scale_damage(
-                atk,
-                sum_bonus(source_status, |bonus| match bonus {
-                    BonusType::PhysicalDamageAgainstElementWithFlags((filter, required), percent)
-                        if (*filter == Element::AllElement || filter == target_status.element())
-                            && BattleFlag::matches(*required, flags) =>
-                    {
-                        Some(*percent as i32)
-                    }
-                    _ => None,
-                }),
-            );
-        }
+        atk = self.apply_weapon_attack_cardfix(atk, source_status, target_status, rules, flags, uses_ammo);
         atk = self.apply_damage_reduction_with_rules(atk, source_status, target_status, element, flags, rules);
         atk *= number_of_hits;
         atk.floor() as i32
@@ -2970,7 +2985,7 @@ impl BattleService {
             _ => 0,
         };
         let mut bane = 0;
-        if self.configuration_service.get_mob_safe(target.job() as i32).is_some()
+        if *target.combat_actor_kind() == models::enums::actor::CombatActorKind::Monster
             && (matches!(target.race(), MobRace::Demon | MobRace::RUndead) || *target.element() == Element::Undead)
         {
             bane += ((u64::from(source.base_level()) + 60) * level(SkillEnum::AlDemonbane) as u64 / 20).min(i32::MAX as u64) as i32;
@@ -3033,7 +3048,14 @@ impl BattleService {
             } else {
                 0.0
             };
-        let damage = self.apply_damage_bonus_modifier(damage, source, target);
+        let damage = self.apply_weapon_attack_cardfix(
+            damage,
+            source,
+            target,
+            SkillDamageRules::default(),
+            flags,
+            Self::attack_uses_ammo(source, 0),
+        );
         self.apply_damage_reduction(damage, source, target, element, flags).max(0.0).floor() as u32
     }
 
@@ -3194,6 +3216,72 @@ impl BattleService {
         )
     }
 
+    pub fn metadata_magic_damage(
+        &self,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        metadata: &crate::server::script::skill::metadata::SkillMetadata,
+        level: u8,
+    ) -> Result<(i32, MagicAttackContext), String> {
+        let modifier = match metadata.name.as_str() {
+            "NPC_MAGICALATTACK" => 1.0,
+            "SL_STUN" => 1.0 + 0.05 * f32::from(level),
+            "SL_STIN" if *target.size() == Size::Small => 1.0 + 0.1 * f32::from(level),
+            "SL_STIN" => 0.01,
+            "SL_SMA" => (40.0 + source.base_level() as f32) / 100.0,
+            name if name.starts_with("NPC_") => 1.0,
+            _ => return Err("Skill has no metadata magic damage formula".into()),
+        };
+        let mut context = self.magic_attack_context(source, modifier, self.skill_attack_element(source, metadata, level));
+        context.skill_id = metadata.id;
+        context.hits = metadata.hit_count.as_ref().and_then(|count| count.value(level, "Count")).unwrap_or(1)
+            .unsigned_abs().clamp(1, u32::from(u16::MAX)) as u16;
+        Ok((self.magic_damage_from_context(source, target, context), context))
+    }
+
+    pub fn magical_normal_attack(
+        &self,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        attacker_id: u32,
+        target_id: u32,
+        credit_id: u32,
+        map: &crate::server::model::map_instance::MapInstanceKey,
+        x: u16,
+        y: u16,
+        tick: u128,
+        motion: u32,
+        damage_motion: u32,
+    ) -> Option<Damage> {
+        let status = source.status_change(models::status_change::StatusChangeKind::MagicalAttack).filter(|status| !status.expired(tick))?;
+        let metadata = crate::server::script::skill::metadata::SkillMetadata::find(SkillEnum::NpcMagicalattack.id())?;
+        let level = status.values[0].clamp(1, i32::from(u8::MAX)) as u8;
+        let (mut amount, context) = self.metadata_magic_damage(source, target, metadata, level).ok()?;
+        if *target.combat_actor_kind() == models::enums::actor::CombatActorKind::SkillUnit { amount = 0; }
+        let mut damage = Damage {
+            notification: None,
+            source_kind: *source.combat_actor_kind(),
+            skill_damage_adjusted: false,
+            target_id,
+            attacker_id,
+            damage: 0,
+            healing: 0,
+            right_hand_damage: None,
+            attacked_at: tick.saturating_add(u128::from(motion)),
+            damage_motion,
+            battle_flags: metadata.battle_flags(true),
+            skill_id: metadata.id,
+            skill_level: level,
+            landed: true,
+            proc_depth: 0,
+            credit_id,
+            defenses_applied: true,
+            magic_context: Some(context),
+        };
+        damage.set_signed_damage(amount);
+        Some(damage.with_skill_notification(map.map_name(), map.map_instance(), x, y, tick, 1, motion))
+    }
+
     fn magic_attack_context(&self, source: &StatusSnapshot, modifier: f32, element: Element) -> MagicAttackContext {
         let mut rng = fastrand::Rng::new();
         let matk = match self.battle_result_mode {
@@ -3299,7 +3387,12 @@ impl BattleService {
         } else {
             (
                 Self::reduced_hard_defense(target, ignored),
-                self.sample_soft_defense(target, JobName::try_from_value(target.job() as usize).is_ok(), ignored, None),
+                self.sample_soft_defense(
+                    target,
+                    *target.combat_actor_kind() == models::enums::actor::CombatActorKind::Player,
+                    ignored,
+                    None,
+                ),
             )
         };
         let physical = (grand.raw_atk as f32 * (1.0 - hard_def)).floor() - vit_def + f32::from(grand.refine_bonus);
@@ -3315,7 +3408,7 @@ impl BattleService {
             0
         } else {
             i32::from(target.int())
-                + if self.configuration_service.get_mob_safe(target.job() as i32).is_some() {
+                + if *target.combat_actor_kind() == models::enums::actor::CombatActorKind::Monster {
                     0
                 } else {
                     i32::from(target.vit()) / 2
@@ -3330,27 +3423,7 @@ impl BattleService {
         };
         let mut damage = ((physical + magic).max(1.0) * context.modifier).floor();
         damage = (damage * element).floor();
-        if !rules.ignore_attack_cards {
-            damage = self.apply_element_attack_bonus(damage, source, &context.element, true);
-            damage = scale_damage(
-                damage,
-                sum_bonus(source, |bonus| match bonus {
-                    BonusType::MagicalDamageAgainstRacePercentage(race, value) if *race == MobRace::All || race == target.race() => {
-                        Some(i32::from(*value))
-                    }
-                    _ => None,
-                }),
-            );
-            damage = scale_damage(
-                damage,
-                sum_bonus(source, |bonus| match bonus {
-                    BonusType::MagicalDamageAgainstSizePercentage(size, value) if *size == Size::All || size == target.size() => {
-                        Some(i32::from(*value))
-                    }
-                    _ => None,
-                }),
-            );
-        }
+        damage = self.apply_magic_attack_cardfix(damage, source, target, &context.element, rules);
         damage = self.apply_damage_reduction_with_rules(
             damage,
             source,
@@ -3401,7 +3474,7 @@ impl BattleService {
         } else {
             let hard_mdef = (hard_mdef - hard_mdef * ignore / 100).min(100);
             let soft_mdef = u32::from(target_status.int())
-                + if self.configuration_service.get_mob_safe(target_status.job() as i32).is_some() {
+                + if *target_status.combat_actor_kind() == models::enums::actor::CombatActorKind::Monster {
                     0
                 } else {
                     u32::from(target_status.vit()) / 2
@@ -3415,31 +3488,7 @@ impl BattleService {
             context.skill_id,
         );
         let mut damage = ((raw * (1.0 - mdef)).floor() - soft_mdef).max(1.0) * elemental_modifier;
-        if !rules.ignore_attack_cards {
-            if !rules.ignore_element {
-                damage = self.apply_element_attack_bonus(damage, source_status, element, true);
-            }
-            damage = scale_damage(
-                damage,
-                sum_bonus(source_status, |bonus| match bonus {
-                    BonusType::MagicalDamageAgainstRacePercentage(race, percent)
-                        if *race == MobRace::All || race == target_status.race() =>
-                    {
-                        Some(*percent as i32)
-                    }
-                    _ => None,
-                }),
-            );
-            damage = scale_damage(
-                damage,
-                sum_bonus(source_status, |bonus| match bonus {
-                    BonusType::MagicalDamageAgainstSizePercentage(size, percent) if *size == Size::All || size == target_status.size() => {
-                        Some(*percent as i32)
-                    }
-                    _ => None,
-                }),
-            );
-        }
+        damage = self.apply_magic_attack_cardfix(damage, source_status, target_status, element, rules);
         let damage = self
             .apply_damage_reduction_with_rules(
                 damage,
@@ -3479,6 +3528,10 @@ impl BattleService {
                 Ok(self.magic_damage_from_context(caster, caster, context))
             }
         }
+    }
+
+    pub fn metadata_weapon_element(&self, source_status: &StatusSnapshot, element: Option<Element>, skill_id: u32) -> Element {
+        self.resolve_attack_element(source_status, element, skill_id, false, true)
     }
 
     pub fn attack_element(&self, source_status: &StatusSnapshot, skill: Option<&dyn OffensiveSkill>) -> Element {
@@ -3617,86 +3670,164 @@ impl BattleService {
 
     fn apply_damage_bonus_modifier_with_rules(
         &self,
-        current_atk: f32,
-        source_status: &StatusSnapshot,
-        target_status: &StatusSnapshot,
+        damage: f32,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
         rules: SkillDamageRules,
     ) -> f32 {
-        // todo include Star crumb
-        // race, mob group, size, element (addRace, addRace2, addSize, addEle)
-        // star crumb, ranked blacksmith weapon, ranged attack bonus,
-        // based on def (bDefRatioAtk*)
-        // Turtle general, Randgris like card (addClass)
-        // Frenzy/Edp
-        // spirit ball
+        let ranged = source.right_hand_weapon_type().is_ranged();
+        let flags = BattleFlag::Weapon.as_flag()
+            | BattleFlag::Normal.as_flag()
+            | if ranged {
+                BattleFlag::Long.as_flag()
+            } else {
+                BattleFlag::Short.as_flag()
+            };
+        self.apply_weapon_attack_cardfix(damage, source, target, rules, flags, Self::attack_uses_ammo(source, 0))
+    }
 
-        // Notes:
-        // star crumb: ignored by shield boomerang skill
-        // spirit ball, shouldcount spirit ball wehn casting fingeroffensive, otherwise
-        // use current value
-        let mut current_atk = current_atk;
-        if !rules.ignore_element {
-            current_atk = scale_damage(
-                current_atk,
-                sum_bonus(source_status, |bonus| match bonus {
-                    BonusType::PhysicalDamageAgainstElementPercentage(element, percent)
-                        if *element == Element::AllElement || element == target_status.element() =>
-                    {
-                        Some(*percent as i32)
-                    }
+    fn apply_weapon_attack_cardfix(
+        &self,
+        damage: f32,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        rules: SkillDamageRules,
+        flags: u32,
+        uses_ammo: bool,
+    ) -> f32 {
+        if rules.ignore_attack_cards {
+            return damage;
+        }
+        let element = if rules.ignore_element {
+            0
+        } else {
+            sum_bonus(source, |bonus| match bonus {
+                BonusType::PhysicalDamageAgainstElementPercentage(filter, rate)
+                    if *filter == Element::AllElement || filter == target.element() =>
+                {
+                    Some(i32::from(*rate))
+                }
+                BonusType::PhysicalDamageAgainstElementWithFlags((filter, required), rate)
+                    if (*filter == Element::AllElement || filter == target.element()) && BattleFlag::matches(*required, flags) =>
+                {
+                    Some(i32::from(*rate))
+                }
+                _ => None,
+            })
+        };
+        let race = sum_bonus(source, |bonus| match bonus {
+            BonusType::PhysicalDamageAgainstRacePercentage(filter, rate) if *filter == MobRace::All || filter == target.race() => {
+                Some(i32::from(*rate))
+            }
+            _ => None,
+        });
+        let size = sum_bonus(source, |bonus| match bonus {
+            BonusType::PhysicalDamageAgainstSizePercentage(filter, rate) if *filter == Size::All || filter == target.size() => {
+                Some(i32::from(*rate))
+            }
+            _ => None,
+        });
+        let mut fix = ClassicCardFix::new();
+        if uses_ammo {
+            fix.multiply(race);
+            fix.multiply(element);
+        } else {
+            fix.multiply(element);
+            fix.multiply(race);
+        }
+        fix.multiply(size);
+        if uses_ammo {
+            fix.multiply(sum_bonus(source, |bonus| match bonus {
+                BonusType::DamageAgainstMobGroupPercentage(group, rate) if self.matches_mob_group(*group, target) => Some(i32::from(*rate)),
+                _ => None,
+            }));
+        } else {
+            for group in target.mob_groups() {
+                fix.multiply(sum_bonus(source, |bonus| match bonus {
+                    BonusType::DamageAgainstMobGroupPercentage(filter, rate) if filter == group => Some(i32::from(*rate)),
                     _ => None,
-                }),
-            );
+                }));
+            }
         }
-        current_atk = scale_damage(
-            current_atk,
-            sum_bonus(source_status, |bonus| match bonus {
-                BonusType::PhysicalDamageAgainstRacePercentage(race, percent) if *race == MobRace::All || race == target_status.race() => {
-                    Some(*percent as i32)
-                }
-                _ => None,
-            }),
-        );
-        current_atk = scale_damage(
-            current_atk,
-            sum_bonus(source_status, |bonus| match bonus {
-                BonusType::PhysicalDamageAgainstSizePercentage(size, percent) if *size == Size::All || size == target_status.size() => {
-                    Some(*percent as i32)
-                }
-                _ => None,
-            }),
-        );
-        let class = self.target_class(target_status);
-        current_atk = scale_damage(
-            current_atk,
-            sum_bonus(source_status, |bonus| match bonus {
-                BonusType::PhysicalDamageAgainstClassPercentage(filter, percent) if *filter == MobClass::All || *filter == class => {
-                    Some(*percent as i32)
-                }
-                _ => None,
-            }),
-        );
-        let advanced_katar = known_skill_level(source_status, SkillEnum::AscKatar);
-        if *source_status.right_hand_weapon_type() == WeaponType::Katar && advanced_katar > 0 {
-            current_atk = scale_damage(current_atk, 10 + 2 * advanced_katar);
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::PhysicalDamageAgainstClassPercentage(filter, rate) if *filter == MobClass::All || filter == target.mob_class() => {
+                Some(i32::from(*rate))
+            }
+            _ => None,
+        }));
+        let katar = known_skill_level(source, SkillEnum::AscKatar);
+        if !uses_ammo && *source.right_hand_weapon_type() == WeaponType::Katar && katar > 0 {
+            fix.multiply(10 + 2 * katar);
         }
-        current_atk = scale_damage(
-            current_atk,
-            sum_bonus(source_status, |bonus| match bonus {
-                BonusType::PhysicalDamageAgainstMobIdPercentage(id, percent) if *id == target_status.job() => Some(*percent as i32),
-                _ => None,
-            }),
-        );
-        current_atk = scale_damage(
-            current_atk,
-            sum_bonus(source_status, |bonus| match bonus {
-                BonusType::DamageAgainstMobGroupPercentage(group, percent) if self.matches_mob_group(*group, target_status) => {
-                    Some(*percent as i32)
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::PhysicalDamageAgainstMobIdPercentage(id, rate) if *id == target.job() => Some(i32::from(*rate)),
+            _ => None,
+        }));
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::DamageRangedAtkPercentage(rate) if flags & BattleFlag::Long.as_flag() != 0 => Some(i32::from(*rate)),
+            BonusType::DamageMeleeAtkPercentage(rate) if flags & BattleFlag::Short.as_flag() != 0 => Some(*rate),
+            _ => None,
+        }));
+        fix.apply(damage)
+    }
+
+    fn apply_magic_attack_cardfix(
+        &self,
+        damage: f32,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        element: &Element,
+        rules: SkillDamageRules,
+    ) -> f32 {
+        if rules.ignore_attack_cards {
+            return damage;
+        }
+        let damage = if rules.ignore_element {
+            damage
+        } else {
+            self.apply_element_attack_bonus(damage, source, element, false)
+        };
+        let mut fix = ClassicCardFix::new();
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::MagicalDamageAgainstRacePercentage(filter, rate) if *filter == MobRace::All || filter == target.race() => {
+                Some(i32::from(*rate))
+            }
+            BonusType::MagicalDamageAgainstMobGroupPercentage(filter, rate) if self.matches_mob_group(*filter, target) => Some(*rate),
+            _ => None,
+        }));
+        if !rules.ignore_element {
+            fix.multiply(sum_bonus(source, |bonus| match bonus {
+                BonusType::MagicalDamageAgainstElementPercentage(filter, rate)
+                    if *filter == Element::AllElement || filter == target.element() =>
+                {
+                    Some(*rate)
                 }
                 _ => None,
-            }),
-        );
-        current_atk
+            }));
+            fix.multiply(sum_bonus(source, |bonus| match bonus {
+                BonusType::MagicalDamageUsingElementPercentage(filter, rate) if *filter == Element::AllElement || filter == element => {
+                    Some(i32::from(*rate))
+                }
+                _ => None,
+            }));
+        }
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::MagicalDamageAgainstSizePercentage(filter, rate) if *filter == Size::All || filter == target.size() => {
+                Some(i32::from(*rate))
+            }
+            _ => None,
+        }));
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::MagicalDamageAgainstClassPercentage(filter, rate) if *filter == MobClass::All || filter == target.mob_class() => {
+                Some(*rate)
+            }
+            _ => None,
+        }));
+        fix.multiply(sum_bonus(source, |bonus| match bonus {
+            BonusType::MagicalDamageAgainstMobIdPercentage(id, rate) if *id == target.job() => Some(*rate),
+            _ => None,
+        }));
+        fix.apply(damage)
     }
 
     fn target_class(&self, target: &StatusSnapshot) -> MobClass {
@@ -3793,92 +3924,132 @@ impl BattleService {
                 damage
             };
         }
-        let class = self.target_class(source);
-        let miscellaneous = flags & BattleFlag::Misc.as_flag() != 0;
-        let mut damage = damage;
-        let mut cardfix = 1000_i64;
-        let categories = if miscellaneous { [0, 1, 2, 5, 3, 4] } else { [0, 1, 2, 3, 4, 5] };
-        for category in categories {
-            if category == 0 && rules.ignore_element {
-                continue;
-            }
-            let reduction = sum_bonus(target, |bonus| match (category, bonus) {
-                (0, BonusType::ResistanceDamageFromElementPercentage(filter, percent))
-                    if *filter == Element::AllElement || filter == element =>
-                {
-                    Some(*percent as i32)
-                }
-                (0, BonusType::ResistanceDamageFromElementWithFlags((filter, required), percent))
-                    if (*filter == Element::AllElement || filter == element) && BattleFlag::matches(*required, flags) =>
-                {
-                    Some(*percent as i32)
-                }
-                (1, BonusType::ResistanceDamageFromRacePercentage(race, percent)) if *race == MobRace::All || race == source.race() => {
-                    Some(*percent as i32)
-                }
-                (1, BonusType::ResistanceDamageFromRaceWithFlags((race, required), percent))
-                    if (*race == MobRace::All || race == source.race()) && BattleFlag::matches(*required, flags) =>
-                {
-                    Some(*percent as i32)
-                }
-                (2, BonusType::ResistanceDamageFromSizePercentage(size, percent)) if *size == Size::All || size == source.size() => {
-                    Some(*percent as i32)
-                }
-                (3, BonusType::ResistanceDamageFromClassPercentage(filter, percent)) if *filter == MobClass::All || *filter == class => {
-                    Some(*percent as i32)
-                }
-                (4, BonusType::ResistancePhysicalAttackFromMobIdPercentage(id, percent))
-                    if *id == source.job() && flags & BattleFlag::Weapon.as_flag() != 0 && flags & BattleFlag::Misc.as_flag() == 0 =>
-                {
-                    Some(*percent as i32)
-                }
-                (5, BonusType::ResistanceDamageFromMobGroupPercentage(group, percent)) if self.matches_mob_group(*group, source) => {
-                    Some(*percent as i32)
-                }
-                _ => None,
-            });
-            if miscellaneous {
-                cardfix = cardfix.saturating_mul(100 - i64::from(reduction.min(100))) / 100;
-            } else {
-                damage = scale_damage(damage, -reduction.min(100));
-            }
+        let mut fix = ClassicCardFix::new();
+        if !rules.ignore_element {
+            fix.multiply(
+                -sum_bonus(target, |bonus| match bonus {
+                    BonusType::ResistanceDamageFromElementPercentage(filter, rate)
+                        if *filter == Element::AllElement || filter == element =>
+                    {
+                        Some(i32::from(*rate))
+                    }
+                    BonusType::ResistanceDamageFromElementWithFlags((filter, required), rate)
+                        if (*filter == Element::AllElement || filter == element) && BattleFlag::matches(*required, flags) =>
+                    {
+                        Some(i32::from(*rate))
+                    }
+                    _ => None,
+                })
+                .min(100),
+            );
         }
+        let miscellaneous = flags & BattleFlag::Misc.as_flag() != 0;
+        let magic = !miscellaneous && flags & BattleFlag::Magic.as_flag() != 0;
+        let race = sum_bonus(target, |bonus| match bonus {
+            BonusType::ResistanceDamageFromRacePercentage(filter, rate) if *filter == MobRace::All || filter == source.race() => {
+                Some(i32::from(*rate))
+            }
+            BonusType::ResistanceDamageFromRaceWithFlags((filter, required), rate)
+                if (*filter == MobRace::All || filter == source.race()) && BattleFlag::matches(*required, flags) =>
+            {
+                Some(i32::from(*rate))
+            }
+            _ => None,
+        })
+        .min(100);
         if miscellaneous {
-            let reduction = sum_bonus(target, |bonus| match bonus {
-                BonusType::ResistanceMiscAttackPercentage(percent) => Some(*percent),
+            fix.multiply(-race);
+        }
+        fix.multiply(
+            -sum_bonus(target, |bonus| match bonus {
+                BonusType::ResistanceDamageFromSizePercentage(filter, rate) if *filter == Size::All || filter == source.size() => {
+                    Some(i32::from(*rate))
+                }
                 _ => None,
             })
-            .min(100);
-            cardfix = cardfix.saturating_mul(100 - i64::from(reduction)) / 100;
-            if flags & BattleFlag::Long.as_flag() != 0 {
-                let reduction = sum_bonus(target, |bonus| match bonus {
-                    BonusType::ResistanceRangeAttackPercentage(percent) => Some(i32::from(*percent)),
-                    _ => None,
-                })
-                .min(100);
-                cardfix = cardfix.saturating_mul(100 - i64::from(reduction)) / 100;
-            }
-            let raw = damage.trunc() as i64;
-            damage = (i128::from(raw) - i128::from(raw) * (1000 - i128::from(cardfix.max(0))) / 1000) as f32;
-        } else if flags & BattleFlag::Magic.as_flag() != 0 {
-            damage = scale_damage(
-                damage,
+            .min(100),
+        );
+        if !miscellaneous {
+            fix.multiply(
                 -sum_bonus(target, |bonus| match bonus {
-                    BonusType::ResistanceMagicAttackPercentage(percent) => Some(*percent as i32),
-                    _ => None,
-                })
-                .min(100),
-            );
-        } else if flags & BattleFlag::Long.as_flag() != 0 {
-            damage = scale_damage(
-                damage,
-                -sum_bonus(target, |bonus| match bonus {
-                    BonusType::ResistanceRangeAttackPercentage(percent) => Some(*percent as i32),
+                    BonusType::ResistanceMagicAttackFromSizePercentage(filter, rate)
+                        if magic && (*filter == Size::All || filter == source.size()) =>
+                    {
+                        Some(*rate)
+                    }
+                    BonusType::ResistancePhysicalAttackFromSizePercentage(filter, rate)
+                        if !magic && (*filter == Size::All || filter == source.size()) =>
+                    {
+                        Some(*rate)
+                    }
                     _ => None,
                 })
                 .min(100),
             );
         }
+        fix.multiply(
+            -sum_bonus(target, |bonus| match bonus {
+                BonusType::ResistanceDamageFromMobGroupPercentage(filter, rate) if self.matches_mob_group(*filter, source) => {
+                    Some(i32::from(*rate))
+                }
+                _ => None,
+            })
+            .min(100),
+        );
+        if !miscellaneous {
+            fix.multiply(-race);
+        }
+        fix.multiply(
+            -sum_bonus(target, |bonus| match bonus {
+                BonusType::ResistanceDamageFromClassPercentage(filter, rate)
+                    if *filter == MobClass::All || filter == source.mob_class() =>
+                {
+                    Some(i32::from(*rate))
+                }
+                _ => None,
+            })
+            .min(100),
+        );
+        if !miscellaneous {
+            fix.multiply(
+                -sum_bonus(target, |bonus| match bonus {
+                    BonusType::ResistancePhysicalAttackFromMobIdPercentage(id, rate) if !magic && *id == source.job() => {
+                        Some(i32::from(*rate))
+                    }
+                    BonusType::ResistanceMagicAttackFromMobIdPercentage(id, rate) if magic && *id == source.job() => Some(*rate),
+                    _ => None,
+                })
+                .min(100),
+            );
+        } else {
+            fix.multiply(
+                -sum_bonus(target, |bonus| match bonus {
+                    BonusType::ResistanceMiscAttackPercentage(rate) => Some(*rate),
+                    _ => None,
+                })
+                .min(100),
+            );
+        }
+        fix.multiply(
+            -sum_bonus(target, |bonus| match bonus {
+                BonusType::ResistanceMeleeAttackPercentage(rate) if flags & BattleFlag::Short.as_flag() != 0 => Some(*rate),
+                BonusType::ResistanceRangeAttackPercentage(rate) if flags & BattleFlag::Long.as_flag() != 0 && !rules.ignore_long_cards => {
+                    Some(i32::from(*rate))
+                }
+                _ => None,
+            })
+            .min(100),
+        );
+        if magic {
+            fix.multiply(
+                -sum_bonus(target, |bonus| match bonus {
+                    BonusType::ResistanceMagicAttackPercentage(rate) => Some(i32::from(*rate)),
+                    _ => None,
+                })
+                .min(100),
+            );
+        }
+        let damage = fix.apply(damage);
         if apply_infinite_defense && damage > 0.0 && flags != 0 && self.is_infinite_defense(target, flags) {
             1.0
         } else {
@@ -3914,11 +4085,13 @@ impl BattleService {
             character.update_last_attack_tick(tick);
             character.update_last_attack_motion(attack_motion);
         }
-        let mut packet_zc_notify_act3 = PacketZcNotifyAct::new(self.configuration_service.packetver());
-        packet_zc_notify_act3.set_target_gid(attack.target);
-        packet_zc_notify_act3.set_action(ActionType::Attack.value() as u8);
-        packet_zc_notify_act3.set_gid(character.char_id);
-        packet_zc_notify_act3.set_attack_mt(attack_motion as i32 / 2);
+        let target_damage_motion = if *target.map_item.object_type() == MapItemType::SkillUnit { 2000 } else if matches!(target.map_item.object_type(), MapItemType::Mob) {
+            self.configuration_service.get_mob(target.map_item.client_item_class() as i32).damage_motion as u32
+        } else { 480 };
+        if let Some(damage) = self.magical_normal_attack(source_status, target_status, character.char_id, target.map_item().id(),
+            character.char_id, &character.map_instance_key, character.x, character.y, tick, attack_motion, target_damage_motion) {
+            return Some(damage);
+        }
         let ranged = source_status.right_hand_weapon_type().is_ranged();
         let mut rng = fastrand::Rng::new();
         let rolls_enabled = matches!(self.battle_result_mode, BattleResultMode::Normal);
@@ -3927,67 +4100,56 @@ impl BattleService {
         } else {
             NormalAttackRoll::Hit
         };
-        let lucky_dodge = outcome == NormalAttackRoll::LuckyDodge;
         let double_attack = outcome == NormalAttackRoll::DoubleAttack;
-        let critical = outcome == NormalAttackRoll::Critical;
         let hit = !matches!(outcome, NormalAttackRoll::Miss | NormalAttackRoll::LuckyDodge);
-        if lucky_dodge {
-            packet_zc_notify_act3.set_action(ActionType::AttackLucky.value() as u8);
-        } else if critical {
-            packet_zc_notify_act3.set_action(ActionType::AttackCritical.value() as u8);
-        } else if double_attack {
-            packet_zc_notify_act3.set_action(ActionType::AttackMultiple.value() as u8);
-        }
-        let (right_hand_damage, left_hand_damage) = self.normal_weapon_damage_signed_parts(source_status, target_status, outcome);
-        let target_damage_motion = if matches!(target.map_item.object_type(), MapItemType::Mob) {
-            self.configuration_service
-                .get_mob(target.map_item.client_item_class() as i32)
-                .damage_motion as u32
-        } else {
-            480
+        let action = match outcome {
+            NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
+            NormalAttackRoll::Critical => ActionType::AttackCritical,
+            NormalAttackRoll::DoubleAttack => ActionType::AttackMultiple,
+            _ => ActionType::Attack,
         };
+        let (right_hand_damage, left_hand_damage) = self.normal_weapon_damage_signed_parts(source_status, target_status, outcome);
         let signed_damage = right_hand_damage.saturating_add(left_hand_damage);
         let damage = signed_damage.max(0) as u32;
-        packet_zc_notify_act3.set_attacked_mt(target_damage_motion as i32);
-        packet_zc_notify_act3.set_damage(right_hand_damage.clamp(i16::MIN as i32, i16::MAX as i32) as i16);
-        packet_zc_notify_act3.set_left_damage(left_hand_damage.clamp(i16::MIN as i32, i16::MAX as i32) as i16);
-        packet_zc_notify_act3.set_count(if double_attack { 2 } else { 1 });
-        packet_zc_notify_act3.fill_raw();
-        self.client_notification_sender
-            .send(Notification::Area(AreaNotification::new(
-                character.current_map_name().clone(),
+        Some(
+            Damage {
+                notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
+                target_id: attack.target,
+                attacker_id: character.char_id,
+                damage,
+                healing: if signed_damage < 0 { signed_damage.unsigned_abs() } else { 0 },
+                right_hand_damage: Some(right_hand_damage.max(0) as u32),
+                attacked_at: tick + attack_motion as u128,
+                damage_motion: target_damage_motion,
+                battle_flags: BattleFlag::Weapon.as_flag()
+                    | BattleFlag::Normal.as_flag()
+                    | if ranged {
+                        BattleFlag::Long.as_flag()
+                    } else {
+                        BattleFlag::Short.as_flag()
+                    },
+                skill_id: 0,
+                skill_level: 0,
+                landed: hit,
+                proc_depth: 0,
+                credit_id: character.char_id,
+                defenses_applied: true,
+                magic_context: None,
+            }
+            .with_action_notification(
+                character.current_map_name(),
                 character.current_map_instance(),
-                AreaNotificationRangeType::Fov {
-                    x: character.x,
-                    y: character.y,
-                    exclude_id: None,
-                },
-                mem::take(packet_zc_notify_act3.raw_mut()),
-            )))
-            .unwrap_or_else(|_| error!("Failed to send notification packet_zc_notify_act3 to client"));
-        Some(Damage {
-            target_id: attack.target,
-            attacker_id: character.char_id,
-            damage,
-            healing: if signed_damage < 0 { signed_damage.unsigned_abs() } else { 0 },
-            right_hand_damage: Some(right_hand_damage.max(0) as u32),
-            attacked_at: tick + attack_motion as u128,
-            damage_motion: target_damage_motion,
-            battle_flags: BattleFlag::Weapon.as_flag()
-                | BattleFlag::Normal.as_flag()
-                | if ranged {
-                    BattleFlag::Long.as_flag()
-                } else {
-                    BattleFlag::Short.as_flag()
-                },
-            skill_id: 0,
-            skill_level: 0,
-            landed: hit,
-            proc_depth: 0,
-            credit_id: character.char_id,
-            defenses_applied: true,
-            magic_context: None,
-        })
+                character.x,
+                character.y,
+                tick,
+                if double_attack { 2 } else { 1 },
+                attack_motion / 2,
+                action,
+                (right_hand_damage, left_hand_damage),
+            ),
+        )
     }
 
     #[inline]

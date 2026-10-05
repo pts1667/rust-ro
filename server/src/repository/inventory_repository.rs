@@ -251,25 +251,32 @@ impl InventoryRepository for SledRepository {
     }
 
     async fn character_inventory_wearable_item_update(&self, updates: Vec<InventoryItemModel>) -> Result<(), Error> {
+        if updates.is_empty() { return Ok(()); }
+        Err(Error::InvalidInput("Equipment changes require the original character owner".into()))
+    }
+
+    async fn character_inventory_commit_equipment(&self, char_id: u32, updates: Vec<InventoryItemModel>) -> Result<(), Error> {
+        if char_id == 0 { return Err(Error::InvalidInput("Invalid equipment owner".into())); }
         (&self.database.inventories, &self.database.inventory_owners).transaction(|(inventories, owners)| {
-            let mut groups = BTreeMap::<i32, Vec<InventoryRecord>>::new();
+            let mut records: Vec<InventoryRecord> = tx_required(inventories, &char_id.to_be_bytes())?;
+            let mut seen = std::collections::BTreeSet::new();
             for update in &updates {
                 let id: i32 = tx_required(owners, &update.id.to_be_bytes())?;
-                if !groups.contains_key(&id) {
-                    groups.insert(id, tx_required(inventories, &id.to_be_bytes())?);
+                if id != char_id as i32 || !seen.insert(update.id) {
+                    return abort("Equipment owner changed or an instance was specified twice");
                 }
-                let record = groups
-                    .get_mut(&id)
-                    .unwrap()
+                let record = records
                     .iter_mut()
                     .find(|record| record.id == update.id && record.item_id == update.item_id && record.unique_id == update.unique_id)
                     .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
+                if record.amount != update.amount || record.refine != update.refine || record.is_identified != update.is_identified
+                    || record.is_damaged != update.is_damaged || [record.card0, record.card1, record.card2, record.card3]
+                        != [update.card0, update.card1, update.card2, update.card3] {
+                    return abort("Equipment instance changed before the update");
+                }
                 record.equip = update.equip;
             }
-            for (id, records) in &groups {
-                tx_write(inventories, &id.to_be_bytes(), records)?;
-            }
-            Ok(())
+            tx_write(inventories, &char_id.to_be_bytes(), &records)
         })?;
         Ok(())
     }

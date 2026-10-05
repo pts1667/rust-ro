@@ -281,6 +281,16 @@ impl InventoryService {
             character.status.takeoff_all_equipment();
             character.add_items(items);
         });
+        let packets = self.inventory_packets(character);
+        self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
+        for packet in packets {
+            self.client_notification_sender
+                .send(Notification::Char(CharNotification::new(character.char_id, packet)))
+                .unwrap_or_else(|_| error!("Failed to notify inventory"));
+        }
+    }
+
+    pub(crate) fn inventory_packets(&self, character: &mut Character) -> Vec<Vec<u8>> {
         //PacketZcNormalItemlist3
         let mut packet_zc_equipment_itemlist3 = PacketZcEquipmentItemlist3::new(self.configuration_service.packetver());
         let mut equipments = vec![];
@@ -306,7 +316,7 @@ impl InventoryService {
         }
         let mut ammo: Option<(usize, &InventoryItemModel)> = None;
         for (index, item) in character.inventory_wearable().iter() {
-            if matches!(item.item_type(), ItemType::Ammo) {
+            if matches!(item.item_type(), ItemType::Ammo) && item.equip != 0 {
                 ammo = Some((*index, item));
                 break;
             }
@@ -356,22 +366,15 @@ impl InventoryService {
         packet_zc_normal_itemlist3.set_item_info(normal_items);
         packet_zc_normal_itemlist3.fill_raw();
         let packet_zc_attack_range = self.packet_attack_range(character);
-        self.server_task_queue.add_to_first_index(CharacterUpdateWeight(character.char_id));
-        self.client_notification_sender
-            .send(Notification::Char(CharNotification::new(
-                character.char_id,
-                chain_packets(vec![
-                    &packet_zc_equipment_itemlist3,
-                    &packet_zc_normal_itemlist3,
-                    &packet_zc_attack_range,
-                ]),
-            )))
-            .unwrap_or_else(|_| error!("Failed to send notification packet_zc_normal_itemlist3 to client"));
+        let mut packets = vec![chain_packets(vec![
+            &packet_zc_equipment_itemlist3,
+            &packet_zc_normal_itemlist3,
+            &packet_zc_attack_range,
+        ])];
         if let Some(packet) = maybe_packet_zc_equip_arrow {
-            self.client_notification_sender
-                .send(Notification::Char(CharNotification::new(character.char_id, packet)))
-                .unwrap_or_else(|_| error!("Failed to send notification equip arrow to client"));
+            packets.push(packet);
         }
+        packets
     }
 
     fn packet_attack_range(&self, character: &mut Character) -> PacketZcAttackRange {
@@ -438,7 +441,9 @@ impl InventoryService {
     }
 
     pub fn equip_item(&self, character: &mut Character, character_equip_item: CharacterEquipItem) -> Option<EquippedItem> {
-        if character.game_systems.is_trading() { return None; }
+        if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return None; }
+        let previous_status = character.status.clone();
+        let previous_inventory = character.inventory.clone();
         let mut packet_zc_req_wear_equip_ack = PacketZcReqWearEquipAck2::new(self.configuration_service.packetver());
         let mut packet_zc_equip_arrow = PacketZcEquipArrow::new(self.configuration_service.packetver());
         let index = character_equip_item.index;
@@ -606,22 +611,26 @@ impl InventoryService {
             packet_zc_req_wear_equip_ack.fill_raw();
             packets_raws_by_value.extend(packet_zc_req_wear_equip_ack.raw);
         }
+        if equipped_item.is_some() {
+            let updates = character.inventory_wearable().into_iter().map(|(_, item)| item.clone()).collect();
+            if let Err(error) = futures::executor::block_on(self.repository.character_inventory_commit_equipment(character.char_id, updates)) {
+                character.status = previous_status;
+                character.inventory = previous_inventory;
+                error!("Failed to commit equipment: {error}");
+                let mut failed = PacketZcReqWearEquipAck2::new(self.configuration_service.packetver());
+                failed.set_index(index as u16);
+                failed.set_result(1);
+                failed.fill_raw();
+                let _ = self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, failed.raw)));
+                return None;
+            }
+        }
         self.client_notification_sender
             .send(Notification::Char(CharNotification::new(
                 character.char_id,
                 packets_raws_by_value,
             )))
             .unwrap_or_else(|_| error!("Failed to send notification equip item to client"));
-        self.persistence_event_sender
-            .send(PersistenceEvent::UpdateEquippedItems(
-                character
-                    .inventory_wearable()
-                    .iter()
-                    .cloned()
-                    .map(|(_m, item)| item.clone())
-                    .collect::<Vec<InventoryItemModel>>(),
-            ))
-            .expect("Fail to send persistence event");
         self.server_task_queue
             .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
         equipped_item
@@ -686,10 +695,24 @@ impl InventoryService {
     }
 
     pub fn takeoff_equip_item(&self, character: &mut Character, index: usize) -> Option<EquippedItem> {
-        if character.game_systems.is_trading() { return None; }
+        if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return None; }
+        let previous_status = character.status.clone();
+        let previous_inventory = character.inventory.clone();
         let mut packet_zc_req_takeoff_equip_ack2 = PacketZcReqTakeoffEquipAck2::new(self.configuration_service.packetver());
         packet_zc_req_takeoff_equip_ack2.set_index(index as u16);
         let takeoff_equipement = character.takeoff_equip_item(index);
+        if takeoff_equipement.is_some() {
+            let updates = character.inventory_wearable().into_iter().map(|(_, item)| item.clone()).collect();
+            if let Err(error) = futures::executor::block_on(self.repository.character_inventory_commit_equipment(character.char_id, updates)) {
+                character.status = previous_status;
+                character.inventory = previous_inventory;
+                error!("Failed to commit equipment removal: {error}");
+                packet_zc_req_takeoff_equip_ack2.set_result(1);
+                packet_zc_req_takeoff_equip_ack2.fill_raw();
+                let _ = self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, packet_zc_req_takeoff_equip_ack2.raw)));
+                return None;
+            }
+        }
         let mut packets_raws_by_value = vec![];
         if let Some(takeoff_equipement) = takeoff_equipement.as_ref() {
             packet_zc_req_takeoff_equip_ack2.set_wear_location(takeoff_equipement.location() as u16);
@@ -715,23 +738,13 @@ impl InventoryService {
                 packets_raws_by_value,
             )))
             .unwrap_or_else(|_| error!("Failed to send notification takeoff item to client"));
-        self.persistence_event_sender
-            .send(PersistenceEvent::UpdateEquippedItems(
-                character
-                    .inventory_wearable()
-                    .iter()
-                    .cloned()
-                    .map(|(_m, item)| item.clone())
-                    .collect::<Vec<InventoryItemModel>>(),
-            ))
-            .expect("Fail to send persistence event");
         self.server_task_queue
             .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(character.char_id));
         takeoff_equipement
     }
 
     pub fn send_card_composition_list(&self, character: &mut Character, char_equip_item: CharacterEquipItem) {
-        if character.game_systems.is_trading() { return; }
+        if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return; }
         let mut packet_zc_item_composition_list = PacketZcItemcompositionList::new(self.configuration_service.packetver());
 
         let mut slotable_items: Vec<u16> = vec![];
@@ -769,7 +782,7 @@ impl InventoryService {
     }
 
     pub fn slot_card(&self, runtime: &Runtime, character: &mut Character, slot_card_args: CharacterSlotCard) {
-        if character.game_systems.is_trading() { return; }
+        if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return; }
         // Get card and equipment items from character inventory
         let mut card_inventory_item = None;
         let mut equipment_inventory_item = None;

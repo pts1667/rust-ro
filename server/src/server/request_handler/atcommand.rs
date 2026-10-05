@@ -12,7 +12,9 @@ use regex_lite::Regex;
 use crate::load_scripts;
 use crate::server::Server;
 use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent};
+use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
+use crate::server::model::map_flags::MapFlag;
 use crate::server::model::request::Request;
 use crate::server::model::session::Session;
 use crate::server::script::Value;
@@ -106,6 +108,21 @@ pub fn handle_atcommand(server: &Server, context: Request, packet: &PacketCzPlay
             let result = handle_speed_change(server, context.session(), args);
             packet_zc_notify_playerchat.set_msg(result);
         }
+        "duel" | "invite" | "accept" | "reject" | "leave" => {
+            let action = match command {
+                "duel" => DuelAction::Create,
+                "invite" => DuelAction::Invite,
+                "accept" => DuelAction::Accept,
+                "reject" => DuelAction::Reject,
+                _ => DuelAction::Leave,
+            };
+            server.add_to_next_tick(GameEvent::Duel(DuelCommand {
+                char_id: context.session().char_id(),
+                action,
+                argument: args.join(" ").trim().to_string(),
+            }));
+            return;
+        }
         "heal" => {
             let result = handle_heal(server, context.session(), args);
             packet_zc_notify_playerchat.set_msg(result);
@@ -168,15 +185,33 @@ pub fn handle_go(server: &Server, session: Arc<Session>, args: Vec<&str>) -> Str
         _ => (),
     }
 
+    if let Some(refusal) = admin_travel_blocked(server, session.char_id(), &city.name) {
+        return refusal;
+    }
     server
         .server_service()
         .schedule_warp_to_walkable_cell(server.state_mut().as_mut(), &city.name, city.x, city.y, session.char_id());
     format!("Warping at {} {},{}", city.name.clone(), city.x, city.y)
 }
 
+fn admin_travel_blocked(server: &Server, char_id: u32, destination: &str) -> Option<String> {
+    let state = server.state();
+    let character = state.get_character_unsafe(char_id);
+    if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoWarp) {
+        return Some("You are not authorized to warp from your current map.".into());
+    }
+    if state.map_flags_for(destination, 0).enabled(MapFlag::NoWarpTo) {
+        return Some("You are not authorized to warp to this destination map.".into());
+    }
+    None
+}
+
 pub fn handle_warp(server: &Server, session: Arc<Session>, args: Vec<&str>) -> String {
     let map_name = args[0].to_string();
     if GlobalConfigService::instance().maps().contains_key(&map_name) {
+        if let Some(refusal) = admin_travel_blocked(server, session.char_id(), &map_name) {
+            return refusal;
+        }
         let mut x = RANDOM_CELL.0;
         let mut y = RANDOM_CELL.1;
         if args.len() > 2 {

@@ -1,19 +1,16 @@
+use models::enums::EnumWithMaskValueU32;
 use models::enums::action::ActionType;
 use models::enums::element::Element;
-use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
-use packets::packets::{Packet, PacketZcNotifyAct};
 
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::events::map_event::MobAttackCharacter;
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::service::battle_service::{BattleService, NormalAttackRoll};
 use crate::server::service::combat_trigger_service::MagicReflectionKind;
-use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::script_world_service::companion_status_snapshot;
 use crate::server::service::status_service::StatusService;
 use crate::server::service::visibility_service::{StealthState, TargetingMode, VisibilityObserver, can_target};
@@ -85,7 +82,14 @@ pub fn reflect_magic(server: &Server, state: &ServerState, request: MagicReflect
     let is_player_actor = player.is_some() || companion.is_some();
     let caster = player
         .or(companion)
-        .or_else(|| map.state().get_mob(source_id).map(|mob| mob.status.clone()));
+        .or_else(|| map.state().get_mob(source_id).map(|mob| mob.status.clone()))
+        .or_else(|| {
+            map.state()
+                .script_skill_state
+                .npcs
+                .get(&source_id)
+                .map(crate::server::script::skill::actor::NpcSkillState::snapshot)
+        });
     let Some(caster) = caster.filter(|status| status.hp() > 0) else {
         return Ok(());
     };
@@ -95,7 +99,22 @@ pub fn reflect_magic(server: &Server, state: &ServerState, request: MagicReflect
         &caster,
         request.damage.magic_context,
     )?;
+    let Some(reflector) = server.script_skill_service().find_script_skill_actor_in(
+        state,
+        request.reflector_id,
+        Some(request.map_key.map_name()),
+        Some(request.map_key.map_instance()),
+    )?
+    else {
+        return Ok(());
+    };
     let damage = Damage {
+        notification: request
+            .damage
+            .notification
+            .map(|notification| notification.relocated(&reflector.map, reflector.instance, reflector.x, reflector.y, tick)),
+        source_kind: *reflector.status.combat_actor_kind(),
+        skill_damage_adjusted: false,
         target_id: source_id,
         attacker_id: request.reflector_id,
         damage: reflected.max(0) as u32,
@@ -147,14 +166,16 @@ pub fn handle(server: &Server, state: &mut ServerState, request: MobAttackReques
     let Some((target, stealth, player_target)) = target.filter(|(target, ..)| target.hp() > 0) else {
         return;
     };
-    let mode = GlobalConfigService::instance()
-        .get_mob_safe(request.source_status.job() as i32)
-        .map_or(0, |mob| mob.mode as u32);
     if !can_target(
-        VisibilityObserver::for_mob(mode, *request.source_status.race()),
+        VisibilityObserver::monster(&request.source_status),
         stealth,
         TargetingMode::Direct,
     ) {
+        return;
+    }
+    if let Some(damage) = server.battle_service().magical_normal_attack(&request.source_status, &target,
+        attack.mob_id, attack.target_char_id, attack.mob_id, &request.source_key, attack.mob_x, attack.mob_y, tick, attack.attack_motion, 480) {
+        server.add_to_delayed_tick(GameEvent::CharacterDamage(damage), u128::from(attack.attack_motion));
         return;
     }
     let mut rng = fastrand::Rng::new();
@@ -188,39 +209,31 @@ pub fn handle(server: &Server, state: &mut ServerState, request: MobAttackReques
             )
             .saturating_mul(if outcome == NormalAttackRoll::DoubleAttack { 2 } else { 1 })
     };
-    let mut packet = PacketZcNotifyAct::new(GlobalConfigService::instance().packetver());
-    packet.set_gid(attack.mob_id);
-    packet.set_target_gid(attack.target_char_id);
-    packet.set_action(
-        match outcome {
-            NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
-            NormalAttackRoll::Critical => ActionType::AttackCritical,
-            NormalAttackRoll::DoubleAttack => ActionType::AttackMultiple,
-            _ => ActionType::Attack,
-        }
-        .value() as u8,
-    );
-    packet.set_attack_mt((attack.attack_motion / 2) as i32);
-    packet.set_attacked_mt(480);
-    packet.set_damage(damage.clamp(i16::MIN as i32, i16::MAX as i32) as i16);
-    packet.set_count(if outcome == NormalAttackRoll::DoubleAttack { 2 } else { 1 });
-    packet.fill_raw();
-    let _ = server
-        .server_service()
-        .notification_sender()
-        .send(Notification::Area(AreaNotification::new(
-            request.source_key.map_name().clone(),
-            request.source_key.map_instance(),
-            AreaNotificationRangeType::Fov {
-                x: attack.mob_x,
-                y: attack.mob_y,
-                exclude_id: None,
-            },
-            packet.raw,
-        )));
+    let action = match outcome {
+        NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
+        NormalAttackRoll::Critical => ActionType::AttackCritical,
+        NormalAttackRoll::DoubleAttack => ActionType::AttackMultiple,
+        _ => ActionType::Attack,
+    };
+    let notification = Some(crate::server::model::damage_notification::DamageNotification::new(
+        request.source_key.map_name(),
+        request.source_key.map_instance(),
+        attack.mob_x,
+        attack.mob_y,
+        tick,
+        attack.attack_motion / 2,
+        if outcome == NormalAttackRoll::DoubleAttack { 2 } else { 1 },
+        crate::server::model::damage_notification::DamageVisual::Action {
+            action,
+            hands: (damage, 0),
+        },
+    ));
     let delay = attack.attack_motion as u128 / 2;
     server.add_to_delayed_tick(
         GameEvent::CharacterDamage(Damage {
+            notification,
+            source_kind: *request.source_status.combat_actor_kind(),
+            skill_damage_adjusted: false,
             target_id: attack.target_char_id,
             attacker_id: attack.mob_id,
             damage: damage.max(0) as u32,

@@ -115,6 +115,8 @@ mod tests {
         fail: AtomicBool,
     }
 
+    impl crate::repository::ScriptCharacterRepository for SkillTransactionRepository {}
+
     #[async_trait]
     impl CharacterRepository for SkillTransactionRepository {
         fn character_commit_skill_reset(&self, _char_id:u32, _account_id:u32, _plan:&crate::repository::script_character_repository::ScriptSkillResetPlan) -> Result<(),Error> {
@@ -270,9 +272,10 @@ mod tests {
             PersistenceEvent::SaveCharacterPosition(SavePositionUpdate {
                 char_id: character.char_id,
                 account_id: character.account_id,
-                map_name: "geffen.gat".to_string(),
+                map_name: "geffen".to_string(),
                 x: 120,
-                y: 120
+                y: 120,
+                revision: 1
             })
         );
     }
@@ -368,38 +371,38 @@ mod tests {
     }
 
     #[test]
-    fn test_update_zeny_should_defer_update_in_db() {
-        // Given
-        let context = before_each(mocked_repository());
+    fn test_update_zeny_commits_before_notifying_and_preserves_a_changed_wallet() {
+        let repository = Arc::new(crate::repository::SledRepository::temporary().unwrap());
         let mut character = create_character();
-        let character_zeny = CharacterZeny {
-            char_id: character.char_id,
-            zeny: Some(100),
-        };
-        // When
-        context
-            .character_service
-            .update_zeny(context.runtime(), character_zeny, &mut character);
-        // Then
-        context
-            .test_context
-            .increment_latch()
-            .wait_expected_count_with_timeout(2, Duration::from_millis(200));
-        assert_eq!(character.status.zeny, 100);
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
-                char_id: character.char_id,
-                field: "zeny".to_string(),
-                value: 100,
-            })
-        );
+        character.status.zeny = 0;
+        repository.database.seed(&database::model::SeedData {
+            accounts: vec![database::model::AccountRecord { account_id: character.account_id, username: "wallet-test".into(), password: "secret".into() }],
+            characters: vec![database::model::CharacterRecord { char_id: character.char_id as i32, account_id: character.account_id as i32,
+                name: character.name.clone(), inventory_slots: 100, ..Default::default() }], ..Default::default()
+        }, false).unwrap();
+        let context = before_each(repository.clone());
+        context.character_service.update_zeny(context.runtime(), CharacterZeny { char_id: character.char_id, zeny: Some(100) }, &mut character);
+        context.test_context.increment_latch().wait_expected_count_with_timeout(1, Duration::from_millis(200));
+        let stored: database::model::CharacterRecord = database::required(&repository.database.characters, &character.char_id.to_be_bytes()).unwrap();
+        assert_eq!((stored.zeny, character.status.zeny), (100, 100));
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
         assert_sent_packet_in_current_packetver!(
             context,
             NotificationExpectation::of_char(character.char_id, vec![SentPacket::with_id(PacketZcLongparChange::packet_id(
                 GlobalConfigService::instance().packetver()
             ))])
         );
+        use sled::transaction::Transactional;
+        repository.database.characters.transaction(|tree| {
+            let mut stored: database::model::CharacterRecord = database::tx_required(tree, &character.char_id.to_be_bytes())?;
+            stored.zeny = 150;
+            database::tx_write(tree, &character.char_id.to_be_bytes(), &stored)
+        }).unwrap();
+        let notifications_before = context.test_context.received_notification().lock().unwrap().len();
+        context.character_service.update_zeny(context.runtime(), CharacterZeny { char_id: character.char_id, zeny: Some(200) }, &mut character);
+        let stored: database::model::CharacterRecord = database::required(&repository.database.characters, &character.char_id.to_be_bytes()).unwrap();
+        assert_eq!((stored.zeny, character.status.zeny), (150, 100));
+        assert_eq!(context.test_context.received_notification().lock().unwrap().len(), notifications_before);
     }
     #[test]
     fn test_update_hp_and_sp_should_update_and_notify_client() {
@@ -430,6 +433,7 @@ mod tests {
         struct MockedCharacterRepository {
             called_fetch_zeny: AtomicBool,
         }
+        impl crate::repository::ScriptCharacterRepository for MockedCharacterRepository {}
         #[async_trait]
         impl CharacterRepository for MockedCharacterRepository {
             async fn character_zeny_fetch(&self, _char_id: u32) -> Result<i32, Error> {

@@ -1,19 +1,22 @@
 use accessor::{GettersAll, SettersAll};
 
-use crate::enums::EnumWithMaskValueU64;
+use crate::enums::actor::CombatActorKind;
 use crate::enums::bonus::BonusType;
 use crate::enums::element::Element;
 use crate::enums::item::EquipmentLocation;
-use crate::enums::mob::{MobRace, MobGroup, MobClass};
+use crate::enums::mob::{MobCapability, MobClass, MobGroup, MobRace};
 use crate::enums::size::Size;
 use crate::enums::status::StatusEffect;
 use crate::enums::weapon::WeaponType;
+use crate::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use crate::item::{WearAmmo, WearAmmoSnapshot, WearGear, WearGearSnapshot, WearWeapon, WearWeaponSnapshot, Wearable};
 use crate::status_bonus::{StatusBonus, StatusBonuses, TemporaryStatusBonuses};
 use crate::status_change::{StatusChange, StatusChangeKind};
 
 #[derive(SettersAll, GettersAll, Debug, Default, Clone)]
 pub struct Status {
+    pub combat_actor_kind: CombatActorKind,
+    pub mob_capabilities: u32,
     pub mob_class: MobClass,
     pub taekwon_ranked: bool,
     pub spirit_sphere_count: u8,
@@ -40,6 +43,7 @@ pub struct Status {
     pub base_exp: u32,
     pub job_exp: u32,
     pub state: u64,
+    pub riding: bool,
     pub size: Size,
     pub is_male: bool,
     pub weapons: Vec<WearWeapon>,
@@ -57,6 +61,8 @@ pub struct Status {
 
 #[derive(Clone, Debug, PartialEq, SettersAll, GettersAll)]
 pub struct StatusSnapshot {
+    combat_actor_kind: CombatActorKind,
+    mob_capabilities: u32,
     mob_class: MobClass,
     base_level: u32,
     temporary_skill_ids: Vec<u32>,
@@ -126,8 +132,45 @@ pub struct StatusSnapshot {
 }
 
 impl StatusSnapshot {
-    pub fn has_status_change(&self, kind: StatusChangeKind) -> bool { self.active_statuses.iter().any(|change| change.kind == kind) }
-    pub fn status_change(&self, kind: StatusChangeKind) -> Option<&StatusChange> { self.active_statuses.iter().find(|change| change.kind == kind) }
+    pub fn new_for_skill_unit(alive: bool) -> Self {
+        let mut status = Self::new_for_mob(
+            0,
+            u32::from(alive),
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            2000,
+            0,
+            0,
+            Size::Small,
+            Element::Neutral,
+            MobRace::Formless,
+            1,
+        );
+        status.combat_actor_kind = CombatActorKind::SkillUnit;
+        status.hit = 1;
+        status.flee = 0;
+        status
+    }
+
+    pub fn has_status_change(&self, kind: StatusChangeKind) -> bool {
+        self.active_statuses.iter().any(|change| change.kind == kind)
+    }
+
+    pub fn status_change(&self, kind: StatusChangeKind) -> Option<&StatusChange> {
+        self.active_statuses.iter().find(|change| change.kind == kind)
+    }
+
     pub fn new_for_mob(
         mob_id: u32,
         hp: u32,
@@ -153,7 +196,9 @@ impl StatusSnapshot {
         element_level: u8,
     ) -> Self {
         Self {
+            combat_actor_kind: CombatActorKind::Monster,
             base_level: 1,
+            mob_capabilities: 0,
             mob_class: MobClass::Normal,
             temporary_skill_ids: vec![],
             spirit_sphere_count: 0,
@@ -225,6 +270,8 @@ impl StatusSnapshot {
     /// Do not use this method directly, use StatusService::to_snapshot instead
     pub fn _from(status: &Status) -> Self {
         let mut snapshot = Self {
+            combat_actor_kind: status.combat_actor_kind,
+            mob_capabilities: status.mob_capabilities,
             mob_class: status.mob_class,
             base_level: status.base_level,
             temporary_skill_ids: status.script_skill_grants.keys().copied().collect(),
@@ -327,18 +374,36 @@ impl StatusSnapshot {
 
     pub fn weapon_upgrade_damage(&self) -> u16 {
         let base = self.right_hand_weapon().map_or(0, |weapon| {
-            weapon.refine().min(10) as u16 * match weapon.level() { 1 => 2, 2 => 3, 3 => 5, 4 => 7, _ => 0 }
+            weapon.refine().min(10) as u16
+                * match weapon.level() {
+                    1 => 2,
+                    2 => 3,
+                    3 => 5,
+                    4 => 7,
+                    _ => 0,
+                }
         });
-        let extra = self.bonuses().iter().filter_map(|bonus| match bonus.bonus() {
-            BonusType::WeaponRefineAtk(value) => Some(i64::from(*value)),
-            _ => None,
-        }).sum::<i64>();
+        let extra = self
+            .bonuses()
+            .iter()
+            .filter_map(|bonus| match bonus.bonus() {
+                BonusType::WeaponRefineAtk(value) => Some(i64::from(*value)),
+                _ => None,
+            })
+            .sum::<i64>();
         (i64::from(base) + extra).clamp(0, i64::from(u16::MAX)) as u16
+    }
+
+    pub fn has_mob_capability(&self, capability: MobCapability) -> bool {
+        self.mob_capabilities & capability.as_flag() != 0
     }
 
     pub fn combined_weapon_type(&self) -> WeaponType {
         let right = *self.right_hand_weapon_type();
-        let left = self.left_hand_weapon().as_ref().map_or(WeaponType::Fist, |weapon| *weapon.weapon_type());
+        let left = self
+            .left_hand_weapon()
+            .as_ref()
+            .map_or(WeaponType::Fist, |weapon| *weapon.weapon_type());
         use WeaponType::*;
         match (right, left) {
             (Fist, left) => left,
@@ -355,29 +420,52 @@ impl StatusSnapshot {
 
     pub fn weapon_atk(&self) -> u16 {
         let base = self.right_hand_weapon().map_or(0, |weapon| i64::from(weapon.attack()));
-        let extra = self.bonuses().iter().filter_map(|bonus| match bonus.bonus() {
-            BonusType::WeaponAtk(value) => Some(i64::from(*value)),
-            _ => None,
-        }).sum::<i64>();
+        let extra = self
+            .bonuses()
+            .iter()
+            .filter_map(|bonus| match bonus.bonus() {
+                BonusType::WeaponAtk(value) => Some(i64::from(*value)),
+                _ => None,
+            })
+            .sum::<i64>();
         (base + extra).clamp(0, i64::from(u16::MAX)) as u16
     }
 
     pub fn left_weapon_atk(&self) -> u16 {
-        let Some(weapon) = self.left_hand_weapon() else { return 0; };
-        let extra = self.left_hand_bonuses().iter().filter_map(|bonus| match bonus {
-            BonusType::WeaponAtk(value) => Some(i64::from(*value)),
-            _ => None,
-        }).sum::<i64>();
+        let Some(weapon) = self.left_hand_weapon() else {
+            return 0;
+        };
+        let extra = self
+            .left_hand_bonuses()
+            .iter()
+            .filter_map(|bonus| match bonus {
+                BonusType::WeaponAtk(value) => Some(i64::from(*value)),
+                _ => None,
+            })
+            .sum::<i64>();
         (i64::from(weapon.attack()) + extra).clamp(0, i64::from(u16::MAX)) as u16
     }
 
     pub fn left_weapon_upgrade_damage(&self) -> u16 {
-        let Some(weapon) = self.left_hand_weapon() else { return 0; };
-        let base = u16::from(weapon.refine().min(10)) * match weapon.level() { 1 => 2, 2 => 3, 3 => 5, 4 => 7, _ => 0 };
-        let extra = self.left_hand_bonuses().iter().filter_map(|bonus| match bonus {
-            BonusType::WeaponRefineAtk(value) => Some(i64::from(*value)),
-            _ => None,
-        }).sum::<i64>();
+        let Some(weapon) = self.left_hand_weapon() else {
+            return 0;
+        };
+        let base = u16::from(weapon.refine().min(10))
+            * match weapon.level() {
+                1 => 2,
+                2 => 3,
+                3 => 5,
+                4 => 7,
+                _ => 0,
+            };
+        let extra = self
+            .left_hand_bonuses()
+            .iter()
+            .filter_map(|bonus| match bonus {
+                BonusType::WeaponRefineAtk(value) => Some(i64::from(*value)),
+                _ => None,
+            })
+            .sum::<i64>();
         (i64::from(base) + extra).clamp(0, i64::from(u16::MAX)) as u16
     }
 
@@ -418,7 +506,12 @@ impl StatusSnapshot {
     }
 
     pub fn known_skill_level(&self, skill: crate::enums::skill_enums::SkillEnum) -> u8 {
-        self.known_skills.iter().filter(|known| known.value == skill).map(|known| known.level).max().unwrap_or(0)
+        self.known_skills
+            .iter()
+            .filter(|known| known.value == skill)
+            .map(|known| known.level)
+            .max()
+            .unwrap_or(0)
     }
 
     pub fn attack_range(&self) -> u8 {
@@ -426,7 +519,9 @@ impl StatusSnapshot {
         use crate::enums::weapon::WeaponType;
         let extra = match self.right_hand_weapon_type() {
             WeaponType::Bow => self.known_skill_level(SkillEnum::AcVulture),
-            WeaponType::Revolver | WeaponType::Rifle | WeaponType::Gatling | WeaponType::Shotgun | WeaponType::Grenade => self.known_skill_level(SkillEnum::GsSnakeeye),
+            WeaponType::Revolver | WeaponType::Rifle | WeaponType::Gatling | WeaponType::Shotgun | WeaponType::Grenade => {
+                self.known_skill_level(SkillEnum::GsSnakeeye)
+            }
             _ => 0,
         };
         self.right_hand_weapon().map_or(1, |weapon| weapon.range()).saturating_add(extra)
@@ -451,7 +546,10 @@ impl Status {
     pub fn blocks_movement(&self) -> bool {
         self.active_statuses.iter().any(|change| change.kind.blocks_movement())
             || self.has_status_change(StatusChangeKind::Hiding)
-                && !self.known_skills.iter().any(|skill| skill.value == crate::enums::skill_enums::SkillEnum::RgTunneldrive && skill.level > 0)
+                && !self
+                    .known_skills
+                    .iter()
+                    .any(|skill| skill.value == crate::enums::skill_enums::SkillEnum::RgTunneldrive && skill.level > 0)
     }
 
     pub fn blocks_attack(&self) -> bool {
@@ -461,6 +559,7 @@ impl Status {
     pub fn blocks_casting(&self) -> bool {
         self.active_statuses.iter().any(|change| change.kind.blocks_casting())
     }
+
     pub fn right_hand_weapon(&self) -> Option<&WearWeapon> {
         self.weapons
             .iter()

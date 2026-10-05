@@ -5,13 +5,29 @@ use crate::server::service::script_world_service::companion_status_snapshot;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
+const EMPERIUM_MOB_ID: i16 = 1288;
+const CASTLE_OWNER_FIELD: u8 = 1;
+
 impl Server {
     pub(crate) fn player_combat_target_allowed(&self, state: &ServerState, source: &Character, target_id: u32) -> bool {
-        if source.status.hp == 0 || source.is_dead() || source.char_id == target_id {
+        self.player_ground_target_allowed(state, source, target_id, false)
+    }
+
+    pub(crate) fn player_ground_target_allowed(
+        &self,
+        state: &ServerState,
+        source: &Character,
+        target_id: u32,
+        allow_dead_source: bool,
+    ) -> bool {
+        if (!allow_dead_source && (source.status.hp == 0 || source.is_dead())) || source.char_id == target_id {
             return false;
         }
         if companion_status_snapshot(source, target_id).is_some() {
             return false;
+        }
+        if let Some(unit) = state.ground_unit(target_id, source.current_map_name(), source.current_map_instance()) {
+            return !unit.used;
         }
         let Some(item) = state.map_item(target_id, source.current_map_name(), source.current_map_instance()) else {
             return false;
@@ -19,7 +35,12 @@ impl Server {
         if *item.object_type() == MapItemType::Mob {
             return state
                 .get_map_instance_from_character(source)
-                .and_then(|instance| instance.state().get_mob(target_id).map(|mob| mob.status.hp() > 0))
+                .and_then(|instance| {
+                    instance
+                        .state()
+                        .get_mob(target_id)
+                        .map(|mob| mob.status.hp() > 0 && (mob.mob_id != EMPERIUM_MOB_ID || self.emperium_attackable(state, source)))
+                })
                 .unwrap_or(false);
         }
         if *item.object_type() == MapItemType::Pet {
@@ -41,6 +62,9 @@ impl Server {
             return false;
         }
         let flags = state.map_flags(&source.map_instance_key);
+        if state.duels.same_duel(source.char_id, target.char_id) {
+            return true;
+        }
         if !flags.versus(state.siege_active) {
             return false;
         }
@@ -52,7 +76,40 @@ impl Server {
         }
         let same_guild = source.game_systems.guild_id > 0 && source.game_systems.guild_id == target.game_systems.guild_id;
         let guild_protected = !(flags.enabled(MapFlag::Pvp) && flags.enabled(MapFlag::PvpNoGuild));
-        !(same_guild && guild_protected)
+        if same_guild && guild_protected {
+            return false;
+        }
+        !(flags.is_gvg() && self.guilds_allied(source.game_systems.guild_id, target.game_systems.guild_id))
+    }
+
+    pub(crate) fn guilds_allied(&self, first: u32, second: u32) -> bool {
+        first != 0
+            && second != 0
+            && first != second
+            && self
+                .repository
+                .guild(first)
+                .ok()
+                .flatten()
+                .is_some_and(|guild| guild.allies.contains(&second))
+    }
+
+    fn emperium_attackable(&self, state: &ServerState, source: &Character) -> bool {
+        let map = source.current_map_name();
+        if !state.siege_active || !state.map_flags(&source.map_instance_key).enabled(MapFlag::GvgCastle) {
+            return false;
+        }
+        let guild = source.game_systems.guild_id;
+        if guild == 0 {
+            return false;
+        }
+        let owner = self
+            .repository
+            .castle_value(map, CASTLE_OWNER_FIELD)
+            .ok()
+            .and_then(|owner| u32::try_from(owner).ok())
+            .unwrap_or(0);
+        owner != guild && !self.guilds_allied(guild, owner)
     }
 
     pub(crate) fn player_skill_requires_hostile_target(skill_id: u32) -> bool {

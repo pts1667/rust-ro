@@ -185,6 +185,9 @@ impl ScriptSkillService {
                 split,
             );
             let mut damage_event = Damage {
+                notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 healing: 0,
                 right_hand_damage: None,
                 target_id: mob.id,
@@ -202,8 +205,16 @@ impl ScriptSkillService {
                 landed: true,
             };
             damage_event.set_signed_damage(damage);
+            damage_event = damage_event.with_skill_notification(
+                source.current_map_name(),
+                source.current_map_instance(),
+                source.x,
+                source.y,
+                tick,
+                1,
+                0,
+            );
             instance.add_to_next_tick(MapEvent::MobDamage(damage_event));
-            self.notify_attack_skill(source, mob.id, effect.skill_id, effect.level, damage);
         }
         if let Some((target_id, target)) = player_target {
             let damage = server.battle_service().player_physical_splash_damage_signed(
@@ -217,6 +228,9 @@ impl ScriptSkillService {
                 split,
             );
             let mut damage_event = Damage {
+                notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 healing: 0,
                 right_hand_damage: None,
                 target_id,
@@ -234,8 +248,16 @@ impl ScriptSkillService {
                 landed: true,
             };
             damage_event.set_signed_damage(damage);
+            damage_event = damage_event.with_skill_notification(
+                source.current_map_name(),
+                source.current_map_instance(),
+                source.x,
+                source.y,
+                tick,
+                1,
+                0,
+            );
             server.add_to_next_tick(GameEvent::CharacterDamage(damage_event));
-            self.notify_attack_skill(source, target_id, effect.skill_id, effect.level, damage);
         }
         Ok(())
     }

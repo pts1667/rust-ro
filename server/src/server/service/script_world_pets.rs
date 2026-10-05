@@ -58,6 +58,9 @@ pub fn advance_pet_hunger(pet: &mut PetRecord, definition: &PetDefinition, now: 
 pub fn pet_bonus_state(character: &Character) -> Option<ScriptPetState> {
     character.game_systems.pet.as_ref().filter(|pet| !pet.incubating).map(|pet| {
         let mut state = pet_script_state(pet);
+        if let Some(support) = character.game_systems.pet_support.as_ref().filter(|support| support.pet_id == pet.id && pet.intimacy > 0) {
+            state.support_bonuses.extend(support.auto_bonuses.iter().copied());
+        }
         if let Some(support) = character.game_systems.pet_support.as_ref().filter(|support|
             support.pet_id == pet.id && pet.intimacy > 0 && (!support.requires_accessory || pet.equipped_item > 0)) {
             state.support_bonuses.extend(support.base_bonuses.iter().copied());

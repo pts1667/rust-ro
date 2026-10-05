@@ -11,7 +11,7 @@ use crate::server::Server;
 
 impl Server {
     pub(crate) fn start_npc_conversation(&self, state: &ServerState, contact: NpcContact) -> Result<(), String> {
-        let character = state.characters().get(&contact.char_id).filter(|character| character.account_id == contact.account_id && !character.is_dead() && character.status.hp > 0 && !character.game_systems.is_trading())
+        let character = state.characters().get(&contact.char_id).filter(|character| character.account_id == contact.account_id && !character.is_dead() && character.status.hp > 0 && !character.game_systems.is_trading() && !character.timing.skill_menu_blocked())
             .ok_or("NPC visitor is unavailable")?;
         let session = state.find_session(contact.account_id).filter(|session| session.char_id == Some(contact.char_id)).ok_or("NPC session expired")?;
         let map_name = character.current_map_name();
@@ -24,7 +24,7 @@ impl Server {
         let generation = session.set_script_handler_channel_sender(sender);
         let notifications = self.server_service().notification_sender();
         let host = NpcScriptHost { server, session: session.clone(), script: script.clone(), inputs: receiver,
-            notifications: notifications.clone(), generation, background: false, map_instance, error: None };
+            notifications: notifications.clone(), generation, background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, map_instance, error: None };
         let vm = self.script_service().vm.clone();
         let entry = script.entry_id;
         let npc_id = script.id;

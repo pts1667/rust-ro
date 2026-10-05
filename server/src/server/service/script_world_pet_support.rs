@@ -16,7 +16,8 @@ use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
 pub fn pet_support_operation(function: Function) -> bool {
-    matches!(function, Function::PetSkillBonus | Function::PetRecovery | Function::PetSkillSupport | Function::PetSkillAttack | Function::PetSkillAttack2 | Function::PetLoot)
+    matches!(function, Function::PetSkillBonus | Function::PetRecovery | Function::PetSkillSupport | Function::PetSkillAttack | Function::PetSkillAttack2 | Function::PetLoot
+        | Function::PetAutoBonus | Function::PetAutoBonus2 | Function::PetAutoBonus3)
 }
 
 fn milliseconds(args: &[Value], index: usize) -> Result<u64, String> {
@@ -29,6 +30,12 @@ fn configure(support: &mut PetSupportRuntime, pet: &PetRecord, config: &PetSuppo
     support.pet_id = pet.id;
     support.requires_accessory = config.require_accessory;
     match function {
+        Function::PetAutoBonus | Function::PetAutoBonus2 | Function::PetAutoBonus3 => {
+            let handler = BonusScriptHandler::new();
+            handler.bonuses.write().unwrap().extend(support.auto_bonuses.iter().copied());
+            handler.register_pet_auto_bonus(function, args, pet.id, pet.class_id)?;
+            support.auto_bonuses = handler.drain();
+        }
         Function::PetLoot => {
             support.loot = Some(crate::server::model::game_systems::PetLootRuntime {
                 capacity: super::pet_loot::loot_capacity(args)?, next_at: now, return_requested: false, target: None, claim_queued: false,

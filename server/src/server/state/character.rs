@@ -1,9 +1,11 @@
 use std::collections::HashSet;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 use accessor::Setters;
+use models::enums::EnumWithMaskValueU64;
 use models::enums::item::ItemType;
+use crate::server::model::game_systems::PlayerOption;
 use models::enums::look::LookType;
 use models::item::EquippedItem;
 use models::status::Status;
@@ -19,6 +21,7 @@ use crate::server::model::movement::{Movable, Movement};
 use crate::server::script::ScriptGlobalVariableStore;
 
 pub struct CharacterTiming {
+    skill_menu_blocked: AtomicBool,
     /// Tick when character can move again
     pub canmove_tick: AtomicU64,
     /// Tick when character can act again (attack/skill)
@@ -28,6 +31,7 @@ pub struct CharacterTiming {
 impl CharacterTiming {
     pub fn new() -> Self {
         Self {
+            skill_menu_blocked: AtomicBool::new(false),
             canmove_tick: AtomicU64::new(0),
             canact_tick: AtomicU64::new(0),
         }
@@ -40,6 +44,7 @@ impl CharacterTiming {
 
     /// Get canmove_tick (called by movement thread)
     pub fn get_canmove_tick(&self) -> u128 {
+        if self.skill_menu_blocked() { return u128::MAX; }
         self.canmove_tick.load(Ordering::Acquire) as u128
     }
 
@@ -50,8 +55,13 @@ impl CharacterTiming {
 
     /// Get canact_tick
     pub fn get_canact_tick(&self) -> u128 {
+        if self.skill_menu_blocked() { return u128::MAX; }
         self.canact_tick.load(Ordering::Acquire) as u128
     }
+
+    pub fn skill_menu_blocked(&self) -> bool { self.skill_menu_blocked.load(Ordering::Acquire) }
+
+    pub fn set_skill_menu_blocked(&self, blocked: bool) { self.skill_menu_blocked.store(blocked, Ordering::Release); }
 }
 
 impl Default for CharacterTiming {
@@ -101,6 +111,9 @@ pub struct Character {
     pub options: u64,
     pub pending_item_skill: Option<crate::server::script::skill::PendingItemSkill>,
     pub pending_craft: Option<crate::server::service::script_crafting_service::CraftSession>,
+    pub pvp_point: i32,
+    pub pvp_won: u32,
+    pub pvp_lost: u32,
     pub game_systems: crate::server::model::game_systems::CharacterGameSystems,
     pub account_game_systems: crate::server::model::game_systems::AccountGameSystems,
     pub guild_name: String,
@@ -143,6 +156,7 @@ pub struct Character {
     pub script_variable_store: Mutex<ScriptGlobalVariableStore>,
 
     pub last_moved_at: u128,
+    pub position_revision: std::sync::atomic::AtomicU64,
     pub last_regen_hp_at: u128,
     pub last_regen_sp_at: u128,
 
@@ -193,6 +207,9 @@ impl Character {
             options: 0,
             pending_item_skill: None,
             pending_craft: None,
+            pvp_point: 0,
+            pvp_won: 0,
+            pvp_lost: 0,
             game_systems: Default::default(),
             account_game_systems: Default::default(),
             guild_name: String::new(),
@@ -212,6 +229,7 @@ impl Character {
             map_view: Default::default(),
             script_variable_store: Default::default(),
             last_moved_at: 0,
+            position_revision: std::sync::atomic::AtomicU64::new(0),
             last_regen_hp_at: 0,
             last_regen_sp_at: 0,
             hotkeys,
@@ -225,7 +243,16 @@ impl Character {
         self.x
     }
 
+    pub(crate) fn next_position_revision(&self) -> u64 {
+        self.position_revision.fetch_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed,
+            |revision| revision.checked_add(1)).expect("Character position revisions exhausted") + 1
+    }
+
     pub fn refresh_script_context(&mut self) {
+        let active_pet_id = self.game_systems.pet.as_ref().filter(|pet| !pet.incubating && pet.intimacy > 0).map(|pet| pet.id);
+        self.status.active_auto_bonuses.retain(|bonus| {
+            bonus.definition.source_pet_id == 0 || active_pet_id == Some(bonus.definition.source_pet_id)
+        });
         self.status.spirit_sphere_count = u8::try_from(self.script_skill_state.spirit_spheres.len()).unwrap_or(u8::MAX);
         self.status.script_context = Some(std::sync::Arc::new(self.script_character_state()));
     }
@@ -479,6 +506,7 @@ impl Character {
     }
 
     pub fn set_current_map_with_key(&mut self, key: MapInstanceKey) {
+        crate::server::script::skill::clear_warp_portal_menu(self, crate::util::tick::get_tick());
         self.map_instance_key = key;
     }
 
@@ -608,7 +636,11 @@ impl Character {
                     .enumerate()
                     .filter(|(_, i)| i.is_some())
                     .map(|(index, i)| (index, i.as_mut().unwrap()))
-                    .find(|(_index, i)| i.item_id == item.item_id)
+                    .find(|(_index, i)| i.item_id == item.item_id && i.id == item.id
+                        && i.unique_id == item.unique_id && i.refine == item.refine
+                        && i.is_identified == item.is_identified && i.is_damaged == item.is_damaged
+                        && [i.card0, i.card1, i.card2, i.card3] == [item.card0, item.card1, item.card2, item.card3]
+                        && i.amount.checked_add(item.amount).is_some())
                 {
                     item_in_inventory.amount += item.amount;
                     added_items.push((index, item.clone()));
@@ -714,6 +746,11 @@ impl Character {
             }
         }
         0
+    }
+
+    pub fn set_options(&mut self, options: u64) {
+        self.options = options;
+        self.status.riding = options & PlayerOption::Riding.as_flag() != 0;
     }
 
     pub fn weight(&self) -> u32 {

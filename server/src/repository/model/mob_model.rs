@@ -1,5 +1,5 @@
 use models::enums::element::Element;
-use models::enums::mob::{MobClass, MobDamageMode, MobMode, MobRace};
+use models::enums::mob::{MobCapability, MobClass, MobDamageMode, MobMode, MobRace};
 use models::enums::{EnumWithMaskValueU32, EnumWithStringValue};
 use serde::{Deserialize, Serialize};
 
@@ -54,6 +54,8 @@ pub struct MobModel {
     #[serde(default, alias = "class")]
     pub monster_class: Option<MobClass>,
     #[serde(default)]
+    pub capabilities: Option<Vec<MobCapability>>,
+    #[serde(default)]
     pub race_groups: Vec<String>,
     pub element: String,
     pub element_level: i8,
@@ -73,6 +75,39 @@ pub struct MobModel {
 }
 
 impl MobModel {
+    pub fn battle_capabilities(&self) -> u32 {
+        let mut flags = match &self.capabilities {
+            Some(capabilities) => capabilities.iter().fold(0, |flags, capability| flags | capability.as_flag()),
+            None => {
+                let mode = u32::from(self.mode as u16);
+                let mut flags = 0;
+                for (legacy, capability) in [
+                    (MobMode::Boss, MobCapability::StatusImmune),
+                    (MobMode::Detector, MobCapability::Detector),
+                    (MobMode::NoKnockback, MobCapability::KnockbackImmune),
+                ] {
+                    if mode & legacy.as_flag() != 0 {
+                        flags |= capability.as_flag();
+                    }
+                }
+                if MobRace::try_from_string(&self.race).is_ok_and(|race| matches!(race, MobRace::Demon | MobRace::Insect)) {
+                    flags |= MobCapability::Detector.as_flag();
+                }
+                flags
+            }
+        };
+        flags |= match self.battle_class() {
+            MobClass::Boss => {
+                MobCapability::Detector.as_flag() | MobCapability::StatusImmune.as_flag() | MobCapability::KnockbackImmune.as_flag()
+            }
+            MobClass::Guardian => MobCapability::StatusImmune.as_flag(),
+            MobClass::Battlefield => MobCapability::StatusImmune.as_flag() | MobCapability::SkillImmune.as_flag(),
+            MobClass::Event => MobCapability::FixedItemDrop.as_flag(),
+            _ => 0,
+        };
+        flags
+    }
+
     pub fn battle_class(&self) -> MobClass {
         self.monster_class.unwrap_or_else(|| {
             if self.mode as u32 & MobMode::Boss.as_flag() != 0 {
@@ -109,6 +144,7 @@ impl Default for MobModel {
             scale: 0,
             race: "DemiHuman".to_string(),
             monster_class: None,
+            capabilities: None,
             race_groups: Vec::new(),
             element: Element::Neutral.as_str().to_string(),
             element_level: 0,

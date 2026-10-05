@@ -9,6 +9,7 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> {
         4 => stylist(ctx),
         5 => job_master(ctx),
         6 => ctx.call(Function::Shop, vec![]).map(|_| ()),
+        7 => mount_master(ctx),
         _ => Err(format!("Unknown NPC script {id}")),
     }
 }
@@ -304,6 +305,43 @@ fn job_master(ctx: &Context) -> Result<(), String> {
             ctx.call(Function::ResetLevel, vec![1.into()])?;
         }
         ctx.mes(format!("You are now a {}!", names[selected]))?;
+    }
+    ctx.close()
+}
+
+fn mount_master(ctx: &Context) -> Result<(), String> {
+    ctx.mes("[Mount Master]")?;
+    let mut options = vec!["Toggle cart".to_string(), "Toggle falcon".into(), "Toggle Peco Peco".into()];
+    let married = number(ctx, Function::GetPartnerId, vec![])? != 0;
+    options.push(if married { "Divorce".into() } else { "Marry".into() });
+    options.push("Cancel".into());
+    match ctx.select(&options)? {
+        0 => {
+            let cart = number(ctx, Function::CheckCart, vec![])? != 0;
+            ctx.call(Function::SetCart, vec![i32::from(!cart).into()])?;
+        }
+        1 => {
+            let falcon = number(ctx, Function::CheckFalcon, vec![])? != 0;
+            ctx.call(Function::SetFalcon, vec![i32::from(!falcon).into()])?;
+        }
+        2 => {
+            let riding = number(ctx, Function::CheckRiding, vec![])? != 0;
+            ctx.call(Function::SetRiding, vec![i32::from(!riding).into()])?;
+        }
+        3 if married => {
+            ctx.call(Function::Divorce, vec![])?;
+            ctx.mes("You are no longer married.")?;
+        }
+        3 => {
+            ctx.mes("Enter the name of your online partner.")?;
+            let name = ctx.call(Function::InputString, vec![])?.text();
+            if number(ctx, Function::Marriage, vec![name.into()])? == 1 {
+                ctx.mes("Congratulations!")?;
+            } else {
+                ctx.mes("The marriage could not be performed.")?;
+            }
+        }
+        _ => {}
     }
     ctx.close()
 }

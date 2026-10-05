@@ -1,6 +1,76 @@
 use super::*;
 use crate::server::model::game_systems::{ItemContainer, PlayerOption, VendingStore};
 
+pub struct StoreMove {
+    pub char_id: u32,
+    pub account_id: u32,
+    pub vending_id: Option<u32>,
+    pub buying_id: Option<u32>,
+    pub map: String,
+    pub map_instance: u8,
+    pub x: u16,
+    pub y: u16,
+    pub close_vending: bool,
+    pub close_buying: bool,
+}
+
+pub struct StoreMoveResult {
+    pub vending: Option<VendingStore>,
+    pub buying: Option<BuyingStore>,
+}
+
+pub fn move_character_stores(repository: &SledRepository, change: &StoreMove) -> Result<StoreMoveResult, Error> {
+    let db = &repository.database;
+    Ok((&db.game_systems, &db.characters).transaction(|(systems, characters)| {
+        let character: CharacterRecord = tx_required(characters, &(change.char_id as i32).to_be_bytes())?;
+        if character.account_id as u32 != change.account_id {
+            return abort("Store movement account does not own the character");
+        }
+        if tx_read::<u32>(systems, &key(b"vender/", change.char_id))? != change.vending_id
+            || tx_read::<u32>(systems, &key(b"buyer/", change.char_id))? != change.buying_id
+        {
+            return abort("Store changed before map movement");
+        }
+        let mut vending = None;
+        if let Some(id) = change.vending_id {
+            let mut store: VendingStore = tx_required(systems, &key(b"vending/", id))?;
+            if store.char_id != change.char_id || store.account_id != change.account_id {
+                return abort("Vending store belongs to another character");
+            }
+            if change.close_vending {
+                systems.remove(key(b"vending/", id))?;
+                systems.remove(key(b"vender/", change.char_id))?;
+            } else {
+                store.map = change.map.clone();
+                store.map_instance = change.map_instance;
+                store.x = change.x;
+                store.y = change.y;
+                tx_write(systems, &key(b"vending/", id), &store)?;
+                vending = Some(store);
+            }
+        }
+        let mut buying = None;
+        if let Some(id) = change.buying_id {
+            let mut store: BuyingStore = tx_required(systems, &key(b"store/", id))?;
+            if store.char_id != change.char_id || store.account_id != change.account_id {
+                return abort("Buying store belongs to another character");
+            }
+            if change.close_buying {
+                systems.remove(key(b"store/", id))?;
+                systems.remove(key(b"buyer/", change.char_id))?;
+            } else {
+                store.map = change.map.clone();
+                store.map_instance = change.map_instance;
+                store.x = change.x;
+                store.y = change.y;
+                tx_write(systems, &key(b"store/", id), &store)?;
+                buying = Some(store);
+            }
+        }
+        Ok(StoreMoveResult { vending, buying })
+    })?)
+}
+
 #[derive(Debug)]
 pub struct ContainerTransfer {
     pub cart: Vec<InventoryRecord>,
@@ -52,12 +122,34 @@ fn matching_stack(a: &InventoryRecord, b: &InventoryRecord) -> bool {
         && [a.card0, a.card1, a.card2, a.card3] == [b.card0, b.card1, b.card2, b.card3]
 }
 
+pub(super) fn trade_masks(
+    items: &TransactionalTree,
+    item: &ItemModel,
+    record: &InventoryRecord,
+) -> ConflictableTransactionResult<Vec<u64>, Error> {
+    let mut masks = vec![item.trade_flags];
+    if !models::item::special_card_metadata(record.card0) {
+        for id in [record.card0, record.card1, record.card2, record.card3]
+            .into_iter()
+            .take(item.slots.unwrap_or(0).clamp(0, 4) as usize)
+            .filter(|id| *id != 0)
+        {
+            let card: ItemModel = tx_required(items, &(id as u16 as i32).to_be_bytes())?;
+            masks.push(card.trade_flags);
+        }
+    }
+    Ok(masks)
+}
+
 fn transfer_record(
     source: &mut Vec<InventoryRecord>,
     destination: &mut Vec<InventoryRecord>,
     record_id: i32,
     amount: u32,
     owner: Option<u32>,
+    destination_holder: u32,
+    source_holder: u32,
+    systems: &TransactionalTree,
     owners: &TransactionalTree,
     items: &TransactionalTree,
     metadata: &TransactionalTree,
@@ -72,7 +164,7 @@ fn transfer_record(
         || amount > i16::MAX as u32
         || record.equip != 0
         || record.amount < amount as i16
-        || (!item.item_type.is_stackable() && amount != 1)
+        || (!item.item_type.is_stackable() && (record.amount != 1 || amount != 1))
     {
         return abort("Invalid container item quantity");
     }
@@ -89,6 +181,12 @@ fn transfer_record(
             .ok_or_else(|| sled::transaction::ConflictableTransactionError::Abort(Error::new("Item stack overflow".into())))?;
         destination[index].id
     } else {
+        if destination
+            .iter()
+            .any(|target| target.id == record.id || (record.unique_id != 0 && target.unique_id == record.unique_id))
+        {
+            return abort("Container item identity already exists at the destination");
+        }
         let mut moved = record.clone();
         moved.amount = amount as i16;
         if !whole {
@@ -98,6 +196,9 @@ fn transfer_record(
         destination.push(moved);
         id
     };
+    if item.item_type == ItemType::PetEgg && record.card0 == 256 {
+        super::pet_custody::transfer_egg(systems, &record, moved_id, destination_holder, source_holder)?;
+    }
     if whole {
         source.remove(index);
         owners.remove(record.id.to_be_bytes().to_vec())?;
@@ -172,9 +273,14 @@ pub fn container_transfer(
                 .find(|item| item.id == record_id)
                 .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
             let item: ItemModel = tx_required(items, &record.item_id.to_be_bytes())?;
-            if (destination == ItemContainer::Cart && item.trade_flags & ItemTradeFlag::NoCart.as_flag() != 0)
-                || (destination == ItemContainer::Storage && item.trade_flags & ItemTradeFlag::NoStorage.as_flag() != 0)
-                || (destination == ItemContainer::GuildStorage && item.trade_flags & ItemTradeFlag::NoGuildStorage.as_flag() != 0)
+            if source == ItemContainer::Inventory && tx_required::<i32>(owners, &record.id.to_be_bytes())? != char_id as i32 {
+                return abort("Container item ownership changed");
+            }
+            let masks = trade_masks(items, &item, record)?;
+            if (destination == ItemContainer::Cart && masks.iter().any(|mask| mask & ItemTradeFlag::NoCart.as_flag() != 0))
+                || (destination == ItemContainer::Storage && masks.iter().any(|mask| mask & ItemTradeFlag::NoStorage.as_flag() != 0))
+                || (destination == ItemContainer::GuildStorage
+                    && masks.iter().any(|mask| mask & ItemTradeFlag::NoGuildStorage.as_flag() != 0))
             {
                 return abort("Item cannot be stored in this container");
             }
@@ -184,6 +290,13 @@ pub fn container_transfer(
                 record_id,
                 amount,
                 (destination == ItemContainer::Inventory).then_some(char_id),
+                if matches!(destination, ItemContainer::Inventory | ItemContainer::Cart) {
+                    char_id
+                } else {
+                    0
+                },
+                char_id,
+                systems,
                 owners,
                 items,
                 metadata,
@@ -231,6 +344,7 @@ pub fn create_vending_store(repository: &SledRepository, store: &VendingStore) -
                     .find(|record| record.id == offer.inventory_id)
                     .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
                 let item: ItemModel = tx_required(items, &record.item_id.to_be_bytes())?;
+                let masks = trade_masks(items, &item, record)?;
                 if offer.amount == 0
                     || offer.amount > i16::MAX as u16
                     || offer.amount as i16 > record.amount
@@ -239,10 +353,13 @@ pub fn create_vending_store(repository: &SledRepository, store: &VendingStore) -
                     || !record.is_identified
                     || record.is_damaged
                     || record.equip != 0
-                    || item.trade_flags & ItemTradeFlag::NoTrade.as_flag() != 0
+                    || masks.iter().any(|mask| mask & ItemTradeFlag::NoTrade.as_flag() != 0)
                     || (!item.item_type.is_stackable() && offer.amount != 1)
                 {
                     return abort("Invalid vending offer");
+                }
+                if item.item_type == ItemType::PetEgg && record.card0 == 256 {
+                    super::pet_custody::incubating_pet(systems, record)?;
                 }
                 total = total
                     .checked_add(u64::from(offer.price) * u64::from(offer.amount))
@@ -326,7 +443,8 @@ pub fn vending_store_trade(
                     .find(|record| record.id == offer.inventory_id)
                     .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
                 let item: ItemModel = tx_required(items, &source.item_id.to_be_bytes())?;
-                if item.trade_flags & ItemTradeFlag::NoTrade.as_flag() != 0 || !source.is_identified || source.is_damaged {
+                let masks = trade_masks(items, &item, source)?;
+                if masks.iter().any(|mask| mask & ItemTradeFlag::NoTrade.as_flag() != 0) || !source.is_identified || source.is_damaged {
                     return abort("Vending item can no longer be traded");
                 }
                 total = total
@@ -338,6 +456,9 @@ pub fn vending_store_trade(
                     offer.inventory_id,
                     u32::from(*amount),
                     Some(buyer_id),
+                    buyer_id,
+                    store.char_id,
+                    systems,
                     owners,
                     items,
                     metadata,

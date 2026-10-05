@@ -176,7 +176,7 @@ fn live_rank_events_preserve_resources_on_promotion_and_atomically_cap_demotion(
 fn npc_fixture() -> (Arc<Server>, Arc<Session>, NpcContact) {
     let (context, _repository, character) = super::native_payment_tests::fixture(false, false);
     let npc_id = 600;
-    let script = Script { id: npc_id, entry_id: 1, map_name: "empty".into(), name: "Counter".into(), sprite: 0, x: 51, y: 50, dir: 0, x_size: 0, y_size: 0, constructor_args: vec![] };
+    let script = Script { id: npc_id, scope_instance: 0, entry_id: 1, map_name: "empty".into(), name: "Counter".into(), sprite: 0, x: 51, y: 50, dir: 0, x_size: 0, y_size: 0, constructor_args: vec![] };
     let map = Box::leak(Box::new(Map::new(100, 100, 10_000, "empty".into(), "empty.gat".into(), vec![], vec![], vec![script])));
     let cells = vec![models::enums::cell::CellType::Walkable.as_flag(); 10_001];
     let instance = MapInstance::from_map(crate::tests::common::test_script_vm(), map, 0, cells, context.client_notification_sender.clone(), MapItems::new(0), Arc::new(TasksQueue::new()));
@@ -231,7 +231,7 @@ fn unavailable_or_remote_npc_contacts_do_not_start_a_conversation() {
 }
 
 fn incoming_damage(target_id: u32, attacker_id: u32, flags: u32, skill: SkillEnum) -> Damage {
-    Damage { target_id, attacker_id, credit_id: attacker_id, damage: 100, healing: 0, attacked_at: 100,
+    Damage { notification: None, source_kind: models::enums::actor::CombatActorKind::Player, skill_damage_adjusted: false, target_id, attacker_id, credit_id: attacker_id, damage: 100, healing: 0, attacked_at: 100,
         damage_motion: 500, battle_flags: flags, skill_id: skill.id(), skill_level: 1,
         proc_depth: 0, defenses_applied: true, landed: true, magic_context: None, right_hand_damage: None }
 }

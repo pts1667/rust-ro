@@ -54,10 +54,7 @@ impl ComaBonuses {
     }
 
     pub fn chance(&self, target: &StatusSnapshot, flags: u32) -> u16 {
-        let immune = GlobalConfigService::instance()
-            .get_mob_safe(target.job() as i32)
-            .is_some_and(|mob| mob.mode as u32 & MobMode::Boss.as_flag() != 0)
-            || matches!(target.mob_class(), MobClass::Boss | MobClass::Guardian | MobClass::Battlefield);
+        let immune = target.has_mob_capability(models::enums::mob::MobCapability::StatusImmune);
         let class = *target.mob_class();
         self.chance_against(target, class, immune, flags)
     }
@@ -235,7 +232,7 @@ pub fn resolve(bonuses: &[StatusBonus], event: &CombatEvent<'_>, rng: &mut fastr
             i32::from(ComaBonuses::from_bonuses(bonuses).chance_against(
                 event.other,
                 event.monster_class,
-                matches!(event.monster_class, MobClass::Boss | MobClass::Guardian | MobClass::Battlefield),
+                event.other.has_mob_capability(models::enums::mob::MobCapability::StatusImmune),
                 event.battle_flags,
             )),
             rng,
@@ -571,6 +568,7 @@ mod tests {
         crate::tests::common::before_all();
         let mut target = target();
         target.set_mob_class(MobClass::Guardian);
+        target.set_mob_capabilities(models::enums::mob::MobCapability::StatusImmune.as_flag());
         let coma = ComaBonuses::from_bonuses(&[
             StatusBonus::new(BonusType::ChanceToInflictStatusComaOnAttackOnClassPercentage(
                 MobClass::Guardian,
@@ -584,6 +582,7 @@ mod tests {
         target.set_mob_class(MobClass::Battlefield);
         assert_eq!(coma.chance(&target, BattleFlag::Weapon.as_flag()), 0);
         target.set_mob_class(MobClass::Normal);
+        target.set_mob_capabilities(0);
         assert_eq!(coma.chance(&target, BattleFlag::Weapon.as_flag()), 10000);
     }
 

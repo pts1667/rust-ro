@@ -46,25 +46,39 @@ use crate::util::tick::{delayed_tick, get_tick, get_tick_client};
 mod pet_capture;
 #[path = "map_pet_loot.rs"]
 mod pet_loot;
+#[path = "map_unit_data.rs"]
+mod unit_data;
+pub(crate) use unit_data::npc_entry_packet;
+#[path = "map_npc_effect.rs"]
+pub(crate) mod npc_effect;
+#[path = "map_ground_trap.rs"]
+mod ground_trap;
 
 pub struct MapInstanceService {
-    client_notification_sender: SyncSender<Notification>,
+    pub(super) client_notification_sender: SyncSender<Notification>,
     configuration_service: &'static GlobalConfigService,
     mob_service: MobService,
     battle_service: BattleService,
-    server_task_queue: Arc<TasksQueue<GameEvent>>,
+    pub(super) server_task_queue: Arc<TasksQueue<GameEvent>>,
 }
 
 impl MapInstanceService {
-    pub fn start_actor_skill(&self, state: &mut MapInstanceState, request: crate::server::script::skill::actor::MapActorSkillCast, tick: u128) -> Result<(), String> {
+    pub fn start_actor_skill(
+        &self,
+        state: &mut MapInstanceState,
+        request: crate::server::script::skill::actor::MapActorSkillCast,
+        tick: u128,
+    ) -> Result<(), String> {
         crate::server::script::skill::actor::start_map_cast(state, request, tick, &self.client_notification_sender)
     }
 
     pub fn tick_actor_skills(&self, state: &mut MapInstanceState, tick: u128) {
         for completion in crate::server::script::skill::actor::tick_map_casts(state, tick) {
-            self.server_task_queue.add_to_first_index(GameEvent::ScriptActorSkillComplete(completion));
+            self.server_task_queue
+                .add_to_first_index(GameEvent::ScriptActorSkillComplete(completion));
         }
     }
+
     pub(crate) fn new(
         client_notification_sender: SyncSender<Notification>,
         configuration_service: &'static GlobalConfigService,
@@ -117,7 +131,7 @@ impl MapInstanceService {
                     mob_spawn.info.name_english.clone(),
                     mob_spawn.info.damage_motion as u32,
                     StatusFromDb::from_mob_model(&mob_spawn.info),
-                    mob_spawn.info.mode as u32,
+                    u32::from(mob_spawn.info.mode as u16),
                     mob_spawn.info.range1 as u16,
                     mob_spawn.info.range3 as u16,
                     mob_spawn.info.atk_delay as u32,
@@ -240,8 +254,7 @@ impl MapInstanceService {
             .filter(|mob| {
                 mob.is_present()
                     && mob.hp() > 0
-                    && mob.mode & MobMode::Boss.as_flag() == 0
-                    && !matches!(mob.status.mob_class(), models::enums::mob::MobClass::Boss | models::enums::mob::MobClass::Guardian | models::enums::mob::MobClass::Battlefield)
+                    && !mob.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune)
                     && *mob.status.race() != models::enums::mob::MobRace::RUndead
                     && *mob.status.element() != Element::Undead
             })
@@ -349,15 +362,23 @@ impl MapInstanceService {
                 let damage = (hp as f32 * BattleService::element_modifier(&Element::Fire, &target))
                     .max(0.0)
                     .floor() as u32;
-                let mut packet = PacketZcNotifyAct::new(self.configuration_service.packetver());
-                packet.set_gid(sphere_id);
-                packet.set_target_gid(id);
-                packet.set_action(ActionType::Attack.value() as u8);
-                packet.set_damage(damage.min(i16::MAX as u32) as i16);
-                packet.set_count(1);
-                packet.fill_raw();
-                self.notify_area(state, position.x, position.y, packet.raw);
+                let notification = Some(crate::server::model::damage_notification::DamageNotification::new(
+                    state.key().map_name(),
+                    state.key().map_instance(),
+                    position.x,
+                    position.y,
+                    tick,
+                    0,
+                    1,
+                    crate::server::model::damage_notification::DamageVisual::Action {
+                        action: ActionType::Attack,
+                        hands: (damage.min(i32::MAX as u32) as i32, 0),
+                    },
+                ));
                 tasks.add_to_first_index(MapEvent::MobDamage(Damage {
+                    notification,
+                    source_kind: models::enums::actor::CombatActorKind::Monster,
+                    skill_damage_adjusted: false,
                     target_id: id,
                     attacker_id: sphere_id,
                     damage,
@@ -393,7 +414,7 @@ impl MapInstanceService {
         let Some(mob) = state.get_mob(mob_id).filter(|mob| mob.is_present()) else {
             return;
         };
-        if mob.mode & (MobMode::NoKnockback.as_flag() | MobMode::Boss.as_flag()) != 0 {
+        if mob.status.has_mob_capability(models::enums::mob::MobCapability::KnockbackImmune) {
             return;
         }
         let from = mob.position();
@@ -512,6 +533,9 @@ impl MapInstanceService {
                     self.mob_being_attacked(
                         state,
                         Damage {
+                            notification: None,
+                            source_kind: models::enums::actor::CombatActorKind::Monster,
+                            skill_damage_adjusted: false,
                             target_id,
                             attacker_id: source_id,
                             damage: hp,
@@ -537,10 +561,11 @@ impl MapInstanceService {
                 let Some(model) = self.configuration_service.get_mob_safe(mob_id as i32) else {
                     return;
                 };
-                let Some(old) = state
-                    .get_mob(target_id)
-                    .filter(|mob| mob.is_present() && mob.summon_ai <= 1 && mob.mode & MobMode::Boss.as_flag() == 0)
-                else {
+                let Some(old) = state.get_mob(target_id).filter(|mob| {
+                    mob.is_present()
+                        && mob.summon_ai <= 1
+                        && !mob.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune)
+                }) else {
                     return;
                 };
                 if self
@@ -558,6 +583,7 @@ impl MapInstanceService {
                 replacement.summon_owner = old.summon_owner;
                 replacement.summon_ai = old.summon_ai;
                 replacement.event_entry = old.event_entry;
+                replacement.event_npc = old.event_npc;
                 replacement.set_hp(
                     (replacement.hp() as u64 * old.hp() as u64 / old.status.max_hp().max(1) as u64)
                         .max(1)
@@ -642,6 +668,7 @@ impl MapInstanceService {
             mob.summon_owner = (ai != 0).then_some(request.owner_id);
             mob.summon_ai = ai;
             mob.event_entry = event_entry;
+            mob.event_npc = request.event_npc;
             if !request.name.is_empty() && request.name != "--ja--" && request.name != "--en--" {
                 mob.name = request.name.clone();
                 mob.name_english = request.name.clone();
@@ -683,7 +710,7 @@ impl MapInstanceService {
             model.name_english.clone(),
             model.damage_motion as u32,
             StatusFromDb::from_mob_model(model),
-            model.mode as u32,
+            u32::from(model.mode as u16),
             model.range1 as u16,
             model.range3 as u16,
             model.atk_delay as u32,
@@ -774,7 +801,7 @@ impl MapInstanceService {
             } else {
                 characters.as_slice()
             };
-            let observer = VisibilityObserver::for_mob(mob.mode, *mob.status.race());
+            let observer = VisibilityObserver::monster(&mob.status);
             let targets: Vec<_> = targets
                 .iter()
                 .filter(|target| {
@@ -836,11 +863,7 @@ impl MapInstanceService {
             .map(|target| StealthState::from_status(&target.status_effects))
             .or_else(|| state.actor_visibility.get(&attack.target_char_id).copied())
             .unwrap_or_default();
-        if !can_target(
-            VisibilityObserver::for_mob(source.mode, *source.status.race()),
-            stealth,
-            TargetingMode::Direct,
-        ) {
+        if !can_target(VisibilityObserver::monster(&source.status), stealth, TargetingMode::Direct) {
             return;
         }
         let flags = BattleFlag::Weapon.as_flag()
@@ -851,6 +874,11 @@ impl MapInstanceService {
                 BattleFlag::Short.as_flag()
             };
         if let Some(target) = state.get_mob(attack.target_char_id).filter(|mob| mob.is_present()) {
+            if let Some(damage) = self.battle_service.magical_normal_attack(&source.status, &target.status, source.id, target.id,
+                source.summon_owner.unwrap_or(source.id), state.key(), source.x, source.y, tick, source.atk_motion, target.damage_motion) {
+                Self::add_to_delayed_tick(tasks, MapEvent::MobDamage(damage), u128::from(source.atk_motion));
+                return;
+            }
             let mut rng = fastrand::Rng::new();
             let roll = BattleService::normal_attack_roll(&source.status, &target.status, source.attack_range > 3, &mut rng);
             let damage = if matches!(roll, NormalAttackRoll::Miss | NormalAttackRoll::LuckyDodge) {
@@ -878,27 +906,31 @@ impl MapInstanceService {
                     flags,
                 )
             };
-            let mut packet = PacketZcNotifyAct::new(self.configuration_service.packetver());
-            packet.set_gid(source.id);
-            packet.set_target_gid(target.id);
-            packet.set_action(
-                match roll {
-                    NormalAttackRoll::Critical => ActionType::AttackCritical,
-                    NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
-                    _ => ActionType::Attack,
-                }
-                .value() as u8,
-            );
-            packet.set_attack_mt((source.atk_motion / 2) as i32);
-            packet.set_attacked_mt(target.damage_motion as i32);
-            packet.set_damage(damage.clamp(i16::MIN as i32, i16::MAX as i32) as i16);
-            packet.set_count(1);
-            packet.fill_raw();
-            self.notify_area(state, source.x, source.y, packet.raw);
+            let action = match roll {
+                NormalAttackRoll::Critical => ActionType::AttackCritical,
+                NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
+                _ => ActionType::Attack,
+            };
+            let notification = Some(crate::server::model::damage_notification::DamageNotification::new(
+                state.key().map_name(),
+                state.key().map_instance(),
+                source.x,
+                source.y,
+                tick,
+                source.atk_motion / 2,
+                1,
+                crate::server::model::damage_notification::DamageVisual::Action {
+                    action,
+                    hands: (damage, 0),
+                },
+            ));
             let delay = source.atk_motion as u128 / 2;
             Self::add_to_delayed_tick(
                 tasks,
                 MapEvent::MobDamage(Damage {
+                    notification,
+                    source_kind: models::enums::actor::CombatActorKind::Monster,
+                    skill_damage_adjusted: false,
                     target_id: target.id,
                     attacker_id: source.id,
                     damage: damage.max(0) as u32,
@@ -932,18 +964,45 @@ impl MapInstanceService {
     pub fn mob_being_attacked(
         &self,
         map_instance_state: &mut MapInstanceState,
-        damage: Damage,
+        mut damage: Damage,
         map_instance_tasks_queue: Arc<TasksQueue<MapEvent>>,
         tick: u128,
     ) {
         let origin_map = map_instance_state.key().clone();
+        let original_damage = damage;
+        if !damage.matches_notification_map(&origin_map) {
+            return;
+        }
+        if self.handle_npc_map_event(map_instance_state, &MapEvent::MobDamage(damage), tick) {
+            return;
+        }
+        if damage.skill_id != 0
+            && damage.attacker_id != damage.target_id
+            && map_instance_state
+                .get_mob(damage.target_id)
+                .is_some_and(|mob| mob.status.has_mob_capability(models::enums::mob::MobCapability::SkillImmune))
+        {
+            damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
+            return;
+        }
+        if damage.healing > 0 {
+            if let Some(target) = map_instance_state.get_mob(damage.target_id) {
+                crate::server::service::map_flag_service::apply_map_skill_damage(&map_instance_state.flags, &mut damage, &target.status);
+            }
+        }
         if damage.healing > 0 {
             if let Some(mob) = map_instance_state
                 .mobs_mut()
                 .get_mut(&damage.target_id)
                 .filter(|mob| mob.is_present() && mob.hp() > 0)
             {
+                let before_hp = mob.hp();
                 mob.set_hp(mob.hp().saturating_add(damage.healing).min(mob.status.max_hp()));
+                damage.notify_admitted(
+                    &self.client_notification_sender,
+                    -i64::from(mob.hp().saturating_sub(before_hp)),
+                    self.configuration_service.packetver(),
+                );
                 self.notify_mob_stand(map_instance_state, damage.target_id);
             }
             return;
@@ -960,6 +1019,7 @@ impl MapInstanceService {
                             kind,
                             map_key: map_instance_state.key().clone(),
                         }));
+                    damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
                     return;
                 }
             }
@@ -992,6 +1052,7 @@ impl MapInstanceService {
                 packet.set_skid(SkillEnum::SaMagicrod.id() as u16);
                 packet.set_level(i16::from(damage.skill_level));
                 packet.set_result(true);
+                damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
                 packet.fill_raw();
                 self.notify_area_key(&key, mob.x, mob.y, packet.raw);
                 return;
@@ -1014,14 +1075,28 @@ impl MapInstanceService {
                 damage.damage
             };
             let after_shields = mob.apply_incoming_skill_damage_flags(equipment_damage, damage.battle_flags, damage.skill_id);
-            let applied = crate::server::service::map_flag_service::apply_map_combat_damage(
+            damage.damage = crate::server::service::map_flag_service::apply_map_combat_damage(
                 &map_flags,
                 &self.configuration_service.config().game,
                 after_shields,
                 damage.skill_id,
                 damage.battle_flags,
-            )
-            .min(mob.hp());
+            );
+            crate::server::service::map_flag_service::apply_map_skill_damage(&map_flags, &mut damage, &mob.status);
+            let before_hp = mob.hp();
+            if damage.healing > 0 {
+                mob.set_hp(mob.hp().saturating_add(damage.healing).min(mob.status.max_hp()));
+            }
+            let applied = damage.damage.min(mob.hp());
+            original_damage.notify_admitted(
+                &self.client_notification_sender,
+                if damage.healing > 0 {
+                    -i64::from(mob.hp().saturating_sub(before_hp))
+                } else {
+                    i64::from(applied)
+                },
+                self.configuration_service.packetver(),
+            );
             if mob.status_effects.active_statuses != before {
                 changed = Some((
                     mob.x,
@@ -1033,12 +1108,18 @@ impl MapInstanceService {
                 if let Some((x, y, raw)) = changed.take() {
                     self.notify_area_key(&key, x, y, raw);
                 }
+                if damage.healing > 0 {
+                    self.notify_mob_stand(map_instance_state, damage.target_id);
+                }
                 return;
             }
             admitted_hit = damage.landed;
             let reflected = physical_reflection(&mob.status, damage.battle_flags, damage.skill_id, applied);
             if reflected > 0 && damage.proc_depth < 8 {
                 let returned = Damage {
+                    notification: None,
+                    source_kind: models::enums::actor::CombatActorKind::Monster,
+                    skill_damage_adjusted: false,
                     target_id: damage.attacker_id,
                     attacker_id: mob.id,
                     damage: reflected,
@@ -1054,7 +1135,18 @@ impl MapInstanceService {
                     credit_id: mob.summon_owner.unwrap_or(mob.id),
                     defenses_applied: true,
                     magic_context: None,
-                };
+                }
+                .with_action_notification(
+                    key.map_name(),
+                    key.map_instance(),
+                    mob.x,
+                    mob.y,
+                    tick,
+                    1,
+                    0,
+                    ActionType::AttackNomotion,
+                    (reflected.min(i32::MAX as u32) as i32, 0),
+                );
                 if source.is_some() {
                     map_instance_tasks_queue.add_to_first_index(MapEvent::MobDamage(returned));
                 } else {
@@ -1076,6 +1168,7 @@ impl MapInstanceService {
             mob.last_credit_id = credited_id;
             mob.last_attack_flags = damage.battle_flags;
             mob.last_attack_skill = damage.skill_id;
+            mob.last_damage = applied;
             mob.last_proc_depth = damage.proc_depth;
             mob.last_attacked_at = tick;
             if mob.summon_ai == 2 && mob.next_summon_action == 0 && mob.hp() > 0 {
@@ -1107,7 +1200,7 @@ impl MapInstanceService {
                         battle_flags: damage.battle_flags,
                         skill_id: damage.skill_id,
                         damage: applied,
-                        right_hand_damage: damage.admitted_right_hand_damage(applied),
+                        right_hand_damage: original_damage.admitted_right_hand_damage(applied),
                         other_mob_id: Some(mob.mob_id as u32),
                         depth: damage.proc_depth,
                         drop_position: Some(mob.position()),
@@ -1117,6 +1210,8 @@ impl MapInstanceService {
             if damage.landed && damage.skill_id != 0 && damage.proc_depth < 8 {
                 self.server_task_queue
                     .add_to_first_index(GameEvent::ScriptSkillHit(crate::server::script::skill::ScriptSkillHit {
+                        source_map: Some(origin_map.map_name().clone()),
+                        source_instance: Some(origin_map.map_instance()),
                         source_id: damage.attacker_id,
                         target_id: mob.id,
                         skill_id: damage.skill_id,
@@ -1140,7 +1235,12 @@ impl MapInstanceService {
             }
         }
         if admitted_hit {
-            crate::server::script::skill::actor::interrupt_map_cast(map_instance_state, damage.target_id, tick, &self.client_notification_sender);
+            crate::server::script::skill::actor::interrupt_map_cast(
+                map_instance_state,
+                damage.target_id,
+                tick,
+                &self.client_notification_sender,
+            );
         }
         if let Some((x, y, raw)) = changed {
             self.notify_area_key(&key, x, y, raw);
@@ -1188,6 +1288,11 @@ impl MapInstanceService {
             let player_killer = map_instance_state
                 .get_map_item(map_instance_state.get_mob(id).map_or(0, |mob| mob.last_attacker_id))
                 .is_some_and(|item| *item.object_type() == MapItemType::Character);
+            let player_credit = map_instance_state.get_mob(id).is_some_and(|mob| {
+                map_instance_state
+                    .get_map_item(mob.last_credit_id)
+                    .is_some_and(|item| *item.object_type() == MapItemType::Character)
+            });
             let mob = map_instance_state
                 .mobs_mut()
                 .get_mut(&id)
@@ -1240,7 +1345,24 @@ impl MapInstanceService {
                     delayed_tick(delay, GAME_TICK_RATE),
                 );
             }
-            if let Some(entry_id) = mob.event_entry.filter(|_| mob.last_credit_id != 0) {
+            if let Some(callback) = mob.event_npc {
+                self.server_task_queue.add_to_index(
+                    GameEvent::ScriptNpcEvent(crate::server::model::events::game_event::ScriptNpcEvent {
+                        npc_id: callback.npc_id,
+                        scope_instance: callback.scope_instance,
+                        entry_id: callback.entry_id,
+                        char_id: player_credit.then_some(mob.last_credit_id),
+                        depth: 0,
+                        queued_until: 0,
+                        args: Some(vec![
+                            script_sdk::Value::Number(mob.mob_id as i32),
+                            script_sdk::Value::Number(id as i32),
+                        ]),
+                        timer_guard: None,
+                    }),
+                    delayed_tick(delay, GAME_TICK_RATE),
+                );
+            } else if let Some(entry_id) = mob.event_entry.filter(|_| mob.last_credit_id != 0) {
                 self.server_task_queue.add_to_index(
                     GameEvent::ScriptEvent(ScriptEvent {
                         char_id: mob.last_credit_id,

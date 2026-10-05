@@ -9,7 +9,7 @@ use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
-use packets::packets::{Packet, PacketZcNotifySkill2, PacketZcUseSkill};
+use packets::packets::{Packet, PacketZcUseSkill};
 use script_sdk::Value;
 
 use crate::repository::Repository;
@@ -21,23 +21,23 @@ use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_item::{MapItemType, ToMapItemSnapshot};
-use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::battle_service::BattleService;
+use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
-#[path = "actor_ground_skill.rs"]
-mod actor_ground;
 #[path = "skill_actor.rs"]
 pub mod actor;
+#[path = "skill_actor_area.rs"]
+mod actor_area;
 #[path = "skill_actor_dispatch.rs"]
 mod actor_dispatch;
 #[path = "skill_actor_effects.rs"]
 mod actor_effects;
-#[path = "skill_actor_area.rs"]
-mod actor_area;
+#[path = "actor_ground_skill.rs"]
+mod actor_ground;
 #[path = "skill_area_damage.rs"]
 mod area_damage;
 #[path = "skill_autocast.rs"]
@@ -52,6 +52,8 @@ mod delayed;
 mod devotion;
 #[path = "ground_skill.rs"]
 mod ground;
+#[path = "skill_magic.rs"]
+mod magic;
 #[path = "skill_metadata.rs"]
 pub mod metadata;
 #[path = "skill_party_support.rs"]
@@ -72,12 +74,20 @@ mod support;
 mod targeted;
 #[path = "skill_teleport.rs"]
 mod teleport;
+#[path = "ground_text_skill.rs"]
+mod text_ground;
+#[path = "ground_trap.rs"]
+pub(crate) mod trap;
 #[path = "skill_utility.rs"]
 mod utility;
+#[path = "skill_warp_portal.rs"]
+mod warp_portal;
 pub use ground::{FixedGroundSkillDamage, GroundSkillSource};
 pub use reveal::ScriptRevealActor;
 pub use targeted::{PreparedSkillOutcome, ScriptSkillCompletionPlan};
 pub use teleport::PendingTeleportMenu;
+pub(crate) use warp_portal::clear_menu as clear_warp_portal_menu;
+pub use warp_portal::{PendingWarpPortalMenu, WarpPortalEntry, WarpPortalMenuCast};
 
 #[derive(Clone, Debug, Default)]
 pub struct ScriptSkillState {
@@ -94,6 +104,8 @@ pub struct ScriptSkillState {
     pub deferred_requirements: Option<requirements::DeferredSkillPayment>,
     pub native_requirements: Option<requirements::DeferredSkillPayment>,
     pub pending_teleport: Option<PendingTeleportMenu>,
+    pub pending_warp_portal: Option<PendingWarpPortalMenu>,
+    pub ground_skill_text: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -126,25 +138,80 @@ pub struct ScriptSkillEffect {
 #[derive(Clone, Debug, PartialEq)]
 pub enum ScriptSkillAction {
     Cast,
+    OpenWarpPortalMenu(WarpPortalMenuCast),
+    MagicAttack {
+        target_id: u32,
+        map: crate::server::model::map_instance::MapInstanceKey,
+        issued_skill: bool,
+    },
     OpenTeleportMenu,
-    Heal { hp: u32, sp: u32 },
-    SetResources { hp: Option<u32>, sp: Option<u32> },
+    CleanGraffiti {
+        map: crate::server::model::map_instance::MapInstanceKey,
+        x: u16,
+        y: u16,
+    },
+    Heal {
+        hp: u32,
+        sp: u32,
+    },
+    SetResources {
+        hp: Option<u32>,
+        sp: Option<u32>,
+    },
     ClearBuffs,
     RandomWarp,
-    BreakEquipment { location: u64 },
-    ActivateGround { skill_id: u32, cast_generation: u64 },
+    BreakEquipment {
+        location: u64,
+    },
+    ActivateGround {
+        skill_id: u32,
+        cast_generation: u64,
+    },
+    TrapControl {
+        trap_id: u32,
+        map: crate::server::model::map_instance::MapInstanceKey,
+        spring: bool,
+        ignore_range: bool,
+    },
     ExplodeSplasher,
-    WaterBall { sequence: u64, cell: u16 },
-    AreaStatus { x: u16, y: u16 },
-    Face { direction: u16 },
-    FinalStrike { x: u16, y: u16, map: String, instance: u8 },
-    DelayedWeaponHit { target_id: u32, map: String, instance: u8 },
-    SnatchWarp { victim_id: u32, map: String, instance: u8 },
-    DelayedStatus { request: StatusChangeRequest, map: String, instance: u8 },
+    WaterBall {
+        sequence: u64,
+        cell: u16,
+    },
+    AreaStatus {
+        x: u16,
+        y: u16,
+    },
+    Face {
+        direction: u16,
+    },
+    FinalStrike {
+        x: u16,
+        y: u16,
+        map: String,
+        instance: u8,
+    },
+    DelayedWeaponHit {
+        target_id: u32,
+        map: String,
+        instance: u8,
+    },
+    SnatchWarp {
+        victim_id: u32,
+        map: String,
+        instance: u8,
+    },
+    DelayedStatus {
+        request: StatusChangeRequest,
+        map: String,
+        instance: u8,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ScriptSkillHit {
+    pub source_map: Option<String>,
+    pub source_instance: Option<u8>,
     pub source_id: u32,
     pub target_id: u32,
     pub skill_id: u32,
@@ -213,7 +280,10 @@ impl ScriptSkillService {
 
     pub fn active_cast_cancelable(&self, character: &Character) -> bool {
         character.script_skill_state.cast_cancel_override.unwrap_or_else(|| {
-            let skill_id = character.skill_in_use.as_ref().map(|cast| cast.skill.id())
+            let skill_id = character
+                .skill_in_use
+                .as_ref()
+                .map(|cast| cast.skill.id())
                 .unwrap_or(character.script_skill_state.casting_skill_id);
             self.cast_cancelable(skill_id)
         })
@@ -228,6 +298,7 @@ impl ScriptSkillService {
         character.script_skill_state.deferred_requirements = None;
         character.script_skill_state.native_requirements = None;
         character.script_skill_state.pending_teleport = None;
+        self.cancel_warp_portal_menu(character, crate::util::tick::get_tick());
     }
 
     pub fn validate_effect_cast(&self, source: &Character, effect: &ScriptSkillEffect) -> Result<(), String> {
@@ -469,19 +540,48 @@ impl ScriptSkillService {
             character.script_skill_state.deferred_requirements = Some(requirements::DeferredSkillPayment {
                 skill_id,
                 level,
+                keep_requirements: true,
                 requirements,
                 source_index: None,
                 source_item: None,
             });
         }
         self.end_cloaking_on_skill(server, character, skill_id, tick);
+        if matches!(skill.name().as_str(), "HT_REMOVETRAP" | "HT_SPRINGTRAP") {
+            self.validate_player_trap_control(state, character, target_id, skill_id, level, tick, instant)?;
+            let effect = ScriptSkillEffect {
+                source_char_id: character.char_id,
+                target_id: character.char_id,
+                skill_id,
+                level,
+                heal_value: 0,
+                proc_depth: depth,
+                skill_event_emitted: instant,
+                cast_generation: 0,
+                action: ScriptSkillAction::TrapControl {
+                    trap_id: target_id,
+                    map: character.map_instance_key.clone(),
+                    spring: skill.name() == "HT_SPRINGTRAP",
+                    ignore_range: instant,
+                },
+                deferred_requirements: None,
+                prepared_outcome: None,
+                source_index: None,
+                source_item: None,
+            };
+            if instant {
+                return self.apply_target_effect(server, state, character, &effect, tick);
+            }
+            self.queue_target_effect(server, character, skill, effect, tick);
+            return Ok(());
+        }
         if (matches!(
             Self::operation(skill.name()),
             Some(callbacks::SkillOperation::Spirit | callbacks::SkillOperation::Movement)
         ) && skill.name() != "RG_INTIMIDATE")
             || matches!(
                 skill.name().as_str(),
-                "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN"
+                "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER"
             )
         {
             let effect = ScriptSkillEffect {
@@ -565,9 +665,42 @@ impl ScriptSkillService {
         }
         if !instant
             && character.x.abs_diff(target.position.x).max(character.y.abs_diff(target.position.y))
-                > self.player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, level).max(1)
+                > self
+                    .player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, level)
+                    .max(1)
         {
             return Err("Item skill target is out of range".into());
+        }
+        if Self::uses_metadata_magic(skill.name()) {
+            let issued_skill = instant
+                || character
+                    .pending_item_skill
+                    .as_ref()
+                    .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
+            let effect = ScriptSkillEffect {
+                source_char_id: character.char_id,
+                target_id: character.char_id,
+                skill_id,
+                level,
+                heal_value: 0,
+                proc_depth: depth,
+                skill_event_emitted: instant,
+                cast_generation: 0,
+                action: ScriptSkillAction::MagicAttack {
+                    target_id,
+                    map: character.map_instance_key.clone(),
+                    issued_skill,
+                },
+                deferred_requirements: None,
+                prepared_outcome: None,
+                source_index: None,
+                source_item: None,
+            };
+            if instant {
+                return self.apply_target_effect(server, state, character, &effect, tick);
+            }
+            self.queue_target_effect(server, character, skill, effect, tick);
+            return Ok(());
         }
         if matches!(Self::operation(skill.name()), Some(callbacks::SkillOperation::Ground)) {
             return self.place_ground_skill_depth(
@@ -669,7 +802,9 @@ impl ScriptSkillService {
         }
         let source_status = StatusService::instance().to_snapshot(&character.status);
         let target_status = match target.map_item.object_type() {
-            MapItemType::Mob => state.map_item_mob_status(&target.map_item, character.current_map_name(), character.current_map_instance()),
+            MapItemType::Mob | MapItemType::SkillUnit => {
+                state.map_item_mob_status(&target.map_item, character.current_map_name(), character.current_map_instance())
+            }
             MapItemType::Character if target_id == character.char_id => Some(source_status.clone()),
             MapItemType::Character => state
                 .get_character(target_id)
@@ -705,7 +840,11 @@ impl ScriptSkillService {
                     BattleFlag::Misc
                 })
                 .as_flag()
-                    | if skill_id == SkillEnum::TfThrowstone.id() { BattleFlag::Weapon.as_flag() } else { 0 }
+                    | if skill_id == SkillEnum::TfThrowstone.id() {
+                        BattleFlag::Weapon.as_flag()
+                    } else {
+                        0
+                    }
                     | (if offensive.is_ranged() || offensive.is_magic() {
                         BattleFlag::Long
                     } else {
@@ -714,6 +853,9 @@ impl ScriptSkillService {
                     .as_flag()
                     | BattleFlag::Skill.as_flag();
                 let mut damage_event = Damage {
+                    notification: None,
+                    source_kind: models::enums::actor::CombatActorKind::Player,
+                    skill_damage_adjusted: false,
                     healing: 0,
                     right_hand_damage: None,
                     target_id,
@@ -731,6 +873,17 @@ impl ScriptSkillService {
                     landed,
                 };
                 damage_event.set_signed_damage(damage);
+                if skill_id != SkillEnum::WzWaterball.id() && skill_id != SkillEnum::ChPalmstrike.id() {
+                    damage_event = damage_event.with_skill_notification(
+                        character.current_map_name(),
+                        character.current_map_instance(),
+                        character.x,
+                        character.y,
+                        tick,
+                        1,
+                        0,
+                    );
+                }
                 let instance = state
                     .get_map_instance_from_character(character)
                     .ok_or("Map instance is unavailable")?;
@@ -740,9 +893,6 @@ impl ScriptSkillService {
                     } else {
                         server.add_to_next_tick(GameEvent::CharacterDamage(damage));
                     }
-                }
-                if skill_id != SkillEnum::WzWaterball.id() && skill_id != SkillEnum::ChPalmstrike.id() {
-                    self.notify_attack_skill(character, target_id, skill_id, level, damage);
                 }
                 return Ok(());
             }
@@ -758,6 +908,7 @@ impl ScriptSkillService {
             Some(requirements::DeferredSkillPayment {
                 skill_id,
                 level,
+                keep_requirements: true,
                 requirements: self.requirements_plan(character, skill_id, level, tick)?,
                 source_index: None,
                 source_item: None,
@@ -1097,6 +1248,8 @@ impl ScriptSkillService {
             "LK_AURABLADE" => Some(AuraBlade),
             "LK_CONCENTRATION" => Some(Concentration),
             "NPC_MAGICMIRROR" => Some(MagicMirror),
+            "NPC_POWERUP" => Some(IncAttackRate),
+            "NPC_DEFENDER" => Some(Defender),
             "NPC_STONESKIN" | "NPC_ANTIMAGIC" => Some(ArmorChange),
             "NPC_SLOWCAST" => Some(SlowCast),
             "NPC_CRITICALWOUND" => Some(CriticalWound),
@@ -1171,9 +1324,12 @@ impl ScriptSkillService {
     }
 
     pub fn player_skill_range(&self, source: &StatusSnapshot, skill_id: u32, level: u8) -> u16 {
-        if let Some(metadata) = metadata::SkillMetadata::find(skill_id) { return metadata.player_range(source, level); }
-        self.configuration.find_skill_config(&Value::Number(skill_id as i32)).map_or(1,
-            |skill| Self::range(skill, level).unsigned_abs().min(14) as u16)
+        if let Some(metadata) = metadata::SkillMetadata::find(skill_id) {
+            return metadata.player_range(source, level);
+        }
+        self.configuration
+            .find_skill_config(&Value::Number(skill_id as i32))
+            .map_or(1, |skill| Self::range(skill, level).unsigned_abs().min(14) as u16)
     }
 
     fn duration(skill: &SkillConfig, level: u8) -> u32 {
@@ -1294,19 +1450,6 @@ impl ScriptSkillService {
         packet.set_skid(SkillEnum::SaMagicrod.id() as u16);
         packet.set_level(i16::from(incoming_level));
         packet.set_result(true);
-        packet.fill_raw();
-        self.notify_area(character, packet.raw);
-    }
-
-    fn notify_attack_skill(&self, character: &Character, target_id: u32, skill_id: u32, level: u8, damage: i32) {
-        let mut packet = PacketZcNotifySkill2::new(self.configuration.packetver());
-        packet.set_aid(character.char_id);
-        packet.set_target_id(target_id);
-        packet.set_skid(skill_id as u16);
-        packet.set_level(level as i16);
-        packet.set_damage(damage);
-        packet.set_count(1);
-        packet.set_action(6);
         packet.fill_raw();
         self.notify_area(character, packet.raw);
     }

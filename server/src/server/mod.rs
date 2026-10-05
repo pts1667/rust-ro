@@ -32,10 +32,10 @@ use crate::server::service::character::skill_tree_service::SkillTreeService;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
 use crate::server::service::script_service::ScriptService;
+use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
-use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::state::server::ServerState;
 use crate::util::cell::{MyRefMut, MyUnsafeCell};
 use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
@@ -118,7 +118,11 @@ impl Server {
         runtime: Arc<Runtime>,
     ) -> Server {
         let tasks_queue = Arc::new(TasksQueue::new());
-        let script_world_service = ScriptWorldService::new(client_notification_sender.clone(), repository.clone(), GlobalConfigService::instance());
+        let script_world_service = ScriptWorldService::new(
+            client_notification_sender.clone(),
+            repository.clone(),
+            GlobalConfigService::instance(),
+        );
         let movement_tasks_queue = Arc::new(TasksQueue::new());
         StatusService::init(GlobalConfigService::instance(), item_script_vm.clone());
 
@@ -208,7 +212,11 @@ impl Server {
         server_service: ServerService,
         runtime: Arc<Runtime>,
     ) -> Server {
-        let script_world_service = ScriptWorldService::new(server_service.notification_sender(), repository.clone(), GlobalConfigService::instance());
+        let script_world_service = ScriptWorldService::new(
+            server_service.notification_sender(),
+            repository.clone(),
+            GlobalConfigService::instance(),
+        );
         Server {
             configuration,
             repository,
@@ -231,8 +239,16 @@ impl Server {
             .map_instances()
             .iter()
             .for_each(|(_, instances)| instances.iter().for_each(|instance| instance.shutdown()));
+        let state = self.state.borrow();
+        let characters: Vec<_> = state.characters().values().collect();
+        let positions = characters
+            .iter()
+            .map(|character| {
+                crate::server::service::map_position_service::position_update(character, &state.map_flags(&character.map_instance_key))
+            })
+            .collect();
         self.character_service()
-            .save_characters_state(self.state.borrow().characters().values().collect(), get_tick())
+            .save_characters_state_with_positions(characters, positions, get_tick())
             .await;
         self.state_mut()
             .sessions()
@@ -353,16 +369,53 @@ impl Server {
     }
 
     pub(crate) fn disconnect_character_in_state(&self, state: &mut ServerState, char_id: u32) {
-        let Some(mut character) = state.characters_mut().remove(&char_id) else { return; };
-        if let Some(session) = state.find_session(character.account_id) { session.cancel_script(); }
+        self.begin_character_logout(state, char_id, false, get_tick());
+    }
+
+    pub(crate) fn finish_character_logout(&self, state: &mut ServerState, char_id: u32) {
+        state.pending_character_logouts.remove(&char_id);
+        state.character_logins.remove(&char_id);
+        state.script_timers.disconnect(char_id);
+        if let Err(error) = self.cancel_player_trade(state, char_id) {
+            warn!("Trade cancellation failed: {error}");
+        }
+        let Some(mut character) = state.characters_mut().remove(&char_id) else {
+            return;
+        };
+        state.retire_character_items(char_id, character.account_id);
+        if let Some(session) = state
+            .find_session(character.account_id)
+            .filter(|session| session.char_id == Some(char_id))
+        {
+            session.cancel_script();
+        }
         self.script_world_service().cancel_pet_capture_in_state(self, state, &mut character);
-        if let Err(error) = self.script_world_service().return_pet_loot_in_state(self, state, &mut character, get_tick() as u64) { warn!("Pet loot return deferred on disconnect: {error}"); }
-        if let Err(error) = self.script_world_service().disconnect_party(self, &mut character) { warn!("Party disconnect failed: {error}"); }
-        if let Err(error) = self.script_world_service().disconnect(&mut character) { warn!("World disconnect failed: {error}"); }
-        self.script_service().npc_variables.lock().unwrap().retain(|(scope, _, owner, ..), _| *scope != 2 || *owner != char_id);
+        if let Err(error) = self
+            .script_world_service()
+            .return_pet_loot_in_state(self, state, &mut character, get_tick() as u64)
+        {
+            warn!("Pet loot return deferred on disconnect: {error}");
+        }
+        if let Err(error) = self.script_world_service().disconnect_party(self, &mut character) {
+            warn!("Party disconnect failed: {error}");
+        }
+        if let Err(error) = self.script_world_service().disconnect(&mut character) {
+            warn!("World disconnect failed: {error}");
+        }
+        self.script_service()
+            .npc_variables
+            .lock()
+            .unwrap()
+            .retain(|(scope, _, owner, ..), _| *scope != 2 || *owner != char_id);
+        let position =
+            crate::server::service::map_position_service::position_update(&character, &state.map_flags(&character.map_instance_key));
         self.runtime.block_on(async {
-            self.character_service().save_characters_state(vec![&character], get_tick()).await;
-            if let Err(error) = self.repository.save_hotkeys(char_id, &character.hotkeys).await { warn!("Hotkey save failed: {error}"); }
+            self.character_service()
+                .save_characters_state_with_positions(vec![&character], vec![position], get_tick())
+                .await;
+            if let Err(error) = self.repository.save_hotkeys(char_id, &character.hotkeys).await {
+                warn!("Hotkey save failed: {error}");
+            }
         });
     }
 
@@ -432,12 +485,25 @@ impl Server {
                                                 };
                                                 for frame in incoming {
                                                     let id = u16::from_le_bytes([frame[0], frame[1]]);
-                                                    let packet: Box<dyn packets::packets::Packet> = if service::script_world_service::world_frame_length(id, server_shared_ref.packetver()).is_some()
-                                                        || request_handler::script_operations::frame_length(id, server_shared_ref.packetver()).is_some() {
-                                                        Box::new(packets::packets::PacketUnknown { raw: frame, packet_id: format!("0x{id:04x}") })
-                                                    } else {
-                                                        parse(&frame, server_shared_ref.packetver())
-                                                    };
+                                                    let packet: Box<dyn packets::packets::Packet> =
+                                                        if service::script_world_service::world_frame_length(
+                                                            id,
+                                                            server_shared_ref.packetver(),
+                                                        )
+                                                        .is_some()
+                                                            || request_handler::script_operations::frame_length(
+                                                                id,
+                                                                server_shared_ref.packetver(),
+                                                            )
+                                                            .is_some()
+                                                        {
+                                                            Box::new(packets::packets::PacketUnknown {
+                                                                raw: frame,
+                                                                packet_id: format!("0x{id:04x}"),
+                                                            })
+                                                        } else {
+                                                            parse(&frame, server_shared_ref.packetver())
+                                                        };
                                                     if GlobalConfigService::instance().config().server.trace_packet {
                                                         print_packet(&None, None, PacketDirection::Forward, &packet);
                                                     }
@@ -460,6 +526,9 @@ impl Server {
                                             }
                                         }
                                     }
+                                    server_shared_ref.add_to_next_tick(GameEvent::ClientDisconnected(
+                                        crate::server::model::character_lifecycle::ClientDisconnected { socket: tcp_stream_arc },
+                                    ));
                                 })
                                 .unwrap();
                         }
@@ -607,15 +676,10 @@ impl Server {
                 .unwrap();
             let server_ref_clone = server_ref.clone();
             let client_notification_sender_clone = client_notification_sender.clone();
-            let persistence_event_sender_clone = persistence_event_sender.clone();
             thread::Builder::new()
                 .name("movement_loop_thread".to_string())
                 .spawn_scoped(server_thread_scope, move || {
-                    Self::character_movement_loop(
-                        server_ref_clone,
-                        client_notification_sender_clone,
-                        persistence_event_sender_clone,
-                    );
+                    Self::character_movement_loop(server_ref_clone, client_notification_sender_clone);
                     info!("Shutdown movement_loop_thread");
                 })
                 .unwrap();

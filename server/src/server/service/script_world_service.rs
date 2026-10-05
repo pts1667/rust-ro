@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, VecDeque};
+use std::sync::atomic::AtomicU64;
 use std::sync::mpsc::{SyncSender, TrySendError};
 use std::sync::{Arc, Mutex, OnceLock};
-use std::sync::atomic::AtomicU64;
 
 use models::enums::action::ActionType;
 use models::enums::cell::CellType;
@@ -41,21 +41,21 @@ mod party;
 pub use party::{party_can_pick_up, party_experience_awards, party_experience_awards_with_bonus, party_loot_candidates};
 #[path = "script_world_homunculus.rs"]
 mod homunculus;
-#[path = "script_world_protocol.rs"]
-mod protocol;
-#[path = "script_world_requests.rs"]
-mod requests;
-#[path = "script_world_pets.rs"]
-mod pets;
-#[path = "script_world_pet_support.rs"]
-mod pet_support;
 #[path = "script_world_pet_combat.rs"]
 mod pet_combat;
 #[path = "script_world_pet_loot.rs"]
 mod pet_loot;
-pub use pet_support::pet_support_operation;
+#[path = "script_world_pet_support.rs"]
+mod pet_support;
+#[path = "script_world_pets.rs"]
+mod pets;
+#[path = "script_world_protocol.rs"]
+mod protocol;
+#[path = "script_world_requests.rs"]
+mod requests;
 #[cfg(test)]
 pub(crate) use pet_support::PetSupportHost;
+pub use pet_support::pet_support_operation;
 pub use pets::{advance_pet_hunger, pet_bonus_state, pet_constant, pet_information, pet_script_state};
 #[path = "script_world_vending.rs"]
 mod vending;
@@ -103,7 +103,9 @@ pub struct PetDefinition {
     pub change_target_rate: u16,
 }
 
-fn default_pet_combat_rate() -> u16 { 10001 }
+fn default_pet_combat_rate() -> u16 {
+    10001
+}
 
 #[derive(Deserialize)]
 pub struct MercenaryDefinition {
@@ -452,8 +454,10 @@ fn evolve_homunculus_systems(systems: &mut CharacterGameSystems) -> Result<bool,
     Ok(true)
 }
 
+const CALL_PARTNER_SKILL_ID: i32 = 336;
+
 impl ScriptWorldService {
-    pub fn handle_companion_damage(&self, server: &Server, state: &mut ServerState, damage: Damage, now: u128) -> Result<bool, String> {
+    pub fn handle_companion_damage(&self, server: &Server, state: &mut ServerState, mut damage: Damage, now: u128) -> Result<bool, String> {
         let owner_id = state
             .characters()
             .values()
@@ -462,32 +466,57 @@ impl ScriptWorldService {
             return Ok((1_000_000_000..1_300_000_000).contains(&damage.target_id));
         };
         let character = state.characters().get(&owner_id).unwrap();
+        if !damage.matches_notification_map(&character.map_instance_key) {
+            return Ok(true);
+        }
         if character
             .game_systems
             .pet
             .as_ref()
             .is_some_and(|pet| pet_world_id(pet.id) == damage.target_id)
         {
+            damage.notify_admitted(&self.notifications, 0, self.configuration.packetver());
             return Ok(true);
         }
         let snapshot = companion_status_snapshot(character, damage.target_id).ok_or("Companion status is unavailable")?;
         if snapshot.hp() == 0 {
+            damage.notify_admitted(&self.notifications, 0, self.configuration.packetver());
             return Ok(true);
+        }
+        let map_flags = state.map_flags(&character.map_instance_key);
+        if damage.healing > 0 {
+            crate::server::service::map_flag_service::apply_map_skill_damage(&map_flags, &mut damage, &snapshot);
         }
         if damage.healing > 0 {
             let character = state.characters_mut().get_mut(&owner_id).unwrap();
             let mut systems = character.game_systems.clone();
-            if let Some(mercenary) = systems.mercenary.as_mut().filter(|mercenary| mercenary_world_id(mercenary) == damage.target_id) {
+            if let Some(mercenary) = systems
+                .mercenary
+                .as_mut()
+                .filter(|mercenary| mercenary_world_id(mercenary) == damage.target_id)
+            {
                 mercenary.hp = mercenary.hp.saturating_add(damage.healing).min(snapshot.max_hp());
-            } else if let Some(homunculus) = systems.homunculus.as_mut().filter(|homunculus| homunculus_world_id(homunculus) == damage.target_id) {
+            } else if let Some(homunculus) = systems
+                .homunculus
+                .as_mut()
+                .filter(|homunculus| homunculus_world_id(homunculus) == damage.target_id)
+            {
                 homunculus.hp = homunculus.hp.saturating_add(damage.healing).min(snapshot.max_hp());
             }
             if systems != character.game_systems {
-                let saved = self.repository.save_character_game_systems(owner_id, &systems).map_err(|error| error.to_string())?;
+                let saved = self
+                    .repository
+                    .save_character_game_systems(owner_id, &systems)
+                    .map_err(|error| error.to_string())?;
                 install_state(character, saved);
                 self.send_mercenary(character, now as u64)?;
                 self.send_homunculus(character)?;
             }
+            damage.notify_admitted(
+                &self.notifications,
+                -i64::from(damage.healing.min(snapshot.max_hp().saturating_sub(snapshot.hp()))),
+                self.configuration.packetver(),
+            );
             return Ok(true);
         }
         if damage.landed && damage.battle_flags & BattleFlag::Magic.as_flag() != 0 {
@@ -505,14 +534,15 @@ impl ScriptWorldService {
                     map_key: character.map_instance_key.clone(),
                 };
                 crate::server::service::map_combat_service::reflect_magic(server, state, request, now)?;
+                damage.notify_admitted(&self.notifications, 0, self.configuration.packetver());
                 return Ok(true);
             }
         }
-        let map_flags = state.map_flags(&character.map_instance_key);
         let versus = map_flags.versus(state.siege_active);
         let character = state.characters_mut().get_mut(&owner_id).unwrap();
         let mut systems = character.game_systems.clone();
         let mut admitted = 0;
+        let mut healed = 0;
         let mut absorbed = false;
         let raw = if damage.defenses_applied {
             damage.damage
@@ -544,10 +574,25 @@ impl ScriptWorldService {
                 StatusEffectService::apply_incoming_skill_damage_flags(&mut status, raw, damage.battle_flags, versus, damage.skill_id)
             };
             let received = crate::server::service::map_flag_service::apply_map_combat_damage(
-                &map_flags, &self.configuration.config().game, received, damage.skill_id, damage.battle_flags,
+                &map_flags,
+                &self.configuration.config().game,
+                received,
+                damage.skill_id,
+                damage.battle_flags,
             );
+            let mut adjusted = Damage {
+                damage: received,
+                ..damage
+            };
+            crate::server::service::map_flag_service::apply_map_skill_damage(&map_flags, &mut adjusted, &snapshot);
+            let received = adjusted.damage;
+            healed = adjusted.healing.min(snapshot.max_hp().saturating_sub(mercenary.hp));
             admitted = received.min(mercenary.hp);
-            mercenary.hp = mercenary.hp.saturating_sub(received);
+            mercenary.hp = mercenary
+                .hp
+                .saturating_sub(received)
+                .saturating_add(adjusted.healing)
+                .min(snapshot.max_hp());
             mercenary.sp = status.sp;
             mercenary.statuses = status.active_statuses;
             if mercenary.hp == 0 {
@@ -571,10 +616,25 @@ impl ScriptWorldService {
                 StatusEffectService::apply_incoming_skill_damage_flags(&mut status, raw, damage.battle_flags, versus, damage.skill_id)
             };
             let received = crate::server::service::map_flag_service::apply_map_combat_damage(
-                &map_flags, &self.configuration.config().game, received, damage.skill_id, damage.battle_flags,
+                &map_flags,
+                &self.configuration.config().game,
+                received,
+                damage.skill_id,
+                damage.battle_flags,
             );
+            let mut adjusted = Damage {
+                damage: received,
+                ..damage
+            };
+            crate::server::service::map_flag_service::apply_map_skill_damage(&map_flags, &mut adjusted, &snapshot);
+            let received = adjusted.damage;
+            healed = adjusted.healing.min(snapshot.max_hp().saturating_sub(homunculus.hp));
             admitted = received.min(homunculus.hp);
-            homunculus.hp = homunculus.hp.saturating_sub(received);
+            homunculus.hp = homunculus
+                .hp
+                .saturating_sub(received)
+                .saturating_add(adjusted.healing)
+                .min(snapshot.max_hp());
             homunculus.sp = status.sp;
             homunculus.statuses = status.active_statuses;
             if homunculus.hp == 0 {
@@ -589,6 +649,11 @@ impl ScriptWorldService {
                 .map_err(|error| error.to_string())?;
             install_state(character, saved);
         }
+        damage.notify_admitted(
+            &self.notifications,
+            if healed > 0 { -i64::from(healed) } else { i64::from(admitted) },
+            self.configuration.packetver(),
+        );
         if absorbed {
             self.send_mercenary(character, now as u64)?;
             self.send_homunculus(character)?;
@@ -618,6 +683,9 @@ impl ScriptWorldService {
         };
         if reflected > 0 && damage.attacker_id != damage.target_id {
             let reflected = Damage {
+                notification: None,
+                source_kind: *snapshot.combat_actor_kind(),
+                skill_damage_adjusted: false,
                 target_id: damage.attacker_id,
                 attacker_id: damage.target_id,
                 damage: reflected,
@@ -633,7 +701,18 @@ impl ScriptWorldService {
                 magic_context: None,
                 right_hand_damage: None,
                 healing: 0,
-            };
+            }
+            .with_action_notification(
+                character.current_map_name(),
+                character.current_map_instance(),
+                character.x,
+                character.y,
+                now,
+                1,
+                0,
+                ActionType::AttackNomotion,
+                (reflected.min(i32::MAX as u32) as i32, 0),
+            );
             if let Some(map) = server.state().get_map_instance_from_character(character) {
                 if map.state().get_mob(reflected.target_id).is_some() {
                     map.add_to_next_tick(MapEvent::MobDamage(reflected));
@@ -731,7 +810,9 @@ impl ScriptWorldService {
 
     fn pet_configuration(&self) -> &configuration::configuration::PetSupportConfig {
         #[cfg(test)]
-        if let Some(configuration) = &self.pet_configuration_override { return configuration; }
+        if let Some(configuration) = &self.pet_configuration_override {
+            return configuration;
+        }
         &self.configuration.config().game.pet_support
     }
 
@@ -742,7 +823,9 @@ impl ScriptWorldService {
     }
 
     pub fn handles(function: Function) -> bool {
-        if pet_support_operation(function) { return true; }
+        if pet_support_operation(function) {
+            return true;
+        }
         matches!(
             function,
             Function::Pet
@@ -762,14 +845,33 @@ impl ScriptWorldService {
                 | Function::CheckFalcon
                 | Function::CheckMadogear
                 | Function::IsMounting
+                | Function::Marriage
+                | Function::Divorce
+                | Function::SetCart
+                | Function::SetFalcon
+                | Function::SetRiding
                 | Function::OpenStorage
                 | Function::GuildOpenStorage
                 | Function::GetPetInfo
         )
     }
 
-    pub fn validate_call(&self, character: &Character, function: Function, args: &[Value], now: u64) -> Result<(), String> {
-        if pet_support_operation(function) { return self.validate_pet_support(character, function, args, now); }
+    pub fn validate_call(&self, state: &ServerState, character: &Character, function: Function, args: &[Value], now: u64) -> Result<(), String> {
+        if matches!(function, Function::OpenStorage | Function::GuildOpenStorage | Function::BuyingStore)
+            && (character.status.hp == 0 || character.game_systems.is_trading() || character.game_systems.vending_store.is_some() || character.game_systems.buying_store.is_some()) {
+            return Err("Storage and shop preparation are unavailable in the current state".into());
+        }
+        if function == Function::BuyingStore {
+            if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
+                return Err("Buying stores are disabled on this map".into());
+            }
+            if character.game_systems.storage_open || character.game_systems.guild_storage_open.is_some() || !(1..=5).contains(&number(args, 0)?) {
+                return Err("Buying store preparation state or slot count is invalid".into());
+            }
+        }
+        if pet_support_operation(function) {
+            return self.validate_pet_support(character, function, args, now);
+        }
         match function {
             Function::SetFont => {
                 if !(0..=9).contains(&number(args, 0)?) {
@@ -777,7 +879,9 @@ impl ScriptWorldService {
                 }
             }
             Function::Pet => {
-                if character.game_systems.pending_pet_capture.is_some() { return Err("A pet capture is awaiting confirmation".into()); }
+                if character.game_systems.pending_pet_capture.is_some() {
+                    return Err("A pet capture is awaiting confirmation".into());
+                }
                 let item = pet_lure_id(number(args, 0)?)?;
                 if self.configuration.find_item(item).is_none() {
                     return Err("Unknown pet lure item".into());
@@ -791,7 +895,10 @@ impl ScriptWorldService {
                     return Err("A pet is already active".into());
                 }
             }
-            Function::GetPetInfo => { number(args, 0)?; optional_number(args, 1, character.char_id as i32)?; }
+            Function::GetPetInfo => {
+                number(args, 0)?;
+                optional_number(args, 1, character.char_id as i32)?;
+            }
             Function::MercenaryCreate => {
                 let class = number(args, 0)?;
                 if !world_data()
@@ -870,14 +977,31 @@ impl ScriptWorldService {
             | Function::CheckFalcon
             | Function::CheckMadogear
             | Function::IsMounting => {}
+            Function::SetCart => {
+                if !(0..=5).contains(&optional_number(args, 0, 1)?) {
+                    return Err("Unknown classic cart style".into());
+                }
+            }
+            Function::SetFalcon | Function::SetRiding => {}
+            Function::Marriage => {
+                if args.first().and_then(|name| name.string_value().ok()).is_none_or(|name| name.is_empty()) {
+                    return Err("Marriage requires a partner name".into());
+                }
+            }
+            Function::Divorce => {}
             _ => return Err("Unknown world operation".into()),
         }
         Ok(())
     }
 
     pub fn call(&self, server: &Server, character: &mut Character, function: Function, args: &[Value], now: u64) -> Result<Value, String> {
-        self.validate_call(character, function, args, now)?;
-        if pet_support_operation(function) { return self.call_pet_support(server, character, function, args, now); }
+        if character.game_systems.is_trading() && matches!(function, Function::OpenStorage | Function::GuildOpenStorage) {
+            return Err("Storage is unavailable during trading".into());
+        }
+        self.validate_call(server.state(), character, function, args, now)?;
+        if pet_support_operation(function) {
+            return self.call_pet_support(server, character, function, args, now);
+        }
         if persistent_world_operation(function) {
             let plan = plan_persistent_effects(character, &[(function, args.to_vec())], now)?;
             let committed = self
@@ -893,7 +1017,10 @@ impl ScriptWorldService {
                 let pet = if target_id == character.char_id {
                     character.script_character_state().pet
                 } else {
-                    server.state().get_character(target_id).and_then(|target| target.script_character_state().pet)
+                    server
+                        .state()
+                        .get_character(target_id)
+                        .and_then(|target| target.script_character_state().pet)
                 };
                 Ok(pet_information(pet.as_ref(), number(args, 0)?))
             }
@@ -1098,6 +1225,14 @@ impl ScriptWorldService {
                 Ok(Value::default())
             }
             Function::BuyingStore => {
+                if server.state().map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
+                    return Err("Buying stores are disabled on this map".into());
+                }
+                if character.status.hp == 0 || character.game_systems.is_trading() || character.game_systems.vending_store.is_some()
+                    || character.game_systems.buying_store.is_some() || character.game_systems.storage_open || character.game_systems.guild_storage_open.is_some() {
+                    return Err("Buying store cannot be prepared in the current state".into());
+                }
+                if !(1..=5).contains(&number(args, 0)?) { return Err("Buying store supports between one and five slots".into()); }
                 character.game_systems.buying_slots = number(args, 0)? as u8;
                 self.send(character.char_id, vec![0x10, 0x08, character.game_systems.buying_slots])?;
                 Ok(Value::default())
@@ -1127,6 +1262,9 @@ impl ScriptWorldService {
                 Ok(Value::default())
             }
             Function::OpenStorage => {
+                if character.status.hp == 0 || character.game_systems.vending_store.is_some() || character.game_systems.buying_store.is_some() {
+                    return Ok(Value::Number(1));
+                }
                 if character.game_systems.guild_storage_open.is_some() {
                     return Ok(Value::Number(1));
                 }
@@ -1138,9 +1276,124 @@ impl ScriptWorldService {
                 self.send_storage(character)?;
                 Ok(Value::default())
             }
+            Function::Marriage => {
+                let name = args[0].string_value()?.to_string();
+                let first = character.char_id;
+                let mut state = server.state_mut();
+                let partner = state
+                    .characters_mut()
+                    .values_mut()
+                    .find(|other| other.name == name && other.char_id != first)
+                    .ok_or("Marriage partner is offline")?;
+                if character.game_systems.partner_id != 0 || partner.game_systems.partner_id != 0 {
+                    return Ok(Value::Number(0));
+                }
+                self.repository
+                    .marry_characters(first, partner.char_id)
+                    .map_err(|error| error.to_string())?;
+                partner.game_systems.partner_id = first;
+                character.game_systems.partner_id = partner.char_id;
+                partner.game_systems.revision = self
+                    .repository
+                    .character_game_systems(partner.char_id)
+                    .map_err(|error| error.to_string())?
+                    .revision;
+                character.game_systems.revision = self
+                    .repository
+                    .character_game_systems(first)
+                    .map_err(|error| error.to_string())?
+                    .revision;
+                for member in [&mut *partner, &mut *character] {
+                    crate::server::service::script_character_service::grant_skill(
+                        server,
+                        member,
+                        &[Value::Number(CALL_PARTNER_SKILL_ID), Value::Number(1), Value::Number(3)],
+                    )?;
+                }
+                Ok(Value::Number(1))
+            }
+            Function::Divorce => {
+                if character.game_systems.partner_id == 0 {
+                    return Ok(Value::Number(0));
+                }
+                let partner_id = self
+                    .repository
+                    .divorce_character(character.char_id)
+                    .map_err(|error| error.to_string())?;
+                character.game_systems.partner_id = 0;
+                character.game_systems.revision = self
+                    .repository
+                    .character_game_systems(character.char_id)
+                    .map_err(|error| error.to_string())?
+                    .revision;
+                let revoke = [Value::Number(CALL_PARTNER_SKILL_ID), Value::Number(0), Value::Number(3)];
+                crate::server::service::script_character_service::grant_skill(server, character, &revoke)?;
+                if let Some(partner) = server.state_mut().characters_mut().get_mut(&partner_id) {
+                    partner.game_systems.partner_id = 0;
+                    partner.game_systems.revision = self
+                        .repository
+                        .character_game_systems(partner_id)
+                        .map_err(|error| error.to_string())?
+                        .revision;
+                    crate::server::service::script_character_service::grant_skill(server, partner, &revoke)?;
+                }
+                Ok(Value::Number(1))
+            }
+            Function::SetCart => {
+                self.set_cart(character, optional_number(args, 0, 1)? as u8, false)?;
+                Ok(Value::default())
+            }
+            Function::SetFalcon | Function::SetRiding => {
+                let mount = if function == Function::SetFalcon { PlayerOption::Falcon } else { PlayerOption::Riding };
+                self.set_mount_option(character, mount, optional_number(args, 0, 1)? != 0)?;
+                server.character_service().reload_client_side_status(character);
+                Ok(Value::default())
+            }
             Function::GuildOpenStorage => Ok(Value::Number(i32::from(self.open_guild_storage(character)?))),
             _ => Err("Unknown world operation".into()),
         }
+    }
+
+    fn fame_list(&self, character: &Character, kind: u8) -> Result<(), String> {
+        use crate::repository::fame_repository::FameCategory;
+        let category = match kind {
+            0 => FameCategory::Blacksmith,
+            1 => FameCategory::Alchemist,
+            2 => FameCategory::Taekwon,
+            _ => {
+                return self.send(character.char_id, protocol::fame_list(kind, &[], 0, GlobalConfigService::instance().packetver()));
+            }
+        };
+        let rankings = self.repository.fame_rankings(category).map_err(|error| error.to_string())?;
+        let own = self.repository.fame_points(category, character.char_id).map_err(|error| error.to_string())?;
+        self.send(character.char_id, protocol::fame_list(kind, &rankings, own, GlobalConfigService::instance().packetver()))
+    }
+
+    fn call_partner(&self, server: &Server, state: &ServerState, character: &Character) -> Result<(), String> {
+        use crate::server::model::map_flags::MapFlag;
+        let partner = state
+            .characters()
+            .get(&character.game_systems.partner_id)
+            .filter(|_| character.game_systems.partner_id != 0)
+            .ok_or("Your partner is not online")?;
+        if partner.status.hp == 0 || partner.is_dead() {
+            return Err("Your partner cannot be called while dead".into());
+        }
+        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoWarpTo) {
+            return Err("Partners cannot be called to this map".into());
+        }
+        let origin = state.map_flags(&partner.map_instance_key);
+        if origin.enabled(MapFlag::NoWarp) || origin.enabled(MapFlag::NoTeleport) {
+            return Err("Your partner cannot leave their current map".into());
+        }
+        server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::ScriptWarp(crate::server::model::events::game_event::ScriptWarp {
+            char_id: partner.char_id,
+            map: character.current_map_name().clone(),
+            x: character.x,
+            y: character.y,
+            destination_instance: Some(character.current_map_instance()),
+        }));
+        Ok(())
     }
 
     pub fn tick(&self, server: &Server, character: &mut Character, now: u64) -> Result<bool, String> {
@@ -1155,7 +1408,12 @@ impl ScriptWorldService {
         }
         character.game_systems.last_companion_tick = now;
         let previous_pet_bonus = pet_bonus_state(character);
-        if character.game_systems.pending_pet_capture.as_ref().is_some_and(|pending| now >= pending.expires_at || character.status.hp == 0 || pending.map_key != character.map_instance_key) {
+        if character
+            .game_systems
+            .pending_pet_capture
+            .as_ref()
+            .is_some_and(|pending| now >= pending.expires_at || character.status.hp == 0 || pending.map_key != character.map_instance_key)
+        {
             self.cancel_pet_capture_in_state(server, state, character);
         }
         let mut changed = resume_companion_timers(&mut character.game_systems, now);
@@ -1388,12 +1646,7 @@ impl ScriptWorldService {
         self.close_storage(character)?;
         pause_companion_timers(&mut character.game_systems, crate::util::tick::get_tick() as u64);
         self.close_vending(character)?;
-        if let Some(store) = character.game_systems.buying_store.take() {
-            self.repository
-                .close_buying_store(character.char_id, store.id)
-                .map_err(|error| error.to_string())?;
-            self.area(character, protocol::store_disappear(character.char_id))?;
-        }
+        self.close_buying(character)?;
         for id in character.game_systems.rendered_companions.keys().copied().collect::<Vec<_>>() {
             self.area(character, self.vanish(id))?;
         }
@@ -1680,6 +1933,9 @@ impl ScriptWorldService {
 
     pub fn open_guild_storage(&self, character: &mut Character) -> Result<u8, String> {
         use crate::server::model::game_systems::GuildStorageAccess;
+        if character.status.hp == 0 || character.game_systems.is_trading() || character.game_systems.vending_store.is_some() || character.game_systems.buying_store.is_some() {
+            return Ok(1);
+        }
         if character.game_systems.guild_id == 0 {
             return Ok(3);
         }
@@ -1870,7 +2126,12 @@ impl ScriptWorldService {
         }
         let commanded = character.game_systems.companion_commands.get(&id);
         if commanded.is_some_and(|command| now < command.next_move_at || command.cast.is_some())
-            || character.game_systems.pet_support.as_ref().is_some_and(|support| pet_world_id(support.pet_id) == id && support.casting.is_some()) {
+            || character
+                .game_systems
+                .pet_support
+                .as_ref()
+                .is_some_and(|support| pet_world_id(support.pet_id) == id && support.casting.is_some())
+        {
             return (previous.x, previous.y);
         }
         let target = commanded.and_then(|command| command.target).or_else(|| {
@@ -1944,8 +2205,11 @@ impl ScriptWorldService {
     fn companion_attack(&self, server: &Server, state: &ServerState, character: &mut Character, now: u64) -> Result<(), String> {
         let ids = companion_snapshots(character)
             .into_iter()
-            .filter(|snapshot| *snapshot.map_item().object_type() != MapItemType::Pet
-                || self.pet_configuration().attack_support || self.pet_configuration().damage_support)
+            .filter(|snapshot| {
+                *snapshot.map_item().object_type() != MapItemType::Pet
+                    || self.pet_configuration().attack_support
+                    || self.pet_configuration().damage_support
+            })
             .map(|snapshot| snapshot.map_item().id())
             .collect::<Vec<_>>();
         for id in ids {
@@ -1954,7 +2218,14 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    fn companion_attack_one(&self, server: &Server, state: &ServerState, character: &mut Character, id: u32, now: u64) -> Result<(), String> {
+    fn companion_attack_one(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        character: &mut Character,
+        id: u32,
+        now: u64,
+    ) -> Result<(), String> {
         let command = character.game_systems.companion_commands.get(&id);
         let Some(target) = command.and_then(|command| command.target).or_else(|| {
             if command.is_some_and(|command| command.stay) {
@@ -1972,8 +2243,11 @@ impl ScriptWorldService {
         if command
             .is_some_and(|command| now < command.last_attack_at + u64::from(delay) || now < command.can_act_at || command.cast.is_some())
             || source.active_statuses().iter().any(|status| status.kind.blocks_attack())
-            || character.game_systems.pet_support.as_ref().is_some_and(|support|
-                pet_world_id(support.pet_id) == id && (support.casting.is_some() || now < support.can_act_at))
+            || character
+                .game_systems
+                .pet_support
+                .as_ref()
+                .is_some_and(|support| pet_world_id(support.pet_id) == id && (support.casting.is_some() || now < support.can_act_at))
         {
             return Ok(());
         }
@@ -2007,14 +2281,26 @@ impl ScriptWorldService {
             return Ok(());
         }
         if character.game_systems.pet.as_ref().is_some_and(|pet| pet_world_id(pet.id) == id)
-            && self.try_pet_attack_skill(server, state, character, target, now)? { return Ok(()); }
+            && self.try_pet_attack_skill(server, state, character, target, now)?
+        {
+            return Ok(());
+        }
+        if let Some(damage) = server.battle_service().magical_normal_attack(&source, &mob.status, id, target,
+            character.char_id, &character.map_instance_key, position.x, position.y, u128::from(now), delay, mob.damage_motion) {
+            let command = character.game_systems.companion_commands.entry(id).or_default();
+            command.last_attack_at = now;
+            if command.target.is_some() && !command.repeat { command.target = None; command.stay = true; }
+            map.add_to_delayed_tick(MapEvent::MobDamage(damage), u128::from(delay));
+            return Ok(());
+        }
         let mut rng = fastrand::Rng::new();
         let roll = BattleService::normal_attack_roll(&source, &mob.status, range > 3, &mut rng);
         let hit = !matches!(roll, NormalAttackRoll::Miss | NormalAttackRoll::LuckyDodge);
         let critical = roll == NormalAttackRoll::Critical;
         let attack = companion_attack_damage(character, id, critical, &mut rng).ok_or("Companion status is unavailable")?;
         let attack = (f64::from(attack) * f64::from(BattleService::weapon_skill_ratio(&source, 1.0, 0)))
-            .floor().clamp(0.0, f64::from(u32::MAX)) as u32;
+            .floor()
+            .clamp(0.0, f64::from(u32::MAX)) as u32;
         let command = character.game_systems.companion_commands.entry(id).or_default();
         command.last_attack_at = now;
         if command.target.is_some() && !command.repeat {
@@ -2030,50 +2316,54 @@ impl ScriptWorldService {
             };
         let element = server.battle_service().attack_element(&source, None);
         let mut signed_damage = if hit {
-            server.battle_service().actor_physical_damage_signed(attack, &source, &mob.status, false, critical, &element, battle_flags)
+            server
+                .battle_service()
+                .actor_physical_damage_signed(attack, &source, &mob.status, false, critical, &element, battle_flags)
         } else {
             0
         };
         if roll == NormalAttackRoll::DoubleAttack {
             signed_damage = signed_damage.saturating_mul(2);
         }
-        if hit {
-            map.add_to_next_tick(MapEvent::MobDamage(Damage {
-                target_id: target,
-                attacker_id: id,
-                damage: signed_damage.max(0) as u32,
-                attacked_at: now as u128,
-                damage_motion: mob.damage_motion,
-                battle_flags,
-                skill_id: 0,
-                skill_level: 0,
-                landed: hit,
-                proc_depth: 0,
-                credit_id: character.char_id,
-                defenses_applied: true,
-                magic_context: None,
-                right_hand_damage: None,
-                healing: if signed_damage < 0 { signed_damage.unsigned_abs() } else { 0 },
-            }));
+        let action = match roll {
+            NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
+            NormalAttackRoll::Critical => ActionType::AttackCritical,
+            NormalAttackRoll::DoubleAttack => ActionType::AttackMultiple,
+            _ => ActionType::Attack,
+        };
+        let damage = Damage {
+            notification: None,
+            source_kind: *source.combat_actor_kind(),
+            skill_damage_adjusted: false,
+            target_id: target,
+            attacker_id: id,
+            damage: signed_damage.max(0) as u32,
+            attacked_at: now as u128,
+            damage_motion: mob.damage_motion,
+            battle_flags,
+            skill_id: 0,
+            skill_level: 0,
+            landed: hit,
+            proc_depth: 0,
+            credit_id: character.char_id,
+            defenses_applied: true,
+            magic_context: None,
+            right_hand_damage: None,
+            healing: if signed_damage < 0 { signed_damage.unsigned_abs() } else { 0 },
         }
-        let mut packet = PacketZcNotifyAct::new(self.configuration.packetver());
-        packet.set_target_gid(target);
-        packet.set_gid(id);
-        packet.set_action(
-            match roll {
-                NormalAttackRoll::LuckyDodge => ActionType::AttackLucky,
-                NormalAttackRoll::Critical => ActionType::AttackCritical,
-                NormalAttackRoll::DoubleAttack => ActionType::AttackMultiple,
-                _ => ActionType::Attack,
-            }
-            .value() as u8,
+        .with_action_notification(
+            character.current_map_name(),
+            character.current_map_instance(),
+            position.x,
+            position.y,
+            now as u128,
+            if roll == NormalAttackRoll::DoubleAttack { 2 } else { 1 },
+            delay,
+            action,
+            (signed_damage, 0),
         );
-        packet.set_attack_mt(delay as i32);
-        packet.set_attacked_mt(mob.damage_motion as i32);
-        packet.set_damage(signed_damage.clamp(i32::from(i16::MIN), i32::from(i16::MAX)) as i16);
-        packet.set_count(if roll == NormalAttackRoll::DoubleAttack { 2 } else { 1 });
-        packet.fill_raw();
-        self.area(character, packet.raw)
+        map.add_to_next_tick(MapEvent::MobDamage(damage));
+        Ok(())
     }
 }
 
@@ -2112,7 +2402,12 @@ pub fn mercenary_world_id(mercenary: &MercenaryRecord) -> u32 {
 
 pub fn companion_attack_bounds(character: &Character, id: u32) -> Option<(u16, u16, u16)> {
     let snapshot = companion_status_snapshot(character, id)?;
-    if let Some(pet) = character.game_systems.pet.as_ref().filter(|pet| pet_world_id(pet.id) == id && !pet.incubating) {
+    if let Some(pet) = character
+        .game_systems
+        .pet
+        .as_ref()
+        .filter(|pet| pet_world_id(pet.id) == id && !pet.incubating)
+    {
         let data = GlobalConfigService::instance().get_mob_safe(i32::from(pet.class_id))?;
         let minimum = data.atk1.clamp(0, i32::from(u16::MAX)) as u16;
         let maximum = data.atk2.clamp(i32::from(minimum), i32::from(u16::MAX)) as u16;
@@ -2333,7 +2628,12 @@ pub fn companion_health(character: &Character, id: u32) -> Option<(u32, u32, u16
 }
 
 pub fn companion_status_snapshot(character: &Character, id: u32) -> Option<StatusSnapshot> {
-    if character.game_systems.pet.as_ref().is_some_and(|pet| pet_world_id(pet.id) == id && !pet.incubating) {
+    if character
+        .game_systems
+        .pet
+        .as_ref()
+        .is_some_and(|pet| pet_world_id(pet.id) == id && !pet.incubating)
+    {
         return pet_combat::pet_snapshot(character);
     }
     if let Some(mercenary) = &character.game_systems.mercenary {
@@ -2421,8 +2721,15 @@ impl ScriptWorldService {
 }
 
 fn companion_attack_range(character: &Character, id: u32) -> u16 {
-    if let Some(pet) = character.game_systems.pet.as_ref().filter(|pet| pet_world_id(pet.id) == id && !pet.incubating) {
-        return GlobalConfigService::instance().get_mob_safe(i32::from(pet.class_id)).map_or(1, |mob| mob.range1.max(1) as u16);
+    if let Some(pet) = character
+        .game_systems
+        .pet
+        .as_ref()
+        .filter(|pet| pet_world_id(pet.id) == id && !pet.incubating)
+    {
+        return GlobalConfigService::instance()
+            .get_mob_safe(i32::from(pet.class_id))
+            .map_or(1, |mob| mob.range1.max(1) as u16);
     }
     if let Some(mercenary) = character
         .game_systems
@@ -2491,6 +2798,7 @@ fn mercenary_snapshot(mercenary: &MercenaryRecord) -> StatusSnapshot {
         data.element_level,
     );
     snapshot.set_base_level(u32::from(mercenary.level));
+    snapshot.set_combat_actor_kind(models::enums::actor::CombatActorKind::Mercenary);
     snapshot.set_aspd(200.0 - data.attack_delay as f32 / 10.0);
     snapshot.set_base_atk(0);
     let bonuses = mercenary.statuses.iter().flat_map(|status| status.bonuses()).collect::<Vec<_>>();

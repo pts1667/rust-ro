@@ -1,14 +1,20 @@
 use std::sync::Arc;
 
 use crate::server::Server;
-use crate::server::model::events::game_event::{CharacterUseGroundSkill, GameEvent, ScriptIdentify, ScriptTeleportSelection};
+use crate::server::model::events::game_event::{
+    CharacterUseGroundSkill, CharacterUseGroundSkillText, GameEvent, ScriptIdentify, ScriptTeleportSelection,
+};
 use crate::server::model::request::Request;
 use crate::server::request_handler::framing::FrameLength;
 use crate::server::service::script_crafting_service::CraftSelection;
 
 pub fn frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
+    if let Some(layout) = super::talkie_box::layout(id, packetver) {
+        return Some(FrameLength::Fixed(layout.length));
+    }
     match id {
         0x011B => Some(FrameLength::Fixed(20)),
+        0x011D => Some(FrameLength::Fixed(2)),
         0x018E => Some(FrameLength::Fixed(10)),
         0x025B => Some(FrameLength::Fixed(6)),
         0x0178 => Some(FrameLength::Fixed(4)),
@@ -38,7 +44,29 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
         return Err("Script operation arrived on a different connection".into());
     }
     let read = |offset| u16::from_le_bytes([bytes[offset], bytes[offset + 1]]);
+    if let Some(layout) = super::talkie_box::layout(id, server.packetver()) {
+        let [level, skill, x, y, text] = layout.offsets;
+        let skill_id = u32::from(read(skill));
+        if !crate::server::script::skill::ScriptSkillService::is_text_ground_skill(skill_id) {
+            return Err("Text ground skill packet requires Talkie Box or Graffiti".into());
+        }
+        let contents = &bytes[text..];
+        let end = contents.iter().position(|byte| *byte == 0).unwrap_or(contents.len()).min(79);
+        server.add_to_next_tick(GameEvent::CharacterUseGroundSkillText(CharacterUseGroundSkillText {
+            skill: CharacterUseGroundSkill {
+                char_id,
+                skill_id,
+                skill_level: u8::try_from(read(level)).map_err(|_| "Invalid text ground skill level")?,
+                x: read(x),
+                y: read(y),
+            },
+            message: contents[..end].to_vec(),
+            session: crate::server::model::session::SessionBinding::new(&session),
+        }));
+        return Ok(true);
+    }
     let event = match id {
+        0x011D => GameEvent::CharacterMemo(crate::server::model::character_lifecycle::CharacterMemo { session }),
         0x011B => {
             let name = &bytes[4..20];
             let end = name.iter().position(|byte| *byte == 0).unwrap_or(name.len());
@@ -49,6 +77,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
                 char_id,
                 skill_id: u32::from(read(2)),
                 map,
+                session: Some(crate::server::model::session::SessionBinding::new(&session)),
             })
         }
         0x018E => GameEvent::ScriptCraft(CraftSelection {

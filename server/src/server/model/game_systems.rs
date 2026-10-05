@@ -9,7 +9,7 @@ pub use pet_support::{PetAttackSkill, PetRecovery, PetSupportCast, PetSupportRun
     PetLootRuntime, PetLootCargo, PetLootDropReceipt, PetLootDropReservation, PendingPetLootClaim};
 #[path = "player_trade.rs"]
 mod player_trade;
-pub use player_trade::{PlayerTrade, PlayerTradeItem, PlayerTradePhase, PlayerTradeReceipt};
+pub use player_trade::{PlayerTrade, PlayerTradeItem, PlayerTradePhase, PlayerTradeReceipt, PlayerTradeRequest};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(default)]
@@ -17,6 +17,7 @@ pub struct CharacterGameSystems {
     pub revision: u64,
     pub font: u16,
     pub permanent_skill_grants: BTreeMap<u32, u8>,
+    pub memo_points: [Option<MemoPoint>; 3],
     pub partner_id: u32,
     pub guild_id: u32,
     pub party_id: u32,
@@ -105,6 +106,13 @@ pub struct CharacterGameSystems {
 
 impl CharacterGameSystems {
     pub fn is_trading(&self) -> bool { self.trade.as_ref().is_some_and(|trade| trade.phase.blocks_actions()) }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct MemoPoint {
+    pub map: String,
+    pub x: u16,
+    pub y: u16,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
@@ -252,6 +260,133 @@ pub struct GuildRecord {
     pub level: u16,
     pub experience: u64,
     pub skill_points: u16,
+    #[serde(default = "GuildPosition::defaults")]
+    pub positions: Vec<GuildPosition>,
+    #[serde(default)]
+    pub member_positions: BTreeMap<u32, u8>,
+    #[serde(default)]
+    pub notice: GuildNotice,
+    #[serde(default)]
+    pub emblem: Vec<u8>,
+    #[serde(default)]
+    pub emblem_version: u32,
+    #[serde(default)]
+    pub allies: Vec<u32>,
+    #[serde(default)]
+    pub opposition: Vec<u32>,
+    #[serde(default)]
+    pub skills: BTreeMap<u32, u8>,
+}
+
+pub const GUILD_EXTENSION_SKILL: u32 = 10004;
+pub const GUILD_BASE_MEMBERS: usize = 16;
+
+/// Guild skill id, display name, maximum level and prerequisite (skill, level) pairs.
+pub const GUILD_SKILL_TREE: &[(u32, &str, u8, &[(u32, u8)])] = &[
+    (10000, "GD_APPROVAL", 1, &[]),
+    (10001, "GD_KAFRACONTRACT", 1, &[(10000, 1)]),
+    (10002, "GD_GUARDRESEARCH", 1, &[(10000, 1)]),
+    (10003, "GD_GUARDUP", 3, &[]),
+    (10004, "GD_EXTENSION", 10, &[]),
+    (10005, "GD_GLORYGUILD", 0, &[]),
+    (10006, "GD_LEADERSHIP", 5, &[]),
+    (10007, "GD_GLORYWOUNDS", 5, &[]),
+    (10008, "GD_SOULCOLD", 5, &[(10007, 1)]),
+    (10009, "GD_HAWKEYES", 5, &[(10006, 1)]),
+    (10010, "GD_BATTLEORDER", 1, &[(10000, 1), (10004, 2)]),
+    (10011, "GD_REGENERATION", 3, &[(10000, 1), (10004, 5), (10010, 1)]),
+    (10012, "GD_RESTORE", 1, &[(10011, 1)]),
+    (10013, "GD_EMERGENCYCALL", 1, &[(10000, 1), (10002, 1), (10004, 5), (10010, 1), (10011, 1)]),
+    (10014, "GD_DEVELOPMENT", 1, &[(10000, 1), (10004, 5)]),
+    (10015, "GD_ITEMEMERGENCYCALL", 1, &[(10013, 1)]),
+];
+
+impl GuildRecord {
+    pub fn skill_level(&self, skill_id: u32) -> u8 {
+        self.skills.get(&skill_id).copied().unwrap_or(0)
+    }
+
+    pub fn skill_available(&self, skill_id: u32) -> bool {
+        GUILD_SKILL_TREE
+            .iter()
+            .find(|(id, ..)| *id == skill_id)
+            .is_some_and(|(.., requirements)| requirements.iter().all(|(id, level)| self.skill_level(*id) >= *level))
+    }
+
+    pub fn max_members(&self) -> usize {
+        GUILD_BASE_MEMBERS + 6 * usize::from(self.skill_level(GUILD_EXTENSION_SKILL))
+    }
+}
+
+pub const GUILD_POSITION_COUNT: usize = 20;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GuildPosition {
+    pub name: String,
+    pub invite: bool,
+    pub punish: bool,
+    /// Percentage of earned base experience diverted to the guild.
+    pub exp_tax: u8,
+}
+
+impl GuildPosition {
+    pub fn defaults() -> Vec<Self> {
+        (0..GUILD_POSITION_COUNT)
+            .map(|index| match index {
+                0 => Self {
+                    name: "Guild Master".into(),
+                    invite: true,
+                    punish: true,
+                    exp_tax: 0,
+                },
+                last if last == GUILD_POSITION_COUNT - 1 => Self {
+                    name: "Newbie".into(),
+                    invite: false,
+                    punish: false,
+                    exp_tax: 0,
+                },
+                other => Self {
+                    name: format!("Position {}", other + 1),
+                    invite: false,
+                    punish: false,
+                    exp_tax: 0,
+                },
+            })
+            .collect()
+    }
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GuildNotice {
+    pub subject: String,
+    pub body: String,
+}
+
+impl GuildRecord {
+    pub fn position_of(&self, char_id: u32) -> u8 {
+        if char_id == self.master_char_id {
+            0
+        } else {
+            self.member_positions
+                .get(&char_id)
+                .copied()
+                .unwrap_or(GUILD_POSITION_COUNT as u8 - 1)
+        }
+    }
+
+    pub fn can_invite(&self, char_id: u32) -> bool {
+        self.positions.get(usize::from(self.position_of(char_id))).is_some_and(|position| position.invite)
+    }
+
+    pub fn can_punish(&self, char_id: u32) -> bool {
+        self.positions.get(usize::from(self.position_of(char_id))).is_some_and(|position| position.punish)
+    }
+
+    pub fn exp_tax(&self, char_id: u32) -> u8 {
+        self.positions
+            .get(usize::from(self.position_of(char_id)))
+            .map_or(0, |position| position.exp_tax)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -496,6 +631,18 @@ pub enum ScriptWorldRequest {
         reason: String,
     },
     DisbandGuild(String),
+    GuildNotice { subject: String, body: String },
+    GuildPositions(Vec<(u32, GuildPosition)>),
+    GuildMemberPositions(Vec<(u32, u32)>),
+    GuildEmblem(Vec<u8>),
+    GuildEmblemRequest(u32),
+    FameList(u8),
+    GuildSkillUp(u32),
+    GuildAllianceRequest(u32),
+    GuildAllianceReply { inviter: u32, accept: bool },
+    GuildOpposition(u32),
+    GuildRelationBreak { guild_id: u32, hostile: bool },
+    GuildMessage(String),
     CapturePet(u32),
     HatchPet(u16),
     PetMenu(u8),
@@ -562,6 +709,7 @@ pub enum ScriptWorldRequest {
         items: Vec<(u16, u16)>,
     },
     CallHomunculus,
+    CallPartner,
     RestHomunculus,
     ResurrectHomunculus {
         skill_level: u8,

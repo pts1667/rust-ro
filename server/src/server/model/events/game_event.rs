@@ -10,7 +10,22 @@ use crate::server::model::movement::Movement;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GameEvent {
+    GroundTrapCapture(crate::server::script::skill::trap::GroundTrapCapture),
+    GroundTrapRelease(crate::server::script::skill::trap::GroundTrapRelease),
+    GroundTrapEffect(crate::server::script::skill::trap::GroundTrapEffect),
+    GroundTrapSpend { map: MapInstanceKey, unit_id: u32 },
     ScriptRequest(crate::server::script::ScriptRequest),
+    ScriptNpcTransfer(crate::server::script::unit_data::ScriptNpcTransfer),
+    ScriptNpcEvent(ScriptNpcEvent),
+    ScriptLogoutAction(crate::server::model::character_lifecycle::ScriptLogoutAction),
+    ScriptLogoutCompleted(crate::server::model::character_lifecycle::ScriptLogoutCompleted),
+    CharacterSelectionGate(crate::server::model::character_lifecycle::CharacterSelectionGate),
+    CharacterAdmission(crate::server::model::character_lifecycle::CharacterAdmission),
+    CharacterMapEntry(crate::server::model::character_lifecycle::CharacterMapEntry),
+    CharacterMapReady(crate::server::model::character_lifecycle::CharacterMapReady),
+    CharacterLogout(crate::server::model::character_lifecycle::CharacterLogout),
+    ClientDisconnected(crate::server::model::character_lifecycle::ClientDisconnected),
+    ScriptMapDamage(ScriptMapDamage),
     NpcContact(NpcContact),
     CharacterScriptSkill(crate::server::script::skill::ScriptSkillEffect),
     ScriptSkillHit(crate::server::script::skill::ScriptSkillHit),
@@ -28,6 +43,7 @@ pub enum GameEvent {
     ScriptCraft(crate::server::service::script_crafting_service::CraftSelection),
     ScriptIdentify(ScriptIdentify),
     ScriptTeleportSelection(ScriptTeleportSelection),
+    WarpPortalEnter(crate::server::script::skill::WarpPortalEntry),
     FameChanged(FameChanged),
     TaekwonMissionKill(TaekwonMissionKill),
     ItemScriptComplete(ItemScriptComplete),
@@ -37,17 +53,22 @@ pub enum GameEvent {
     CharacterEndStatus(CharacterEndStatus),
     CharacterKnockback(CharacterKnockback),
     CharacterUseGroundSkill(CharacterUseGroundSkill),
+    CharacterUseGroundSkillText(CharacterUseGroundSkillText),
     ReleaseScriptCapture(u32),
     PetCaptureClaimResult(PetCaptureClaimResult),
     PetLootClaimResult(PetLootClaimResult),
     PetLootDropResult(PetLootDropResult),
     ScriptWorld(ScriptWorld),
+    PlayerTrade(PlayerTradeAction),
     CharacterLeaveGame((u32, u8)),
     CharacterLoadedFromClientSide(u32),
     CharacterRemoveFromMap(CharacterRemoveFromMap),
     CharacterClearFov(u32),
     CharacterJoinGame(u32),
     CharacterMove(CharacterMovement),
+    CharacterSavePosition(u32),
+    CharacterMemo(crate::server::model::character_lifecycle::CharacterMemo),
+    CharacterRespawn(crate::server::model::character_lifecycle::CharacterRespawn),
     CharacterCancelMove(u32),
     CharacterChangeMap(CharacterChangeMap),
     CharacterUpdateLook(CharacterLook),
@@ -80,8 +101,94 @@ pub enum GameEvent {
     CharacterResetStats(u32),
     CharacterUpdateSpeed(u32, u16),
     CharacterRestoreAllHpAndSP(u32),
+    Duel(crate::server::model::duel::DuelCommand),
     CharacterRequestCardCompositionList(CharacterEquipItem),
     CharacterSlotCard(CharacterSlotCard),
+}
+
+impl GameEvent {
+    pub(crate) fn required_character(&self) -> Option<u32> {
+        use GameEvent::*;
+        Some(match self {
+            CharacterLoadedFromClientSide(id)
+            | CharacterClearFov(id)
+            | CharacterJoinGame(id)
+            | CharacterSavePosition(id)
+            | CharacterCancelMove(id)
+            | CharacterUpdateWeight(id)
+            | CharacterInitInventory(id)
+            | CharacterSit(id)
+            | CharacterStand(id)
+            | CharacterUpdateClientSideStats(id)
+            | MapNotifyItemRemoved(id)
+            | CharacterResetSkills(id)
+            | CharacterResetStats(id)
+            | CharacterRestoreAllHpAndSP(id) => *id,
+            CharacterHotkeyAdd(id, _) | CharacterHotkeyRemove(id, _) | CharacterUpdateSpeed(id, _) => *id,
+            CharacterRemoveFromMap(event) => event.char_id,
+            Duel(event) => event.char_id,
+            CharacterMove(event) => event.char_id,
+            CharacterMemo(event) => event.session.char_id?,
+            CharacterRespawn(event) => event.session.char_id?,
+            CharacterChangeMap(event) => event.char_id,
+            CharacterUpdateLook(event) => event.char_id,
+            CharacterUpdateZeny(event) => event.char_id,
+            CharacterAddItems(event) => event.char_id,
+            CharacterSellItems(event) => event.char_id,
+            CharacterUseItem(event) => event.char_id,
+            CharacterEquipItem(event) | CharacterRequestCardCompositionList(event) => event.char_id,
+            CharacterTakeoffEquipItem(event) => event.char_id,
+            CharacterAttack(event) => event.char_id,
+            CharacterUseSkill(event) => event.char_id,
+            CharacterDamage(event) => event.target_id,
+            CharacterChangeLevel(event) => event.char_id,
+            CharacterChangeJobLevel(event) => event.char_id,
+            CharacterChangeJob(event) => event.char_id,
+            CharacterKillMonster(event) => event.char_id,
+            CharacterPickUpItem(event) => event.char_id,
+            CharacterUpdateStat(event) => event.char_id,
+            CharacterSkillUpgrade(event) => event.char_id,
+            CharacterDropItem(event) => event.char_id,
+            CharacterSlotCard(event) => event.char_id,
+            CharacterKnockback(event) => event.char_id,
+            CharacterUseGroundSkill(event) => event.char_id,
+            CharacterUseGroundSkillText(event) => event.skill.char_id,
+            WarpPortalEnter(event) => event.char_id,
+            NpcContact(event) => event.char_id,
+            PlayerTrade(event) => event.char_id,
+            ScriptWorld(event) => event.char_id,
+            ScriptWarp(event) => event.char_id,
+            ScriptEvent(event) => event.char_id,
+            ItemScriptComplete(event) => event.action.char_id,
+            CharacterScriptSkill(event) => event.source_char_id,
+            _ => return None,
+        })
+    }
+
+    pub(crate) fn affects_character(&self, mut matches: impl FnMut(u32) -> bool) -> bool {
+        if self.required_character().is_some_and(&mut matches) {
+            return true;
+        }
+        match self {
+            Self::GroundTrapCapture(event) => matches(event.target_id),
+            Self::GroundTrapEffect(event) => matches(event.target_id),
+            Self::CharacterStatusChange(event) => matches(event.char_id),
+            Self::CharacterStatusAlternatives(event) => matches(event.char_id),
+            Self::CharacterEndStatus(event) => matches(event.char_id),
+            Self::ScriptCombat(event) => matches(event.source_id) || matches(event.target_id),
+            Self::ScriptSkillHit(event) => matches(event.source_id) || matches(event.target_id),
+            Self::ScriptMapDamage(event) => matches(event.damage.target_id) || matches(event.damage.attacker_id),
+            Self::ScriptUnitSkill(event) => matches(event.source_id) || matches(event.target_id),
+            Self::CharacterScriptSkill(event) => matches(event.source_char_id) || matches(event.target_id),
+            Self::CharacterAttack(event) => matches(event.target_id),
+            Self::CharacterUseSkill(event) => matches(event.target_id),
+            Self::MobAttack(event) => matches(event.attack.target_char_id),
+            Self::ReflectMagic(event) => {
+                matches(event.damage.target_id) || matches(event.damage.attacker_id) || matches(event.reflector_id)
+            }
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -128,6 +235,14 @@ pub struct NpcContact {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub struct PlayerTradeAction {
+    pub char_id: u32,
+    pub account_id: u32,
+    pub auth_code: i32,
+    pub request: crate::server::model::game_systems::PlayerTradeRequest,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct ScriptSpawned {
     pub char_id: u32,
     pub mob_ids: Vec<u32>,
@@ -167,6 +282,18 @@ pub struct ScriptEvent {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub struct ScriptNpcEvent {
+    pub npc_id: u32,
+    pub scope_instance: u8,
+    pub entry_id: u32,
+    pub char_id: Option<u32>,
+    pub depth: u8,
+    pub queued_until: u128,
+    pub args: Option<Vec<script_sdk::Value>>,
+    pub timer_guard: Option<crate::server::model::script_timer::ScriptTimerGuard>,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct ScriptMapSpawn {
     pub char_id: u32,
     pub map: String,
@@ -175,6 +302,8 @@ pub struct ScriptMapSpawn {
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct ScriptSkillCast {
+    pub source_map: Option<String>,
+    pub source_instance: Option<u8>,
     pub source_id: u32,
     pub target_id: u32,
     pub skill_id: u32,
@@ -184,6 +313,12 @@ pub struct ScriptSkillCast {
     pub cast_cancel: Option<bool>,
     pub message_id: Option<u16>,
     pub ignore_range: bool,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct ScriptMapDamage {
+    pub map: MapInstanceKey,
+    pub damage: Damage,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -197,6 +332,7 @@ pub struct ScriptTeleportSelection {
     pub char_id: u32,
     pub skill_id: u32,
     pub map: String,
+    pub session: Option<crate::server::model::session::SessionBinding>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -252,6 +388,13 @@ pub struct CharacterUseGroundSkill {
     pub skill_level: u8,
     pub x: u16,
     pub y: u16,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct CharacterUseGroundSkillText {
+    pub skill: CharacterUseGroundSkill,
+    pub message: Vec<u8>,
+    pub session: crate::server::model::session::SessionBinding,
 }
 
 #[derive(Debug, PartialEq, Clone)]

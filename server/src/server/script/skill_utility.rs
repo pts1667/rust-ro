@@ -8,6 +8,7 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFl
 use models::enums::EnumWithMaskValueU32;
 use movement::position::Position;
 use script_sdk::Value;
+use packets::packets::{Packet, PacketZcUseskillAck2};
 
 use super::{metadata::SkillMetadata, ScriptSkillAction, ScriptSkillEffect, ScriptSkillService, ScriptSkillState};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
@@ -46,6 +47,10 @@ impl ScriptSkillService {
         if event.char_id != character.char_id || event.skill_id != pending.skill_id || event.skill_level != pending.level { return Err("Targeting reply does not match the pending item skill".into()); }
         let skill = self.configuration.find_skill_config(&Value::Number(event.skill_id as i32)).ok_or("Unknown item skill")?;
         self.validate_skill(skill, event.skill_level as u32)?;
+        if event.skill_id == models::enums::skill_enums::SkillEnum::SlSma.id()
+            && !character.status.status_change(StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
+            return Err("Esma requires an active Estin or Estun readiness effect".into());
+        }
         Self::validate_stealth_cast(state, character, event.skill_id)?;
         self.validate_damage_target(state, character, event.skill_id, event.target_id)?;
         self.validate_support_target(state, character, event.skill_id, event.target_id)?;
@@ -53,7 +58,10 @@ impl ScriptSkillService {
         if let Some(target) = state.get_character(event.target_id) {
             if target.map_instance_key != character.map_instance_key { return Err("Item skill target is on another map".into()); }
         }
-        let position = if event.target_id == character.char_id { Position { x: character.x, y: character.y, dir: character.dir } }
+        let position = if matches!(skill.name().as_str(), "HT_REMOVETRAP" | "HT_SPRINGTRAP") {
+            let (x, y) = self.validate_player_trap_control(state, character, event.target_id, skill.id, pending.level, tick, false)?;
+            Position { x, y, dir: 0 }
+        } else if event.target_id == character.char_id { Position { x: character.x, y: character.y, dir: character.dir } }
             else { state.map_item_snapshot(event.target_id, character.current_map_name(), character.current_map_instance()).ok_or("Item skill target is not on this map")?.position };
         if character.x.abs_diff(position.x).max(character.y.abs_diff(position.y)) > self.player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, pending.level).max(1) { return Err("Item skill target is out of range".into()); }
         let target = if event.target_id == character.char_id { Some(character) } else { state.get_character(event.target_id) };
@@ -87,10 +95,31 @@ impl ScriptSkillService {
         Ok(())
     }
 
-    pub fn queue_target_effect(&self, server: &Server, character: &mut Character, skill: &SkillConfig, mut effect: ScriptSkillEffect, tick: u128) {
+    pub fn queue_target_effect(&self, server: &Server, character: &mut Character, skill: &SkillConfig, effect: ScriptSkillEffect, tick: u128) {
+        self.queue_target_effect_with_cast_time(server, character, skill, effect, tick, None);
+    }
+
+    pub(super) fn queue_target_effect_with_cast_time(&self, server: &Server, character: &mut Character, skill: &SkillConfig, mut effect: ScriptSkillEffect, tick: u128, cast_time: Option<u128>) {
         if !effect.skill_event_emitted { if let Some(payment) = character.script_skill_state.deferred_requirements.take().filter(|payment| payment.skill_id == effect.skill_id && payment.level == effect.level) { effect.deferred_requirements = Some(payment.requirements); effect.source_index = payment.source_index; effect.source_item = payment.source_item; } }
         let status = StatusService::instance().to_snapshot(&character.status);
-        let delay = if effect.skill_event_emitted { 0 } else { SkillMetadata::find(skill.id).map_or(0, |metadata| metadata.cast_duration(effect.level, StatusService::skill_cast_modifier(&status, skill.id))) };
+        let delay = if effect.skill_event_emitted { 0 } else { cast_time.unwrap_or_else(|| SkillMetadata::find(skill.id).map_or(0, |metadata| metadata.cast_duration(effect.level, StatusService::skill_cast_modifier(&status, skill.id)))) };
+        if let ScriptSkillAction::OpenWarpPortalMenu(ref cast) = effect.action {
+            if !effect.skill_event_emitted { self.notify_portal_cast(character, &effect, cast, delay); }
+        }
+        if let ScriptSkillAction::MagicAttack { target_id, .. } = effect.action {
+            if !effect.skill_event_emitted {
+                character.clear_attack();
+                character.movements.clear();
+                let mut packet = PacketZcUseskillAck2::new(server.packetver());
+                packet.set_target_id(target_id);
+                packet.set_aid(character.char_id);
+                packet.set_skid(effect.skill_id as u16);
+                packet.set_property(12);
+                packet.set_delay_time(delay.min(u128::from(u32::MAX)) as u32);
+                packet.fill_raw();
+                self.notify_area(character, packet.raw);
+            }
+        }
         if !effect.skill_event_emitted {
             character.script_skill_state.cast_generation = character.script_skill_state.cast_generation.wrapping_add(1);
             effect.cast_generation = character.script_skill_state.cast_generation;
@@ -129,11 +158,12 @@ impl ScriptSkillService {
             "TK_MISSION" => {
                 if !crate::server::service::script_character_service::begin_taekwon_mission(server, character)? { return Err("Taekwon Mission kept the current target".into()); }
             }
-            "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" => {
+            "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" => {
                 let request = match metadata.name.as_str() {
                     "MC_VENDING" => crate::server::model::game_systems::ScriptWorldRequest::PrepareVending { skill_level: effect.level },
                     "MC_PUSHCART" => crate::server::model::game_systems::ScriptWorldRequest::SetCart(1),
                     "AM_CALLHOMUN" => crate::server::model::game_systems::ScriptWorldRequest::CallHomunculus,
+                    "WE_CALLPARTNER" => crate::server::model::game_systems::ScriptWorldRequest::CallPartner,
                     "AM_REST" => crate::server::model::game_systems::ScriptWorldRequest::RestHomunculus,
                     _ => crate::server::model::game_systems::ScriptWorldRequest::ResurrectHomunculus { skill_level: effect.level },
                 };
@@ -146,6 +176,9 @@ impl ScriptSkillService {
     }
 
     pub fn tick_character_state(&self, character: &mut Character, tick: u128) {
+        if character.script_skill_state.pending_warp_portal.as_ref().is_some_and(|menu| menu.expires_at <= tick || character.status.hp == 0) {
+            self.cancel_warp_portal_menu(character, tick);
+        }
         if character.script_skill_state.expire_spheres(tick) { self.notify_spheres(character); }
         character.status.spirit_sphere_count = character.script_skill_state.spirit_spheres.len().min(u8::MAX as usize) as u8;
         if character.script_skill_state.running && (character.status.hp == 0 || character.status.blocks_movement() || (tick > character.script_skill_state.run_started_at + 80 && character.movements.is_empty())) {

@@ -66,7 +66,39 @@ pub struct ServerConfig {
     pub accounts: Vec<u32>,
     pub port: u16,
     pub enable_visual_debugger: bool,
+    #[serde(default = "default_enable_legacy_proxy")]
+    pub enable_legacy_proxy: bool,
     pub packetver: u32,
+}
+
+fn default_enable_legacy_proxy() -> bool {
+    true
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct SkillUnitConfig {
+    pub damage_sources: u16,
+    pub reiteration_sources: u16,
+    pub nofootset_sources: u16,
+    pub multi_trigger_traps: bool,
+    pub return_all_trap_materials: bool,
+    pub traps_target_all_on_versus: bool,
+    pub drop_recovery_items_when_full: bool,
+}
+
+impl Default for SkillUnitConfig {
+    fn default() -> Self {
+        Self {
+            damage_sources: models::enums::EnumWithMaskValueU16::as_flag(&models::enums::map::MapActorType::Player),
+            reiteration_sources: 0,
+            nofootset_sources: models::enums::EnumWithMaskValueU16::as_flag(&models::enums::map::MapActorType::Player),
+            multi_trigger_traps: false,
+            return_all_trap_materials: false,
+            traps_target_all_on_versus: true,
+            drop_recovery_items_when_full: false,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug, SettersAll, Clone)]
@@ -87,9 +119,19 @@ pub struct GameConfig {
     #[serde(default)]
     pub pvp_exp: bool,
     #[serde(default)]
+    pub restart_hp_rate: u8,
+    #[serde(default)]
+    pub restart_sp_rate: u8,
+    #[serde(default)]
     pub party_even_share_bonus: u16,
     #[serde(default)]
     pub pet_support: PetSupportConfig,
+    #[serde(default)]
+    pub skill_units: SkillUnitConfig,
+    #[serde(default)]
+    pub death_penalty: DeathPenaltyConfig,
+    #[serde(default)]
+    pub allow_es_magic_players: bool,
     #[serde(default)]
     pub gvg_damage_rates: MapCombatDamageRates,
     #[serde(default)]
@@ -107,6 +149,33 @@ pub struct GameConfig {
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(default)]
+pub struct DeathPenaltyConfig {
+    /// 0 disables, 1 is a share of the next level requirement, 2 a share of current experience.
+    pub kind: u8,
+    /// Hundredths of a percent.
+    pub base: u32,
+    pub job: u32,
+    /// Hundredths of a percent of carried zeny.
+    pub zeny: u32,
+    pub max_level_loses_base: bool,
+    pub max_level_loses_job: bool,
+}
+
+impl Default for DeathPenaltyConfig {
+    fn default() -> Self {
+        Self {
+            kind: 1,
+            base: 100,
+            job: 100,
+            zeny: 0,
+            max_level_loses_base: false,
+            max_level_loses_job: false,
+        }
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
 pub struct MapCombatDamageRates {
     pub weapon_skill: u32,
     pub magic_skill: u32,
@@ -117,7 +186,13 @@ pub struct MapCombatDamageRates {
 
 impl Default for MapCombatDamageRates {
     fn default() -> Self {
-        Self { weapon_skill: 60, magic_skill: 60, misc_skill: 60, normal_short: 80, normal_long: 80 }
+        Self {
+            weapon_skill: 60,
+            magic_skill: 60,
+            misc_skill: 60,
+            normal_short: 80,
+            normal_long: 80,
+        }
     }
 }
 
@@ -137,8 +212,17 @@ pub struct PetSupportConfig {
 
 impl Default for PetSupportConfig {
     fn default() -> Self {
-        Self { status_support: false, require_accessory: true, attack_support: false, damage_support: false,
-            attack_exp_to_master: false, attack_exp_rate: 100, ignore_infinite_defense: true, minimum_intimacy: 900, support_rate: 100 }
+        Self {
+            status_support: false,
+            require_accessory: true,
+            attack_support: false,
+            damage_support: false,
+            attack_exp_to_master: false,
+            attack_exp_rate: 100,
+            ignore_infinite_defense: true,
+            minimum_intimacy: 900,
+            support_rate: 100,
+        }
     }
 }
 

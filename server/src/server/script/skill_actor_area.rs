@@ -18,6 +18,7 @@ impl ScriptSkillService {
         server: &Server,
         state: &ServerState,
         source: &ScriptSkillActor,
+        skill_id: u32,
         x: u16,
         y: u16,
         radius: u16,
@@ -70,6 +71,21 @@ impl ScriptSkillService {
                 }
             }
         }
+        if super::metadata::SkillMetadata::find(skill_id).is_some_and(|metadata| metadata.flags.get("TargetTrap").copied().unwrap_or(false))
+        {
+            targets.extend(
+                state
+                    .ground_units
+                    .values()
+                    .filter(|unit| {
+                        unit.map == crate::server::model::map_instance::MapInstanceKey::new(source.map.clone(), source.instance)
+                            && unit.alive(crate::util::tick::get_tick())
+                            && !unit.used
+                            && unit.x.abs_diff(x).max(unit.y.abs_diff(y)) <= radius
+                    })
+                    .map(|unit| (unit.id, unit.status(), false)),
+            );
+        }
         targets
     }
 
@@ -89,7 +105,7 @@ impl ScriptSkillService {
         let instance = state
             .get_map_instance(&source.map, source.instance)
             .ok_or("Area unit skill map is unavailable")?;
-        for (id, status, player) in self.actor_area_targets(server, state, source, x, y, radius) {
+        for (id, status, player) in self.actor_area_targets(server, state, source, metadata.id, x, y, radius) {
             if metadata.name == "AL_CRUCIS"
                 && *status.element() != Element::Undead
                 && !matches!(*status.race(), MobRace::Demon | MobRace::RUndead)
@@ -170,8 +186,17 @@ impl ScriptSkillService {
                 | GroundKind::Sandman
                 | GroundKind::FreezingTrap
                 | GroundKind::ArrowShower
+                | GroundKind::Firewall
+                | GroundKind::Meteor
+                | GroundKind::StormGust
+                | GroundKind::Vermilion
+                | GroundKind::Earthquake
+                | GroundKind::GrandCross
         ) {
             return Err("This ground skill still requires an actor-specific unit lifecycle".into());
+        }
+        if kind == GroundKind::Meteor {
+            return self.place_actor_meteors(server, state, source, request, metadata, x, y, tick);
         }
         self.place_actor_ground_skill_with_options(
             server,
@@ -195,5 +220,55 @@ impl ScriptSkillService {
             true,
             true,
         )
+    }
+
+    fn place_actor_meteors(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        metadata: &SkillMetadata,
+        x: u16,
+        y: u16,
+        tick: u128,
+    ) -> Result<(), String> {
+        let level = request.level as u8;
+        let duration = metadata.duration(level, false).unwrap_or(0).max(0) as u128;
+        let interval = metadata.unit_value("Interval", level, "Time").unwrap_or(-1);
+        let interval = if interval < 0 { 40 } else { interval.max(40) as u128 };
+        let radius = metadata.splash(level).unwrap_or(3).max(0);
+        let mut placed = 0;
+        for number in 1..=(duration / interval).max(1) {
+            let target_x = (i32::from(x) + fastrand::i32(-radius..=radius)).max(0) as u16;
+            let target_y = (i32::from(y) + fastrand::i32(-radius..=radius)).max(0) as u16;
+            let result = self.place_actor_ground_skill_with_options(
+                server,
+                state,
+                GroundSkillSource {
+                    actor_id: source.id,
+                    owner_id: source.credit_id,
+                    map: source.map.clone(),
+                    instance: source.instance,
+                    x: source.x,
+                    y: source.y,
+                    status: source.status.clone(),
+                    raw_attack: source.raw_attack,
+                    fixed_damage: None,
+                },
+                request.skill_id,
+                level,
+                target_x,
+                target_y,
+                tick + number * interval,
+                true,
+                true,
+            );
+            placed += usize::from(result.is_ok());
+        }
+        if placed == 0 {
+            return Err("Meteor Storm found no usable cells".into());
+        }
+        Ok(())
     }
 }

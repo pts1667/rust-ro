@@ -145,7 +145,19 @@ impl StatusService {
             bonuses.extend(change.bonuses());
         }
         for auto_bonus in &status.active_auto_bonuses {
-            bonuses.extend(auto_bonus.bonuses.iter().copied());
+            if auto_bonus.definition.source_pet_id == 0 {
+                bonuses.extend(auto_bonus.bonuses.iter().copied());
+            } else if crate::server::script::pet_auto_bonus::source_is_active(status, &auto_bonus.definition) {
+                let mut script_status = status.clone();
+                script_status.equipment_bonuses = models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(StatusBonus::new).collect());
+                let host = ItemScriptHost::bonuses(script_status, 0);
+                let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_pet_auto_bonus", auto_bonus.definition.program_id));
+                if let Err(error) = result {
+                    error!("Failed to calculate Wasm pet automatic bonus {}: {}", auto_bonus.definition.program_id, error);
+                } else {
+                    bonuses.extend(host.bonuses.drain());
+                }
+            }
         }
 
         if let Some(chance) = bonuses.iter().filter_map(|bonus| if let BonusType::DoubleAttackChancePercentage(value) = bonus { Some(*value) } else { None }).max() {
@@ -174,6 +186,9 @@ impl StatusService {
             }
         }
         snapshot.set_known_skills(known_skills);
+        if status.riding && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::KnRiding) > 0 {
+            snapshot.set_state(snapshot.state() | models::enums::skill::SkillState::Riding.as_flag());
+        }
 
         let firearm = matches!(snapshot.right_hand_weapon_type(), models::enums::weapon::WeaponType::Revolver
             | models::enums::weapon::WeaponType::Rifle | models::enums::weapon::WeaponType::Gatling

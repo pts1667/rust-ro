@@ -32,6 +32,14 @@ mod native_payment_tests;
 #[path = "actor_unit_skill_test.rs"]
 mod actor_unit_skill_tests;
 
+#[cfg(feature = "unit_tests")]
+#[path = "npc_unit_data_test.rs"]
+mod npc_unit_data_tests;
+
+#[cfg(feature = "unit_tests")]
+#[path = "npc_effect_test.rs"]
+mod npc_effect_tests;
+
 #[path = "item_dialog_test.rs"]
 mod item_dialog_tests;
 
@@ -52,6 +60,9 @@ mod item_map_flag_tests;
 
 #[path = "party_warp_test.rs"]
 mod party_warp_tests;
+
+#[path = "player_trade_test.rs"]
+mod player_trade_tests;
 
 struct ServerServiceTestContext {
     test_context: TestContext,

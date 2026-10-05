@@ -26,6 +26,7 @@ pub(super) static NEXT_GROUND_UNIT: AtomicU32 = AtomicU32::new(2_000_000);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum GroundKind {
+    WarpPortal,
     Firewall,
     Pneuma,
     Quagmire,
@@ -38,9 +39,16 @@ pub enum GroundKind {
     Vermilion,
     GrandCross,
     SkidTrap,
+    AnkleSnare,
     LandMine,
+    BlastMine,
+    ClaymoreTrap,
+    Shockwave,
+    Flasher,
     Sandman,
     FreezingTrap,
+    TalkieBox,
+    Graffiti,
     ArrowShower,
     Earthquake,
 }
@@ -48,6 +56,7 @@ pub enum GroundKind {
 impl GroundKind {
     pub fn from_name(name: &str) -> Option<Self> {
         Some(match name {
+            "AL_WARP" => Self::WarpPortal,
             "MG_FIREWALL" => Self::Firewall,
             "AL_PNEUMA" => Self::Pneuma,
             "WZ_QUAGMIRE" => Self::Quagmire,
@@ -59,10 +68,17 @@ impl GroundKind {
             "WZ_STORMGUST" => Self::StormGust,
             "WZ_VERMILION" => Self::Vermilion,
             "CR_GRANDCROSS" => Self::GrandCross,
-            "MA_SKIDTRAP" => Self::SkidTrap,
-            "MA_LANDMINE" => Self::LandMine,
-            "MA_SANDMAN" => Self::Sandman,
-            "MA_FREEZINGTRAP" => Self::FreezingTrap,
+            "MA_SKIDTRAP" | "HT_SKIDTRAP" => Self::SkidTrap,
+            "HT_ANKLESNARE" => Self::AnkleSnare,
+            "MA_LANDMINE" | "HT_LANDMINE" => Self::LandMine,
+            "HT_BLASTMINE" => Self::BlastMine,
+            "HT_CLAYMORETRAP" => Self::ClaymoreTrap,
+            "HT_SHOCKWAVE" => Self::Shockwave,
+            "HT_FLASHER" => Self::Flasher,
+            "MA_SANDMAN" | "HT_SANDMAN" => Self::Sandman,
+            "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => Self::FreezingTrap,
+            "HT_TALKIEBOX" => Self::TalkieBox,
+            "RG_GRAFFITI" => Self::Graffiti,
             "MA_SHOWER" => Self::ArrowShower,
             "NPC_EARTHQUAKE" => Self::Earthquake,
             _ => return None,
@@ -71,15 +87,23 @@ impl GroundKind {
 
     pub(super) fn view_id(self) -> u32 {
         match self {
+            Self::WarpPortal => 129,
             Self::Firewall => 127,
             Self::Pneuma => 133,
             Self::Quagmire => 142,
             Self::Deluge => 155,
             Self::LandProtector => 157,
             Self::SkidTrap => 144,
+            Self::AnkleSnare => 145,
             Self::LandMine => 147,
+            Self::BlastMine => 143,
+            Self::ClaymoreTrap => 152,
+            Self::Shockwave => 148,
+            Self::Flasher => 150,
             Self::Sandman => 149,
             Self::FreezingTrap => 151,
+            Self::TalkieBox => 153,
+            Self::Graffiti => 176,
             Self::Earthquake => 198,
             _ => 134,
         }
@@ -95,11 +119,26 @@ impl GroundKind {
     }
 
     fn damaging(self) -> bool {
-        !matches!(self, Self::Pneuma | Self::Quagmire | Self::Deluge | Self::LandProtector)
+        !matches!(
+            self,
+            Self::WarpPortal | Self::TalkieBox | Self::Graffiti | Self::Pneuma | Self::Quagmire | Self::Deluge | Self::LandProtector
+        )
     }
 
     pub(super) fn trap(self) -> bool {
-        matches!(self, Self::SkidTrap | Self::LandMine | Self::Sandman | Self::FreezingTrap)
+        matches!(
+            self,
+            Self::SkidTrap
+                | Self::AnkleSnare
+                | Self::LandMine
+                | Self::BlastMine
+                | Self::ClaymoreTrap
+                | Self::Shockwave
+                | Self::Flasher
+                | Self::Sandman
+                | Self::FreezingTrap
+                | Self::TalkieBox
+        )
     }
 }
 
@@ -124,6 +163,10 @@ pub struct FixedGroundSkillDamage {
 }
 
 pub struct GroundSkill {
+    pub(super) portal: Option<super::warp_portal::WarpPortalState>,
+    pub message: Vec<u8>,
+    pub capture: Option<super::trap::TrapCaptureState>,
+    pub recovery_item: Option<i32>,
     pub kind: GroundKind,
     pub source_id: u32,
     pub source_x: u16,
@@ -151,6 +194,7 @@ pub struct GroundSkill {
 }
 
 pub struct GroundCell {
+    pub observers: std::collections::HashMap<u32, std::sync::Weak<crate::server::model::session::Session>>,
     pub id: u32,
     pub x: u16,
     pub y: u16,
@@ -241,10 +285,14 @@ impl ScriptSkillService {
             .ok_or("Unknown ground skill")?;
         self.validate_skill(skill, level as u32)?;
         Self::validate_stealth_cast(state, character, skill_id)?;
-        let issued = instant || character.pending_item_skill.as_ref().is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
+        let issued = instant
+            || character
+                .pending_item_skill
+                .as_ref()
+                .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal ground definition is unavailable")?;
-        if GroundKind::from_name(&metadata.name).is_none() && metadata.name != "BS_HAMMERFALL" {
+        if GroundKind::from_name(&metadata.name).is_none() && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER") {
             return Err("Skill does not accept a ground target".into());
         }
         if character.status.hp == 0
@@ -253,7 +301,12 @@ impl ScriptSkillService {
         {
             return Err("Character cannot start a ground skill now".into());
         }
-        if !instant && character.x.abs_diff(x).max(character.y.abs_diff(y)) > self.player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, level).max(1) {
+        if !instant
+            && character.x.abs_diff(x).max(character.y.abs_diff(y))
+                > self
+                    .player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, level)
+                    .max(1)
+        {
             return Err("Ground skill target is out of range".into());
         }
         let instance = state
@@ -268,6 +321,29 @@ impl ScriptSkillService {
                 .is_none_or(|cell| cell & CellType::Shootable.as_flag() == 0)
         {
             return Err("Ground skill target is outside usable terrain".into());
+        }
+        if GroundKind::from_name(&metadata.name).is_some_and(|kind| kind.trap() || kind == GroundKind::Graffiti) {
+            self.validate_actor_ground_with_options(
+                state,
+                &GroundSkillSource {
+                    actor_id: character.char_id,
+                    owner_id: character.char_id,
+                    map: character.current_map_name().clone(),
+                    instance: character.current_map_instance(),
+                    x: character.x,
+                    y: character.y,
+                    status: StatusService::instance().to_snapshot(&character.status),
+                    raw_attack: 0,
+                    fixed_damage: None,
+                },
+                skill_id,
+                level,
+                x,
+                y,
+                tick,
+                true,
+                true,
+            )?;
         }
         let active = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
         if metadata.name == "MG_FIREWALL"
@@ -323,6 +399,33 @@ impl ScriptSkillService {
         self.validate_ground_target_with_mode(state, character, skill_id, level, x, y, tick, instant)?;
         self.end_cloaking_on_skill(server, character, skill_id, tick);
         let metadata = SkillMetadata::find(skill_id).unwrap();
+        if metadata.name == "AL_WARP" {
+            return self.start_warp_portal_menu(server, state, character, skill_id, level, x, y, tick, instant, depth, None);
+        }
+        if metadata.name == "RG_CLEANER" {
+            let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
+            let effect = super::ScriptSkillEffect {
+                source_char_id: character.char_id,
+                target_id: character.char_id,
+                skill_id,
+                level,
+                heal_value: 0,
+                proc_depth: depth,
+                skill_event_emitted: instant,
+                cast_generation: 0,
+                action: super::ScriptSkillAction::CleanGraffiti {
+                    map: character.map_instance_key.clone(),
+                    x,
+                    y,
+                },
+                deferred_requirements: None,
+                prepared_outcome: None,
+                source_index: None,
+                source_item: None,
+            };
+            self.queue_target_effect(server, character, skill, effect, tick);
+            return Ok(());
+        }
         if metadata.name == "BS_HAMMERFALL" {
             if instant {
                 return self.cast_area_status(server, state, character, skill_id, level, x, y, tick);
@@ -406,7 +509,16 @@ impl ScriptSkillService {
                 );
             }
         }
-        let duration = metadata.duration(level, false).unwrap_or(100).max(1) as u128;
+        let base_duration = metadata.duration(level, false).unwrap_or(100);
+        let duration = if kind == GroundKind::Meteor {
+            base_duration.max(0) as u128
+        } else {
+            crate::server::service::map_flag_service::ground_skill_duration(
+                &state.map_flags(&character.map_instance_key),
+                skill_id,
+                base_duration,
+            )
+        };
         let layout = metadata.unit_value("Layout", level, "Size").unwrap_or(0);
         let range = if kind == GroundKind::Pneuma {
             1
@@ -453,10 +565,13 @@ impl ScriptSkillService {
                             != 0
                 })
                 .map(|(x, y)| GroundCell {
+                    observers: Default::default(),
                     id: NEXT_GROUND_UNIT.fetch_add(1, Ordering::Relaxed),
                     x,
                     y,
-                    remaining_hits: if kind == GroundKind::Firewall {
+                    remaining_hits: if kind.trap() {
+                        3500
+                    } else if kind == GroundKind::Firewall {
                         4 + level as u16
                     } else if kind == GroundKind::GrandCross {
                         3
@@ -469,6 +584,17 @@ impl ScriptSkillService {
                 continue;
             }
             active.push(GroundSkill {
+                portal: None,
+                message: if matches!(kind, GroundKind::TalkieBox | GroundKind::Graffiti) {
+                    character.script_skill_state.ground_skill_text.clone()
+                } else {
+                    vec![]
+                },
+                capture: None,
+                recovery_item: kind
+                    .trap()
+                    .then(|| self.configuration.find_item_by_name("Booby_Trap").map(|item| item.id))
+                    .flatten(),
                 kind,
                 source_id: character.char_id,
                 source_x: character.x,
@@ -496,7 +622,17 @@ impl ScriptSkillService {
                 cast_verified: instant,
                 cells,
                 affected: HashSet::new(),
-                actor_source: None,
+                actor_source: (kind.trap() || kind == GroundKind::Graffiti).then(|| GroundSkillSource {
+                    actor_id: character.char_id,
+                    owner_id: character.char_id,
+                    map: character.current_map_name().clone(),
+                    instance: character.current_map_instance(),
+                    x: character.x,
+                    y: character.y,
+                    status: snapshot.clone(),
+                    raw_attack: 0,
+                    fixed_damage: None,
+                }),
                 triggered: false,
                 waves: 0,
             });
@@ -547,21 +683,57 @@ impl ScriptSkillService {
             return;
         };
         for ground in grounds.iter_mut() {
+            if ground.kind == GroundKind::WarpPortal {
+                if !self.warp_portal_owner_current(state, ground) {
+                    ground.expires_at = 0;
+                }
+                continue;
+            }
+            if !ground.cast_verified
+                && !state.get_character(ground.source_id).is_some_and(|source| {
+                    source.status.hp > 0
+                        && (ground.cast_generation == 0 || source.script_skill_state.cast_generation == ground.cast_generation)
+                })
+            {
+                ground.expires_at = 0;
+            }
             if let Some(source) = &ground.actor_source {
                 let map_actor = state.get_map_instance(&source.map, source.instance).is_some_and(|instance| {
                     let map = instance.state();
-                    map.get_mob(source.actor_id).is_some_and(|actor| actor.hp() > 0)
-                        || map.script_skill_state.npcs.get(&source.actor_id).is_some_and(|actor| actor.hp > 0)
+                    map.get_mob(source.actor_id)
+                        .is_some_and(|actor| actor.hp() > 0 || ground.kind == GroundKind::AnkleSnare)
+                        || map
+                            .script_skill_state
+                            .npcs
+                            .get(&source.actor_id)
+                            .is_some_and(|actor| actor.hp > 0 || ground.kind == GroundKind::AnkleSnare)
                 });
-                if !map_actor && !state.get_character(source.owner_id).is_some_and(|owner| {
-                    owner.current_map_name() == &ground.map
-                        && owner.current_map_instance() == ground.instance
-                        && crate::server::service::script_world_service::companion_snapshots(owner)
-                            .iter()
-                            .any(|actor| actor.map_item().id() == ground.source_id)
-                }) {
+                if !map_actor
+                    && !state.get_character(source.owner_id).is_some_and(|owner| {
+                        owner.current_map_name() == &ground.map
+                            && owner.current_map_instance() == ground.instance
+                            && (owner.char_id == source.actor_id && (owner.status.hp > 0 || ground.kind == GroundKind::AnkleSnare)
+                                || crate::server::service::script_world_service::companion_snapshots(owner)
+                                    .iter()
+                                    .any(|actor| actor.map_item().id() == ground.source_id))
+                    })
+                {
                     ground.expires_at = 0;
                 }
+            }
+            if ground.kind == GroundKind::BlastMine
+                && ground.cast_verified
+                && !ground.triggered
+                && ground.expires_at != 0
+                && ground.expires_at <= tick
+            {
+                ground.triggered = true;
+                ground.recovery_item = None;
+                ground.expires_at = tick + 1500;
+                self.change_trap_view(ground, 140);
+            }
+            if ground.capture.is_some() {
+                self.tick_trap_capture(server, state, ground, tick);
             }
             if ground.actor_source.is_none()
                 && !state.get_character(ground.source_id).is_some_and(|source| {
@@ -634,23 +806,6 @@ impl ScriptSkillService {
             let source = state.get_character(ground.source_id);
             if ground.expires_at > tick && !ground.displayed {
                 ground.displayed = true;
-                for cell in &ground.cells {
-                    if cell.remaining_hits > 0 {
-                        self.notify_ground_cell(
-                            ground,
-                            cell,
-                            Self::ground_entry_packet_for(
-                                self.configuration.packetver(),
-                                cell.id,
-                                ground.source_id,
-                                cell.x,
-                                cell.y,
-                                ground.level,
-                                ground.kind.view_id(),
-                            ),
-                        );
-                    }
-                }
                 if !ground.skill_event_emitted {
                     crate::server::service::script_combat_service::emit(
                         server,
@@ -663,6 +818,17 @@ impl ScriptSkillService {
                     );
                     ground.skill_event_emitted = true;
                 }
+            }
+            if ground.kind == GroundKind::WarpPortal {
+                self.tick_warp_portal(server, state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::TalkieBox {
+                self.tick_talkie_box(state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::Graffiti {
+                continue;
             }
             if let Some(kind) = ground.kind.status() {
                 let map_state = instance.state();
@@ -817,6 +983,9 @@ impl ScriptSkillService {
                         .calculate_damage_with_context(&snapshot, &target_status, offensive)
                 };
                 let mut damage_event = Damage {
+                    notification: None,
+                    source_kind: models::enums::actor::CombatActorKind::Player,
+                    skill_damage_adjusted: false,
                     healing: 0,
                     right_hand_damage: None,
                     target_id,
@@ -834,6 +1003,15 @@ impl ScriptSkillService {
                     landed: true,
                 };
                 damage_event.set_signed_damage(damage);
+                damage_event = damage_event.with_skill_notification(
+                    source.current_map_name(),
+                    source.current_map_instance(),
+                    source.x,
+                    source.y,
+                    tick,
+                    1,
+                    0,
+                );
                 instance.add_to_next_tick(MapEvent::MobDamage(damage_event));
                 if ground.kind == GroundKind::Firewall {
                     cell.remaining_hits = cell.remaining_hits.saturating_sub(1);
@@ -858,7 +1036,6 @@ impl ScriptSkillService {
                         cells: 2,
                     });
                 }
-                self.notify_attack_skill(source, target_id, ground.skill_id, ground.level, damage);
             }
             if ground.kind == GroundKind::GrandCross && source.status.hp > 0 {
                 if let Some(cell) = ground
@@ -871,6 +1048,9 @@ impl ScriptSkillService {
                             .battle_service()
                             .grand_cross_damage_signed_with_context(&snapshot, &snapshot, ground.level, true);
                     let mut damage_event = Damage {
+                        notification: None,
+                        source_kind: models::enums::actor::CombatActorKind::Player,
+                        skill_damage_adjusted: false,
                         healing: 0,
                         right_hand_damage: None,
                         target_id: source.char_id,
@@ -888,9 +1068,17 @@ impl ScriptSkillService {
                         landed: true,
                     };
                     damage_event.set_signed_damage(damage);
+                    damage_event = damage_event.with_skill_notification(
+                        source.current_map_name(),
+                        source.current_map_instance(),
+                        source.x,
+                        source.y,
+                        tick,
+                        1,
+                        0,
+                    );
                     server.add_to_next_tick(GameEvent::CharacterDamage(damage_event));
                     cell.remaining_hits = cell.remaining_hits.saturating_sub(1);
-                    self.notify_attack_skill(source, source.char_id, ground.skill_id, ground.level, damage);
                 }
             }
             ground.next_hit_at = ground.next_hit_at.saturating_add(ground.interval);
@@ -898,6 +1086,29 @@ impl ScriptSkillService {
         }
         grounds.retain_mut(|ground| {
             let expired = tick >= ground.expires_at;
+            if !expired {
+                self.sync_ground_unit_visibility(state, ground, tick);
+            }
+            if expired
+                && ground.expires_at != 0
+                && ground.cast_verified
+                && !ground.triggered
+                && ground.cells.iter().any(|cell| cell.remaining_hits > 0)
+            {
+                if let Some(item_id) = ground.recovery_item.take() {
+                    if let Some(map) = state.get_map_instance(&ground.map, ground.instance) {
+                        map.add_to_next_tick(MapEvent::GroundTrapRecover {
+                            item_id,
+                            amount: 1,
+                            x: ground.cells[0].x,
+                            y: ground.cells[0].y,
+                        });
+                    }
+                }
+            }
+            if expired || ground.cells.iter().all(|cell| cell.remaining_hits == 0) {
+                self.release_trap_capture(server, ground);
+            }
             for cell in &ground.cells {
                 if cell.id != 0 && ground.displayed && (expired || cell.remaining_hits == 0) {
                     let mut packet = 0x0120_u16.to_le_bytes().to_vec();
@@ -928,10 +1139,8 @@ impl ScriptSkillService {
     }
 
     pub fn earthquake_attack(source: &StatusSnapshot, level: u8, targets: u32) -> (u16, f32) {
-        let raw = (i64::from(source.fist_atk())
-            + i64::from(source.weapon_atk())
-            + i64::from(source.bonus_atk()))
-        .clamp(0, i64::from(u32::MAX)) as u32;
+        let raw = (i64::from(source.fist_atk()) + i64::from(source.weapon_atk()) + i64::from(source.bonus_atk()))
+            .clamp(0, i64::from(u32::MAX)) as u32;
         let level = u32::from(level);
         let ratio = 200 + 100 * level + 100 * (level / 2) + if level > 4 { 100 } else { 0 };
         (

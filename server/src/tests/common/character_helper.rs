@@ -34,6 +34,7 @@ pub fn create_character() -> Character {
         base_exp: 0,
         job_exp: 0,
         state: 0,
+        riding: false,
         size: Default::default(),
         is_male: true,
         weapons: vec![],
@@ -49,6 +50,8 @@ pub fn create_character() -> Character {
         script_context: None,
         script_skill_grants: Default::default(),
         mob_class: Default::default(),
+        mob_capabilities: 0,
+        combat_actor_kind: Default::default(),
     };
     let mut character = Character::new(
         "Walkiry".to_string(),

@@ -277,7 +277,9 @@ fn companion_magic_reflection_precedes_absorption_and_reflected_magic_cannot_bou
         StatusChangeKind::MagicMirror,
         StatusChangeKind::MagicRod,
     ]);
-    let damage = Damage {
+    let damage = Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id: id,
         attacker_id: 150_000,
         credit_id: 150_000,
@@ -360,7 +362,9 @@ fn companion_damage_rejected_by_persistence_does_not_mutate_live_pools_or_shield
     let mut replacement = before.clone();
     replacement.font = 5;
     let replacement = repository.save_character_game_systems(150_001, &replacement).unwrap();
-    let damage = Damage {
+    let damage = Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id: id,
         attacker_id: 150_000,
         credit_id: 150_000,
@@ -395,7 +399,9 @@ fn companion_gvg_reduction_follows_shields_and_reflects_only_the_admitted_loss()
     let id = install_homunculus(&context, &repository, &[StatusChangeKind::Kyrie, StatusChangeKind::ReflectShield]);
     context.server.map_flag_call(context.server.state_mut().as_mut(), 150_001, Function::SetMapFlag,
         &[Value::from("empty"), Value::Number(crate::server::model::map_flags::MapFlag::Gvg as i32)]).unwrap();
-    let damage = Damage {
+    let damage = Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id: id, attacker_id: 150_000, credit_id: 150_000, damage: 40, healing: 0,
         attacked_at: 100, damage_motion: 0,
         battle_flags: BattleFlag::Weapon.as_flag() | BattleFlag::Normal.as_flag() | BattleFlag::Short.as_flag(),
@@ -453,7 +459,7 @@ fn companion_pressure_bypasses_lex_assumptio_and_kyrie_without_consuming_the_shi
         let (context, repository) = fixture();
         let id = install_homunculus(&context, &repository, &[StatusChangeKind::LexAeterna, shield]);
         let before = context.server.state().get_character(150_001).unwrap().game_systems.homunculus.as_ref().unwrap().statuses.clone();
-        let pressure = Damage { target_id: id, attacker_id: 150_000, credit_id: 150_000, damage: 40, healing: 0,
+        let pressure = Damage { notification: None, source_kind: models::enums::actor::CombatActorKind::Player, skill_damage_adjusted: false, target_id: id, attacker_id: 150_000, credit_id: 150_000, damage: 40, healing: 0,
             right_hand_damage: None, attacked_at: 100, damage_motion: 0,
             battle_flags: BattleFlag::Misc.as_flag() | BattleFlag::Skill.as_flag() | BattleFlag::Long.as_flag(),
             skill_id: SkillEnum::PaPressure.id(), skill_level: 1, landed: true, proc_depth: 0, defenses_applied: true, magic_context: None };
@@ -474,7 +480,9 @@ fn companion_elemental_absorption_heals_atomically_without_reflection_or_damage_
     let saved = repository.save_character_game_systems(150_001, &systems).unwrap();
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().game_systems = saved;
     let statuses = systems.homunculus.as_ref().unwrap().statuses.clone();
-    let damage = Damage {
+    let damage = Damage { notification: None,
+        source_kind: models::enums::actor::CombatActorKind::Player,
+        skill_damage_adjusted: false,
         target_id: id,
         attacker_id: 150_000,
         credit_id: 150_000,

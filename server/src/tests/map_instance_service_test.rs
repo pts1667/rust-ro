@@ -231,7 +231,9 @@ mod tests {
         // When
         context.map_instance_service.mob_being_attacked(
             &mut map_instance_state,
-            Damage {
+            Damage { notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 target_id: mob_item_id,
                 attacker_id: 150000,
                 damage: 10,
@@ -271,7 +273,9 @@ mod tests {
         // When
         context.map_instance_service.mob_being_attacked(
             &mut map_instance_state,
-            Damage {
+            Damage { notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 target_id: mob_item_id,
                 attacker_id: 150000,
                 damage: max_hp + 10,
@@ -313,7 +317,9 @@ mod tests {
         // When
         context.map_instance_service.mob_being_attacked(
             &mut map_instance_state,
-            Damage {
+            Damage { notification: None,
+                source_kind: models::enums::actor::CombatActorKind::Player,
+                skill_damage_adjusted: false,
                 target_id: mob_item_id,
                 attacker_id: 150000,
                 damage: max_hp + 10,
@@ -388,7 +394,9 @@ mod tests {
     }
 
     fn admitted_damage(target_id: u32, damage: u32, landed: bool) -> Damage {
-        Damage {
+        Damage { notification: None,
+            source_kind: models::enums::actor::CombatActorKind::Player,
+            skill_damage_adjusted: false,
             target_id,
             attacker_id: 150000,
             damage,
@@ -1051,6 +1059,8 @@ mod tests {
         let mob = state.mobs_mut().get_mut(&42).unwrap();
         mob.status.set_race(models::enums::mob::MobRace::Plant);
         mob.mode |= models::enums::mob::MobMode::Boss.as_flag();
+        mob.status.set_mob_class(models::enums::mob::MobClass::Boss);
+        mob.status.set_mob_capabilities(models::enums::mob::MobCapability::StatusImmune.as_flag());
         context.map_instance_service.provoke_mob(
             &mut state,
             MobProvoke {
@@ -1340,6 +1350,7 @@ mod tests {
         track.spawned_amount = 3;
         state.mob_spawns_tracks_mut().insert(0, track);
         let request = crate::server::model::events::map_event::ScriptSpawn {
+            event_npc: None,
             mob_id: 1002,
             x: 1,
             y: 1,

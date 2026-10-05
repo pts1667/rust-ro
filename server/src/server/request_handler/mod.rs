@@ -43,26 +43,51 @@ pub mod atcommand;
  */
 pub mod char;
 pub mod chat;
+pub mod framing;
 pub mod login;
 pub mod map;
 pub mod movement;
-pub mod framing;
+pub(crate) mod player_trade;
 pub mod script_operations;
+mod talkie_box;
 
 pub fn handle(server: Arc<Server>, mut context: Request) {
+    match player_trade::handle_raw(server.as_ref(), &context) {
+        Ok(true) => return,
+        Ok(false) => {}
+        Err(error) => {
+            warn!("Rejected malformed player trade packet: {}", error);
+            return;
+        }
+    }
     match script_operations::handle_raw(server.as_ref(), &context) {
         Ok(true) => return,
-        Ok(false) => {},
-        Err(error) => { warn!("Rejected malformed script operation packet: {}", error); return; }
+        Ok(false) => {}
+        Err(error) => {
+            warn!("Rejected malformed script operation packet: {}", error);
+            return;
+        }
     }
     match crate::server::service::script_world_service::decode_request(context.packet().raw(), server.packetver()) {
         Ok(Some(request)) => {
-            let Some(session_id) = server.ensure_session_exists(&context.socket()) else { return; };
-            let Some(session) = server.state().find_session(session_id) else { return; };
-            let Some(char_id) = session.char_id else { return; };
-            let Some(socket) = session.map_server_socket.as_ref() else { return; };
-            if !Arc::ptr_eq(socket, &context.socket()) { return; }
-            server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld { char_id, request }));
+            let Some(session_id) = server.ensure_session_exists(&context.socket()) else {
+                return;
+            };
+            let Some(session) = server.state().find_session(session_id) else {
+                return;
+            };
+            let Some(char_id) = session.char_id else {
+                return;
+            };
+            let Some(socket) = session.map_server_socket.as_ref() else {
+                return;
+            };
+            if !Arc::ptr_eq(socket, &context.socket()) {
+                return;
+            }
+            server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::ScriptWorld(
+                crate::server::model::events::game_event::ScriptWorld { char_id, request },
+            ));
             return;
         }
         Err(error) => {

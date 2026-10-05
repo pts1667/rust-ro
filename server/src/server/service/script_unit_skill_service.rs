@@ -23,7 +23,7 @@ pub(crate) fn unit_skill_request(configuration: &GlobalConfigService, source_id:
     let cast_cancel = args.get(options + 1).map(Value::number_value).transpose()?.map(|cancel| cancel > 0);
     let message_id = args.get(options + 2).map(Value::number_value).transpose()?.filter(|id| *id > 0).map(|id| u16::try_from(id).map_err(|_| "Invalid monster message identifier")).transpose()?;
     let ignore_range = args.get(options + 3).map(Value::number_value).transpose()?.unwrap_or(0) > 0;
-    Ok(ScriptSkillCast { source_id, target_id, skill_id: skill.id, level, ground, cast_time_adjust_ms, cast_cancel, message_id, ignore_range })
+    Ok(ScriptSkillCast { source_id, target_id, skill_id: skill.id, level, ground, cast_time_adjust_ms, cast_cancel, message_id, ignore_range, ..Default::default() })
 }
 
 pub(crate) fn normalize_unit_skill_actor_ids(state: &ServerState, request: &mut ScriptSkillCast) {

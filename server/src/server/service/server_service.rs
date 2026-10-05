@@ -196,6 +196,15 @@ impl ServerService {
             self.server_task_queue.clone(),
         );
         MapInstanceLoop::start_map_instance_thread(map_instance_ref.clone(), map_instance_service);
+        if instance_id > 0 {
+            for npc in map_instance_ref.state().script_skill_state.npcs.values() {
+                if let Some(entry_id) = ScriptService::event_entry(&format!("{}::OnInstanceInit", npc.script.name)) {
+                    self.server_task_queue.add_to_first_index(GameEvent::ScriptNpcEvent(crate::server::model::events::game_event::ScriptNpcEvent {
+                        npc_id: npc.id, scope_instance: npc.script.scope_instance, entry_id, char_id: None, depth: 0, queued_until: 0, args: None, timer_guard: None,
+                    }));
+                }
+            }
+        }
         map_instance_ref
     }
 
@@ -299,7 +308,7 @@ impl ServerService {
                     .map_item_snapshot(map_item.id(), character.current_map_name(), character.current_map_instance())
                     .unwrap();
                 let mut maybe_damage = None;
-                if matches!(*map_item.object_type(), MapItemType::Mob | MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
+                if matches!(*map_item.object_type(), MapItemType::Mob | MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::SkillUnit) {
                     let source = self.get_status_snapshot(&character.status, tick);
                     let attack_motion = self.status_service.attack_motion(&source) as u128;
                     if tick < character.attack().last_attack_tick.saturating_add(attack_motion) || tick < character.timing.get_canact_tick() { return; }
@@ -319,7 +328,18 @@ impl ServerService {
                             char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false},
                         }));
                     }
-                    self.apply_damage(*map_item.object_type(), map_instance, damage);
+                    if damage.skill_id == models::enums::skill_enums::SkillEnum::NpcMagicalattack.id() {
+                        let delay = damage.attacked_at.saturating_sub(tick);
+                        if *map_item.object_type() == MapItemType::Mob {
+                            map_instance.add_to_delayed_tick(MapEvent::MobDamage(damage), delay);
+                        } else {
+                            server.add_to_delayed_tick(GameEvent::ScriptMapDamage(crate::server::model::events::game_event::ScriptMapDamage {
+                                map: character.map_instance_key.clone(), damage,
+                            }), delay);
+                        }
+                    } else {
+                        self.apply_damage(*map_item.object_type(), map_instance, damage);
+                    }
                 }
             }
         } else {
@@ -336,7 +356,7 @@ impl ServerService {
             let Some(item)=character.get_item_from_inventory(drop.index) else {return Err("Drop item is unavailable".into());};
             if character.status.hp==0||character.is_dead()||drop.amount<=0||item.equip!=0||item.amount<drop.amount
                 ||flags.enabled(crate::server::model::map_flags::MapFlag::NoDrop)
-                ||character.game_systems.is_trading()||character.game_systems.buying_store.is_some()||character.game_systems.vending_store.is_some()
+                ||character.game_systems.is_trading()||character.timing.skill_menu_blocked()||character.game_systems.buying_store.is_some()||character.game_systems.vending_store.is_some()
                 ||self.configuration_service.get_item(item.item_id).trade_flags as u64&ItemTradeFlag::NoDrop.as_flag()!=0 {
                 return Ok(false);
             }
@@ -395,7 +415,9 @@ impl ServerService {
     }
 
     fn apply_damage(&self, map_item_type: MapItemType, map_instance: &Arc<MapInstance>, damage: Damage) {
-        if matches!(map_item_type, MapItemType::Mob) {
+        if map_item_type == MapItemType::SkillUnit {
+            self.server_task_queue.add_to_first_index(GameEvent::ScriptMapDamage(crate::server::model::events::game_event::ScriptMapDamage { map: map_instance.key().clone(), damage }));
+        } else if matches!(map_item_type, MapItemType::Mob) {
             map_instance.add_to_next_tick(MapEvent::MobDamage(damage));
         } else if matches!(map_item_type, MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary) {
             self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage));
@@ -481,7 +503,7 @@ impl ServerService {
             Ok(plan) => plan,
             Err(error) => { warn!("Skill requirements failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
         };
-        character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: character_use_skill.skill_id, level: character_use_skill.skill_level, requirements, source_index: None, source_item: None });
+        character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: character_use_skill.skill_id, level: character_use_skill.skill_level, keep_requirements: true, requirements, source_index: None, source_item: None });
         self.script_skill_service.end_cloaking_on_skill(server, character, character_use_skill.skill_id, tick);
         let skill_use_response = self.skill_service.start_item_skill(
             character,
@@ -536,7 +558,7 @@ impl ServerService {
                 Ok(plan) => plan,
                 Err(error) => { warn!("Pending skill requirements failed: {}", error); self.skill_service.send_skill_fail_packet(character, models::enums::skill::UseSkillFailure::Fail); return; }
             };
-            character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: pending.skill_id, level: pending.skill_level, requirements, source_index: None, source_item: None });
+            character.script_skill_state.native_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment { skill_id: pending.skill_id, level: pending.skill_level, keep_requirements: true, requirements, source_index: None, source_item: None });
             self.script_skill_service.end_cloaking_on_skill(server, character, pending.skill_id, tick);
             let skill_use_response = self.skill_service.start_item_skill(
                 character,
@@ -590,7 +612,8 @@ impl ServerService {
                     let map_instance = maybe_map_instance.as_ref().unwrap();
                     match self.script_skill_service.complete_damage_skill(server, server_state, character, skill_use_response.to_damage(), &self.battle_service, tick) {
                         Ok(damages) => for (kind, damage) in damages {
-                            if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(damage)); }
+                            if kind == MapItemType::SkillUnit { self.apply_damage(kind, map_instance, damage); }
+                            else if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(damage)); }
                             else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(damage)); }
                         },
                         Err(error) => warn!("Unable to complete area damage for skill {}: {}", skill_use_response.skill_id, error),
@@ -636,7 +659,7 @@ impl ServerService {
                     MapItemType::Character => {
                         return Some(self.get_status_snapshot(&server_state.get_character_unsafe(target_id).status, tick));
                     }
-                    MapItemType::Mob | MapItemType::Homunculus | MapItemType::Mercenary => {
+                    MapItemType::Mob | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::SkillUnit => {
                         return Some(
                             server_state
                                 .map_item_mob_status(&map_item, character.current_map_name(), character.current_map_instance())
@@ -664,7 +687,7 @@ impl ServerService {
     ) -> Result<bool, String> {
         use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
         use super::script_world_service::{party_can_pick_up, party_loot_candidates};
-        if server_state.contains_locked_map_item(map_item_id) || character.is_dead() || character.status.hp == 0
+        if server_state.contains_locked_map_item(map_item_id) || character.is_dead() || character.status.hp == 0 || character.timing.skill_menu_blocked()
             || character.map_instance_key != *map_instance.key() || !character.is_map_item_in_fov(map_item_id) {
             return Ok(false);
         }

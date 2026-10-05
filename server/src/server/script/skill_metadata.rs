@@ -131,6 +131,13 @@ impl SkillMetadata {
         Self::json_level_value(self.unit.as_ref()?.get(field)?, level, level_field)
     }
 
+    pub fn unit_flag(&self, name: &str) -> bool {
+        self.unit
+            .as_ref()
+            .and_then(|unit| unit.get("Flag")?.get(name)?.as_bool())
+            .unwrap_or(false)
+    }
+
     pub fn json_level_value(value: &serde_json::Value, level: u8, field: &str) -> Option<i32> {
         value
             .as_i64()

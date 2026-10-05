@@ -3768,5 +3768,15 @@
         "Number": 750
       }
     ]
+  },
+  {
+    "map_name": "prontera",
+    "x": 151,
+    "y": 193,
+    "dir": 6,
+    "name": "Mount Master",
+    "sprite": "123",
+    "entry_id": 7,
+    "constructor_args": []
   }
 ]

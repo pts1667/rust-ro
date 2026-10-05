@@ -223,7 +223,7 @@ fn equipment_updates_keep_other_inventory_fields() {
             .remove(0);
         equipment.equip = 1;
         repository
-            .character_inventory_wearable_item_update(vec![equipment.clone()])
+            .character_inventory_commit_equipment(150_000, vec![equipment.clone()])
             .await
             .unwrap();
         assert_eq!(repository.character_inventory_fetch(150_000).await.unwrap(), vec![equipment]);

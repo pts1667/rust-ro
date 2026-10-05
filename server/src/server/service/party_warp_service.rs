@@ -119,6 +119,8 @@ impl Server {
                     (key.clone(), Some((*x, *y)), range)
                 }
             };
+            let recalled_to_map = !matches!(event.map.as_str(), "Random" | "RandomAll" | "SavePoint" | "SavePointAll");
+            if recalled_to_map && char_id != event.char_id && state.map_flags(&key).enabled(MapFlag::NoWarpTo) { continue; }
             self.ensure_party_warp_instance(state, &key)?;
             let (x, y) = destination_cell(state, &key, center, range)?;
             warps.push(ScriptWarp { char_id, map: normalize_map(key.map_name()), x, y, destination_instance: Some(key.map_instance()) });

@@ -307,13 +307,48 @@ impl BonusScriptHandler {
     }
 
     pub fn register_auto_bonus(&self, function: Function, params: &[Value], source_item_id: u32) -> Result<(), String> {
+        let bonus = Self::auto_bonus_definition(function, params, source_item_id)?;
+        bonus!(self, BonusType::AutoBonus(bonus, 1));
+        Ok(())
+    }
+
+    pub(crate) fn register_pet_auto_bonus(&self, function: Function, params: &[Value], pet_id: u32, class_id: u16) -> Result<(), String> {
+        if pet_id == 0 {
+            return Err("Pet automatic bonuses require an active pet".into());
+        }
+        let mut definition = Self::auto_bonus_definition(function, params, 0)?;
+        if definition.program_id == 0 || definition.rate == 0 || definition.duration == 0 {
+            return Ok(());
+        }
+        definition.source_pet_id = pet_id;
+        super::pet_auto_bonus::validate_program(definition.program_id, class_id, "bonus")?;
+        if definition.visual_program_id != 0 {
+            super::pet_auto_bonus::validate_program(definition.visual_program_id, class_id, "visual")?;
+        }
+        let mut bonuses = self.bonuses.write().unwrap();
+        let matches_trigger = |bonus: &BonusType| {
+            matches!(bonus, BonusType::AutoBonus(existing, _) if existing.source_pet_id == pet_id && existing.trigger == definition.trigger)
+        };
+        if bonuses.iter().filter(|bonus| matches_trigger(bonus)).any(|bonus| {
+            matches!(bonus, BonusType::AutoBonus(existing, _) if existing.program_id == definition.program_id)
+        }) {
+            return Ok(());
+        }
+        if bonuses.iter().filter(|bonus| matches_trigger(bonus)).count() >= 50 {
+            return Err("Pet automatic bonus limit exceeded".into());
+        }
+        bonuses.push(BonusType::AutoBonus(definition, 1));
+        Ok(())
+    }
+
+    fn auto_bonus_definition(function: Function, params: &[Value], source_item_id: u32) -> Result<AutoBonus, String> {
         if params.len() < 3 {
             return Err("An automatic bonus needs program, rate and duration".into());
         }
         let trigger = match function {
-            Function::AutoBonus => CombatTrigger::Attack,
-            Function::AutoBonus2 => CombatTrigger::Hit,
-            Function::AutoBonus3 => CombatTrigger::Skill,
+            Function::AutoBonus | Function::PetAutoBonus => CombatTrigger::Attack,
+            Function::AutoBonus2 | Function::PetAutoBonus2 => CombatTrigger::Hit,
+            Function::AutoBonus3 | Function::PetAutoBonus3 => CombatTrigger::Skill,
             _ => return Err("Expected an automatic bonus operation".into()),
         };
         let program_id = positive(&params[0])?;
@@ -329,7 +364,7 @@ impl BonusScriptHandler {
             BattleFlag::normalize(params.get(3).map(Value::number_value).transpose()?.unwrap_or(0) as u32, false)
         };
         let visual_program_id = params.get(4).map(positive).transpose()?.unwrap_or(0);
-        let bonus = AutoBonus {
+        Ok(AutoBonus {
             trigger,
             rate: params[1].number_value()?.saturating_mul(10).clamp(-10000, 10000),
             duration,
@@ -339,9 +374,8 @@ impl BonusScriptHandler {
             visual_program_id,
             source_item_id,
             source_location: 0,
-        };
-        bonus!(self, BonusType::AutoBonus(bonus, 1));
-        Ok(())
+            source_pet_id: 0,
+        })
     }
 
     fn apply_combat_bonus(&self, function: Function, params: &[Value]) -> Result<bool, String> {
@@ -352,6 +386,46 @@ impl BonusScriptHandler {
             self.bonuses.write().unwrap().push(BonusType::CombatProc(proc, 1));
         };
         match name.as_str() {
+            "bnearatkdef" if function == Function::Bonus => bonus!(self, BonusType::ResistanceMeleeAttackPercentage(number(1)?)),
+            "bshortatkrate" if function == Function::Bonus => bonus!(self, BonusType::DamageMeleeAtkPercentage(number(1)?)),
+            "bmagicaddele" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::MagicalDamageAgainstElementPercentage(Element::try_from_value(positive(&params[1])? as usize)?, number(2)?)
+            ),
+            "bmagicaddclass" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::MagicalDamageAgainstClassPercentage(MobClass::try_from_value(positive(&params[1])? as usize)?, number(2)?)
+            ),
+            "bmagicaddrace2" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::MagicalDamageAgainstMobGroupPercentage(MobGroup::try_from_value(positive(&params[1])? as usize)?, number(2)?)
+            ),
+            "bmagicdamage" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::MagicalDamageAgainstMobIdPercentage(positive(&params[1])? as u32, number(2)?)
+            ),
+            "bmagicsubdef" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::ResistanceMagicAttackFromMobIdPercentage(positive(&params[1])? as u32, number(2)?)
+            ),
+            "bweaponsubsize" | "bmagicsubsize" if function == Function::Bonus2 => {
+                let size = Size::try_from_value(positive(&params[1])? as usize)?;
+                bonus!(
+                    self,
+                    if name == "bweaponsubsize" {
+                        BonusType::ResistancePhysicalAttackFromSizePercentage(size, number(2)?)
+                    } else {
+                        BonusType::ResistanceMagicAttackFromSizePercentage(size, number(2)?)
+                    }
+                );
+            }
+            "bmagicaddsize" if function == Function::Bonus2 => bonus!(
+                self,
+                BonusType::MagicalDamageAgainstSizePercentage(
+                    Size::try_from_value(positive(&params[1])? as usize)?,
+                    i8::try_from(number(2)?).map_err(|_| "Magic size damage rate is out of bounds")?
+                )
+            ),
             "bfleerate" if function == Function::Bonus => bonus!(self, BonusType::FleePercentage(number(1)?)),
             "bmiscatkdef" | "bmiscdef" if function == Function::Bonus => {
                 bonus!(self, BonusType::ResistanceMiscAttackPercentage(number(1)?))

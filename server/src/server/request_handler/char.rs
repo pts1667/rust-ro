@@ -3,8 +3,8 @@ use std::net::Shutdown::Both;
 use std::sync::{Arc, Mutex};
 
 use byteorder::{LittleEndian, WriteBytesExt};
-use movement::position::Position;
 use models::status::KnownSkill;
+use movement::position::Position;
 use packets::packets::{
     CharacterInfoNeoUnion, Packet, PacketChDeleteChar4Reserved, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3,
     PacketChSelectChar, PacketChSendMapInfo, PacketCzEnter2, PacketCzRestart, PacketHcAcceptEnterNeoUnion,
@@ -15,17 +15,15 @@ use packets::packets::{
 };
 
 use crate::repository::model::char_model::{CharInsertModel, CharSelectModel, CharacterInfoNeoUnionWrapped};
-use crate::server::model::events::game_event::GameEvent::{CharacterInitInventory, CharacterJoinGame};
-use crate::server::model::events::game_event::{CharacterRemoveFromMap, GameEvent};
+use crate::server::Server;
+use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::hotkey::Hotkey;
-use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::request::Request;
 use crate::server::model::status::StatusFromDb;
 use crate::server::script::ScriptGlobalVariableStore;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::Character;
-use crate::server::Server;
 use crate::util::packet::chain_packets;
 use crate::util::string::StringUtil;
 use crate::util::tick::get_tick_client;
@@ -36,10 +34,11 @@ pub fn handle_char_enter(server: &Server, context: Request) {
     let mut sessions_guard = write_lock!(server_state.sessions());
 
     if sessions_guard.contains_key(&packet_char_enter.aid) {
-        let session = sessions_guard.get(&packet_char_enter.aid).unwrap();
-        let session = Arc::new(session.recreate_with_char_socket(context.socket()));
-        sessions_guard.insert(packet_char_enter.aid, session.clone());
+        let session = sessions_guard.get(&packet_char_enter.aid).unwrap().clone();
         if session.auth_code == packet_char_enter.auth_code && session.user_level == packet_char_enter.user_level {
+            let session = Arc::new(session.recreate_with_char_socket(context.socket()));
+            sessions_guard.insert(packet_char_enter.aid, session.clone());
+            drop(sessions_guard);
             let packet_hc_accept_enter_neo_union: Box<dyn Packet> = server.runtime().block_on(async {
                 let mut hc_accept_enter_neo_union = load_chars_info(session.account_id, server).await;
                 if GlobalConfigService::instance().packetver() >= 20130000 {
@@ -78,8 +77,6 @@ pub fn handle_char_enter(server: &Server, context: Request) {
             socket_send_raw!(context, final_response_packet);
             return;
         }
-        // should not happen, but in case of forged packet, remove session
-        server.state().remove_session(packet_char_enter.aid);
     }
     let mut res = PacketHcRefuseEnter::new(GlobalConfigService::instance().packetver());
     res.set_error_code(0);
@@ -237,9 +234,20 @@ pub fn handle_delete_reserved_char(server: &Server, context: Request) {
 
 pub fn handle_select_char(server: &Server, context: Request) {
     let packet_select_char = cast!(context.packet(), PacketChSelectChar);
-    let session_id = context.session().account_id;
+    let selected_session = match server.await_character_selection(context.session()) {
+        Ok(session) => session,
+        Err(error) => {
+            warn!("Character selection rejected: {error}");
+            let mut packet = PacketHcRefuseEnter::new(server.packetver());
+            packet.set_error_code(0);
+            packet.fill_raw();
+            socket_send!(context, packet);
+            return;
+        }
+    };
+    let session_id = selected_session.account_id;
     let char_model: CharSelectModel = server.runtime().block_on(async {
-        if let Some(char_id) = context.session().char_id {
+        if let Some(char_id) = selected_session.char_id {
             server.repository.character_with_id_fetch(char_id).await.unwrap()
         } else {
             server
@@ -279,7 +287,10 @@ pub fn handle_select_char(server: &Server, context: Request) {
     character.save_map = char_model.save_map.clone();
     character.save_x = char_model.save_x.max(0) as u16;
     character.save_y = char_model.save_y.max(0) as u16;
-    character.options = char_model.option as u32 as u64;
+    character
+        .position_revision
+        .store(char_model.position_revision, std::sync::atomic::Ordering::Relaxed);
+    character.set_options(char_model.option as u32 as u64);
     character.karma = char_model.karma;
     character.manner = char_model.manner;
     match server.repository.character_game_systems(char_id) {
@@ -291,24 +302,36 @@ pub fn handle_select_char(server: &Server, context: Request) {
     }
     match server.repository.account_game_systems(character.account_id) {
         Ok(systems) => character.account_game_systems = systems,
-        Err(error) => { error!("Failed to load account game systems: {error}"); return; }
+        Err(error) => {
+            error!("Failed to load account game systems: {error}");
+            return;
+        }
     }
     if character.game_systems.guild_id != 0 {
         match server.repository.guild(character.game_systems.guild_id) {
             Ok(Some(guild)) => character.guild_name = guild.name,
             Ok(None) => {}
-            Err(error) => { error!("Failed to load guild: {error}"); return; }
+            Err(error) => {
+                error!("Failed to load guild: {error}");
+                return;
+            }
         }
     }
     character.refresh_script_context();
     let char_id = character.char_id;
+    let map = match server.admit_selected_character(selected_session, character) {
+        Ok(map) => map,
+        Err(error) => {
+            warn!("Character admission rejected: {error}");
+            let mut packet = PacketHcRefuseEnter::new(server.packetver());
+            packet.set_error_code(0);
+            packet.fill_raw();
+            socket_send!(context, packet);
+            return;
+        }
+    };
     let mut map_name = [0 as char; 16];
-    character.current_map_name().fill_char_array(map_name.as_mut());
-    server.state_mut().insert_character(character);
-    if context.session().char_id.is_none() {
-        let session = Arc::new(context.session().recreate_with_character(char_id));
-        server.state().add_session(session_id, session);
-    }
+    map.fill_char_array(map_name.as_mut());
     if server.packetver() < 20170329 {
         let mut packet_ch_send_map_info = PacketHcNotifyZonesvr::new(GlobalConfigService::instance().packetver());
         packet_ch_send_map_info.set_gid(char_id);
@@ -342,28 +365,26 @@ pub fn handle_enter_game(server: &Server, context: Request) {
         error!("Not recognized PacketCzEnterX");
         return;
     }
-    let mut sessions_guard = write_lock!(server.state().sessions());
-    let session = sessions_guard.get(&aid);
-    if session.is_none() {
+    let Some(session) = server.state().find_session(aid) else {
         write_lock!(context.socket())
             .shutdown(Both)
             .expect("Unable to shutdown incoming socket. Shutdown was done because session does not exists");
         return;
-    }
-    let session = session.unwrap();
-    if auth_code != session.auth_code {
+    };
+    if auth_code != session.auth_code || session.char_id.is_none() {
         write_lock!(context.socket())
             .shutdown(Both)
             .expect("Unable to shutdown incoming socket. Shutdown was done because packet auth_code mismatching session auth_code");
-        server.state().remove_session(aid);
         return;
     }
-    let is_not_simulated = !session.is_simulated;
-    let char_id = session.char_id();
-    if is_not_simulated {
-        let session = Arc::new(session.recreate_with_map_socket(context.socket()));
-        sessions_guard.insert(aid, session.clone());
-    }
+    let entry = match server.admit_character_map_entry(session, context.socket()) {
+        Ok(entry) => entry,
+        Err(error) => {
+            warn!("Map entry rejected: {error}");
+            let _ = write_lock!(context.socket()).shutdown(Both);
+            return;
+        }
+    };
     let mut packet_map_connection = PacketMapConnection::new(GlobalConfigService::instance().packetver());
     packet_map_connection.set_aid(aid);
 
@@ -376,7 +397,6 @@ pub fn handle_enter_game(server: &Server, context: Request) {
     packet_inventory_expansion_info.fill_raw();
     let mut packet_overweight_percent = PacketZcOverweightPercent::new(GlobalConfigService::instance().packetver());
     packet_overweight_percent.fill_raw();
-    let character = server.state().get_character_unsafe(char_id);
     let mut packet_accept_enter = PacketZcAcceptEnter2::new(GlobalConfigService::instance().packetver());
     packet_accept_enter.set_start_time(get_tick_client());
     packet_accept_enter.set_x_size(5); // Commented as not used, set at 5 in Hercules
@@ -384,49 +404,46 @@ pub fn handle_enter_game(server: &Server, context: Request) {
     packet_accept_enter.set_font(0);
     packet_accept_enter.set_pos_dir(
         Position {
-            x: character.x(),
-            y: character.y(),
-            dir: character.dir(),
+            x: entry.x,
+            y: entry.y,
+            dir: entry.direction,
         }
         .to_pos(),
     );
     packet_accept_enter.fill_raw();
 
-    server.add_to_next_tick(CharacterJoinGame(char_id));
-    server.server_service.schedule_warp_to_walkable_cell(
-        server.state_mut().as_mut(),
-        &Map::name_without_ext(character.current_map_name()),
-        character.x(),
-        character.y(),
-        char_id,
-    );
     socket_send!(context, packet_accept_enter);
 
     /*
      * Inventory
      */
-    server.add_to_next_tick(CharacterInitInventory(char_id));
+    server.add_to_next_tick(GameEvent::CharacterMapReady(
+        crate::server::model::character_lifecycle::CharacterMapReady { session: entry.session },
+    ));
 }
 
 pub fn handle_restart(server: &Server, context: Request) {
     let packet_restart = cast!(context.packet(), PacketCzRestart);
-    let session_id = context.session().account_id;
-    let mut sessions_guard = write_lock!(server.state().sessions());
-    let session = sessions_guard.get(&session_id).unwrap();
-    let char_id = session.char_id();
-    let character_ref = server.state().get_character_from_context_unsafe(&context);
-    server.add_to_tick(
-        GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
-            char_id,
-            map_name: character_ref.current_map_name().clone(),
-            instance_id: character_ref.current_map_instance(),
-        }),
-        1,
-    );
-    server.add_to_tick(GameEvent::CharacterLeaveGame((char_id, packet_restart.atype)), 2);
-    let session = sessions_guard.get(&session_id).unwrap();
-    let session = Arc::new(session.recreate_without_character());
-    sessions_guard.insert(session_id, session);
+    let session = context.session();
+    if !session
+        .map_server_socket
+        .as_ref()
+        .is_some_and(|socket| std::sync::Arc::ptr_eq(socket, &context.socket()))
+    {
+        return;
+    }
+    if packet_restart.atype == 0 {
+        server.add_to_next_tick(GameEvent::CharacterRespawn(
+            crate::server::model::character_lifecycle::CharacterRespawn { session },
+        ));
+        return;
+    }
+    if packet_restart.atype != 1 {
+        return;
+    }
+    server.add_to_next_tick(GameEvent::CharacterLogout(
+        crate::server::model::character_lifecycle::CharacterLogout { session, restart: true },
+    ));
 
     let mut restart_ack = PacketZcRestartAck::new(GlobalConfigService::instance().packetver());
     restart_ack.set_atype(packet_restart.atype);
@@ -436,14 +453,16 @@ pub fn handle_restart(server: &Server, context: Request) {
 
 pub fn handle_disconnect(server: &Server, context: Request) {
     let session = context.session();
-    let char_id = session.char_id();
-    let character_ref = server.state().get_character_from_context_unsafe(&context);
-    server.add_to_next_tick(GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
-        char_id,
-        map_name: character_ref.current_map_name().clone(),
-        instance_id: character_ref.current_map_instance(),
-    }));
-    server.state().remove_session(session.account_id);
+    if !session
+        .map_server_socket
+        .as_ref()
+        .is_some_and(|socket| std::sync::Arc::ptr_eq(socket, &context.socket()))
+    {
+        return;
+    }
+    server.add_to_next_tick(GameEvent::CharacterLogout(
+        crate::server::model::character_lifecycle::CharacterLogout { session, restart: false },
+    ));
 
     let mut disconnect_ack = PacketZcReqDisconnectAck2::new(GlobalConfigService::instance().packetver());
     disconnect_ack.fill_raw();

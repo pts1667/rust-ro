@@ -16,7 +16,11 @@ impl Repository for MockedRepository {}
 
 impl crate::repository::GameSystemRepository for MockedRepository {}
 impl crate::repository::ScriptInventoryRepository for MockedRepository {}
-impl crate::repository::ScriptCharacterRepository for MockedRepository {}
+impl crate::repository::ScriptCharacterRepository for MockedRepository {
+    fn character_adjust_zeny(&self, _char_id: u32, _account_id: u32, expected: u32, delta: i64) -> Result<u32, Error> {
+        Ok((i64::from(expected) + delta).clamp(0, i64::from(i32::MAX)) as u32)
+    }
+}
 impl crate::repository::FameRepository for MockedRepository {}
 
 impl HotKeyRepository for MockedRepository {}
@@ -57,6 +61,10 @@ impl InventoryRepository for MockedRepository {
 
     async fn character_inventory_wearable_item_update(&self, _items: Vec<InventoryItemModel>) -> Result<(), Error> {
         Ok(Default::default())
+    }
+
+    async fn character_inventory_commit_equipment(&self, _char_id: u32, _items: Vec<InventoryItemModel>) -> Result<(), Error> {
+        Ok(())
     }
 }
 

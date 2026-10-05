@@ -96,7 +96,10 @@ impl ClientFrames {
         while self.pending.len().saturating_sub(consumed) >= 2 {
             let remaining = &self.pending[consumed..];
             let id = u16::from_le_bytes([remaining[0], remaining[1]]);
-            let length = crate::server::service::script_world_service::world_frame_length(id, self.packetver)
+            let length = super::talkie_box::layout(id, self.packetver)
+                .map(|layout| FrameLength::Fixed(layout.length))
+                .or_else(|| crate::server::service::script_world_service::world_frame_length(id, self.packetver))
+                .or_else(|| crate::server::service::player_trade_service::frame_length(id))
                 .or_else(|| super::script_operations::frame_length(id, self.packetver))
                 .or_else(|| self.lengths.get(&id).copied())
                 .or_else(|| crate::server::service::script_world_service::client_frame_length(id, self.packetver))
@@ -178,13 +181,16 @@ mod tests {
 
     #[test]
     fn teleport_selection_preserves_the_fixed_map_name_across_fragmented_reads() {
-        let mut frames=ClientFrames::new(20120229);
-        let mut selection=0x011b_u16.to_le_bytes().to_vec();
+        let mut frames = ClientFrames::new(20120229);
+        let mut selection = 0x011B_u16.to_le_bytes().to_vec();
         selection.extend_from_slice(&(models::enums::skill_enums::SkillEnum::AlTeleport.id() as u16).to_le_bytes());
-        let mut map=[0u8;16];map[..10].copy_from_slice(b"Random.gat");selection.extend_from_slice(&map);
+        let mut map = [0u8; 16];
+        map[..10].copy_from_slice(b"Random.gat");
+        selection.extend_from_slice(&map);
         assert!(frames.push(&selection[..15]).unwrap().is_empty());
-        let mut last=selection[15..].to_vec();last.extend_from_slice(&[0xa1,0x01,0]);
-        assert_eq!(frames.push(&last).unwrap(),vec![selection,vec![0xa1,0x01,0]]);
+        let mut last = selection[15..].to_vec();
+        last.extend_from_slice(&[0xA1, 0x01, 0]);
+        assert_eq!(frames.push(&last).unwrap(), vec![selection, vec![0xA1, 0x01, 0]]);
     }
 
     #[test]

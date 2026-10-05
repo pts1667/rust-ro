@@ -73,9 +73,10 @@ impl ScriptSkillService {
             "WZ_STORMGUST" if gust_hits >= 3 => status(Freeze, 15_000, true),
             "WS_CARTTERMINATION" => status(Stun, 500 * level_i, true),
             "MER_CRASH" => status(Stun, 600 * level_i, true),
-            "MA_LANDMINE" => status(Stun, 1000, true),
-            "MA_FREEZINGTRAP" => status(Freeze, 10000, true),
+            "MA_LANDMINE" | "HT_LANDMINE" => status(Stun, 1000, true),
+            "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => status(Freeze, 10000, true),
             "ML_SPIRALPIERCE" => status(Ankle, 10000, true),
+            "SL_STUN" if *target.size() == models::enums::size::Size::Medium => status(Stun, (30 + 10 * level_i) * 100, false),
             "RG_RAID" => {
                 status(Stun, (10 + 3 * level_i) * 100, false);
                 status(Blind, (10 + 3 * level_i) * 100, true);
@@ -104,6 +105,7 @@ impl ScriptSkillService {
     }
 
     pub fn after_skill_damage(&self, server: &Server, state: &mut ServerState, hit: ScriptSkillHit, tick: u128) -> Result<(), String> {
+        if state.ground_units.contains_key(&hit.target_id) { return Ok(()); }
         if hit.damage == 0 || hit.depth >= 8 {
             return Ok(());
         }
@@ -281,8 +283,8 @@ impl ScriptSkillService {
                     continue;
                 }
                 let delay = match metadata.name.as_str() {
-                    "MA_LANDMINE" => 1000,
-                    "MA_FREEZINGTRAP" => StatusService::instance().attack_motion(&snapshot) as u128 + 100,
+                    "MA_LANDMINE" | "HT_LANDMINE" => 1000,
+                    "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => StatusService::instance().attack_motion(&snapshot) as u128 + 100,
                     _ => 0,
                 };
                 if state.get_character(hit.target_id).is_some() || state.companion_owner(hit.target_id, &map, instance_id).is_some() {

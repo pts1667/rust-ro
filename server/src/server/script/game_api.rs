@@ -21,10 +21,24 @@ fn variable_name(name: &str) -> (VariableScope, String) {
 }
 
 impl ScriptService {
+    fn schedule_game_event(server: &Server, context: &ScriptRequest, event: GameEvent) {
+        let event = if let Some(token) = context.logout_token {
+            GameEvent::ScriptLogoutAction(crate::server::model::character_lifecycle::ScriptLogoutAction {
+                char_id: context.char_id, token, action: Box::new(event),
+            })
+        } else { event };
+        server.add_to_next_tick(event);
+    }
+    fn validate_variable_scope(context: &ScriptRequest, scope: VariableScope) -> Result<(), String> {
+        if context.char_id == 0 && matches!(scope, VariableScope::Character | VariableScope::CharacterTemporary | VariableScope::Account) {
+            return Err("Script variable requires an attached player".into());
+        }
+        Ok(())
+    }
     pub(crate) fn read_item_variable(&self, server: &Server, character: &crate::server::state::character::Character, name: &str) -> Reply {
         let (scope, name) = crate::server::service::item_effect_service::script_variable_name(name);
-        let context = ScriptRequest { char_id: character.char_id, account_id: character.account_id, npc_id: 0, npc_entry: 0,
-            map_instance: character.current_map_instance(), generation: 0, background: false,
+        let context = ScriptRequest { char_id: character.char_id, account_id: character.account_id, npc_id: 0, npc_entry: 0, npc_scope_instance: 0,
+            map_instance: character.current_map_instance(), generation: 0, background: false, event_depth: 0, timer_context: None, logout_token: None,
             request: Request::Read(name.clone()), response: std::sync::Arc::new(std::sync::Mutex::new(None)) };
         self.read_variable(server, &context, scope, name, 0)
     }
@@ -32,13 +46,14 @@ impl ScriptService {
     fn temporary_key(context: &ScriptRequest, scope: VariableScope, name: &str, index: u32) -> (u32, u8, u32, String, u32) {
         match scope {
             VariableScope::Npc => (0, 0, context.npc_entry, name.into(), index),
-            VariableScope::NpcInstance => (1, context.map_instance, context.npc_id, name.into(), index),
+            VariableScope::NpcInstance => (1, context.npc_scope_instance, context.npc_id, name.into(), index),
             VariableScope::ServerTemporary => (3, 0, 0, name.into(), index),
             _ => (2, 0, context.char_id, name.into(), index),
         }
     }
 
     fn read_variable(&self, server: &Server, context: &ScriptRequest, scope: VariableScope, name: String, index: u32) -> Reply {
+        Self::validate_variable_scope(context, scope)?;
         let string = name.ends_with('$');
         let repository = &server.repository;
         Ok(match (scope, string) {
@@ -64,6 +79,7 @@ impl ScriptService {
 
     fn write_variables(&self, server: &Server, context: &ScriptRequest, variables: Vec<Variable>) -> Reply {
         for variable in &variables {
+            Self::validate_variable_scope(context, variable.scope)?;
             if variable.name.is_empty()
                 || variable.name.len() > 128
                 || !matches!(variable.value, Value::Number(_) | Value::String(_))
@@ -92,6 +108,9 @@ impl ScriptService {
     }
 
     pub fn handle_request(&self, server: &Server, state: &mut ServerState, context: ScriptRequest) {
+        if super::unit_data::handle_request(server, state, &context) {
+            return;
+        }
         let response = context.response.lock().unwrap().take();
         let Some(response) = response else {
             return;
@@ -99,10 +118,16 @@ impl ScriptService {
         if response.is_closed() {
             return;
         }
-        let valid = state.find_session(context.account_id).is_some_and(|session| {
+        let valid = if context.logout_token.is_some() {
+            server.valid_logout_request(state, &context)
+        } else if state.pending_character_logouts.contains_key(&context.char_id) {
+            false
+        } else if context.background && context.char_id == 0 && context.account_id == 0 {
+            super::unit_data::script_actor(state, &context).is_ok_and(|npc| npc.is_some())
+        } else { state.find_session(context.account_id).is_some_and(|session| {
             (context.background || session.script_generation.load(Ordering::Acquire) == context.generation) && session.char_id == Some(context.char_id)
-        });
-        let reply = if valid && state.characters().contains_key(&context.char_id) {
+        }) && state.characters().contains_key(&context.char_id) };
+        let reply = if valid {
             self.process_request(server, state, &context)
         } else {
             Err("Conversation is no longer active".into())
@@ -113,9 +138,8 @@ impl ScriptService {
     fn process_request(&self, server: &Server, state: &mut ServerState, context: &ScriptRequest) -> Reply {
         match context.request.clone() {
             Request::Read(name) => {
-                let character = state.characters().get(&context.char_id).ok_or("Character disconnected")?;
-                if let Some(value) = status_variable(&character.status, &name) {
-                    return Ok(value);
+                if let Some(character) = state.characters().get(&context.char_id) {
+                    if let Some(value) = status_variable(&character.status, &name) { return Ok(value); }
                 }
                 let (scope, name) = variable_name(&name);
                 self.read_variable(server, context, scope, name, 0)
@@ -129,6 +153,7 @@ impl ScriptService {
                 let mut persistent = vec![];
                 let mut positions = vec![];
                 for (position, variable) in variables.into_iter().enumerate() {
+                    Self::validate_variable_scope(context, variable.scope)?;
                     if variable.name.is_empty() || variable.name.len() > 128 || variable.name.ends_with('$') || !matches!(variable.value, Value::Number(_)) {
                         return Err("Counter scope or name is invalid".into());
                     }
@@ -155,8 +180,9 @@ impl ScriptService {
             }
             Request::Write { name, value } => {
                 if name == "Zeny" {
+                    if context.char_id == 0 { return Err("Zeny requires an attached player".into()); }
                     let amount = u32::try_from(value.number_value()?).map_err(|_| "Invalid zeny")?;
-                    server.add_to_next_tick(GameEvent::CharacterUpdateZeny(
+                    Self::schedule_game_event(server, context, GameEvent::CharacterUpdateZeny(
                         crate::server::model::events::game_event::CharacterZeny {
                             char_id: context.char_id,
                             zeny: Some(amount),
@@ -286,7 +312,103 @@ impl ScriptService {
                 Ok(Value::default())
             }
             Request::Call { function, arguments } => {
+                if function == Function::WarpPortal {
+                    let source = super::unit_data::script_actor(state, context)?.ok_or("Warp Portal command requires an NPC")?;
+                    return server.script_skill_service().create_npc_warp_portal(state, &source, &arguments, crate::util::tick::get_tick());
+                }
+                if crate::server::service::npc_timer_service::handles(function) {
+                    return server.npc_timer_call(state, context, function, &arguments, crate::util::tick::get_tick());
+                }
+                if matches!(function, Function::GetNpcId | Function::DoEvent | Function::DoNpcEvent) {
+                    return server.npc_event_call(state, context, function, &arguments);
+                }
+                if function == Function::Print {
+                    debug!("NPC {}: {}", context.npc_id, arguments.iter().map(|value| value.text()).collect::<Vec<_>>().join(" "));
+                    return Ok(Value::default());
+                }
+                if (context.char_id == 0 && function == Function::Announce)
+                    || (function == Function::Monster && super::unit_data::script_actor(state, context)?.is_some()) {
+                    return server.npc_background_call(state, context, function, &arguments);
+                }
+                if matches!(function, Function::Rand | Function::Min | Function::Max | Function::Pow | Function::GetTime | Function::GetItemInfo) {
+                    let mut host = ItemScriptHost::bonuses(models::status::Status::default(), 0);
+                    return futures::executor::block_on(host.invoke(Request::Call { function, arguments }));
+                }
+                if matches!(function, Function::UnitSkill | Function::UnitSkillToId | Function::UnitSkillToPosition) {
+                    let default_source = if context.char_id == 0 { context.npc_id } else { context.char_id };
+                    let mut request = crate::server::service::script_unit_skill_service::unit_skill_request(self.configuration_service, default_source, function, &arguments)?;
+                    crate::server::service::script_unit_skill_service::normalize_unit_skill_actor_ids(state, &mut request);
+                    let actor = super::unit_data::request_actor(server, state, context, request.source_id)?.ok_or("Unit skill caster is unavailable")?;
+                    request.source_map = Some(actor.map);
+                    request.source_instance = Some(actor.instance);
+                    server.script_skill_service().cast_script_unit_skill(server, state, request, crate::util::tick::get_tick())?;
+                    return Ok(Value::default());
+                }
+                if matches!(function, Function::StartStatus | Function::StartStatus2 | Function::StartStatus4) {
+                    use models::enums::EnumWithMaskValueU32;
+                    use crate::server::model::map_item::MapItemType;
+                    use crate::server::model::events::map_event::MapEvent;
+                    let (target, request) = crate::server::service::item_effect_service::status_request(function, &arguments, models::status_change::StatusStartFlag::NoAvoid.as_flag())?;
+                    let target = super::unit_data::request_actor(server, state, context, target.unwrap_or(context.char_id))?.ok_or("Status target is unavailable")?;
+                    if target.object_type == MapItemType::Character {
+                        let mut character = state.characters_mut().remove(&target.id).ok_or("Status target disconnected")?;
+                        let result = crate::server::service::status_effect_service::StatusEffectService::start(server, &mut character, request, crate::util::tick::get_tick(), &server.server_service().notification_sender());
+                        state.insert_character(character);
+                        result?;
+                    } else if target.object_type == MapItemType::Npc {
+                        let map = state.get_map_instance(&target.map, target.instance).ok_or("Status target map is unavailable")?;
+                        map.add_to_next_tick(MapEvent::NpcEffect(crate::server::service::map_npc_effect::MapNpcEffect {
+                            actor_id: target.id, effect: crate::server::service::map_npc_effect::NpcEffect::Status(request),
+                        }));
+                    } else {
+                        Self::schedule_game_event(server, context, GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange { char_id: target.id, request }));
+                    }
+                    return Ok(Value::default());
+                }
+                if function == Function::EndStatus {
+                    use crate::server::model::map_item::MapItemType;
+                    use crate::server::model::events::map_event::MapEvent;
+                    let (target, kind) = crate::server::service::item_effect_service::status_to_end(&arguments)?;
+                    let target = super::unit_data::request_actor(server, state, context, target.unwrap_or(context.char_id))?.ok_or("Status target is unavailable")?;
+                    if target.object_type == MapItemType::Character {
+                        let mut character = state.characters_mut().remove(&target.id).ok_or("Status target disconnected")?;
+                        crate::server::service::status_effect_service::StatusEffectService::end(server, &mut character, kind, crate::util::tick::get_tick(), &server.server_service().notification_sender());
+                        state.insert_character(character);
+                    } else if target.object_type == MapItemType::Npc {
+                        let map = state.get_map_instance(&target.map, target.instance).ok_or("Status target map is unavailable")?;
+                        map.add_to_next_tick(MapEvent::NpcEffect(crate::server::service::map_npc_effect::MapNpcEffect {
+                            actor_id: target.id, effect: crate::server::service::map_npc_effect::NpcEffect::EndStatus(kind),
+                        }));
+                    } else {
+                        Self::schedule_game_event(server, context, GameEvent::CharacterEndStatus(crate::server::model::events::game_event::CharacterEndStatus { char_id: target.id, kind }));
+                    }
+                    return Ok(Value::default());
+                }
+                if matches!(function, Function::GetCastleData | Function::SetCastleData) {
+                    let map = arguments.first().ok_or("Castle map is required")?.string_value()?.to_string();
+                    if !state.map_flags_for(&map, 0).enabled(crate::server::model::map_flags::MapFlag::GvgCastle) {
+                        return Ok(Value::Number(0));
+                    }
+                    let field = u8::try_from(arguments.get(1).ok_or("Castle data selector is required")?.number_value()?)
+                        .map_err(|_| "Unknown castle data selector")?;
+                    if function == Function::GetCastleData {
+                        return Ok(Value::Number(server.repository.castle_value(&map, field).map_err(|error| error.to_string())?));
+                    }
+                    let value = arguments.get(2).ok_or("Castle data value is required")?.number_value()?;
+                    server.repository.set_castle_value(&map, field, value).map_err(|error| error.to_string())?;
+                    return Ok(Value::Number(0));
+                }
+                if matches!(function, Function::AgitStart | Function::AgitEnd | Function::AgitCheck) {
+                    return Ok(Value::Number(match function {
+                        Function::AgitCheck => i32::from(state.siege_active),
+                        _ => i32::from(server.set_siege_active(state, function == Function::AgitStart)),
+                    }));
+                }
                 if crate::server::service::map_flag_service::is_map_flag_call(function) {
+                    if let Some(npc) = super::unit_data::script_actor(state, context)? {
+                        let key = crate::server::model::map_instance::MapInstanceKey::new(npc.map, npc.instance);
+                        return server.map_flag_call_from(state, Some(&key), function, &arguments);
+                    }
                     return server.map_flag_call(state, context.char_id, function, &arguments);
                 }
                 if function == Function::GetCharacterId {
@@ -307,19 +429,31 @@ impl ScriptService {
                 let target_argument = match function {
                     Function::ResetLevel | Function::AddFame => Some(1),
                     Function::GetFame | Function::GetFameRank => Some(0),
+                    Function::SavePoint => Some(if arguments.len() > 4 { 5 } else { 3 }),
+                    Function::GetSavePoint => Some(1),
                     _ => None,
                 };
                 let target_id = target_argument.and_then(|index| arguments.get(index)).map(Value::number_value).transpose()?
                     .map(|id| u32::try_from(id).map_err(|_| "Invalid script target character")).transpose()?.filter(|id| *id != 0).unwrap_or(context.char_id);
                 let mut character = state.characters_mut().remove(&target_id).ok_or("Script target character disconnected")?;
                 let result: Reply = (|| { match function {
+                    Function::SavePoint => crate::server::service::map_position_service::set_save_point(server, state, &mut character, &arguments),
+                    Function::GetSavePoint => {
+                        if !(1..=2).contains(&arguments.len()) { return Err("GetSavePoint requires a type and optional character ID".into()); }
+                        Ok(match number(0)? {
+                            0 => crate::server::service::map_flag_service::normalize_map(&character.save_map).into(),
+                            1 => i32::from(character.save_x).into(),
+                            2 => i32::from(character.save_y).into(),
+                            _ => 0.into(),
+                        })
+                    }
                     Function::GetLook => Ok(Value::Number(
                         character.get_look(LookType::try_from_value(number(0)? as usize).map_err(|_| "Invalid look type")?) as i32,
                     )),
                     Function::SetLook => {
                         let look_type = LookType::try_from_value(number(0)? as usize).map_err(|_| "Invalid look type")?;
                         let look_value = u16::try_from(number(1)?).map_err(|_| "Invalid look value")?;
-                        server.add_to_next_tick(GameEvent::CharacterUpdateLook(CharacterLook {
+                        Self::schedule_game_event(server, context, GameEvent::CharacterUpdateLook(CharacterLook {
                             char_id: context.char_id,
                             look_type,
                             look_value,
@@ -366,7 +500,7 @@ impl ScriptService {
                     )),
                     Function::JobChange => {
                         let job = JobName::try_from_value(number(0)? as usize).map_err(|_| "Invalid job")?;
-                        server.add_to_next_tick(GameEvent::CharacterChangeJob(CharacterChangeJob {
+                        Self::schedule_game_event(server, context, GameEvent::CharacterChangeJob(CharacterChangeJob {
                             char_id: context.char_id,
                             job,
                             should_reset_skills: false,
@@ -380,17 +514,6 @@ impl ScriptService {
                     Function::GetFame => crate::server::service::script_character_service::get_fame(server, &character, false),
                     Function::GetFameRank => crate::server::service::script_character_service::get_fame(server, &character, true),
                     Function::AddFame => crate::server::service::script_character_service::add_fame(server, &mut character, &arguments),
-                    Function::StartStatus | Function::StartStatus2 | Function::StartStatus4 => {
-                        use models::enums::EnumWithMaskValueU32;
-                        let (target, request) = crate::server::service::item_effect_service::status_request(function, &arguments,
-                            models::status_change::StatusStartFlag::NoAvoid.as_flag())?;
-                        if target.is_some_and(|target| target != character.char_id) {
-                            server.add_to_next_tick(GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange { char_id: target.unwrap(), request }));
-                        } else {
-                            crate::server::service::status_effect_service::StatusEffectService::start(server, &mut character, request, crate::util::tick::get_tick(), &server.server_service().notification_sender())?;
-                        }
-                        Ok(Value::default())
-                    }
                     Function::Print => {
                         debug!(
                             "NPC {}: {}",

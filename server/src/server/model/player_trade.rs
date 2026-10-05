@@ -35,4 +35,16 @@ pub struct PlayerTrade {
 pub struct PlayerTradeReceipt {
     pub session_id: u64,
     pub partner_id: u32,
+    #[serde(default)]
+    pub payload: Vec<u8>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PlayerTradeRequest {
+    Request(u32),
+    Answer(bool),
+    Offer { index: u16, amount: u32 },
+    Lock,
+    Cancel,
+    Confirm,
 }

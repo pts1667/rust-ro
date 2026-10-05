@@ -4,7 +4,7 @@ use std::hash::Hash;
 use std::io::Write;
 use std::net::{Shutdown, TcpStream};
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, Mutex, RwLock, Weak};
 
 use packets::packets::{Packet, PacketUnknown};
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,26 @@ use tokio::sync::mpsc::Sender;
 
 use crate::server::script::PlayerInput;
 use crate::server::state::character::Character;
+
+#[derive(Clone)]
+pub struct SessionBinding(Weak<Session>);
+
+impl SessionBinding {
+    pub fn new(session: &Arc<Session>) -> Self { Self(Arc::downgrade(session)) }
+    pub fn matches(&self, session: &Arc<Session>) -> bool {
+        self.0.upgrade().is_some_and(|original| Arc::ptr_eq(&original, session))
+    }
+}
+
+impl std::fmt::Debug for SessionBinding {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SessionBinding").field(&self.0.as_ptr()).finish()
+    }
+}
+
+impl PartialEq for SessionBinding {
+    fn eq(&self, other: &Self) -> bool { Weak::ptr_eq(&self.0, &other.0) }
+}
 
 pub struct Session {
     pub char_server_socket: Option<Arc<RwLock<TcpStream>>>,

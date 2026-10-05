@@ -47,6 +47,7 @@ impl StatusFromDb {
             base_exp: char_model.base_exp as u32,
             job_exp: char_model.job_exp as u32,
             state: 0,
+            riding: false,
             is_male: char_model.sex != "F",
             size: Default::default(),
             weapons: vec![],
@@ -62,6 +63,8 @@ impl StatusFromDb {
             script_context: None,
             script_skill_grants: Default::default(),
             mob_class: Default::default(),
+            mob_capabilities: 0,
+            combat_actor_kind: Default::default(),
         }
     }
 
@@ -93,6 +96,7 @@ impl StatusFromDb {
         snapshot.set_hit((mob_model.level + mob_model.dex).clamp(0, i16::MAX as i32) as i16);
         snapshot.set_base_level(mob_model.level.max(1) as u32);
         snapshot.set_mob_class(mob_model.battle_class());
+        snapshot.set_mob_capabilities(mob_model.battle_capabilities());
         snapshot.set_flee((mob_model.level + mob_model.agi).clamp(0, i16::MAX as i32) as i16);
         snapshot.set_mob_groups(mob_model.race_groups.iter().filter_map(|name| MobGroup::try_from_string_ignore_case(name).or_else(|_| MobGroup::try_from_string_ignore_case(&format!("RC2_{name}"))).ok()).collect());
         snapshot

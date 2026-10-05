@@ -257,6 +257,9 @@ fn apply_effect(
             }
             if state.get_character(request.target_id).is_some() {
                 server.add_to_next_tick(GameEvent::CharacterDamage(Damage {
+                    notification: None,
+                    source_kind: models::enums::actor::CombatActorKind::Player,
+                    skill_damage_adjusted: false,
                     target_id: request.target_id,
                     attacker_id: request.source_id,
                     damage,
@@ -279,6 +282,9 @@ fn apply_effect(
                     .get_map_instance_from_character(character)
                     .ok_or("Reflection map is unavailable")?
                     .add_to_next_tick(MapEvent::MobDamage(Damage {
+                        notification: None,
+                        source_kind: models::enums::actor::CombatActorKind::Player,
+                        skill_damage_adjusted: false,
                         target_id: request.target_id,
                         attacker_id: request.source_id,
                         damage,
@@ -321,11 +327,19 @@ fn apply_effect(
                 .characters_mut()
                 .get_mut(&request.source_id)
                 .ok_or("Zeny owner is unavailable")?;
-            let zeny = character.status.zeny.saturating_add(amount).min(i32::MAX as u32);
+            let zeny = server
+                .repository
+                .character_adjust_zeny(
+                    character.char_id,
+                    character.account_id,
+                    character.status.zeny,
+                    i64::from(amount),
+                )
+                .map_err(|error| error.to_string())?;
             character.status.zeny = zeny;
             server.add_to_next_tick(GameEvent::CharacterUpdateZeny(CharacterZeny {
                 char_id: request.source_id,
-                zeny: Some(zeny),
+                zeny: None,
             }));
             Ok(())
         }
@@ -441,6 +455,9 @@ fn apply_splash(server: &Server, state: &mut ServerState, request: &ScriptCombat
             .battle_service()
             .normal_splash_damage_signed(&source_status, &target_status, ranged);
         let event = Damage {
+            notification: None,
+            source_kind: models::enums::actor::CombatActorKind::Player,
+            skill_damage_adjusted: false,
             target_id,
             attacker_id: request.source_id,
             damage: damage.max(0) as u32,
@@ -456,40 +473,23 @@ fn apply_splash(server: &Server, state: &mut ServerState, request: &ScriptCombat
             credit_id: request.source_id,
             defenses_applied: true,
             magic_context: None,
-        };
+        }
+        .with_action_notification(
+            source.current_map_name(),
+            source.current_map_instance(),
+            position.x,
+            position.y,
+            tick,
+            1,
+            0,
+            models::enums::action::ActionType::Splash,
+            (damage, 0),
+        );
         if player {
             server.add_to_next_tick(GameEvent::CharacterDamage(event));
         } else {
             instance.add_to_next_tick(MapEvent::MobDamage(event));
         }
-        use packets::packets::{Packet, PacketZcNotifyAct};
-        let mut packet = PacketZcNotifyAct::new(GlobalConfigService::instance().packetver());
-        packet.set_gid(request.source_id);
-        packet.set_target_gid(target_id);
-        packet.set_attack_mt(0);
-        packet.set_attacked_mt(0);
-        packet.set_damage(damage.clamp(i16::MIN as i32, i16::MAX as i32) as i16);
-        packet.set_count(1);
-        use models::enums::EnumWithNumberValue;
-        packet.set_action(models::enums::action::ActionType::Splash.value() as u8);
-        packet.fill_raw();
-        let notification = crate::server::model::events::client_notification::AreaNotification::new(
-            source.current_map_name().clone(),
-            source.current_map_instance(),
-            crate::server::model::events::client_notification::AreaNotificationRangeType::Fov {
-                x: position.x,
-                y: position.y,
-                exclude_id: None,
-            },
-            packet.raw,
-        );
-        server
-            .server_service()
-            .notification_sender()
-            .send(crate::server::model::events::client_notification::Notification::Area(
-                notification,
-            ))
-            .map_err(|error| error.to_string())?;
     }
     Ok(())
 }
@@ -519,13 +519,15 @@ pub fn skill_flags(skill_id: u32) -> u32 {
 }
 
 fn run_auto_bonus(server: &Server, character: &mut Character, definition: AutoBonus, tick: u128) -> Result<(), String> {
-    if !source_is_equipped_at(&character.status, definition.source_item_id, definition.source_location) {
+    if !auto_bonus_source_is_present(character, &definition) {
         return Ok(());
     }
+    let pet_bonus = definition.source_pet_id != 0;
+    let entry = if pet_bonus { "run_pet_auto_bonus" } else { "run_bonus" };
     let host = server
         .item_service()
-        .prepare_host(server, character, definition.source_item_id, true);
-    let (host, result) = futures::executor::block_on(server.script_service().vm.execute(host, "run_bonus", definition.program_id));
+        .prepare_host(server, character, definition.source_item_id, !pet_bonus);
+    let (host, result) = futures::executor::block_on(server.script_service().vm.execute(host, entry, definition.program_id));
     result.map_err(|error| host.error.clone().unwrap_or(error))?;
     let bonuses = host.bonuses.drain();
     let mut effects = host.effects;
@@ -534,16 +536,15 @@ fn run_auto_bonus(server: &Server, character: &mut Character, definition: AutoBo
             .item_service()
             .prepare_host(server, character, definition.source_item_id, true);
         visual.variables.extend(host.variables);
-        let (visual, result) = futures::executor::block_on(server.script_service().vm.execute(
-            visual,
-            "run_bonus",
-            definition.visual_program_id,
-        ));
+        let (visual, result) = futures::executor::block_on(server.script_service().vm.execute(visual, entry, definition.visual_program_id));
         result.map_err(|error| visual.error.clone().unwrap_or(error))?;
         effects.extend(visual.effects);
     }
     server.item_service().validate_effects(&effects)?;
     server.item_service().apply_effects(server, server.runtime(), character, effects)?;
+    if !auto_bonus_source_is_present(character, &definition) {
+        return Ok(());
+    }
     let active = ActiveAutoBonus {
         definition,
         expires_at: tick.saturating_add(definition.duration as u128),
@@ -551,15 +552,39 @@ fn run_auto_bonus(server: &Server, character: &mut Character, definition: AutoBo
     };
     if let Some(existing) = character.status.active_auto_bonuses.iter_mut().find(|bonus| {
         bonus.definition.program_id == definition.program_id
+            && bonus.definition.trigger == definition.trigger
             && bonus.definition.source_item_id == definition.source_item_id
             && bonus.definition.source_location == definition.source_location
+            && bonus.definition.source_pet_id == definition.source_pet_id
     }) {
         *existing = active;
     } else {
         character.status.active_auto_bonuses.push(active);
     }
-    server.character_service().reload_client_side_status(character);
+    reload_auto_bonus_status(server, character);
     Ok(())
+}
+
+fn reload_auto_bonus_status(server: &Server, character: &mut Character) {
+    let snapshot = StatusService::instance().to_snapshot(&character.status);
+    let hp = character.status.hp.min(snapshot.max_hp());
+    let sp = character.status.sp.min(snapshot.max_sp());
+    if hp != character.status.hp || sp != character.status.sp {
+        server.character_service().update_hp_sp(character, hp, sp);
+    }
+    server.character_service().reload_client_side_status(character);
+}
+
+fn auto_bonus_source_is_present(character: &Character, definition: &AutoBonus) -> bool {
+    if definition.source_pet_id != 0 {
+        character
+            .game_systems
+            .pet
+            .as_ref()
+            .is_some_and(|pet| pet.id == definition.source_pet_id && !pet.incubating && pet.intimacy > 0)
+    } else {
+        source_is_equipped_at(&character.status, definition.source_item_id, definition.source_location)
+    }
 }
 
 fn apply_status(
@@ -736,20 +761,25 @@ pub fn tick_character(server: &Server, character: &mut Character, tick: u128) {
         .status
         .active_auto_bonuses
         .iter()
-        .filter(|bonus| {
-            source_is_equipped_at(
-                &character.status,
+        .filter(|bonus| auto_bonus_source_is_present(character, &bonus.definition))
+        .map(|bonus| {
+            (
                 bonus.definition.source_item_id,
                 bonus.definition.source_location,
+                bonus.definition.source_pet_id,
             )
         })
-        .map(|bonus| (bonus.definition.source_item_id, bonus.definition.source_location))
         .collect::<std::collections::HashSet<_>>();
     character.status.active_auto_bonuses.retain(|bonus| {
-        bonus.expires_at > tick && equipped_ids.contains(&(bonus.definition.source_item_id, bonus.definition.source_location))
+        bonus.expires_at > tick
+            && equipped_ids.contains(&(
+                bonus.definition.source_item_id,
+                bonus.definition.source_location,
+                bonus.definition.source_pet_id,
+            ))
     });
     if before != character.status.active_auto_bonuses.len() {
-        server.character_service().reload_client_side_status(character);
+        reload_auto_bonus_status(server, character);
     }
     let snapshot = StatusService::instance().to_snapshot(&character.status);
     let mut present = std::collections::HashSet::new();

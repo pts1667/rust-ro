@@ -86,7 +86,7 @@ pub(crate) fn validate_item_map_flags(flags: &MapFlags, item: &ItemModel) -> Res
 
 impl ItemService {
     fn validate_item_in_state(&self, server: &Server, state: &ServerState, character: &Character, item: &InventoryItemModel) -> Result<(), String> {
-        if character.game_systems.is_trading() { return Err("Items cannot be used while trading".into()); }
+        if character.game_systems.is_trading() || character.timing.skill_menu_blocked() { return Err("Items are unavailable during trading or destination selection".into()); }
         let flags = state.map_flags(&character.map_instance_key);
         validate_item_map_flags(&flags, self.configuration_service.get_item(item.item_id))?;
         if crate::server::script::game_data::item_in_use_group(item.item_id, "GIANT_FLY_WING") {
@@ -203,7 +203,7 @@ impl ItemService {
         let plan = if check_requirements { server.script_skill_service().requirements_plan(character, skill_id, level, tick)? } else { Default::default() };
         let source = Self::validated_skill_source(character, source_index)?;
         character.script_skill_state.deferred_requirements = Some(crate::server::script::skill::requirements::DeferredSkillPayment {
-            skill_id, level, requirements: plan, source_index, source_item: source.map(|item| (item.id, item.item_id, item.unique_id)) });
+            skill_id, level, keep_requirements: check_requirements, requirements: plan, source_index, source_item: source.map(|item| (item.id, item.item_id, item.unique_id)) });
         Ok(())
     }
 
@@ -386,6 +386,7 @@ impl ItemService {
         let mut projected = Character::new(character.name.clone(), character.char_id, character.account_id, character.status.clone(), character.x, character.y,
             character.dir, character.current_map_name().clone(), character.sex, vec![]);
         projected.options = character.options;
+        projected.map_instance_key = character.map_instance_key.clone();
         projected.game_systems = character.game_systems.clone();
         for effect in &effects {
             match effect {
@@ -403,7 +404,7 @@ impl ItemService {
                     variables.push(Variable { scope, name, index: 0, value: value.clone() });
                 }
                 ItemEffect::Call { function, arguments } => {
-                    if ScriptWorldService::handles(*function) { server.script_world_service().validate_call(character, *function, arguments, tick as u64)?; }
+                    if ScriptWorldService::handles(*function) { server.script_world_service().validate_call(server.state(), &projected, *function, arguments, tick as u64)?; }
                     match function {
                         Function::GetItem => {
                             let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
@@ -559,7 +560,7 @@ impl ItemService {
         Ok((name, x, y))
     }
 
-    fn spawn_request(&self, arguments: &[Value], owner_id: u32) -> Result<ScriptSpawn, String> {
+    pub(crate) fn spawn_request(&self, arguments: &[Value], owner_id: u32) -> Result<ScriptSpawn, String> {
         let number = |index: usize| arguments.get(index).ok_or("Missing monster argument")?.number_value();
         let map = arguments.first().ok_or("Missing monster map")?.string_value()?;
         if map != "this" && self.configuration_service.find_map(&Map::name_without_ext(map)).is_none() { return Err("Monster map is unavailable".into()); }
@@ -569,7 +570,7 @@ impl ItemService {
         if amount == 0 || amount > 1000 { return Err("Monster count is out of bounds".into()); }
         let event = arguments.get(6).map(Value::text).unwrap_or_default();
         if !event.is_empty() && super::script_service::ScriptService::event_entry(&event).is_none() { return Err("Monster event is not a compiled event".into()); }
-        Ok(ScriptSpawn { mob_id, x: number(1)?, y: number(2)?, name: arguments.get(3).ok_or("Missing monster name")?.text(), amount, event,
+        Ok(ScriptSpawn { mob_id, x: number(1)?, y: number(2)?, name: arguments.get(3).ok_or("Missing monster name")?.text(), amount, event, event_npc: None,
             size: arguments.get(7).map(Value::number_value).transpose()?.map(|value| u8::try_from(value).map_err(|_| "Invalid monster size")).transpose()?,
             ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id })
     }
@@ -581,7 +582,9 @@ impl ItemService {
                 server.script_skill_service().handle_skill(server, character, skill, arguments[1].number_value()? as u32, arguments.get(2).map(Value::truthy).unwrap_or(false))?;
             }
             Function::UnitSkill | Function::UnitSkillToId | Function::UnitSkillToPosition => {
-                let request = super::script_unit_skill_service::unit_skill_request(self.configuration_service, character.char_id, function, &arguments)?;
+                let mut request = super::script_unit_skill_service::unit_skill_request(self.configuration_service, character.char_id, function, &arguments)?;
+                request.source_map = Some(character.current_map_name().clone());
+                request.source_instance = Some(character.current_map_instance());
                 server.add_to_next_tick(GameEvent::ScriptUnitSkill(request));
             }
             Function::StartStatus | Function::StartStatus2 | Function::StartStatus4 => {

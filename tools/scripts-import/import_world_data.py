@@ -144,15 +144,14 @@ def compile_pet_scripts(repository, sources, mobs):
     dispatch = ["use script_sdk::{Context, Function, Value};"]
     definitions = []
     metadata = []
+    programs = []
     compiled = {"bonus": [], "support": []}
     for source in sources:
         class_id = mobs[source["Mob"]]["id"]
         for key, kind in (("Script", "bonus"), ("SupportScript", "support")):
             text = source.get(key, "") or ""
-            converter = Parser(text)
+            converter = Parser(text, programs, class_id)
             code = converter.compile()
-            if converter.programs:
-                raise ValueError("Pet automatic bonus programs require an explicit pet program catalog")
             compiled[kind].append(f"{class_id} => pet_{kind}_{class_id}(ctx),")
             definitions.append(f"#[inline(never)]\n#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]\nfn pet_{kind}_{class_id}(ctx: &Context) -> Result<(), String> {{ {code}\nOk(()) }}")
             metadata.append({"class_id": class_id, "kind": kind, "source_hash": hashlib.md5(text.encode()).hexdigest(), "calls": sorted(converter.calls)})
@@ -160,10 +159,19 @@ def compile_pet_scripts(repository, sources, mobs):
         dispatch.append(f"pub fn run_{kind}(ctx: &Context, id: u32) -> Result<(), String> {{ match id {{")
         dispatch.extend(compiled[kind])
         dispatch.extend(['_ => Err(format!("Unknown pre-renewal pet class {id}")),', "} }"])
+    context_name = "ctx" if programs else "_ctx"
+    dispatch.append(f"pub fn run_auto_bonus({context_name}: &Context, id: u32) -> Result<(), String> {{ match id {{")
+    for program in programs:
+        dispatch.append(f"{program['id']} => pet_auto_bonus_{program['id']}(ctx),")
+        definitions.append(f"#[inline(never)]\n#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]\nfn pet_auto_bonus_{program['id']}(ctx: &Context) -> Result<(), String> {{ {program['body']}\nOk(()) }}")
+    dispatch.extend(['_ => Err(format!("Unknown pre-renewal pet automatic bonus {id}")),', "} }"])
     (repository / "scripts/src/pets.rs").write_text("\n".join(dispatch + definitions) + "\n", encoding="utf-8")
     destination = repository / "config/wasm"
     destination.mkdir(exist_ok=True)
     (destination / "pets.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    catalog = [{("class_id" if key == "item_id" else key): value for key, value in program.items() if key != "body"}
+               for program in programs]
+    (destination / "pet_bonus_programs.json").write_text(json.dumps(catalog, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

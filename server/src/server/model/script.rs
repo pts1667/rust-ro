@@ -1,9 +1,10 @@
 use script_sdk::Value;
 
-#[derive(Setters, Clone, Debug)]
+#[derive(Setters, Clone, Debug, PartialEq)]
 pub struct Script {
     #[set]
     pub id: u32,
+    pub scope_instance: u8,
     pub map_name: String,
     pub name: String,
     pub sprite: u16,

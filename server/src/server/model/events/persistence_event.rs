@@ -21,6 +21,7 @@ pub struct SavePositionUpdate {
     pub map_name: String,
     pub x: u16,
     pub y: u16,
+    pub revision: u64,
 }
 #[derive(Debug, PartialEq)]
 pub struct StatusUpdate<T: Debug + Sized + PartialEq> {

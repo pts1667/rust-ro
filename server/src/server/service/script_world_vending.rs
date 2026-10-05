@@ -3,6 +3,7 @@ use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
 use super::{ScriptWorldService, protocol};
 use crate::server::Server;
 use crate::server::model::game_systems::{ItemContainer, PlayerOption, VendingOffer, VendingStore};
+use crate::server::model::map_flags::MapFlag;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -19,6 +20,67 @@ fn cart_mask() -> u64 {
 }
 
 impl ScriptWorldService {
+    pub(crate) fn prepare_store_map_move(
+        &self,
+        character: &mut Character,
+        destination: &crate::server::model::map_instance::MapInstanceKey,
+        position: movement::position::Position,
+        flags: &crate::server::model::map_flags::MapFlags,
+    ) -> Result<(), String> {
+        self.close_storage(character)?;
+        let vending_id = character.game_systems.vending_store.as_ref().map(|store| store.id);
+        let buying_id = character.game_systems.buying_store.as_ref().map(|store| store.id);
+        if vending_id.is_some() || buying_id.is_some() {
+            let result = self
+                .repository
+                .move_character_stores(&crate::repository::game_system_repository::StoreMove {
+                    char_id: character.char_id,
+                    account_id: character.account_id,
+                    vending_id,
+                    buying_id,
+                    map: destination.map_without_ext(),
+                    map_instance: destination.map_instance(),
+                    x: position.x,
+                    y: position.y,
+                    close_vending: flags.enabled(MapFlag::NoVending),
+                    close_buying: flags.enabled(MapFlag::NoBuyingStore),
+                })
+                .map_err(|error| error.to_string())?;
+            character.game_systems.vending_store = result.vending;
+            character.game_systems.buying_store = result.buying;
+            let mut disappearance = Vec::new();
+            if vending_id.is_some() {
+                disappearance.extend(protocol::vending_disappear(character.char_id));
+            }
+            if buying_id.is_some() {
+                disappearance.extend(protocol::store_disappear(character.char_id));
+            }
+            // A committed store relocation must finish even if its notification cannot be
+            // queued.
+            if let Err(error) = self.area(character, disappearance) {
+                log::warn!("Store movement notification failed for {}: {error}", character.char_id);
+            }
+        }
+        character.game_systems.vending_slots = 0;
+        character.game_systems.buying_slots = 0;
+        character.game_systems.opened_vending_store = None;
+        character.game_systems.remote_vending_store = None;
+        character.game_systems.remote_store = None;
+        Ok(())
+    }
+
+    pub(crate) fn close_buying(&self, character: &mut Character) -> Result<(), String> {
+        if let Some(store) = &character.game_systems.buying_store {
+            self.repository
+                .close_buying_store(character.char_id, store.id)
+                .map_err(|error| error.to_string())?;
+            character.game_systems.buying_store = None;
+            self.area(character, protocol::store_disappear(character.char_id))?;
+        }
+        character.game_systems.buying_slots = 0;
+        Ok(())
+    }
+
     pub fn initialize_cart(&self, character: &mut Character) -> Result<(), String> {
         if character.game_systems.vending_store.is_none() && character.game_systems.buying_store.is_none() {
             self.repository
@@ -71,12 +133,38 @@ impl ScriptWorldService {
         self.repository
             .set_character_options(character.char_id, character.options, options)
             .map_err(|error| error.to_string())?;
-        character.options = options;
+        character.set_options(options);
         if style == 0 {
             self.send(character.char_id, protocol::header(0x012B))?;
         } else {
             self.initialize_cart(character)?;
         }
+        self.send_options(character)
+    }
+
+    pub(crate) fn set_mount_option(&self, character: &mut Character, mount: PlayerOption, enable: bool) -> Result<(), String> {
+        let (skill_id, flag) = match mount {
+            PlayerOption::Falcon => (127, PlayerOption::Falcon.as_flag()),
+            _ => (63, PlayerOption::Riding.as_flag()),
+        };
+        if enable
+            && (character.options & PlayerOption::Madogear.as_flag() != 0
+                || !character
+                    .status
+                    .known_skills
+                    .iter()
+                    .any(|skill| skill.value.id() == skill_id && skill.level > 0))
+        {
+            return Ok(());
+        }
+        let options = if enable { character.options | flag } else { character.options & !flag };
+        if options == character.options {
+            return Ok(());
+        }
+        self.repository
+            .set_character_options(character.char_id, character.options, options)
+            .map_err(|error| error.to_string())?;
+        character.set_options(options);
         self.send_options(character)
     }
 
@@ -89,7 +177,7 @@ impl ScriptWorldService {
         self.repository
             .set_character_options(character.char_id, character.options, options)
             .map_err(|error| error.to_string())?;
-        character.options = options;
+        character.set_options(options);
         self.send_options(character)
     }
 
@@ -105,18 +193,36 @@ impl ScriptWorldService {
     pub(crate) fn move_container(
         &self,
         server: &Server,
+        state: &ServerState,
         character: &mut Character,
         source: ItemContainer,
         destination: ItemContainer,
         index: u16,
         amount: u32,
     ) -> Result<(), String> {
-        let source = if source == ItemContainer::Storage && character.game_systems.guild_storage_open.is_some() { ItemContainer::GuildStorage } else { source };
-        let destination = if destination == ItemContainer::Storage && character.game_systems.guild_storage_open.is_some() { ItemContainer::GuildStorage } else { destination };
+        let source = if source == ItemContainer::Storage && character.game_systems.guild_storage_open.is_some() {
+            ItemContainer::GuildStorage
+        } else {
+            source
+        };
+        let destination = if destination == ItemContainer::Storage && character.game_systems.guild_storage_open.is_some() {
+            ItemContainer::GuildStorage
+        } else {
+            destination
+        };
+        if (source == ItemContainer::Cart || destination == ItemContainer::Cart)
+            && state.map_flags(&character.map_instance_key).enabled(MapFlag::NoUseCart)
+        {
+            return Err("Cart transfers are disabled on this map".into());
+        }
         if (source == ItemContainer::Storage || destination == ItemContainer::Storage) && !character.game_systems.storage_open {
             return Err("Storage window is not open".into());
         }
-        if (source == ItemContainer::GuildStorage || destination == ItemContainer::GuildStorage) && character.game_systems.guild_storage_open.is_none() { return Err("Guild storage is not open".into()); }
+        if (source == ItemContainer::GuildStorage || destination == ItemContainer::GuildStorage)
+            && character.game_systems.guild_storage_open.is_none()
+        {
+            return Err("Guild storage is not open".into());
+        }
         if (source == ItemContainer::Cart || destination == ItemContainer::Cart) && !has_cart(character) {
             return Err("Character has no cart".into());
         }
@@ -127,7 +233,11 @@ impl ScriptWorldService {
             ItemContainer::Inventory => character.get_item_from_inventory(index as usize).map(|record| record.id),
             ItemContainer::Cart => character.game_systems.cart_items.get(index as usize).map(|record| record.id),
             ItemContainer::Storage => character.game_systems.storage_items.get(index as usize).map(|record| record.id),
-            ItemContainer::GuildStorage => character.game_systems.guild_storage_items.get(index as usize).map(|record| record.id),
+            ItemContainer::GuildStorage => character
+                .game_systems
+                .guild_storage_items
+                .get(index as usize)
+                .map(|record| record.id),
         }
         .ok_or("Unknown container item index")?;
         let transfer = self
@@ -145,7 +255,9 @@ impl ScriptWorldService {
         if character.game_systems.storage_open {
             character.game_systems.storage_items = transfer.storage;
         }
-        if character.game_systems.guild_storage_open.is_some() { character.game_systems.guild_storage_items = transfer.guild_storage; }
+        if character.game_systems.guild_storage_open.is_some() {
+            character.game_systems.guild_storage_items = transfer.guild_storage;
+        }
         if source == ItemContainer::Inventory || destination == ItemContainer::Inventory {
             server
                 .inventory_service()
@@ -154,13 +266,18 @@ impl ScriptWorldService {
         if source == ItemContainer::Cart || destination == ItemContainer::Cart {
             self.send_cart(character)?;
         }
-        if matches!(source, ItemContainer::Storage | ItemContainer::GuildStorage) || matches!(destination, ItemContainer::Storage | ItemContainer::GuildStorage) {
+        if matches!(source, ItemContainer::Storage | ItemContainer::GuildStorage)
+            || matches!(destination, ItemContainer::Storage | ItemContainer::GuildStorage)
+        {
             self.send_storage(character)?;
         }
         Ok(())
     }
 
-    pub(crate) fn prepare_vending(&self, character: &mut Character, skill_level: u8) -> Result<(), String> {
+    pub(crate) fn prepare_vending(&self, state: &ServerState, character: &mut Character, skill_level: u8) -> Result<(), String> {
+        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending) {
+            return Err("Vending is disabled on this map".into());
+        }
         let level = character
             .status
             .known_skills
@@ -189,10 +306,14 @@ impl ScriptWorldService {
     pub(crate) fn create_vending(
         &self,
         server: &Server,
+        state: &ServerState,
         character: &mut Character,
         title: String,
         offers: Vec<(u16, u16, u32)>,
     ) -> Result<(), String> {
+        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending) {
+            return Err("Vending is disabled on this map".into());
+        }
         if character.game_systems.vending_slots == 0
             || offers.is_empty()
             || offers.len() > usize::from(character.game_systems.vending_slots)

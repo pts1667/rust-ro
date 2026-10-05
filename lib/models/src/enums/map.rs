@@ -36,11 +36,36 @@ pub enum MapRestrictionZone {
 
 impl MapRestrictionZone {
     pub fn from_zone(zone: i32) -> Option<Self> {
-        let zones = [Self::Zone0, Self::Zone1, Self::Zone2, Self::Zone3, Self::Zone4, Self::Zone5,
-            Self::Zone6, Self::Zone7, Self::Zone8, Self::Zone9, Self::Zone10, Self::Zone11,
-            Self::Zone12, Self::Zone13, Self::Zone14, Self::Zone15, Self::Zone16, Self::Zone17,
-            Self::Zone18, Self::Zone19, Self::Zone20, Self::Zone21, Self::Zone22, Self::Zone23,
-            Self::Zone24, Self::Zone25, Self::Zone26, Self::Zone27];
+        let zones = [
+            Self::Zone0,
+            Self::Zone1,
+            Self::Zone2,
+            Self::Zone3,
+            Self::Zone4,
+            Self::Zone5,
+            Self::Zone6,
+            Self::Zone7,
+            Self::Zone8,
+            Self::Zone9,
+            Self::Zone10,
+            Self::Zone11,
+            Self::Zone12,
+            Self::Zone13,
+            Self::Zone14,
+            Self::Zone15,
+            Self::Zone16,
+            Self::Zone17,
+            Self::Zone18,
+            Self::Zone19,
+            Self::Zone20,
+            Self::Zone21,
+            Self::Zone22,
+            Self::Zone23,
+            Self::Zone24,
+            Self::Zone25,
+            Self::Zone26,
+            Self::Zone27,
+        ];
         usize::try_from(zone).ok().and_then(|index| zones.get(index)).copied()
     }
 }
@@ -60,6 +85,31 @@ pub enum MapActorType {
     Elemental,
     #[mask_value = 4095]
     All,
+}
+
+impl From<crate::enums::actor::CombatActorKind> for MapActorType {
+    fn from(kind: crate::enums::actor::CombatActorKind) -> Self {
+        use crate::enums::actor::CombatActorKind;
+        match kind {
+            CombatActorKind::Player => Self::Player,
+            CombatActorKind::Monster => Self::Monster,
+            CombatActorKind::Npc => Self::Npc,
+            CombatActorKind::Homunculus => Self::Homunculus,
+            CombatActorKind::Mercenary => Self::Mercenary,
+            CombatActorKind::Pet => Self::Pet,
+            CombatActorKind::SkillUnit => Self::Skill,
+        }
+    }
+}
+
+#[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum SkillDamageMap {
+    #[mask_value = 1]
+    Normal,
+    Pvp,
+    Gvg,
+    Battleground,
+    Flag,
 }
 
 #[derive(WithMaskValueU8, Debug, Copy, Clone, PartialEq, Eq)]

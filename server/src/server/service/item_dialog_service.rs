@@ -28,10 +28,10 @@ impl ItemService {
         let source = Self::consumption(item, 1);
         let entry = item.item_id as u32;
         let dialog = NpcScriptHost { server: server.clone(), session, script: Arc::new(Script {
-            id: ITEM_DIALOG_NPC, entry_id: entry, name: format!("Item{entry}"), map_name: character.current_map_name().clone(),
+            id: ITEM_DIALOG_NPC, scope_instance: character.current_map_instance(), entry_id: entry, name: format!("Item{entry}"), map_name: character.current_map_name().clone(),
             sprite: 0, x: character.x, y: character.y, dir: 0, x_size: 0, y_size: 0, constructor_args: vec![],
         }), inputs: receiver, notifications: self.client_notification_sender.clone(), generation,
-            map_instance: character.current_map_instance(), background: false, error: None };
+            map_instance: character.current_map_instance(), background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, error: None };
         let host = ItemDialogHost { item: host, dialog };
         let vm = self.item_script_vm.clone();
         let timeout = std::time::Duration::from_secs(server.configuration.scripting.conversation_timeout_secs.max(1));

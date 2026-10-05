@@ -351,7 +351,7 @@ impl StatusEffectService {
     pub fn clear_buffs(status: &mut Status) -> Vec<StatusChangeKind> {
         let kinds = status.active_statuses.iter().filter(|change| {
             let flags = &change.kind.metadata().flags;
-            !flags.get("NoClearBuff").copied().unwrap_or(false)
+            !flags.get("NoClearbuff").copied().unwrap_or(false) && !flags.get("NoClearBuff").copied().unwrap_or(false)
                 && (!flags.get("Debuff").copied().unwrap_or(false) || flags.get("RemoveChemicalProtect").copied().unwrap_or(false))
         }).map(|change| change.kind).collect::<Vec<_>>();
         for kind in &kinds { if *kind == StatusChangeKind::Berserk { if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == *kind) { change.values[1] = 0; } } Self::end_status(status, Some(*kind)); }
@@ -711,6 +711,11 @@ impl StatusEffectService {
                 SteelBody => { snapshot.set_def(90); snapshot.set_mdef(90); slow = slow.max(25); attack_delay_penalty += 250; }
                 _ => {}
             }
+        }
+        if player && snapshot.state() & models::enums::skill::SkillState::Riding.as_flag() != 0 {
+            haste = haste.max(25);
+            let cavalier_mastery = i32::from(snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::KnCavaliermastery));
+            attack_delay_penalty += 500 - 100 * cavalier_mastery;
         }
         if status.active_statuses.iter().any(|change| matches!(change.kind, Freeze | Stun | Sleep | Stone)) { snapshot.set_flee(0); }
         snapshot.set_speed((snapshot.speed() as i64 * (100 + slow - haste).max(40) as i64 / 100).clamp(10, u16::MAX as i64) as u16);

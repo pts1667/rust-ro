@@ -71,42 +71,7 @@ pub fn plan_raw_experience(character: &Character, base: u32, job: u32) -> Result
         status.hp,
         status.sp,
     ];
-    let requirements = &config.config().game.exp_requirements;
-    let base_requirements = if kind.is_rebirth() {
-        &requirements.base_next_level_requirement.transcendent
-    } else {
-        &requirements.base_next_level_requirement.normal
-    };
-    let jobs = &requirements.job_next_level_requirement;
-    let job_requirements = if kind.is_taekwon() {
-        &jobs.taekwon_class
-    } else if kind.is_gunslinger_ninja() {
-        &jobs.gunslinger_class
-    } else if kind.is_rebirth() {
-        if kind.is_novice() {
-            &jobs.transcended_novice
-        } else if kind.is_first_class() {
-            &jobs.transcended_first_class
-        } else {
-            &jobs.transcended_second_class
-        }
-    } else if kind.is_novice() {
-        &jobs.novice
-    } else if kind.is_first_class() {
-        &jobs.first_class
-    } else {
-        &jobs.second_class
-    };
-    let max_base = config
-        .config()
-        .game
-        .max_base_level
-        .min(99)
-        .min(base_requirements.len() as u32 + 1)
-        .max(1);
-    let max_job = u32::from(config.get_job_config(status.job).job_level().max_job_level())
-        .min(job_requirements.len() as u32 + 1)
-        .max(1);
+    let (base_requirements, job_requirements, max_base, max_job) = experience_tables(&status, kind)?;
     if status.hp > 0 {
         let base_before = status.base_level;
         let job_before = status.job_level;
@@ -159,6 +124,96 @@ pub fn plan_raw_experience(character: &Character, base: u32, job: u32) -> Result
         max_hp: status.max_hp,
         max_sp: status.max_sp,
     })
+}
+
+fn experience_tables(status: &Status, kind: JobName) -> Result<(&'static [u32], &'static [u32], u32, u32), String> {
+    let config = GlobalConfigService::instance();
+    let requirements = &config.config().game.exp_requirements;
+    let base_requirements: &[u32] = if kind.is_rebirth() {
+        &requirements.base_next_level_requirement.transcendent
+    } else {
+        &requirements.base_next_level_requirement.normal
+    };
+    let jobs = &requirements.job_next_level_requirement;
+    let job_requirements: &[u32] = if kind.is_taekwon() {
+        &jobs.taekwon_class
+    } else if kind.is_gunslinger_ninja() {
+        &jobs.gunslinger_class
+    } else if kind.is_rebirth() {
+        if kind.is_novice() {
+            &jobs.transcended_novice
+        } else if kind.is_first_class() {
+            &jobs.transcended_first_class
+        } else {
+            &jobs.transcended_second_class
+        }
+    } else if kind.is_novice() {
+        &jobs.novice
+    } else if kind.is_first_class() {
+        &jobs.first_class
+    } else {
+        &jobs.second_class
+    };
+    let max_base = config
+        .config()
+        .game
+        .max_base_level
+        .min(99)
+        .min(base_requirements.len() as u32 + 1)
+        .max(1);
+    let max_job = u32::from(config.get_job_config(status.job).job_level().max_job_level())
+        .min(job_requirements.len() as u32 + 1)
+        .max(1);
+    Ok((base_requirements, job_requirements, max_base, max_job))
+}
+
+/// Experience lost on death, or `None` when the penalty does not apply.
+pub fn plan_death_penalty(character: &Character, no_penalty_map: bool) -> Result<Option<ScriptExperiencePlan>, String> {
+    let penalty = &GlobalConfigService::instance().config().game.death_penalty;
+    let kind = JobName::try_from_value(character.status.job as usize).map_err(|_| "Unknown classic job")?;
+    if penalty.kind == 0 || no_penalty_map || kind.is_novice() {
+        return Ok(None);
+    }
+    let status = &character.status;
+    let (base_requirements, job_requirements, max_base, max_job) = experience_tables(status, kind)?;
+    let loss = |level: u32, exp: u32, max_level: u32, rate: u32, requirements: &[u32], enabled_at_max: bool| {
+        if rate == 0 || (level >= max_level && !enabled_at_max) {
+            return 0;
+        }
+        let basis = match penalty.kind {
+            1 => u64::from(requirements.get(level as usize - 1).copied().unwrap_or(0)),
+            _ => u64::from(exp),
+        };
+        ((basis * u64::from(rate) / 10_000) as u32).min(exp)
+    };
+    let base_loss = loss(status.base_level, status.base_exp, max_base, penalty.base, base_requirements, penalty.max_level_loses_base);
+    let job_loss = loss(status.job_level, status.job_exp, max_job, penalty.job, job_requirements, penalty.max_level_loses_job);
+    if base_loss == 0 && job_loss == 0 {
+        return Ok(None);
+    }
+    Ok(Some(ScriptExperiencePlan {
+        expected_job: status.job,
+        expected: [
+            status.base_level,
+            status.job_level,
+            status.base_exp,
+            status.job_exp,
+            status.status_point,
+            status.skill_point,
+            status.hp,
+            status.sp,
+        ],
+        base_level: status.base_level,
+        job_level: status.job_level,
+        base_exp: status.base_exp - base_loss,
+        job_exp: status.job_exp - job_loss,
+        status_points: status.status_point,
+        skill_points: status.skill_point,
+        hp: status.hp,
+        sp: status.sp,
+        max_hp: status.max_hp,
+        max_sp: status.max_sp,
+    }))
 }
 
 fn grant_level_experience(mut level: u32, exp: u32, gain: u32, max_level: u32, requirements: &[u32]) -> Result<(u32, u32), String> {
@@ -337,7 +392,7 @@ fn mission_target(base_level: u32, completion: bool) -> Result<u32, String> {
             let mob = configuration.get_mob_safe(entry.mob_id as i32)?;
             (!completion
                 || mob.level as u32 <= base_level
-                    && mob.mode as u32 & models::enums::mob::MobMode::Boss.as_flag() == 0
+                    && mob.battle_capabilities() & models::enums::mob::MobCapability::StatusImmune.as_flag() == 0
                     && spawned.contains(&entry.mob_id))
             .then_some(entry.mob_id)
         })
@@ -504,7 +559,7 @@ pub fn apply_reset_skills(server: &Server, character: &mut Character, plan: &Scr
     character.status.script_skill_grants = plan.temporary_grants.clone();
     character.status.skill_point = plan.skill_points;
     let changed_options = character.options != plan.options;
-    character.options = plan.options;
+    character.set_options(plan.options);
     if changed_options {
         notify_options(server, character);
     }
@@ -671,7 +726,7 @@ pub fn reset_level(server: &Server, character: &mut Character, arguments: &[Valu
         .map(|change| change.kind)
         .collect();
     character.status = staged;
-    character.options = plan.options;
+    character.set_options(plan.options);
     character.game_systems.mounting = systems.mounting;
     character.game_systems.revision = systems.revision;
     character.attack = None;

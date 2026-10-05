@@ -96,6 +96,46 @@ impl<'de> Visitor<'de> for BonusTypeWrapperVisitor {
             // ([A-z]+),
             // "$1" => BonusType::$1,
             let bonus = match bonus.as_str() {
+                "MagicalDamageAgainstElementPercentage" => BonusType::MagicalDamageAgainstElementPercentage(
+                    Element::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing element"))? as usize)
+                        .map_err(serde::de::Error::custom)?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing magic damage"))?,
+                ),
+                "MagicalDamageAgainstClassPercentage" => BonusType::MagicalDamageAgainstClassPercentage(
+                    MobClass::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing class"))? as usize)
+                        .map_err(serde::de::Error::custom)?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing magic damage"))?,
+                ),
+                "MagicalDamageAgainstMobGroupPercentage" => BonusType::MagicalDamageAgainstMobGroupPercentage(
+                    MobGroup::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing group"))? as usize)
+                        .map_err(serde::de::Error::custom)?,
+                    value2.ok_or_else(|| serde::de::Error::custom("Missing magic damage"))?,
+                ),
+                "MagicalDamageAgainstMobIdPercentage" | "ResistanceMagicAttackFromMobIdPercentage" => {
+                    let id = value.ok_or_else(|| serde::de::Error::custom("Missing monster ID"))? as u32;
+                    let percent = value2.ok_or_else(|| serde::de::Error::custom("Missing magic damage modifier"))?;
+                    if bonus == "MagicalDamageAgainstMobIdPercentage" {
+                        BonusType::MagicalDamageAgainstMobIdPercentage(id, percent)
+                    } else {
+                        BonusType::ResistanceMagicAttackFromMobIdPercentage(id, percent)
+                    }
+                }
+                "ResistanceMeleeAttackPercentage" => {
+                    BonusType::ResistanceMeleeAttackPercentage(value.ok_or_else(|| serde::de::Error::custom("Missing melee defense"))?)
+                }
+                "DamageMeleeAtkPercentage" => {
+                    BonusType::DamageMeleeAtkPercentage(value.ok_or_else(|| serde::de::Error::custom("Missing melee attack rate"))?)
+                }
+                "ResistancePhysicalAttackFromSizePercentage" | "ResistanceMagicAttackFromSizePercentage" => {
+                    let size = Size::try_from_value(value.ok_or_else(|| serde::de::Error::custom("Missing size"))? as usize)
+                        .map_err(serde::de::Error::custom)?;
+                    let percent = value2.ok_or_else(|| serde::de::Error::custom("Missing size defense"))?;
+                    if bonus == "ResistancePhysicalAttackFromSizePercentage" {
+                        BonusType::ResistancePhysicalAttackFromSizePercentage(size, percent)
+                    } else {
+                        BonusType::ResistanceMagicAttackFromSizePercentage(size, percent)
+                    }
+                }
                 "Str" => BonusType::Str(value.unwrap() as i8),
                 "Agi" => BonusType::Agi(value.unwrap() as i8),
                 "Vit" => BonusType::Vit(value.unwrap() as i8),

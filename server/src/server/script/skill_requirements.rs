@@ -36,6 +36,7 @@ pub struct SkillItemRemoval {
 pub struct DeferredSkillPayment {
     pub skill_id: u32,
     pub level: u8,
+    pub keep_requirements: bool,
     pub requirements: SkillRequirementPlan,
     pub source_index: Option<usize>,
     pub source_item: Option<(i32, i32, i64)>,
@@ -58,6 +59,14 @@ impl ScriptSkillService {
     }
 
     pub fn requirements_plan(&self, character: &Character, skill_id: u32, level: u8, tick: u128) -> Result<SkillRequirementPlan, String> {
+        self.requirements_plan_with_mode(character, skill_id, level, tick, false)
+    }
+
+    pub(crate) fn item_requirements_plan(&self, character: &Character, skill_id: u32, level: u8, tick: u128) -> Result<SkillRequirementPlan, String> {
+        self.requirements_plan_with_mode(character, skill_id, level, tick, true)
+    }
+
+    fn requirements_plan_with_mode(&self, character: &Character, skill_id: u32, level: u8, tick: u128, item_only: bool) -> Result<SkillRequirementPlan, String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal requirements are unavailable")?;
         let Some(requirements) = metadata.requires.as_ref() else {
             return Ok(SkillRequirementPlan::default());
@@ -101,6 +110,11 @@ impl ScriptSkillService {
                 snapshot.max_sp() as u64 * sp_rate.unsigned_abs() as u64 / 100
             })
             .min(u32::MAX as u64) as u32;
+        let sp = if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN" | "SL_SMA") {
+            let reduction = if snapshot.base_level() >= 90 { 7 } else if snapshot.base_level() >= 80 { 5 } else if snapshot.base_level() >= 70 { 3 } else { 0 };
+            let rate = u64::from(snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::SlKaina)) * reduction;
+            sp.saturating_sub((u64::from(sp) * rate.min(100) / 100) as u32)
+        } else { sp };
         let sp_modifier = snapshot
             .bonuses_raw()
             .iter()
@@ -135,21 +149,22 @@ impl ScriptSkillService {
             spirit_spheres: spheres,
             removals: vec![],
         };
-        if character.status.hp < minimum_hp {
+        if item_only { plan = SkillRequirementPlan::default(); }
+        if !item_only && character.status.hp < minimum_hp {
             return Err("Not enough HP for this skill".into());
         }
-        if maximum_hp_percent
+        if !item_only && maximum_hp_percent
             .is_some_and(|maximum| u64::from(character.status.hp) * 100 / u64::from(snapshot.max_hp().max(1)) > u64::from(maximum))
         {
             return Err("Current HP exceeds this skill's upper threshold".into());
         }
-        if character.status.sp < sp {
+        if !item_only && character.status.sp < sp {
             return Err("Not enough SP for this skill".into());
         }
         if character.status.zeny < plan.zeny {
             return Err("Not enough zeny for this skill".into());
         }
-        if sphere_count < spheres as usize {
+        if !item_only && sphere_count < spheres as usize {
             return Err("Not enough spirit spheres or coins".into());
         }
         if let Some(weapons) = requirements.get("Weapon").and_then(|value| value.as_object()) {

@@ -16,8 +16,18 @@ use crate::server::state::server::ServerState;
 
 impl ScriptSkillService {
     pub fn find_script_skill_actor(&self, state: &ServerState, actor_id: u32) -> Option<ScriptSkillActor> {
+        self.find_script_skill_actor_in(state, actor_id, None, None).ok().flatten()
+    }
+
+    pub fn find_script_skill_actor_in(
+        &self,
+        state: &ServerState,
+        actor_id: u32,
+        map: Option<&str>,
+        instance_id: Option<u8>,
+    ) -> Result<Option<ScriptSkillActor>, String> {
         if let Some(character) = state.get_character(actor_id) {
-            return Some(ScriptSkillActor {
+            return Ok(Some(ScriptSkillActor {
                 id: character.char_id,
                 credit_id: character.char_id,
                 object_type: MapItemType::Character,
@@ -30,24 +40,40 @@ impl ScriptSkillService {
                 raw_attack: 0,
                 mode: 0,
                 attack_motion: 0,
-            });
+            }));
         }
+        let mut npcs = Vec::new();
         for instances in state.map_instances().values() {
             for instance in instances {
                 if let Some(source) = actor::map_actor(&instance.state(), actor_id) {
-                    return Some(source);
-                }
-                if let Some(npc) = instance.get_script(actor_id) {
-                    return Some(NpcSkillState::new(&npc).actor(instance.key().map_name().clone(), instance.id()));
+                    if source.object_type != MapItemType::Npc {
+                        return Ok(Some(source));
+                    }
+                    npcs.push(source);
+                } else if let Some(npc) = instance.get_script(actor_id) {
+                    npcs.push(NpcSkillState::new(&npc).actor(instance.key().map_name().clone(), instance.id()));
                 }
             }
+        }
+        if !npcs.is_empty() {
+            if let Some(map) = map {
+                npcs.retain(|npc| npc.map.trim_end_matches(".gat") == map.trim_end_matches(".gat"));
+            }
+            if let Some(instance_id) = instance_id {
+                npcs.retain(|npc| npc.instance == instance_id);
+            }
+            if npcs.len() > 1 {
+                return Err("NPC actor ID is ambiguous without its map instance".into());
+            }
+            return Ok(npcs.pop());
         }
         for owner in state.characters().values() {
             if let Some(snapshot) = crate::server::service::script_world_service::companion_status_snapshot(owner, actor_id) {
                 let item = crate::server::service::script_world_service::companion_snapshots(owner)
                     .into_iter()
-                    .find(|actor| actor.map_item().id() == actor_id)?;
-                return Some(ScriptSkillActor {
+                    .find(|actor| actor.map_item().id() == actor_id)
+                    .ok_or("Companion actor has no position")?;
+                return Ok(Some(ScriptSkillActor {
                     id: actor_id,
                     credit_id: owner.char_id,
                     object_type: *item.map_item().object_type(),
@@ -60,10 +86,10 @@ impl ScriptSkillService {
                     raw_attack: 0,
                     mode: 0,
                     attack_motion: 0,
-                });
+                }));
             }
         }
-        None
+        Ok(None)
     }
 
     pub(super) fn actor_target_status(
@@ -93,13 +119,29 @@ impl ScriptSkillService {
         request: ScriptSkillCast,
         tick: u128,
     ) -> Result<(), String> {
-        let source = self
-            .find_script_skill_actor(state, request.source_id)
+        let mut source = self
+            .find_script_skill_actor_in(state, request.source_id, request.source_map.as_deref(), request.source_instance)?
             .ok_or("Unit skill caster is not in the game")?;
+        if source.object_type == MapItemType::Npc {
+            let map = state
+                .get_map_instance(&source.map, source.instance)
+                .ok_or("NPC cast map is unavailable")?;
+            let npc = map.state().script_skill_state.npcs.get(&source.id).cloned();
+            if let Some(mut npc) = npc {
+                npc.initialize_for_cast();
+                source = npc.actor(source.map.clone(), source.instance);
+            }
+        }
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unknown pre-renewal unit skill")?;
         let level = u8::try_from(request.level).map_err(|_| "Invalid unit skill level")?;
         if level == 0 || level > metadata.max_level {
             return Err("Unit skill level exceeds its classic definition".into());
+        }
+        if state.ground_unit(request.target_id, &source.map, source.instance).is_some()
+            && metadata.target_type.as_deref() != Some("Trap")
+            && !metadata.flags.get("TargetTrap").copied().unwrap_or(false)
+        {
+            return Err("Unit skill cannot target trap units".into());
         }
         if request.message_id.is_some_and(|message| message > 0) && source.object_type != MapItemType::Mob {
             return Err("Unit skill messages require a monster caster".into());
@@ -122,9 +164,6 @@ impl ScriptSkillService {
                 } else {
                     Some(self.actor_target_status(state, &source, request.target_id)?.0)
                 };
-                if target.is_some_and(|target| *target.map_item().object_type() == MapItemType::Npc) {
-                    return Err("NPC recipient effects require their own status lifecycle".into());
-                }
                 let npc = (source.object_type == MapItemType::Npc)
                     .then(|| instance.get_script(source.id).map(|script| NpcSkillState::new(&script)))
                     .flatten();
@@ -209,6 +248,32 @@ impl ScriptSkillService {
             self.validate_native_environment(state, &character, request.skill_id, level, tick)?;
             let base = metadata.cast_duration(level, StatusService::skill_cast_modifier(&source.status, request.skill_id));
             let duration = (base.min(i64::MAX as u128) as i64 + i64::from(request.cast_time_adjust_ms)).max(0) as u128;
+            if request.skill_id == SkillEnum::AlWarp.id() {
+                let (x, y) = request.ground.ok_or("Warp Portal requires a ground position")?;
+                character.script_skill_state.deferred_requirements = Some(DeferredSkillPayment {
+                    skill_id: request.skill_id,
+                    level,
+                    keep_requirements: true,
+                    requirements,
+                    source_index: None,
+                    source_item: None,
+                });
+                character.script_skill_state.cast_cancel_override =
+                    Some(duration > 0 && request.cast_cancel.unwrap_or(metadata.cast_cancel.unwrap_or(true)));
+                return self.start_warp_portal_menu(
+                    server,
+                    state,
+                    &mut character,
+                    request.skill_id,
+                    level,
+                    x,
+                    y,
+                    tick,
+                    false,
+                    0,
+                    Some(duration),
+                );
+            }
             self.end_cloaking_on_skill(server, &mut character, request.skill_id, tick);
             character.movements.clear();
             character.clear_attack();
@@ -229,6 +294,7 @@ impl ScriptSkillService {
                     payment: Some(DeferredSkillPayment {
                         skill_id: request.skill_id,
                         level,
+                        keep_requirements: true,
                         requirements,
                         source_index: None,
                         source_item: None,
@@ -253,7 +319,12 @@ impl ScriptSkillService {
     ) -> Result<(), String> {
         let request = &completion.request;
         let source = self
-            .find_script_skill_actor(state, request.source_id)
+            .find_script_skill_actor_in(
+                state,
+                request.source_id,
+                Some(&completion.source.map),
+                Some(completion.source.instance),
+            )?
             .ok_or("Unit skill caster left the map")?;
         if source.map != completion.source.map || source.instance != completion.source.instance || !source.can_cast(request.skill_id) {
             return Err("Unit skill caster changed maps or was incapacitated".into());
@@ -392,7 +463,7 @@ impl ScriptSkillService {
         self.execute_actor_skill(server, state, &source, request, tick)
     }
 
-    fn validate_script_actor_operation(metadata: &SkillMetadata, source: &ScriptSkillActor, level: u8) -> Result<(), String> {
+    pub(crate) fn validate_script_actor_operation(metadata: &SkillMetadata, source: &ScriptSkillActor, level: u8) -> Result<(), String> {
         use super::ground::GroundKind;
         let direct_support = matches!(
             metadata.name.as_str(),
@@ -416,11 +487,24 @@ impl ScriptSkillService {
                 | "NPC_WIDECONFUSE"
                 | "NPC_WIDECURSE"
                 | "NPC_WIDESILENCE"
+                | "NPC_WIDESLEEP"
+                | "NPC_WIDESTONE"
+                | "NPC_WIDEFREEZE"
+                | "NPC_WIDESTUN"
                 | "NPC_DRAGONFEAR"
                 | "AL_CRUCIS"
+                | "NPC_WIDESOULDRAIN"
+                | "NPC_SELFDESTRUCTION"
                 | "BS_HAMMERFALL"
-        ) || metadata.name == "AL_TELEPORT" && source.object_type == MapItemType::Mob;
-        if direct_support || Self::status_for_skill(&metadata.name).is_some() {
+                | "RG_CLEANER"
+        ) || metadata.name == "AL_TELEPORT" && matches!(source.object_type, MapItemType::Mob | MapItemType::Npc);
+        if direct_support
+            || Self::status_for_skill(&metadata.name).is_some()
+            || Self::uses_metadata_magic(&metadata.name)
+            || Self::actor_npc_magic(metadata)
+            || Self::actor_npc_weapon(metadata)
+            || Self::actor_metadata_status(metadata)
+        {
             return Ok(());
         }
         if let Some(kind) = GroundKind::from_name(&metadata.name) {
@@ -433,10 +517,23 @@ impl ScriptSkillService {
                     | GroundKind::Deluge
                     | GroundKind::LandProtector
                     | GroundKind::SkidTrap
+                    | GroundKind::AnkleSnare
                     | GroundKind::LandMine
+                    | GroundKind::BlastMine
+                    | GroundKind::ClaymoreTrap
+                    | GroundKind::Shockwave
+                    | GroundKind::Flasher
                     | GroundKind::Sandman
                     | GroundKind::FreezingTrap
+                    | GroundKind::TalkieBox
+                    | GroundKind::Graffiti
                     | GroundKind::ArrowShower
+                    | GroundKind::Firewall
+                    | GroundKind::Meteor
+                    | GroundKind::StormGust
+                    | GroundKind::Vermilion
+                    | GroundKind::Earthquake
+                    | GroundKind::GrandCross
             ) {
                 Ok(())
             } else {
@@ -445,20 +542,12 @@ impl ScriptSkillService {
         }
         if matches!(
             metadata.name.as_str(),
-            "WZ_WATERBALL"
-                | "CH_PALMSTRIKE"
-                | "RG_INTIMIDATE"
+            "RG_INTIMIDATE"
                 | "RG_BACKSTAP"
                 | "AS_SPLASHER"
                 | "NJ_ISSEN"
-                | "SM_MAGNUM"
-                | "MG_FIREBALL"
-                | "WZ_FROSTNOVA"
                 | "RG_RAID"
-                | "NPC_HELLJUDGEMENT"
-                | "NPC_PULSESTRIKE"
                 | "NPC_VAMPIRE_GIFT"
-                | "NPC_WIDESOULDRAIN"
         ) {
             return Err(format!("{} requires an additional actor-specific callback", metadata.name));
         }

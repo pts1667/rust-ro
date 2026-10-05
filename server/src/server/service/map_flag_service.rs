@@ -19,6 +19,52 @@ pub fn normalize_map(name: &str) -> String {
     Map::name_without_ext(name).to_ascii_lowercase()
 }
 
+pub(crate) fn apply_map_skill_damage(
+    flags: &MapFlags,
+    damage: &mut crate::server::model::action::Damage,
+    target: &models::status::StatusSnapshot,
+) {
+    use models::enums::actor::CombatActorKind;
+    use models::enums::mob::MobClass;
+    if damage.skill_damage_adjusted || damage.skill_id == 0 {
+        return;
+    }
+    damage.skill_damage_adjusted = true;
+    let target_kind = match target.combat_actor_kind() {
+        CombatActorKind::Player => 0,
+        CombatActorKind::Monster if *target.mob_class() == MobClass::Boss => 2,
+        CombatActorKind::Monster => 1,
+        _ => 3,
+    };
+    let caster = damage.source_kind.into();
+    let rate = i64::from(flags.skill_damage_rate(damage.skill_id, caster, target_kind))
+        + i64::from(super::map_skill_rules::database_damage_rate(
+            flags,
+            damage.skill_id,
+            caster,
+            target_kind,
+        ));
+    let amount = if damage.healing > 0 {
+        -i64::from(damage.healing)
+    } else {
+        i64::from(damage.damage)
+    };
+    let adjusted = amount + amount * rate / 100;
+    damage.damage = adjusted.max(0).min(i64::from(u32::MAX)) as u32;
+    damage.healing = if adjusted < 0 {
+        adjusted.unsigned_abs().min(u64::from(u32::MAX)) as u32
+    } else {
+        0
+    };
+}
+
+pub(crate) fn ground_skill_duration(flags: &MapFlags, skill_id: u32, duration: i32) -> u128 {
+    let duration = duration.max(0) as u128;
+    flags
+        .skill_duration_rate(skill_id)
+        .map_or(duration, |rate| duration / 100 * u128::from(rate))
+}
+
 pub fn apply_map_combat_damage(flags: &MapFlags, config: &GameConfig, damage: u32, skill_id: u32, battle_flags: u32) -> u32 {
     if damage == 0 {
         return 0;
@@ -132,6 +178,7 @@ pub fn is_map_flag_call(function: Function) -> bool {
         function,
         Function::GetMapFlag
             | Function::SetMapFlag
+            | Function::SetMapFlagNoSave
             | Function::RemoveMapFlag
             | Function::PvpOn
             | Function::PvpOff
@@ -158,6 +205,29 @@ impl Server {
                 }
             }
         }
+    }
+
+    pub(crate) fn set_siege_active(&self, state: &mut ServerState, active: bool) -> bool {
+        if state.siege_active == active {
+            return false;
+        }
+        state.siege_active = active;
+        let castle_characters: Vec<u32> = state
+            .characters()
+            .values()
+            .filter(|character| state.map_flags(&character.map_instance_key).enabled(MapFlag::GvgCastle))
+            .map(|character| character.char_id)
+            .collect();
+        for char_id in castle_characters {
+            if !active {
+                if let Some(character) = state.characters_mut().get_mut(&char_id) {
+                    character.clear_attack();
+                }
+            }
+            self.notify_map_property(state, char_id);
+        }
+        self.broadcast_npc_event(state, if active { "OnAgitStart" } else { "OnAgitEnd" });
+        true
     }
 
     pub(crate) fn notify_map_property(&self, state: &mut ServerState, char_id: u32) {
@@ -206,14 +276,60 @@ impl Server {
     }
 
     pub(crate) fn map_flag_call(&self, state: &mut ServerState, char_id: u32, function: Function, arguments: &[Value]) -> Reply {
-        let source = state.characters().get(&char_id);
+        let source = state.characters().get(&char_id).map(|character| character.map_instance_key.clone());
+        self.map_flag_call_from(state, source.as_ref(), function, arguments)
+    }
+
+    pub(crate) fn map_flag_call_from(
+        &self,
+        state: &mut ServerState,
+        source: Option<&MapInstanceKey>,
+        function: Function,
+        arguments: &[Value],
+    ) -> Reply {
         let map = normalize_map(arguments.first().ok_or("Map name is required")?.string_value()?);
         let instance = source
-            .filter(|source| map == normalize_map(source.current_map_name()))
-            .map_or(0, |source| source.current_map_instance());
+            .filter(|source| map == normalize_map(source.map_name()))
+            .map_or(0, |source| source.map_instance());
         let key = MapInstanceKey::new(map.clone(), instance);
         if state.get_map_instance(&map, instance).is_none() && GlobalConfigService::instance().find_map(&map).is_none() {
             return Err("Map is unavailable".into());
+        }
+        if function == Function::SetMapFlagNoSave {
+            if arguments.len() != 4 {
+                return Err("NoSave requires a map, alternate map, x, and y".into());
+            }
+            let alternate = arguments[1].string_value()?;
+            let alternate = if alternate.eq_ignore_ascii_case("SavePoint") {
+                "SavePoint".to_string()
+            } else {
+                normalize_map(alternate)
+            };
+            let x = arguments[2].number_value()?;
+            let y = arguments[3].number_value()?;
+            let coordinates = if (x, y) == (-1, -1) {
+                crate::server::model::map::RANDOM_CELL
+            } else {
+                (
+                    u16::try_from(x).map_err(|_| "Invalid NoSave x coordinate")?,
+                    u16::try_from(y).map_err(|_| "Invalid NoSave y coordinate")?,
+                )
+            };
+            if alternate != "SavePoint" {
+                let destination = GlobalConfigService::instance()
+                    .find_map(&alternate)
+                    .ok_or("NoSave destination is unavailable")?;
+                if coordinates != crate::server::model::map::RANDOM_CELL
+                    && (coordinates.0 >= destination.x_size() || coordinates.1 >= destination.y_size())
+                {
+                    return Err("NoSave destination is outside the map".into());
+                }
+            }
+            let mut flags = state.map_flags(&key);
+            flags.set(MapFlag::NoSave, true, &[])?;
+            flags.save = Some((alternate, coordinates.0, coordinates.1));
+            self.install_map_flags(state, &key, flags)?;
+            return Ok(0.into());
         }
         let (flag, enabled, offset) = match function {
             Function::PvpOn => (MapFlag::Pvp, true, 1),

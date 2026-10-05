@@ -260,7 +260,9 @@ impl ScriptSkillService {
                 } else {
                     StatusChangeKind::Provoke
                 };
-                if kind == StatusChangeKind::Provoke && Self::undead_target(target) { return Ok(vec![]); }
+                if kind == StatusChangeKind::Provoke && Self::undead_target(target) {
+                    return Ok(vec![]);
+                }
                 let chance = if kind == StatusChangeKind::DecreaseAgi {
                     50 + 3 * level as i32 + (context.base_level as i32 + source.int() as i32) / 5
                 } else {
@@ -273,7 +275,9 @@ impl ScriptSkillService {
                     rate: (chance.max(0) * 100).min(u16::MAX as i32) as u16,
                     flags: 0,
                 };
-                if kind == StatusChangeKind::Provoke && level == 10 { request.values[2] = 100; }
+                if kind == StatusChangeKind::Provoke && level == 10 {
+                    request.values[2] = 100;
+                }
                 return Ok(vec![Status { target_id, request }]);
             }
             "ML_DEVOTION" => {
@@ -322,7 +326,20 @@ impl ScriptSkillService {
         };
         let landed =
             metadata.damage_type.as_deref() != Some("Weapon") || server.battle_service().skill_hits(source, target, actual_skill, level);
-        let (damage, magic_context, battle_flags) = if let Some(offensive) = offensive {
+        let (damage, magic_context, battle_flags) = if Self::uses_metadata_magic(&metadata.name) {
+            let (damage, context) = server.battle_service().metadata_magic_damage(source, target, metadata, level)?;
+            if metadata.name == "NPC_MAGICALATTACK" {
+                effects.push(Status { target_id: source_id,
+                    request: StatusChangeRequest::guaranteed(StatusChangeKind::MagicalAttack, metadata.duration(level, false).unwrap_or(0), i32::from(level)) });
+            } else if metadata.name == "SL_SMA" {
+                effects.push(EndStatus { target_id: source_id, kind: StatusChangeKind::Sma });
+            } else if level >= 7 && !source.status_change(StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
+                let duration = SkillMetadata::find(SkillEnum::SlSma.id()).and_then(|metadata| metadata.duration(level, false)).unwrap_or(3000);
+                effects.push(Status { target_id: source_id,
+                    request: StatusChangeRequest::guaranteed(StatusChangeKind::Sma, duration, i32::from(level)) });
+            }
+            (damage, Some(context), metadata.battle_flags(true))
+        } else if let Some(offensive) = offensive {
             let flags = (if crate::server::service::battle_service::BattleService::is_weapon_skill(offensive) {
                 BattleFlag::Weapon
             } else if offensive.is_magic() {
@@ -452,7 +469,9 @@ impl ScriptSkillService {
                 _ => return Err(format!("Companion damage skill {} has no resolved formula", metadata.name)),
             }
         };
-        let mut damage_event = crate::server::model::action::Damage {
+        let mut damage_event = crate::server::model::action::Damage { notification: None,
+            source_kind: *source.combat_actor_kind(),
+            skill_damage_adjusted: false,
             healing: 0,
             right_hand_damage: None,
             target_id,

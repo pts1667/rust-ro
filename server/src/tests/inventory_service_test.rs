@@ -98,6 +98,19 @@ mod tests {
         assert_task_queue_contains_event, assert_task_queue_contains_event_at_tick, assert_task_queue_is_empty,
     };
 
+    #[derive(Default)]
+    struct EquipmentRepository {
+        commits: Mutex<Vec<(u32, Vec<InventoryItemModel>)>>,
+    }
+
+    #[async_trait]
+    impl InventoryRepository for EquipmentRepository {
+        async fn character_inventory_commit_equipment(&self, char_id: u32, items: Vec<InventoryItemModel>) -> Result<(), Error> {
+            self.commits.lock().unwrap().push((char_id, items));
+            Ok(())
+        }
+    }
+
     #[test]
     fn test_add_items_in_inventory_should_add_items_in_memory_save_added_item_in_database() {
         // Given
@@ -355,7 +368,8 @@ mod tests {
     #[test]
     fn test_equip_item_should_not_equip_item_if_item_is_not_in_inventory() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         let char_id = character.char_id;
         // When
@@ -373,13 +387,15 @@ mod tests {
                 PacketZcReqWearEquipAck2::packet_id(GlobalConfigService::instance().packetver())
             )])
         );
-        assert_sent_persistence_event!(context, PersistenceEvent::UpdateEquippedItems(vec![]));
+        assert!(repository.commits.lock().unwrap().is_empty());
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]
     fn test_equip_item_should_equip_item_if_base_level_requirements_is_met() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         let item = GlobalConfigService::instance().get_item_by_name("Knife");
         let inventory_index = add_item_in_inventory(&mut character, "Knife");
@@ -409,10 +425,8 @@ mod tests {
                 GlobalConfigService::instance().packetver()
             ))])
         );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateEquippedItems(vec![character.inventory[inventory_index].as_ref().unwrap().clone()])
-        );
+        assert_eq!(repository.commits.lock().unwrap().as_slice(), &[(char_id, vec![character.inventory[inventory_index].as_ref().unwrap().clone()])]);
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]
@@ -510,7 +524,8 @@ mod tests {
     #[test]
     fn test_equip_item_should_not_equip_item_if_base_level_requirements_is_not_met() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         character.status.base_level = 0;
         let _item = GlobalConfigService::instance().get_item_by_name("Knife");
@@ -531,10 +546,8 @@ mod tests {
                 PacketZcReqWearEquipAck2::packet_id(GlobalConfigService::instance().packetver())
             )])
         );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateEquippedItems(vec![character.inventory[inventory_index].as_ref().unwrap().clone()])
-        );
+        assert!(repository.commits.lock().unwrap().is_empty());
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]
@@ -609,7 +622,8 @@ mod tests {
     #[test]
     fn test_equip_item_should_equip_item_if_class_requirements_is_met() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         let item = GlobalConfigService::instance().get_item_by_name("Bow");
         character.status.base_level = (item.equip_level_min.unwrap_or(1) + 1) as u32;
@@ -647,16 +661,15 @@ mod tests {
                 GlobalConfigService::instance().packetver()
             ))])
         );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateEquippedItems(vec![character.inventory[inventory_index].as_ref().unwrap().clone()])
-        );
+        assert_eq!(repository.commits.lock().unwrap().as_slice(), &[(char_id, vec![character.inventory[inventory_index].as_ref().unwrap().clone()])]);
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]
     fn test_equip_item_should_not_equip_item_if_class_requirements_is_not_met() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         let item = GlobalConfigService::instance().get_item_by_name("Bow");
         character.status.base_level = (item.equip_level_min.unwrap_or(1) + 1) as u32;
@@ -677,16 +690,15 @@ mod tests {
                 PacketZcReqWearEquipAck2::packet_id(GlobalConfigService::instance().packetver())
             )])
         );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateEquippedItems(vec![character.inventory[inventory_index].as_ref().unwrap().clone()])
-        );
+        assert!(repository.commits.lock().unwrap().is_empty());
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]
     fn test_equip_ammo_should_equip_item_if_class_requirements_is_met() {
         // Given
-        let context = before_each_with_latch(mocked_repository(), 2);
+        let repository = Arc::new(EquipmentRepository::default());
+        let context = before_each_with_latch(repository.clone(), 1);
         let mut character = create_character();
         let item = GlobalConfigService::instance().get_item_by_name("Arrow");
         character.status.job = JobName::Archer.value() as u32;
@@ -725,10 +737,8 @@ mod tests {
                 GlobalConfigService::instance().packetver()
             ))])
         );
-        assert_sent_persistence_event!(
-            context,
-            PersistenceEvent::UpdateEquippedItems(vec![character.inventory[inventory_index].as_ref().unwrap().clone()])
-        );
+        assert_eq!(repository.commits.lock().unwrap().as_slice(), &[(char_id, vec![character.inventory[inventory_index].as_ref().unwrap().clone()])]);
+        assert!(context.test_context.received_persistence_events().lock().unwrap().is_empty());
     }
 
     #[test]

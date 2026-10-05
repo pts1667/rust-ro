@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::sync::mpsc::SyncSender;
 
 use models::enums::cell::CellType;
+use models::enums::actor::CombatActorKind;
 use models::enums::element::Element;
 use models::enums::mob::{MobMode, MobRace};
+use models::enums::mob::MobCapability;
 use models::enums::size::Size;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::{Status, StatusSnapshot};
@@ -53,99 +55,9 @@ pub struct ScriptActorSkillCompletion {
     pub payment: Option<DeferredSkillPayment>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct NpcSkillState {
-    pub id: u32,
-    pub sprite: u16,
-    pub x: u16,
-    pub y: u16,
-    pub dir: u16,
-    pub level: u32,
-    pub stat_point: u16,
-    pub parameters: [u16; 6],
-    pub hp: u32,
-    pub sp: u32,
-    pub max_hp: u32,
-    pub max_sp: u32,
-    pub size: Size,
-    pub speed: u16,
-    pub attack_min: u16,
-    pub attack_max: u16,
-}
-
-impl NpcSkillState {
-    pub fn new(script: &Script) -> Self {
-        Self {
-            id: script.id,
-            sprite: script.sprite,
-            x: script.x,
-            y: script.y,
-            dir: script.dir,
-            level: 0,
-            stat_point: 0,
-            parameters: [0; 6],
-            hp: 1,
-            sp: 1,
-            max_hp: 1,
-            max_sp: 1,
-            size: Size::Small,
-            speed: 0,
-            attack_min: 0,
-            attack_max: 0,
-        }
-    }
-
-    pub fn snapshot(&self) -> StatusSnapshot {
-        let [str, agi, vit, int, dex, luk] = self.parameters.map(|value| value.saturating_add(self.stat_point));
-        let mut snapshot = StatusSnapshot::new_for_mob(
-            u32::from(self.sprite),
-            self.hp,
-            self.sp,
-            self.max_hp,
-            self.max_sp,
-            str,
-            agi,
-            vit,
-            int,
-            dex,
-            luk,
-            0,
-            0,
-            (u32::from(int) + u32::from(int / 7).pow(2)).min(u32::from(u16::MAX)) as u16,
-            (u32::from(int) + u32::from(int / 5).pow(2)).min(u32::from(u16::MAX)) as u16,
-            self.speed,
-            0,
-            0,
-            self.size,
-            Element::Neutral,
-            MobRace::DemiHuman,
-            1,
-        );
-        snapshot.set_base_level(self.level);
-        snapshot.set_hit((self.level + u32::from(dex)).clamp(1, i16::MAX as u32) as i16);
-        snapshot.set_flee((self.level + u32::from(agi)).clamp(1, i16::MAX as u32) as i16);
-        snapshot
-    }
-
-    pub fn actor(&self, map: String, instance: u8) -> ScriptSkillActor {
-        ScriptSkillActor {
-            id: self.id,
-            credit_id: self.id,
-            object_type: MapItemType::Npc,
-            map,
-            instance,
-            x: self.x,
-            y: self.y,
-            dir: self.dir,
-            status: self.snapshot(),
-            raw_attack: u32::from(fastrand::u16(
-                self.attack_min.min(self.attack_max)..=self.attack_min.max(self.attack_max),
-            )),
-            mode: MobMode::CanMove.as_flag() | MobMode::CanAttack.as_flag(),
-            attack_motion: 0,
-        }
-    }
-}
+#[path = "skill_npc_state.rs"]
+mod npc;
+pub use npc::NpcSkillState;
 
 impl ScriptSkillActor {
     pub fn from_mob(mob: &Mob, map: String, instance: u8) -> Self {
@@ -176,14 +88,17 @@ impl ScriptSkillActor {
             active_statuses: self.status.active_statuses().clone(),
             ..Status::default()
         };
-        status.hp > 0 && !status.blocks_casting() && super::ScriptSkillService::player_skill_source_allowed(&status, skill_id)
+        status.hp > 0
+            && !self.status.has_mob_capability(MobCapability::NoCast)
+            && !status.blocks_casting()
+            && super::ScriptSkillService::player_skill_source_allowed(&status, skill_id)
     }
 
     pub fn observer(&self) -> VisibilityObserver {
-        if self.object_type == MapItemType::Mob {
-            VisibilityObserver::for_mob(self.mode, *self.status.race())
-        } else {
-            VisibilityObserver::player(&self.status)
+        match self.object_type {
+            MapItemType::Mob => VisibilityObserver::monster(&self.status),
+            MapItemType::Npc => VisibilityObserver::npc(),
+            _ => VisibilityObserver::player(&self.status),
         }
     }
 }
@@ -191,6 +106,7 @@ impl ScriptSkillActor {
 #[derive(Default)]
 pub struct MapSkillState {
     pub npcs: HashMap<u32, NpcSkillState>,
+    pub transferring_npcs: std::collections::HashSet<u32>,
     pub casts: HashMap<u32, ActiveActorCast>,
     pub generations: HashMap<u32, u64>,
     next_generation: u64,
@@ -416,8 +332,14 @@ pub fn start_map_cast(
     tick: u128,
     sender: &SyncSender<Notification>,
 ) -> Result<(), String> {
+    if cast.source.object_type == MapItemType::Npc && !state.get_map_item(cast.request.source_id).is_some_and(|item| *item.object_type() == MapItemType::Npc) {
+        return Err("NPC caster left the map".into());
+    }
     if let Some(npc) = cast.npc.take() {
         state.script_skill_state.npcs.entry(npc.id).or_insert(npc);
+    }
+    if let Some(npc) = state.script_skill_state.npcs.get_mut(&cast.request.source_id) {
+        npc.initialize_for_cast();
     }
     let source = map_actor(state, cast.request.source_id).ok_or("Unit skill source is not on this map")?;
     if state.script_skill_state.casts.contains_key(&source.id) {

@@ -75,7 +75,8 @@ struct GuildStorageScriptContext {
 }
 
 pub fn constant(name: &str) -> Reply {
-    crate::server::service::script_presentation_service::presentation_constant(name)
+    super::unit_data::constant(name)
+        .or_else(|| crate::server::service::script_presentation_service::presentation_constant(name))
         .or_else(|| super::utilities::constant(name))
         .or_else(|| super::game_data::constant(name))
         .or_else(|| crate::server::service::script_world_service::pet_constant(name))
@@ -365,6 +366,16 @@ impl ItemScriptHost {
             }
             Function::AutoBonus | Function::AutoBonus2 | Function::AutoBonus3 => {
                 self.bonuses.register_auto_bonus(function, &arguments, self.item_id)?;
+                Ok(Value::default())
+            }
+            Function::PetAutoBonus | Function::PetAutoBonus2 | Function::PetAutoBonus3 => {
+                let pet = self.status.script_context.as_ref().and_then(|context| context.pet.as_ref())
+                    .filter(|pet| pet.intimacy > 0).ok_or("Pet automatic bonuses require an active pet")?;
+                if self.effects_allowed {
+                    self.effects.push(ItemEffect::Call { function, arguments });
+                } else {
+                    self.bonuses.register_pet_auto_bonus(function, &arguments, pet.id, pet.class_id)?;
+                }
                 Ok(Value::default())
             }
             Function::GetRefine => Ok(Value::Number(

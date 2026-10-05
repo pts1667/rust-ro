@@ -116,6 +116,32 @@ fn concurrent_character_creation_enforces_slot_uniqueness() {
 }
 
 #[test]
+fn inventory_seed_preserves_crafted_and_split_stacks_and_rejects_duplicate_identity_atomically() {
+    let database = seeded_database();
+    let rows = vec![
+        InventoryRecord { id: 31, item_id: 501, amount: 2, card0: 255, card2: 91, ..Default::default() },
+        InventoryRecord { id: 32, item_id: 501, amount: 3, card0: 255, card2: 92, ..Default::default() },
+        InventoryRecord { id: 33, item_id: 501, amount: 4, ..Default::default() },
+    ];
+    database.seed(&SeedData { characters: vec![character(150_000, "First", 0)],
+        inventories: vec![CharacterInventory { char_id: 150_000, items: rows.clone() }], ..Default::default()
+    }, false).unwrap();
+    let stored: Vec<InventoryRecord> = required(&database.inventories, &150_000_i32.to_be_bytes()).unwrap();
+    assert_eq!(stored, rows);
+    for row in &stored { assert_eq!(required::<i32>(&database.inventory_owners, &row.id.to_be_bytes()).unwrap(), 150_000); }
+    let snapshot = || [&database.inventories, &database.inventory_owners, &database.metadata].into_iter()
+        .map(|tree| tree.iter().map(|pair| { let (key, value) = pair.unwrap(); (key.to_vec(), value.to_vec()) }).collect::<Vec<_>>()).collect::<Vec<_>>();
+    let before = snapshot();
+    for duplicate_unique_id in [false, true] {
+        let mut invalid = rows.clone();
+        if duplicate_unique_id { invalid[0].unique_id = 77; invalid[1].unique_id = 77; }
+        else { invalid[1].id = invalid[0].id; }
+        assert!(database.seed(&SeedData { inventories: vec![CharacterInventory { char_id: 150_000, items: invalid }], ..Default::default() }, true).is_err());
+        assert_eq!(snapshot(), before);
+    }
+}
+
+#[test]
 fn replacing_seed_updates_name_slot_and_inventory_owner_indexes() {
     let database = seeded_database();
     let mut seed = SeedData {

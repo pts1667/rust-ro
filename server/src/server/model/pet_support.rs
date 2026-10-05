@@ -9,6 +9,7 @@ pub struct PetSupportRuntime {
     pub initialized: bool,
     pub requires_accessory: bool,
     pub base_bonuses: Vec<BonusType>,
+    pub auto_bonuses: Vec<BonusType>,
     pub bonus: Option<PetTimedBonus>,
     pub recovery: Option<PetRecovery>,
     pub skill: Option<PetSupportSkill>,
