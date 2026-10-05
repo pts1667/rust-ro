@@ -1,11 +1,12 @@
 use packets::packets::{
-    Packet, PacketZcCloseDialog, PacketZcMenuList, PacketZcNotifyPlayerchat, PacketZcOpenEditdlg, PacketZcOpenEditdlgstr,
+    Packet, PacketZcCloseDialog, PacketZcMenuList, PacketZcOpenEditdlg, PacketZcOpenEditdlgstr,
     PacketZcSayDialog, PacketZcShowImage2, PacketZcWaitDialog,
 };
 use script_sdk::{Function, Reply, Value};
 
 use super::{NpcScriptHost, PlayerInput};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
+use crate::util::packet::playerchat_packet;
 
 impl NpcScriptHost {
     pub fn send_packet<'a>(&'a self, packet: &mut dyn Packet) -> impl std::future::Future<Output = Result<(), String>> + Send + 'a {
@@ -97,10 +98,7 @@ impl NpcScriptHost {
                 if text.len() > 16_000 {
                     return Err("Message is too long".into());
                 }
-                let mut packet = PacketZcNotifyPlayerchat::new(packetver);
-                packet.set_msg(text);
-                packet.set_packet_length((packet.msg.len() + 4) as i16);
-                packet.fill_raw();
+                let mut packet = playerchat_packet(packetver, &text);
                 self.send_packet(&mut packet).await?;
             }
             Function::Cutin => {

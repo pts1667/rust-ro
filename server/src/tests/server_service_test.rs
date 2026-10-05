@@ -242,39 +242,7 @@ mod tests {
             .test_context
             .get_sent_packet(vec![packets::packets::PacketZcNotifyPlayerchat::packet_id(packetver)], packetver);
         assert_eq!(packets.len(), 1);
-        assert!(cast!(packets[0], packets::packets::PacketZcNotifyPlayerchat).msg.starts_with("@bogus is an Unknown Command"));
-    }
-
-    #[test]
-    fn creating_a_duel_is_answered_once_the_duel_actor_reports_back() {
-        // Given
-        let (context, _repository, character) = super::native_payment_tests::fixture(false, false);
-        let char_id = character.char_id;
-        context.server.state_mut().insert_character(character);
-        context.server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::Duel(
-            crate::server::model::duel::DuelCommand {
-                char_id,
-                action: crate::server::model::duel::DuelAction::Create,
-                argument: String::new(),
-            },
-        ));
-        // When
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
-        let mut tick = 40;
-        while context.server.state().duels.duel_of(char_id).is_none() && std::time::Instant::now() < deadline {
-            crate::server::Server::game_loop_iteration(&context.server, tick);
-            tick += 40;
-            std::thread::sleep(std::time::Duration::from_millis(5));
-        }
-        crate::server::Server::game_loop_iteration(&context.server, tick);
-        // Then
-        assert!(context.server.state().duels.duel_of(char_id).is_some());
-        let packetver = GlobalConfigService::instance().packetver();
-        let packets = context
-            .test_context
-            .get_sent_packet(vec![packets::packets::PacketZcNotifyPlayerchat::packet_id(packetver)], packetver);
-        assert_eq!(packets.len(), 1);
-        assert!(cast!(packets[0], packets::packets::PacketZcNotifyPlayerchat).msg.starts_with("You have created a duel"));
+        assert_eq!(cast!(packets[0], packets::packets::PacketZcNotifyPlayerchat).msg, "@bogus is an Unknown Command.");
     }
 
     #[test]

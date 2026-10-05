@@ -655,7 +655,10 @@ impl Server {
     }
 
     fn apply_pvp_death(&self, state: &mut ServerState, victim_id: u32, killer_id: u32) {
-        self.leave_duel(victim_id);
+        if state.duels.duel_of(victim_id).is_some() {
+            self.leave_duel(state, victim_id);
+        }
+        state.duels.reject(victim_id);
         let Some(victim) = state.characters().get(&victim_id) else {
             return;
         };

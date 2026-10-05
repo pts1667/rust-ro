@@ -18,6 +18,7 @@ use crate::server::model::events::client_notification::{CharNotification, Notifi
 use crate::server::state::server::ServerState;
 use crate::server::script::Value;
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::util::packet::playerchat_packet;
 
 lazy_static! {
     static ref COMMAND_REGEX: Regex = Regex::new(r"^([@#!])([^\s]*)\s?(.*)?").unwrap();
@@ -96,10 +97,7 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             let packetver = GlobalConfigService::instance().packetver();
             std::thread::spawn(move || {
                 let result = handle_reload(args.iter().map(String::as_str).collect());
-                let mut packet = PacketZcNotifyPlayerchat::new(packetver);
-                packet.set_msg(result);
-                packet.set_packet_length((4 + packet.msg.len()) as i16);
-                packet.fill_raw();
+                let mut packet = playerchat_packet(packetver, &result);
                 sender
                     .send(Notification::Char(CharNotification::new(char_id, std::mem::take(packet.raw_mut()))))
                     .unwrap_or_else(|_| error!("Failed to send notification packet_zc_notify_playerchat to client"));
@@ -145,9 +143,8 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
     send_chat_reply(server, char_id, packet_zc_notify_playerchat);
 }
 
-fn send_chat_reply(server: &Server, char_id: u32, mut packet: PacketZcNotifyPlayerchat) {
-    packet.set_packet_length((4 + packet.msg.len()) as i16);
-    packet.fill_raw();
+fn send_chat_reply(server: &Server, char_id: u32, reply: PacketZcNotifyPlayerchat) {
+    let mut packet = playerchat_packet(GlobalConfigService::instance().packetver(), &reply.msg);
     server
         .server_service()
         .notification_sender()

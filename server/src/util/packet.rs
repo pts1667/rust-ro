@@ -2,11 +2,20 @@ use std::fmt::{Display, Formatter};
 use std::net::SocketAddr;
 use std::panic;
 
-use packets::packets::Packet;
+use packets::packets::{Packet, PacketZcNotifyPlayerchat};
 use packets::packets_parser::parse;
 
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::util::tick::get_tick;
+
+/// The client reads the message up to a NUL terminator, so without one it drops the last character.
+pub fn playerchat_packet(packetver: u32, text: &str) -> PacketZcNotifyPlayerchat {
+    let mut packet = PacketZcNotifyPlayerchat::new(packetver);
+    packet.set_msg(format!("{text}\0"));
+    packet.set_packet_length((packet.base_len(packetver) + packet.msg.len()) as i16);
+    packet.fill_raw();
+    packet
+}
 
 pub fn chain_packets(packets: Vec<&dyn Packet>) -> Vec<u8> {
     let mut res: Vec<u8> = Vec::new();
@@ -167,5 +176,17 @@ impl PacketsBuffer {
 
     pub fn session_id(&self) -> u32 {
         self.session_id
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn playerchat_packet_is_nul_terminated_and_length_covers_it() {
+        let packet = playerchat_packet(GlobalConfigService::instance().packetver(), "hello");
+        assert_eq!(&packet.raw[4..], b"hello\0");
+        assert_eq!(packet.packet_length as usize, packet.raw.len());
     }
 }
