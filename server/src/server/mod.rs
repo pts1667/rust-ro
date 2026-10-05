@@ -373,6 +373,7 @@ impl Server {
     }
 
     pub fn disconnect_character(&self, char_id: u32) {
+        let _state_loops_guard = self.lock_state_loops();
         self.disconnect_character_in_state(self.state_mut().as_mut(), char_id);
     }
 

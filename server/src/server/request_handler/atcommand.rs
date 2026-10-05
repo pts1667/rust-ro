@@ -188,9 +188,12 @@ pub fn handle_go(server: &Server, session: Arc<Session>, args: Vec<&str>) -> Str
     if let Some(refusal) = admin_travel_blocked(server, session.char_id(), &city.name) {
         return refusal;
     }
-    server
-        .server_service()
-        .schedule_warp_to_walkable_cell(server.state_mut().as_mut(), &city.name, city.x, city.y, session.char_id());
+    {
+        let _state_loops_guard = server.lock_state_loops();
+        server
+            .server_service()
+            .schedule_warp_to_walkable_cell(server.state_mut().as_mut(), &city.name, city.x, city.y, session.char_id());
+    }
     format!("Warping at {} {},{}", city.name.clone(), city.x, city.y)
 }
 
@@ -224,9 +227,12 @@ pub fn handle_warp(server: &Server, session: Arc<Session>, args: Vec<&str>) -> S
                 y = parse_y_res;
             }
         }
-        server
-            .server_service()
-            .schedule_warp_to_walkable_cell(server.state_mut().as_mut(), &map_name, x, y, session.char_id());
+        {
+            let _state_loops_guard = server.lock_state_loops();
+            server
+                .server_service()
+                .schedule_warp_to_walkable_cell(server.state_mut().as_mut(), &map_name, x, y, session.char_id());
+        }
         let char_id = session.char_id();
         let character = server.state().get_character_unsafe(char_id);
         return format!("Warp to map {} at {},{}", map_name, character.x(), character.y());
