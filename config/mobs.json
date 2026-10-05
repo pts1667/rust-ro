@@ -2818,7 +2818,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 35750
     },
     {
       "id": 1039,
@@ -2926,7 +2927,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 53625
     },
     {
       "id": 1040,
@@ -3468,7 +3470,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 25740
     },
     {
       "id": 1047,
@@ -4620,7 +4623,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 19662
     },
     {
       "id": 1060,
@@ -6905,7 +6909,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 7150
     },
     {
       "id": 1087,
@@ -7013,7 +7018,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 29315
     },
     {
       "id": 1088,
@@ -9243,7 +9249,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 14300
     },
     {
       "id": 1113,
@@ -9521,7 +9528,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 12512
     },
     {
       "id": 1116,
@@ -12138,7 +12146,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 21450
     },
     {
       "id": 1148,
@@ -12422,7 +12431,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 13750
     },
     {
       "id": 1490,
@@ -13062,7 +13072,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 57495
     },
     {
       "id": 1158,
@@ -13251,7 +13262,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 16087
     },
     {
       "id": 1160,
@@ -15371,7 +15383,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 31102
     },
     {
       "id": 1191,
@@ -19756,7 +19769,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 32175
     },
     {
       "id": 1252,
@@ -19858,7 +19872,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 25025
     },
     {
       "id": 1253,
@@ -21570,7 +21585,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 32890
     },
     {
       "id": 1273,
@@ -24758,7 +24774,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 9101
     },
     {
       "id": 1313,
@@ -30115,7 +30132,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 65671
     },
     {
       "id": 1374,
@@ -31376,7 +31394,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 60078
     },
     {
       "id": 1390,
@@ -32189,7 +32208,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 130875
     },
     {
       "id": 1400,
@@ -33609,7 +33629,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 17144
     },
     {
       "id": 1419,
@@ -36369,7 +36390,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 16547
     },
     {
       "id": 1493,
@@ -37073,7 +37095,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 43625
     },
     {
       "id": 1503,
@@ -37843,7 +37866,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 43632
     },
     {
       "id": 1512,
@@ -41080,7 +41104,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 29587
     },
     {
       "id": 1584,
@@ -43541,7 +43566,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 15505
     },
     {
       "id": 1624,
@@ -43987,7 +44013,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 22625
     },
     {
       "id": 1631,
@@ -45130,7 +45157,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2417800
     },
     {
       "id": 1647,
@@ -45238,7 +45266,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2041700
     },
     {
       "id": 1648,
@@ -45346,7 +45375,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2001170
     },
     {
       "id": 1649,
@@ -45454,7 +45484,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2128500
     },
     {
       "id": 1650,
@@ -45562,7 +45593,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2046500
     },
     {
       "id": 1651,
@@ -45670,7 +45702,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2004100
     },
     {
       "id": 1652,
@@ -46300,7 +46333,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 129380
     },
     {
       "id": 1659,
@@ -48104,7 +48138,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 100000
     },
     {
       "id": 1686,
@@ -48380,7 +48415,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 32497
     },
     {
       "id": 1689,
@@ -49977,7 +50013,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1833000
     },
     {
       "id": 1709,
@@ -50819,7 +50856,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 145925
     },
     {
       "id": 1720,
@@ -51600,7 +51638,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1178100
     },
     {
       "id": 1735,
@@ -52580,7 +52619,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1427450
     },
     {
       "id": 1752,
@@ -53577,7 +53617,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 481087
     },
     {
       "id": 1769,
@@ -54416,7 +54457,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1360025
     },
     {
       "id": 1780,
@@ -54905,7 +54947,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 147775
     },
     {
       "id": 1786,
@@ -57456,7 +57499,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1577160
     },
     {
       "id": 1833,
@@ -60219,7 +60263,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 555555
     },
     {
       "id": 1872,
@@ -60403,7 +60448,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 3333333
     },
     {
       "id": 1875,
@@ -61173,7 +61219,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 22625
     },
     {
       "id": 1886,
@@ -62419,7 +62466,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 1800000
     },
     {
       "id": 1918,
@@ -66527,7 +66575,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 50000
     },
     {
       "id": 1981,
@@ -68561,7 +68610,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 2400000
     },
     {
       "id": 2023,
@@ -69318,7 +69368,8 @@
       "capabilities": [
         "Mvp"
       ],
-      "damage_modes": []
+      "damage_modes": [],
+      "mvp_exp": 37144
     },
     {
       "id": 2069,

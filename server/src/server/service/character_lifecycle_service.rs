@@ -388,6 +388,8 @@ impl Server {
             }
         }
         state.script_timers.disconnect(char_id);
+        self.battleground_leave(state, char_id, true, true);
+        self.battleground_queue_leave(state, char_id, false);
         if let Err(error) = self.cancel_player_trade(state, char_id) {
             warn!("Trade cancellation failed during logout: {error}");
         }

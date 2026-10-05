@@ -175,14 +175,21 @@ impl Server {
         if character.account_id != request.session.account_id || !character.loaded_from_client_side || character.status.hp != 0 {
             return Ok(());
         }
-        let map = normalize_map(&character.save_map);
+        let cemetery = self.battleground_cemetery(state, char_id).filter(|point| GlobalConfigService::instance().find_map(&point.map).is_some());
+        let (map, x, y) = match &cemetery {
+            Some(point) => (point.map.clone(), point.x, point.y),
+            None => (normalize_map(&character.save_map), character.save_x, character.save_y),
+        };
         if GlobalConfigService::instance().find_map(&map).is_none() {
             return Err("Respawn destination is unavailable".into());
         }
-        let (x, y) = (character.save_x, character.save_y);
         let mut character = state.characters_mut().remove(&char_id).ok_or("Respawn character disconnected")?;
         let snapshot = crate::server::service::status_service::StatusService::instance().to_snapshot(&character.status);
-        let (hp, sp) = respawn_resources(&snapshot, &self.configuration.game);
+        let (hp, sp) = if cemetery.is_some() {
+            ((snapshot.max_hp() / 100).max(1), snapshot.max_sp())
+        } else {
+            respawn_resources(&snapshot, &self.configuration.game)
+        };
         self.script_skill_service().cancel_queued_cast(&mut character);
         character.pending_item_skill = None;
         character.movements.clear();

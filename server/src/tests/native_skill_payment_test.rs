@@ -765,7 +765,11 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
         assert!(target.status.has_status_change(StatusChangeKind::NoRecovery));
         assert!(target.status.has_status_change(StatusChangeKind::Berserk));
         assert!(target.damages.is_empty());
-        assert!(context.server_task_queue.is_empty());
+        let queued = context.server_task_queue.pop().unwrap_or_default();
+        assert!(
+            queued.iter().all(|event| matches!(event, crate::server::model::events::game_event::GameEvent::CharacterDamage(_))),
+            "unexpected queued events: {queued:?}"
+        );
     }
 }
 

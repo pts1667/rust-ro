@@ -52,6 +52,9 @@ impl ScriptSkillService {
         if skill_id == models::enums::skill_enums::SkillEnum::CgTarotcard.id() {
             deferred.sp = std::mem::take(&mut upfront.sp);
         }
+        if skill_id == models::enums::skill_enums::SkillEnum::HwGanbantein.id() {
+            deferred = std::mem::take(&mut upfront);
+        }
         if skill_id == models::enums::skill_enums::SkillEnum::MgStonecurse.id() && level > 5 {
             deferred.removals = std::mem::take(&mut upfront.removals);
         }
@@ -204,6 +207,12 @@ impl ScriptSkillService {
                     == 0 =>
             {
                 return Err("This skill requires a cart".into());
+            }
+            Some("Riding") if character.options & PlayerOption::Riding.as_flag() == 0 => {
+                return Err("This skill requires a Peco Peco".into());
+            }
+            Some("Falcon") if character.options & PlayerOption::Falcon.as_flag() == 0 => {
+                return Err("This skill requires a falcon".into());
             }
             Some("Move_Enable") if character.status.blocks_movement() => return Err("This skill requires movement".into()),
             Some("Recover_Weight_Rate")

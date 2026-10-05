@@ -255,6 +255,9 @@ impl ScriptWorldService {
                         return Err(error.to_string());
                     }
                 };
+                server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::GuildBroken {
+                    guild_id: guild.id,
+                }));
                 for member in &guild.members {
                     self.send(*member, vec![0x5E, 0x01, 0, 0, 0, 0])?;
                     if *member == character.char_id {
@@ -338,6 +341,9 @@ impl ScriptWorldService {
                 if !message.starts_with(&prefix) {
                     return Err("Guild chat sender does not match the character".into());
                 }
+                if server.battleground_chat(state, character, &message) {
+                    return Ok(());
+                }
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -355,6 +361,13 @@ impl ScriptWorldService {
                     .repository
                     .guild_upgrade_skill(character.char_id, skill_id)
                     .map_err(|error| error.to_string())?;
+                let level = guild.skill_level(skill_id);
+                let mut ack = protocol::header(0x010E);
+                for value in [skill_id as u16, u16::from(level), 0, 0] {
+                    ack.extend_from_slice(&value.to_le_bytes());
+                }
+                ack.push(1);
+                self.send(character.char_id, ack)?;
                 self.broadcast_guild_packet(&guild, guild_skills_packet(&guild))?;
                 self.broadcast_guild_summary(server, character, &guild)
             }
@@ -379,10 +392,10 @@ impl ScriptWorldService {
                 if guild.allies.contains(&target_guild.id) {
                     return self.send(character.char_id, vec![0x73, 0x01, 0]);
                 }
-                if guild.allies.len() >= 3 {
+                if guild.allies.len() >= usize::from(server.configuration.game.guild_max_alliances) {
                     return self.send(character.char_id, vec![0x73, 0x01, 4]);
                 }
-                if target_guild.allies.len() >= 3 {
+                if target_guild.allies.len() >= usize::from(server.configuration.game.guild_max_alliances) {
                     return self.send(character.char_id, vec![0x73, 0x01, 3]);
                 }
                 if state.guild_alliance_requests.contains_key(&target_char) {
@@ -440,13 +453,17 @@ impl ScriptWorldService {
                     .guild_declare_opposition(character.char_id, target_guild)
                     .map_err(|error| error.to_string())?;
                 self.send(character.char_id, vec![0x81, 0x01, 0])?;
-                self.refresh_guild_relations(&[&guild])
+                let opposed = self.repository.guild(target_guild).map_err(|error| error.to_string())?;
+                let mut guilds = vec![&guild];
+                guilds.extend(opposed.as_ref());
+                self.refresh_guild_relations(&guilds)
             }
             ScriptWorldRequest::GuildRelationBreak { guild_id, .. } => {
-                self.guild_master_of(character)?;
+                let before = self.guild_master_of(character)?;
                 if state.siege_active {
                     return Err("Guild relations cannot change during Guild Wars".into());
                 }
+                let hostile = before.opposition.contains(&guild_id);
                 let guild = self
                     .repository
                     .guild_break_relation(character.char_id, guild_id)
@@ -454,7 +471,12 @@ impl ScriptWorldService {
                 let other = self.repository.guild(guild_id).map_err(|error| error.to_string())?;
                 let mut guilds = vec![&guild];
                 guilds.extend(other.as_ref());
-                self.refresh_guild_relations(&guilds)
+                self.refresh_guild_relations(&guilds)?;
+                self.broadcast_guild_packet(&guild, relation_deleted_packet(guild_id, hostile))?;
+                if let Some(other) = other.as_ref() {
+                    self.broadcast_guild_packet(other, relation_deleted_packet(guild.id, hostile))?;
+                }
+                Ok(())
             }
             _ => Err("Unknown guild operation".into()),
         }
@@ -630,6 +652,13 @@ fn guild_positions(info: bool, guild: &GuildRecord) -> Vec<u8> {
         }
     }
     protocol::set_length(&mut packet);
+    packet
+}
+
+fn relation_deleted_packet(guild_id: u32, hostile: bool) -> Vec<u8> {
+    let mut packet = protocol::header(0x0184);
+    packet.extend_from_slice(&guild_id.to_le_bytes());
+    packet.extend_from_slice(&u32::from(hostile).to_le_bytes());
     packet
 }
 

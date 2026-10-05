@@ -28211,6 +28211,42 @@
     "interactive": false
   },
   {
+    "id": 12968,
+    "dynamic": true,
+    "source_hash": "ccb64b6957ec0f56aad278e6aea13642",
+    "calls": [
+      "getcharid",
+      "unitskilluseid"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 12969,
+    "dynamic": true,
+    "source_hash": "f0897eef79299f8edbb468f9c123440b",
+    "calls": [
+      "getcharid",
+      "unitskilluseid"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 12970,
+    "dynamic": true,
+    "source_hash": "90bbfbf665ef1101bb72ac1c5d170763",
+    "calls": [
+      "getcharid",
+      "unitskilluseid"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
     "id": 12999,
     "dynamic": true,
     "source_hash": "57c3b54268510ae6ea934b3a0648b74f",

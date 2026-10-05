@@ -8,6 +8,7 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFl
 use script_sdk::Value;
 
 use super::metadata::SkillMetadata;
+use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
@@ -18,6 +19,7 @@ use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
+
 
 #[derive(Clone, Debug, PartialEq)]
 enum TargetEffect {
@@ -86,6 +88,8 @@ impl ScriptSkillService {
             if succeeded {
                 effects = Self::draw_tarot_effects(effect.level, effect.source_char_id, 0);
             }
+        } else if effect.skill_id == SkillEnum::HwGanbantein.id() {
+            succeeded = fastrand::u8(0..100) < GANBANTEIN_SUCCESS_PERCENT;
         } else if effect.skill_id == SkillEnum::MgStonecurse.id() {
             succeeded = false;
             if target.hp > 0 && !immune {
@@ -139,13 +143,17 @@ impl ScriptSkillService {
 
     pub(super) fn source_heal_amount(&self, character: &Character, level: u8) -> u32 {
         let snapshot = StatusService::instance().to_snapshot(&character.status);
+        let hp = Self::heal_amount(&snapshot, character.status.base_level, level);
+        Self::scale_source_heal(character, &snapshot, hp)
+    }
+
+    pub(super) fn scale_source_heal(character: &Character, snapshot: &StatusSnapshot, hp: u32) -> u32 {
         let meditation = character
             .status
             .known_skills
             .iter()
             .find(|skill| skill.value == SkillEnum::HpMeditatio)
             .map_or(0, |skill| skill.level as u32);
-        let hp = Self::heal_amount(&snapshot, character.status.base_level, level);
         let power = snapshot
             .bonuses_raw()
             .iter()
@@ -224,9 +232,12 @@ impl ScriptSkillService {
             ScriptSkillAction::ExplodeSplasher => {
                 self.explode_splasher(server, state, character, effect, tick)?;
             }
-            ScriptSkillAction::AreaStatus { x, y } => {
-                self.cast_area_status(server, state, character, effect.skill_id, effect.level, x, y, tick)?;
-            }
+            ScriptSkillAction::AreaStatus { x, y } => match SkillMetadata::find(effect.skill_id).map(|metadata| metadata.name.as_str()) {
+                Some("HW_GANBANTEIN") => self.clear_ground_units(character, x, y),
+                Some("MO_BODYRELOCATION") => self.body_relocation(server, state, character, x, y, tick),
+                _ => self.cast_area_status(server, state, character, effect.skill_id, effect.level, x, y, tick)?,
+            },
+            ScriptSkillAction::Summon { x, y } => self.summon_alchemist_creature(state, character, effect, x, y)?,
             ScriptSkillAction::Face { direction } => {
                 character.dir = direction % 8;
                 let mut packet = 0x009C_u16.to_le_bytes().to_vec();

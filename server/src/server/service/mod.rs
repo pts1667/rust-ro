@@ -1,5 +1,12 @@
 pub mod battle_service;
+pub(crate) mod battleground_service;
+pub(crate) mod cell_status_service;
+pub(crate) mod battleground_queue_service;
+pub(crate) mod script_map_commands;
 pub mod duel_service;
+pub(crate) mod guild_skill_service;
+pub(crate) mod castle_service;
+pub(crate) mod wedding_service;
 pub mod combat_trigger_service;
 pub mod script_combat_service;
 pub mod map_combat_service;

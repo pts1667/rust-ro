@@ -22,6 +22,9 @@ use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
+/// A spent Safety Wall removes its status from the target, which is how the wall learns it is used up.
+const SAFETY_WALL_APPLY_GRACE_MS: u128 = 400;
+
 pub(super) static NEXT_GROUND_UNIT: AtomicU32 = AtomicU32::new(2_000_000);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -38,6 +41,7 @@ pub enum GroundKind {
     StormGust,
     Vermilion,
     GrandCross,
+    GrandDarkness,
     SkidTrap,
     AnkleSnare,
     LandMine,
@@ -51,6 +55,10 @@ pub enum GroundKind {
     Graffiti,
     ArrowShower,
     Earthquake,
+    SafetyWall,
+    Sanctuary,
+    VenomDust,
+    SpiderWeb,
 }
 
 impl GroundKind {
@@ -59,6 +67,10 @@ impl GroundKind {
             "AL_WARP" => Self::WarpPortal,
             "MG_FIREWALL" => Self::Firewall,
             "AL_PNEUMA" => Self::Pneuma,
+            "MG_SAFETYWALL" => Self::SafetyWall,
+            "PR_SANCTUARY" => Self::Sanctuary,
+            "AS_VENOMDUST" => Self::VenomDust,
+            "PF_SPIDERWEB" => Self::SpiderWeb,
             "WZ_QUAGMIRE" => Self::Quagmire,
             "SA_DELUGE" => Self::Deluge,
             "SA_LANDPROTECTOR" => Self::LandProtector,
@@ -68,6 +80,7 @@ impl GroundKind {
             "WZ_STORMGUST" => Self::StormGust,
             "WZ_VERMILION" => Self::Vermilion,
             "CR_GRANDCROSS" => Self::GrandCross,
+            "NPC_GRANDDARKNESS" => Self::GrandDarkness,
             "MA_SKIDTRAP" | "HT_SKIDTRAP" => Self::SkidTrap,
             "HT_ANKLESNARE" => Self::AnkleSnare,
             "MA_LANDMINE" | "HT_LANDMINE" => Self::LandMine,
@@ -90,6 +103,10 @@ impl GroundKind {
             Self::WarpPortal => 129,
             Self::Firewall => 127,
             Self::Pneuma => 133,
+            Self::SafetyWall => 126,
+            Self::Sanctuary => 131,
+            Self::VenomDust => 146,
+            Self::SpiderWeb => 183,
             Self::Quagmire => 142,
             Self::Deluge => 155,
             Self::LandProtector => 157,
@@ -112,6 +129,7 @@ impl GroundKind {
     fn status(self) -> Option<StatusChangeKind> {
         match self {
             Self::Pneuma => Some(StatusChangeKind::Pneuma),
+            Self::SafetyWall => Some(StatusChangeKind::SafetyWall),
             Self::Quagmire => Some(StatusChangeKind::Quagmire),
             Self::Deluge => Some(StatusChangeKind::Deluge),
             _ => None,
@@ -121,8 +139,27 @@ impl GroundKind {
     fn damaging(self) -> bool {
         !matches!(
             self,
-            Self::WarpPortal | Self::TalkieBox | Self::Graffiti | Self::Pneuma | Self::Quagmire | Self::Deluge | Self::LandProtector
+            Self::WarpPortal
+                | Self::TalkieBox
+                | Self::Graffiti
+                | Self::Pneuma
+                | Self::SafetyWall
+                | Self::Sanctuary
+                | Self::VenomDust
+                | Self::SpiderWeb
+                | Self::GrandDarkness
+                | Self::Quagmire
+                | Self::Deluge
+                | Self::LandProtector
         )
+    }
+
+    pub(super) fn effect_range(self, configured: u16) -> u16 {
+        match self {
+            Self::Pneuma => 1,
+            Self::Sanctuary | Self::VenomDust | Self::SpiderWeb => 0,
+            _ => configured,
+        }
     }
 
     pub(super) fn trap(self) -> bool {
@@ -292,7 +329,9 @@ impl ScriptSkillService {
                 .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal ground definition is unavailable")?;
-        if GroundKind::from_name(&metadata.name).is_none() && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER") {
+        if GroundKind::from_name(&metadata.name).is_none()
+            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "AM_SPHEREMINE" | "AM_CANNIBALIZE")
+        {
             return Err("Skill does not accept a ground target".into());
         }
         if character.status.hp == 0
@@ -344,6 +383,9 @@ impl ScriptSkillService {
                 true,
                 true,
             )?;
+        }
+        if Self::is_alchemist_summon(skill_id) {
+            self.validate_summon_limit(state, character, skill_id, level)?;
         }
         let active = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
         if metadata.name == "MG_FIREWALL"
@@ -426,8 +468,31 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if metadata.name == "BS_HAMMERFALL" {
+        if Self::is_alchemist_summon(skill_id) {
+            let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
+            let effect = super::ScriptSkillEffect {
+                source_char_id: character.char_id,
+                target_id: character.char_id,
+                skill_id,
+                level,
+                heal_value: 0,
+                proc_depth: depth,
+                skill_event_emitted: false,
+                cast_generation: 0,
+                action: super::ScriptSkillAction::Summon { x, y },
+                deferred_requirements: None,
+                prepared_outcome: None,
+                source_index: None,
+                source_item: None,
+            };
             if instant {
+                return self.apply_target_effect(server, state, character, &effect, tick);
+            }
+            self.queue_target_effect(server, character, skill, effect, tick);
+            return Ok(());
+        }
+        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION") {
+            if instant && metadata.name == "BS_HAMMERFALL" {
                 return self.cast_area_status(server, state, character, skill_id, level, x, y, tick);
             }
             let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
@@ -446,6 +511,9 @@ impl ScriptSkillService {
                 source_index: None,
                 source_item: None,
             };
+            if instant {
+                return self.apply_target_effect(server, state, character, &effect, tick);
+            }
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
@@ -520,11 +588,7 @@ impl ScriptSkillService {
             )
         };
         let layout = metadata.unit_value("Layout", level, "Size").unwrap_or(0);
-        let range = if kind == GroundKind::Pneuma {
-            1
-        } else {
-            metadata.unit_value("Range", level, "Size").unwrap_or(0).max(0) as u16
-        };
+        let range = kind.effect_range(metadata.unit_value("Range", level, "Size").unwrap_or(0).max(0) as u16);
         let interval = metadata.unit_value("Interval", level, "Time").unwrap_or(-1);
         let interval = if interval < 0 { 40 } else { interval.max(40) as u128 };
         let centers = if kind == GroundKind::Meteor {
@@ -553,7 +617,9 @@ impl ScriptSkillService {
             let locations = match kind {
                 GroundKind::Firewall => Self::firewall_cells(character.x, character.y, x, y),
                 GroundKind::Pneuma => vec![(x, y)],
-                GroundKind::GrandCross => Self::grand_cross_cells(x, y),
+                GroundKind::Sanctuary => Self::sanctuary_cells(x, y),
+                GroundKind::VenomDust => Self::venom_dust_cells(x, y),
+                GroundKind::GrandCross | GroundKind::GrandDarkness => Self::grand_cross_cells(x, y),
                 _ => Self::square_cells(x, y, layout.max(0) as u16),
             };
             let cells = locations
@@ -573,7 +639,7 @@ impl ScriptSkillService {
                         3500
                     } else if kind == GroundKind::Firewall {
                         4 + level as u16
-                    } else if kind == GroundKind::GrandCross {
+                    } else if matches!(kind, GroundKind::GrandCross | GroundKind::GrandDarkness) {
                         3
                     } else {
                         u16::MAX
@@ -608,7 +674,7 @@ impl ScriptSkillService {
                 expires_at: active_from + offset + if kind == GroundKind::Meteor { 100 } else { duration },
                 next_hit_at: active_from
                     + offset
-                    + if matches!(kind, GroundKind::GrandCross | GroundKind::Earthquake | GroundKind::StormGust) {
+                    + if matches!(kind, GroundKind::GrandCross | GroundKind::GrandDarkness | GroundKind::Earthquake | GroundKind::StormGust) {
                         100
                     } else {
                         0
@@ -853,6 +919,17 @@ impl ScriptSkillService {
                     if kind == StatusChangeKind::Quagmire && ground.actor_source.is_none() && state.get_character(target_id).is_some() {
                         continue;
                     }
+                    if kind == StatusChangeKind::SafetyWall && ground.affected.contains(&target_id) && tick > ground.active_from + SAFETY_WALL_APPLY_GRACE_MS {
+                        let still_protected = state
+                            .get_character(target_id)
+                            .map(|target| target.status.has_status_change(kind))
+                            .or_else(|| map_state.get_mob(target_id).map(|mob| mob.status_effects.has_status_change(kind)))
+                            .unwrap_or(true);
+                        if !still_protected {
+                            ground.expires_at = tick;
+                            continue;
+                        }
+                    }
                     affected.insert(target_id);
                     if !ground.affected.contains(&target_id) {
                         let mut request = StatusChangeRequest::guaranteed(
@@ -907,6 +984,18 @@ impl ScriptSkillService {
                     }
                 }
                 ground.affected = affected;
+            }
+            if ground.kind == GroundKind::Sanctuary {
+                self.tick_sanctuary(server, state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::VenomDust {
+                self.tick_venom_dust(server, state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::SpiderWeb {
+                self.tick_spider_web(server, state, ground, tick);
+                continue;
             }
             if ground.actor_source.is_some() {
                 self.tick_actor_ground_skill(server, state, ground, tick);
@@ -1173,6 +1262,20 @@ impl ScriptSkillService {
             .collect()
     }
 
+    pub fn venom_dust_cells(x: u16, y: u16) -> Vec<(u16, u16)> {
+        Self::square_cells(x, y, 1)
+            .into_iter()
+            .filter(|(cx, cy)| cx.abs_diff(x) + cy.abs_diff(y) <= 1)
+            .collect()
+    }
+
+    pub fn sanctuary_cells(x: u16, y: u16) -> Vec<(u16, u16)> {
+        Self::square_cells(x, y, 2)
+            .into_iter()
+            .filter(|(cx, cy)| !(cx.abs_diff(x) == 2 && cy.abs_diff(y) == 2))
+            .collect()
+    }
+
     pub fn grand_cross_cells(x: u16, y: u16) -> Vec<(u16, u16)> {
         let dx = [
             0, 0, -1, 0, 1, -2, -1, 0, 1, 2, -4, -3, -2, -1, 0, 1, 2, 3, 4, -2, -1, 0, 1, 2, -1, 0, 1, 0, 0,
@@ -1259,6 +1362,17 @@ mod tests {
         assert_eq!(cells.len(), 29);
         assert!(cells.contains(&(14, 10)) && cells.contains(&(10, 6)) && cells.contains(&(12, 11)));
         assert!(!cells.contains(&(12, 12)));
+    }
+    #[test]
+    fn sanctuary_covers_a_five_by_five_square_without_corners() {
+        let cells = ScriptSkillService::sanctuary_cells(10, 10);
+        assert_eq!(cells.len(), 21);
+        assert!(cells.contains(&(12, 11)) && cells.contains(&(11, 8)));
+        assert!(!cells.contains(&(12, 12)) && !cells.contains(&(8, 8)));
+        assert_eq!(GroundKind::Sanctuary.effect_range(1), 0);
+        let venom = ScriptSkillService::venom_dust_cells(10, 10);
+        assert_eq!(venom.len(), 5);
+        assert!(venom.contains(&(9, 10)) && !venom.contains(&(9, 9)));
     }
     #[test]
     fn ground_packets_follow_the_selected_client_version() {

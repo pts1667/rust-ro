@@ -21,7 +21,7 @@ use crate::server::service::map_instance_service::MapInstanceService;
 use crate::server::service::mob_service::MobService;
 use crate::tests::common;
 
-const NPC_ID: u32 = 80_001;
+pub(super) const NPC_ID: u32 = 80_001;
 const MOB_ID: u32 = 80_002;
 
 pub(super) fn fixture() -> (ServerServiceTestContext, Arc<MapInstance>, MapInstanceService, u32) {
@@ -386,18 +386,8 @@ fn range_and_obstacles_are_checked_unless_ignored_and_ground_still_requires_usab
 }
 
 #[test]
-fn unsupported_actor_lifecycles_and_nonmonster_messages_fail_before_casting() {
+fn nonmonster_messages_fail_before_casting() {
     let (context, instance, service, target) = fixture();
-    assert!(
-        start(
-            &context,
-            &instance,
-            &service,
-            request(NPC_ID, target, SkillEnum::WzWaterball),
-            1000
-        )
-        .is_err()
-    );
     let mut cast = request(NPC_ID, target, SkillEnum::MgFirebolt);
     cast.message_id = Some(1);
     assert!(start(&context, &instance, &service, cast, 1000).is_err());

@@ -572,7 +572,7 @@ impl ItemService {
         if !event.is_empty() && super::script_service::ScriptService::event_entry(&event).is_none() { return Err("Monster event is not a compiled event".into()); }
         Ok(ScriptSpawn { mob_id, x: number(1)?, y: number(2)?, name: arguments.get(3).ok_or("Missing monster name")?.text(), amount, event, event_npc: None,
             size: arguments.get(7).map(Value::number_value).transpose()?.map(|value| u8::try_from(value).map_err(|_| "Invalid monster size")).transpose()?,
-            ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id })
+            ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id, guardian: None, bg_id: 0, max_hp: None, lifetime_ms: None, reserved_id: None })
     }
 
     fn apply_game_call(&self, server: &Server, character: &mut Character, function: Function, arguments: Vec<Value>, tick: u128) -> Result<(), String> {

@@ -108,12 +108,13 @@ pub fn handle_atcommand(server: &Server, context: Request, packet: &PacketCzPlay
             let result = handle_speed_change(server, context.session(), args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "duel" | "invite" | "accept" | "reject" | "leave" => {
+        "duel" | "invite" | "accept" | "reject" | "leave" | "killer" | "pk" => {
             let action = match command {
                 "duel" => DuelAction::Create,
                 "invite" => DuelAction::Invite,
                 "accept" => DuelAction::Accept,
                 "reject" => DuelAction::Reject,
+                "killer" | "pk" => DuelAction::Killer,
                 _ => DuelAction::Leave,
             };
             server.add_to_next_tick(GameEvent::Duel(DuelCommand {

@@ -492,9 +492,15 @@ impl ScriptSkillService {
                 | "NPC_WIDEFREEZE"
                 | "NPC_WIDESTUN"
                 | "NPC_DRAGONFEAR"
+                | "NPC_WIDEHELLDIGNITY"
+                | "NPC_EXPULSION"
+                | "TF_BACKSLIDING"
+                | "HW_GANBANTEIN"
+                | "MO_BODYRELOCATION"
                 | "AL_CRUCIS"
                 | "NPC_WIDESOULDRAIN"
                 | "NPC_SELFDESTRUCTION"
+                | "NPC_DARKBREATH"
                 | "BS_HAMMERFALL"
                 | "RG_CLEANER"
         ) || metadata.name == "AL_TELEPORT" && matches!(source.object_type, MapItemType::Mob | MapItemType::Npc);
@@ -513,6 +519,10 @@ impl ScriptSkillService {
                 GroundKind::HeavenDrive
                     | GroundKind::Thunderstorm
                     | GroundKind::Pneuma
+                    | GroundKind::SafetyWall
+                    | GroundKind::Sanctuary
+                    | GroundKind::VenomDust
+                    | GroundKind::SpiderWeb
                     | GroundKind::Quagmire
                     | GroundKind::Deluge
                     | GroundKind::LandProtector
@@ -534,6 +544,7 @@ impl ScriptSkillService {
                     | GroundKind::Vermilion
                     | GroundKind::Earthquake
                     | GroundKind::GrandCross
+                    | GroundKind::GrandDarkness
             ) {
                 Ok(())
             } else {
@@ -542,12 +553,10 @@ impl ScriptSkillService {
         }
         if matches!(
             metadata.name.as_str(),
-            "RG_INTIMIDATE"
-                | "RG_BACKSTAP"
+            "RG_BACKSTAP"
                 | "AS_SPLASHER"
                 | "NJ_ISSEN"
                 | "RG_RAID"
-                | "NPC_VAMPIRE_GIFT"
         ) {
             return Err(format!("{} requires an additional actor-specific callback", metadata.name));
         }

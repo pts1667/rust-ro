@@ -9,7 +9,7 @@ use script_sdk::{Value, Variable, VariableScope};
 
 use crate::server::Server;
 use crate::server::model::action::Damage;
-use crate::server::model::events::client_notification::{CharNotification, Notification};
+use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterUseSkill, GameEvent, ScriptEvent, ScriptWarp};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map::{Map, RANDOM_CELL};
@@ -116,6 +116,13 @@ impl Server {
         use models::enums::skill_enums::SkillEnum;
 
         use super::visibility_service::TargetingMode;
+        if skill_id != 0 && self.is_emperium_target(state, source, target_id) {
+            let targets_emperium = crate::server::script::skill::metadata::SkillMetadata::find(skill_id)
+                .is_some_and(|metadata| metadata.flags.get("TargetEmperium").copied().unwrap_or(false));
+            if !targets_emperium {
+                return false;
+            }
+        }
         if let Some(unit) = state.ground_unit(target_id, source.current_map_name(), source.current_map_instance()) {
             return crate::server::script::skill::metadata::SkillMetadata::find(skill_id).is_some_and(|metadata| {
                 metadata.target_type.as_deref() == Some("Trap") || !unit.used && metadata.flags.get("TargetTrap").copied().unwrap_or(false)
@@ -317,7 +324,11 @@ impl Server {
             GameEvent::ReflectMagic(request) => map_combat_service::reflect_magic(self, state, request, tick)?,
             GameEvent::ScriptUnitSkill(mut request) => {
                 super::script_unit_skill_service::normalize_unit_skill_actor_ids(state, &mut request);
-                self.script_skill_service().cast_script_unit_skill(self, state, request, tick)?;
+                if request.skill_id == super::guild_skill_service::GD_ITEMEMERGENCYCALL {
+                    self.use_item_emergency_call(state, request.source_id, request.level)?;
+                } else {
+                    self.script_skill_service().cast_script_unit_skill(self, state, request, tick)?;
+                }
             }
             GameEvent::ScriptActorSkillComplete(completion) => self
                 .script_skill_service()
@@ -480,6 +491,7 @@ impl Server {
                         | ScriptSkillAction::ExplodeSplasher
                         | ScriptSkillAction::WaterBall { .. }
                         | ScriptSkillAction::AreaStatus { .. }
+                        | ScriptSkillAction::Summon { .. }
                         | ScriptSkillAction::Face { .. }
                         | ScriptSkillAction::FinalStrike { .. }
                         | ScriptSkillAction::DelayedWeaponHit { .. }
@@ -550,6 +562,16 @@ impl Server {
                 state.insert_character(caster);
                 paid?;
                 if !completion.succeeded {
+                    if effect.skill_id == models::enums::skill_enums::SkillEnum::HwGanbantein.id() {
+                        let mut packet = 0x0110_u16.to_le_bytes().to_vec();
+                        packet.extend_from_slice(&(effect.skill_id as u16).to_le_bytes());
+                        packet.extend_from_slice(&0_u32.to_le_bytes());
+                        packet.extend_from_slice(&[0, <models::enums::skill::UseSkillFailure as models::enums::EnumWithNumberValue>::value(&models::enums::skill::UseSkillFailure::Fail) as u8]);
+                        let _ = self
+                            .server_service()
+                            .notification_sender()
+                            .send(Notification::Char(CharNotification::new(effect.source_char_id, packet)));
+                    }
                     return Ok(());
                 }
                 if let Some(mut character) = state.characters_mut().remove(&effect.target_id) {
@@ -812,6 +834,9 @@ impl Server {
                 }));
                 return Ok(());
             }
+            if crate::server::service::guild_skill_service::is_active_guild_skill(event.skill_id) {
+                return self.use_guild_skill(state, &mut character, event.skill_id, event.skill_level, tick);
+            }
             if let Some(pending) = character.pending_item_skill.clone() {
                 if !self.player_skill_target_allowed(state, &character, event.target_id, event.skill_id, false) {
                     return Err("Skill target is hidden or unavailable".into());
@@ -964,6 +989,86 @@ impl Server {
         }
     }
 
+    /// A defender in Auto Counter stance who faces a melee attacker negates the hit and strikes back.
+    fn auto_counter_reaction(&self, state: &ServerState, damage: &Damage, tick: u128) -> bool {
+        use models::enums::skill_enums::SkillEnum;
+        use models::status_change::StatusChangeKind;
+        let melee = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        if damage.battle_flags & melee != melee || damage.attacker_id == damage.target_id {
+            return false;
+        }
+        let Some(defender) = state.characters().get(&damage.target_id) else {
+            return false;
+        };
+        let Some(stance) = defender.status.status_change(StatusChangeKind::AutoCounter) else {
+            return false;
+        };
+        let level = stance.values[0].clamp(1, i32::from(u8::MAX)) as u8;
+        let attacker = state
+            .characters()
+            .get(&damage.attacker_id)
+            .map(|attacker| (attacker.x, attacker.y, StatusService::instance().to_snapshot(&attacker.status), true))
+            .or_else(|| {
+                state.get_map_instance_from_character(defender).and_then(|instance| {
+                    instance
+                        .state()
+                        .get_mob(damage.attacker_id)
+                        .map(|mob| (mob.x, mob.y, mob.status.clone(), false))
+                })
+            });
+        let Some((attacker_x, attacker_y, attacker_status, attacker_is_player)) = attacker else {
+            return false;
+        };
+        let defender_status = StatusService::instance().to_snapshot(&defender.status);
+        let distance = defender.x.abs_diff(attacker_x).max(defender.y.abs_diff(attacker_y));
+        let toward_attacker = ScriptSkillService::direction_to(defender.x, defender.y, attacker_x, attacker_y, defender.dir);
+        let facing_offset = (toward_attacker + 8 - defender.dir % 8) % 8;
+        if distance > 0 && (!matches!(facing_offset, 0 | 1 | 7) || distance > u16::from(defender_status.attack_range()) + 1) {
+            return false;
+        }
+        let Some(object) = skills::skill_enums::to_object(SkillEnum::KnAutocounter, level) else {
+            return false;
+        };
+        let Some(offensive) = object.as_offensive_skill() else {
+            return false;
+        };
+        let (amount, context) = self
+            .battle_service()
+            .calculate_damage_with_context(&defender_status, &attacker_status, Some(offensive));
+        let mut counter = Damage {
+            notification: None,
+            source_kind: *defender_status.combat_actor_kind(),
+            skill_damage_adjusted: false,
+            target_id: damage.attacker_id,
+            attacker_id: defender.char_id,
+            credit_id: defender.char_id,
+            damage: 0,
+            healing: 0,
+            right_hand_damage: None,
+            attacked_at: tick,
+            damage_motion: 0,
+            battle_flags: melee,
+            skill_id: SkillEnum::KnAutocounter.id(),
+            skill_level: level,
+            proc_depth: damage.proc_depth + 1,
+            defenses_applied: true,
+            magic_context: context,
+            landed: true,
+        };
+        counter.set_signed_damage(amount);
+        counter = counter.with_skill_notification(defender.current_map_name(), defender.current_map_instance(), defender.x, defender.y, tick, 1, 0);
+        self.add_to_next_tick(GameEvent::CharacterEndStatus(crate::server::model::events::game_event::CharacterEndStatus {
+            char_id: defender.char_id,
+            kind: Some(StatusChangeKind::AutoCounter),
+        }));
+        if attacker_is_player {
+            self.add_to_next_tick(GameEvent::CharacterDamage(counter));
+        } else if let Some(instance) = state.get_map_instance_from_character(defender) {
+            instance.add_to_next_tick(MapEvent::MobDamage(counter));
+        }
+        true
+    }
+
     fn apply_nightmare_drops(&self, state: &mut ServerState, char_id: u32) {
         use models::enums::EnumWithMaskValueU64;
         use models::enums::item::ItemTradeFlag;
@@ -980,48 +1085,73 @@ impl Server {
         };
         if let Some(instance) = state.get_map_instance_from_character(&character) {
             for (item_id, location, rate) in flags.nightmare_drops.iter().copied() {
-                if location & models::enums::map::NightmareDropLocation::Inventory.as_flag() == 0 {
-                    continue;
-                }
-                let candidates: Vec<usize> = character
-                    .inventory_iter()
-                    .filter(|(_, item)| {
-                        item.equip == 0
-                            && (item_id == -1 || item.item_id == item_id)
-                            && GlobalConfigService::instance().get_item(item.item_id).trade_flags as u64 & ItemTradeFlag::NoDrop.as_flag() == 0
-                    })
-                    .map(|(index, _)| index)
-                    .collect();
-                if candidates.is_empty() || fastrand::u32(0..10_000) >= u32::from(rate) {
-                    continue;
-                }
-                let index = if item_id == -1 {
-                    candidates[fastrand::usize(..candidates.len())]
-                } else {
-                    candidates[0]
-                };
-                let drop = crate::server::model::events::game_event::CharacterRemoveItem {
-                    char_id,
-                    index,
-                    amount: 1,
-                    price: 0,
-                };
-                if let Err(error) = self.inventory_service().character_drop_items(
-                    self.runtime(),
-                    &mut character,
-                    crate::server::model::events::game_event::CharacterRemoveItems {
+                for (wanted, equipped) in [
+                    (models::enums::map::NightmareDropLocation::Inventory, false),
+                    (models::enums::map::NightmareDropLocation::Equipped, true),
+                ] {
+                    if location & wanted.as_flag() == 0 {
+                        continue;
+                    }
+                    let candidates: Vec<usize> = character
+                        .inventory_iter()
+                        .filter(|(_, item)| {
+                            (item.equip != 0) == equipped
+                                && (item_id == -1 || item.item_id == item_id)
+                                && GlobalConfigService::instance().get_item(item.item_id).trade_flags as u64 & ItemTradeFlag::NoDrop.as_flag() == 0
+                        })
+                        .map(|(index, _)| index)
+                        .collect();
+                    if candidates.is_empty() || fastrand::u32(0..10_000) >= u32::from(rate) {
+                        continue;
+                    }
+                    let index = if item_id == -1 {
+                        candidates[fastrand::usize(..candidates.len())]
+                    } else {
+                        candidates[0]
+                    };
+                    if equipped && self.inventory_service().takeoff_equip_item(&mut character, index).is_none() {
+                        continue;
+                    }
+                    let drop = crate::server::model::events::game_event::CharacterRemoveItem {
                         char_id,
-                        sell: false,
-                        items: vec![drop],
-                        notify_client: true,
-                    },
-                    &instance,
-                ) {
-                    error!("Nightmare drop for {char_id} failed: {error}");
+                        index,
+                        amount: 1,
+                        price: 0,
+                    };
+                    if let Err(error) = self.inventory_service().character_drop_items(
+                        self.runtime(),
+                        &mut character,
+                        crate::server::model::events::game_event::CharacterRemoveItems {
+                            char_id,
+                            sell: false,
+                            items: vec![drop],
+                            notify_client: true,
+                        },
+                        &instance,
+                    ) {
+                        error!("Nightmare drop for {char_id} failed: {error}");
+                    }
                 }
             }
         }
         state.insert_character(character);
+    }
+
+    pub(crate) fn enter_pvp_ranking(&self, state: &mut ServerState, char_id: u32) {
+        let Some(character) = state.characters().get(&char_id) else {
+            return;
+        };
+        let key = character.map_instance_key.clone();
+        let flags = state.map_flags(&key);
+        if !flags.enabled(MapFlag::Pvp) || flags.enabled(MapFlag::PvpNoCalcRank) {
+            return;
+        }
+        if let Some(character) = state.characters_mut().get_mut(&char_id) {
+            character.pvp_point = 5;
+            character.pvp_won = 0;
+            character.pvp_lost = 0;
+        }
+        self.send_pvp_ranks(state, &key);
     }
 
     fn send_pvp_ranks(&self, state: &ServerState, key: &crate::server::model::map_instance::MapInstanceKey) {
@@ -1047,6 +1177,10 @@ impl Server {
     }
 
     fn apply_pvp_death(&self, state: &mut ServerState, victim_id: u32, killer_id: u32) {
+        if state.duels.duel_of(victim_id).is_some() {
+            self.leave_duel(state, victim_id);
+        }
+        state.duels.reject(victim_id);
         let Some(victim) = state.characters().get(&victim_id) else {
             return;
         };
@@ -1220,6 +1354,10 @@ impl Server {
             return Ok(());
         }
         if damage.damage == 0 {
+            damage.notify_admitted(&self.server_service().notification_sender(), 0, self.packetver());
+            return Ok(());
+        }
+        if damage.landed && damage.skill_id == 0 && damage.proc_depth < 8 && self.auto_counter_reaction(state, &damage, tick) {
             damage.notify_admitted(&self.server_service().notification_sender(), 0, self.packetver());
             return Ok(());
         }
@@ -1463,6 +1601,7 @@ impl Server {
             self.apply_death_penalty(state, damage.target_id);
             self.apply_nightmare_drops(state, damage.target_id);
             self.apply_pvp_death(state, damage.target_id, damage.credit_id.max(damage.attacker_id));
+            self.battleground_member_died(state, damage.target_id);
         }
         if damage.damage > 0
             && damage.landed
@@ -1592,19 +1731,14 @@ impl Server {
         {
             return;
         }
-        let Some(guild) = state
+        let guild = state
             .characters()
             .get(&kill.char_id)
-            .map(|character| character.game_systems.guild_id)
-            .filter(|guild| *guild != 0)
-        else {
-            return;
-        };
-        let map = kill.map_instance_key.map_name();
-        match self.repository.set_castle_value(map, 1, guild as i32) {
-            Ok(()) => info!("Guild {guild} broke the Emperium and now owns {map}"),
-            Err(error) => error!("Castle ownership transfer for {map} failed: {error}"),
-        }
+            .map_or(0, |character| character.game_systems.guild_id);
+        self.add_to_next_tick(GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::EmperiumBroken {
+            map: kill.map_instance_key.map_name().to_string(),
+            guild_id: guild,
+        }));
     }
 
     pub(crate) fn reward_monster_kill(
@@ -1626,6 +1760,7 @@ impl Server {
             400,
         );
         self.transfer_castle_on_emperium_break(state, &kill);
+        self.reward_mvp(state, &kill);
         let config = &GlobalConfigService::instance().config().game;
         let flags = state.map_flags(&kill.map_instance_key);
         let shares = if flags.enabled(crate::server::model::map_flags::MapFlag::Pvp) && !config.pvp_exp {
@@ -1703,5 +1838,77 @@ impl Server {
             }
         }
         first_error.map_or(Ok(()), Err)
+    }
+
+    fn reward_mvp(&self, state: &mut ServerState, kill: &crate::server::model::events::game_event::CharacterKillMonster) {
+        let mob = GlobalConfigService::instance().get_mob(i32::from(kill.mob_id));
+        if !mob.is_mvp() {
+            return;
+        }
+        let flags = state.map_flags(&kill.map_instance_key);
+        let Some(mvp) = state
+            .characters()
+            .get(&kill.char_id)
+            .filter(|character| !character.is_dead() && character.map_instance_key == kill.map_instance_key)
+        else {
+            return;
+        };
+        let (char_id, account_id, x, y) = (mvp.char_id, mvp.account_id, mvp.x, mvp.y);
+        let sender = self.server_service().notification_sender();
+        let mut effect = 0x010C_u16.to_le_bytes().to_vec();
+        effect.extend_from_slice(&char_id.to_le_bytes());
+        let _ = sender.try_send(Notification::Area(AreaNotification::new(
+            kill.map_instance_key.map_name().clone(),
+            kill.map_instance_key.map_instance(),
+            AreaNotificationRangeType::Fov { x, y, exclude_id: None },
+            effect,
+        )));
+        let config = &GlobalConfigService::instance().config().game;
+        if mob.mvp_exp > 0 && !flags.enabled(crate::server::model::map_flags::MapFlag::NoBaseExp) {
+            let exp = mob.mvp_exp as u32;
+            let plan = state
+                .characters()
+                .get(&char_id)
+                .ok_or_else(|| "MVP is unavailable".to_string())
+                .and_then(|character| super::script_character_service::plan_raw_experience(character, exp, 0));
+            match plan {
+                Ok(plan) => {
+                    let award = crate::repository::script_character_repository::ScriptExperienceAward { char_id, account_id, plan };
+                    match self.repository.character_commit_experience_awards(std::slice::from_ref(&award)) {
+                        Ok(_) => {
+                            if let Some(character) = state.characters_mut().get_mut(&char_id) {
+                                super::script_character_service::apply_experience(self, character, &award.plan);
+                            }
+                            let mut packet = 0x010B_u16.to_le_bytes().to_vec();
+                            packet.extend_from_slice(&exp.to_le_bytes());
+                            let _ = sender.try_send(Notification::Char(CharNotification::new(char_id, packet)));
+                        }
+                        Err(error) => error!("MVP experience for {char_id} was not recorded: {error}"),
+                    }
+                }
+                Err(error) => warn!("MVP experience skipped: {error}"),
+            }
+        }
+        if flags.enabled(crate::server::model::map_flags::MapFlag::NoMvpLoot) {
+            return;
+        }
+        let prize = mob.mvp_drops.iter().find(|drop| {
+            let rate = (drop.rate as f32 * config.drop_rate_mvp).round() as u32;
+            rate >= 10_000 || fastrand::u32(0..10_000) < rate
+        });
+        let Some(prize) = prize else {
+            return;
+        };
+        let item = GlobalConfigService::instance().get_item(prize.item_id);
+        let mut packet = 0x010A_u16.to_le_bytes().to_vec();
+        packet.extend_from_slice(&(prize.item_id as u16).to_le_bytes());
+        let _ = sender.try_send(Notification::Char(CharNotification::new(char_id, packet)));
+        let identified = !item.item_type.should_be_identified_when_dropped();
+        self.add_to_next_tick(GameEvent::CharacterAddItems(crate::server::model::events::game_event::CharacterAddItems {
+            char_id,
+            should_perform_check: true,
+            buy: false,
+            items: vec![crate::repository::model::item_model::InventoryItemModel::from_item_model(&item, 1, identified)],
+        }));
     }
 }

@@ -1,0 +1,7805 @@
+[
+  {
+    "id": 0,
+    "map": "aldeg_cas01",
+    "name": "Neuschwanstein",
+    "emperium": [
+      216,
+      23
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 4
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 2
+        },
+        {
+          "name": "Executioner",
+          "id": 1205,
+          "count": 1
+        },
+        {
+          "name": "Penomena",
+          "id": 1216,
+          "count": 10
+        },
+        {
+          "name": "Alarm",
+          "id": 1193,
+          "count": 18
+        },
+        {
+          "name": "Clock",
+          "id": 1269,
+          "count": 9
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 7
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        },
+        {
+          "name": "Tower Keeper",
+          "id": 1270,
+          "count": 4
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 1,
+        "x": 17,
+        "y": 218
+      },
+      {
+        "type": 2,
+        "x": 39,
+        "y": 208
+      },
+      {
+        "type": 2,
+        "x": 38,
+        "y": 196
+      },
+      {
+        "type": 2,
+        "x": 45,
+        "y": 228
+      },
+      {
+        "type": 2,
+        "x": 21,
+        "y": 194
+      },
+      {
+        "type": 3,
+        "x": 218,
+        "y": 24
+      },
+      {
+        "type": 3,
+        "x": 213,
+        "y": 24
+      },
+      {
+        "type": 3,
+        "x": 73,
+        "y": 70
+      }
+    ],
+    "master_room": [
+      113,
+      223
+    ],
+    "treasure": {
+      "box": 1324,
+      "cells": [
+        [
+          115,
+          226
+        ],
+        [
+          122,
+          226
+        ],
+        [
+          115,
+          219
+        ],
+        [
+          122,
+          219
+        ],
+        [
+          116,
+          225
+        ],
+        [
+          117,
+          225
+        ],
+        [
+          118,
+          225
+        ],
+        [
+          119,
+          225
+        ],
+        [
+          120,
+          225
+        ],
+        [
+          121,
+          225
+        ],
+        [
+          121,
+          224
+        ],
+        [
+          121,
+          223
+        ],
+        [
+          121,
+          222
+        ],
+        [
+          121,
+          221
+        ],
+        [
+          121,
+          220
+        ],
+        [
+          120,
+          220
+        ],
+        [
+          119,
+          220
+        ],
+        [
+          118,
+          220
+        ],
+        [
+          117,
+          220
+        ],
+        [
+          116,
+          220
+        ],
+        [
+          116,
+          221
+        ],
+        [
+          116,
+          222
+        ],
+        [
+          116,
+          223
+        ],
+        [
+          116,
+          224
+        ]
+      ]
+    },
+    "steward": {
+      "x": 218,
+      "y": 175,
+      "dir": 0,
+      "name": "Alfredo#aldeg_cas01"
+    },
+    "kafra": {
+      "x": 218,
+      "y": 170,
+      "dir": 0,
+      "name": "Kafra Staff#aldeg_cas01",
+      "destination": [
+        "Al De Baran",
+        "aldebaran",
+        132,
+        103
+      ]
+    },
+    "dungeon_lever": {
+      "x": 211,
+      "y": 181,
+      "dir": 0,
+      "name": "#aldeg_cas01",
+      "destination": [
+        "gld_dun02",
+        32,
+        122
+      ]
+    },
+    "flags": {
+      "return": [
+        218,
+        170
+      ],
+      "outside": [
+        {
+          "map": "alde_gld",
+          "x": 61,
+          "y": 87,
+          "dir": 6,
+          "name": "Neuschwanstein#1-2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 61,
+          "y": 79,
+          "dir": 6,
+          "name": "Neuschwanstein#2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 45,
+          "y": 87,
+          "dir": 8,
+          "name": "Neuschwanstein#3"
+        },
+        {
+          "map": "alde_gld",
+          "x": 51,
+          "y": 87,
+          "dir": 8,
+          "name": "Neuschwanstein#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "aldeg_cas01",
+          "x": 30,
+          "y": 248,
+          "dir": 4,
+          "name": "Neuschwanstein#5-2"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 30,
+          "y": 248,
+          "dir": 4,
+          "name": "Neuschwanstein#6"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 37,
+          "y": 248,
+          "dir": 4,
+          "name": "Neuschwanstein#7"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 37,
+          "y": 246,
+          "dir": 4,
+          "name": "Neuschwanstein#8"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 30,
+          "y": 246,
+          "dir": 4,
+          "name": "Neuschwanstein#9"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 95,
+          "y": 80,
+          "dir": 2,
+          "name": "Neuschwanstein#10"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 95,
+          "y": 59,
+          "dir": 2,
+          "name": "Neuschwanstein#11"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 62,
+          "y": 75,
+          "dir": 2,
+          "name": "Neuschwanstein#12"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 66,
+          "y": 75,
+          "dir": 2,
+          "name": "Neuschwanstein#13"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 70,
+          "y": 75,
+          "dir": 2,
+          "name": "Neuschwanstein#14"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 74,
+          "y": 75,
+          "dir": 2,
+          "name": "Neuschwanstein#15"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 62,
+          "y": 64,
+          "dir": 2,
+          "name": "Neuschwanstein#16"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 66,
+          "y": 64,
+          "dir": 2,
+          "name": "Neuschwanstein#17"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 70,
+          "y": 64,
+          "dir": 2,
+          "name": "Neuschwanstein#18"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 74,
+          "y": 64,
+          "dir": 2,
+          "name": "Neuschwanstein#19"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 74,
+          "y": 64,
+          "dir": 2,
+          "name": "Neuschwanstein#20"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 203,
+          "y": 150,
+          "dir": 4,
+          "name": "Neuschwanstein#21"
+        },
+        {
+          "map": "aldeg_cas01",
+          "x": 210,
+          "y": 150,
+          "dir": 4,
+          "name": "Neuschwanstein#22"
+        },
+        {
+          "map": "aldebaran",
+          "x": 152,
+          "y": 97,
+          "dir": 4,
+          "name": "Neuschwanstein#23"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 123,
+      "y": 223,
+      "dir": 0,
+      "name": "#lever_A01",
+      "exit": [
+        218,
+        176
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "map": "aldeg_cas02",
+    "name": "Hohenschwangau",
+    "emperium": [
+      213,
+      23
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 4
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 2
+        },
+        {
+          "name": "Executioner",
+          "id": 1205,
+          "count": 1
+        },
+        {
+          "name": "Penomena",
+          "id": 1216,
+          "count": 10
+        },
+        {
+          "name": "Alarm",
+          "id": 1193,
+          "count": 18
+        },
+        {
+          "name": "Clock",
+          "id": 1269,
+          "count": 9
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 7
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        },
+        {
+          "name": "Tower Keeper",
+          "id": 1270,
+          "count": 4
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 27,
+        "y": 184
+      },
+      {
+        "type": 3,
+        "x": 88,
+        "y": 43
+      },
+      {
+        "type": 3,
+        "x": 117,
+        "y": 46
+      },
+      {
+        "type": 1,
+        "x": 60,
+        "y": 202
+      },
+      {
+        "type": 1,
+        "x": 51,
+        "y": 183
+      },
+      {
+        "type": 2,
+        "x": 21,
+        "y": 177
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 183
+      },
+      {
+        "type": 2,
+        "x": 210,
+        "y": 7
+      }
+    ],
+    "master_room": [
+      134,
+      225
+    ],
+    "treasure": {
+      "box": 1326,
+      "cells": [
+        [
+          134,
+          231
+        ],
+        [
+          135,
+          231
+        ],
+        [
+          135,
+          230
+        ],
+        [
+          134,
+          230
+        ],
+        [
+          132,
+          233
+        ],
+        [
+          133,
+          233
+        ],
+        [
+          134,
+          233
+        ],
+        [
+          135,
+          233
+        ],
+        [
+          136,
+          233
+        ],
+        [
+          137,
+          233
+        ],
+        [
+          137,
+          232
+        ],
+        [
+          137,
+          231
+        ],
+        [
+          137,
+          230
+        ],
+        [
+          137,
+          229
+        ],
+        [
+          137,
+          228
+        ],
+        [
+          136,
+          228
+        ],
+        [
+          135,
+          228
+        ],
+        [
+          134,
+          228
+        ],
+        [
+          133,
+          228
+        ],
+        [
+          132,
+          228
+        ],
+        [
+          132,
+          229
+        ],
+        [
+          132,
+          230
+        ],
+        [
+          132,
+          231
+        ],
+        [
+          132,
+          232
+        ]
+      ]
+    },
+    "steward": {
+      "x": 78,
+      "y": 74,
+      "dir": 0,
+      "name": "Chenchenlie#aldeg_cas02"
+    },
+    "kafra": {
+      "x": 84,
+      "y": 74,
+      "dir": 0,
+      "name": "Kafra Staff#aldeg_cas02",
+      "destination": [
+        "Al De Baran",
+        "aldebaran",
+        132,
+        103
+      ]
+    },
+    "dungeon_lever": {
+      "x": 194,
+      "y": 136,
+      "dir": 0,
+      "name": "#aldeg_cas02",
+      "destination": [
+        "gld_dun02",
+        79,
+        30
+      ]
+    },
+    "flags": {
+      "return": [
+        220,
+        190
+      ],
+      "outside": [
+        {
+          "map": "alde_gld",
+          "x": 99,
+          "y": 251,
+          "dir": 4,
+          "name": "Hohenschwangau#1-2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 99,
+          "y": 244,
+          "dir": 4,
+          "name": "Hohenschwangau#2"
+        }
+      ],
+      "inside": [
+        {
+          "map": "aldeg_cas02",
+          "x": 82,
+          "y": 71,
+          "dir": 2,
+          "name": "Hohenschwangau#3-2"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 67,
+          "y": 30,
+          "dir": 2,
+          "name": "Hohenschwangau#4"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 183,
+          "y": 140,
+          "dir": 2,
+          "name": "Hohenschwangau#5"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 212,
+          "y": 152,
+          "dir": 2,
+          "name": "Hohenschwangau#6"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 108,
+          "y": 39,
+          "dir": 2,
+          "name": "Hohenschwangau#7"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 57,
+          "y": 213,
+          "dir": 2,
+          "name": "Hohenschwangau#8"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 103,
+          "y": 53,
+          "dir": 2,
+          "name": "Hohenschwangau#9"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 73,
+          "y": 53,
+          "dir": 2,
+          "name": "Hohenschwangau#10"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 63,
+          "y": 41,
+          "dir": 2,
+          "name": "Hohenschwangau#11"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 229,
+          "y": 6,
+          "dir": 2,
+          "name": "Hohenschwangau#12"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 230,
+          "y": 40,
+          "dir": 2,
+          "name": "Hohenschwangau#13"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 197,
+          "y": 40,
+          "dir": 2,
+          "name": "Hohenschwangau#14"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 32,
+          "y": 213,
+          "dir": 2,
+          "name": "Hohenschwangau#15"
+        },
+        {
+          "map": "aldeg_cas02",
+          "x": 121,
+          "y": 29,
+          "dir": 2,
+          "name": "Hohenschwangau#16"
+        },
+        {
+          "map": "aldebaran",
+          "x": 149,
+          "y": 97,
+          "dir": 4,
+          "name": "Hohenschwangau#17"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 139,
+      "y": 234,
+      "dir": 0,
+      "name": "#lever_A02",
+      "exit": [
+        78,
+        75
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "map": "aldeg_cas03",
+    "name": "Nuernberg",
+    "emperium": [
+      205,
+      31
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 4
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 2
+        },
+        {
+          "name": "Executioner",
+          "id": 1205,
+          "count": 1
+        },
+        {
+          "name": "Penomena",
+          "id": 1216,
+          "count": 10
+        },
+        {
+          "name": "Alarm",
+          "id": 1193,
+          "count": 18
+        },
+        {
+          "name": "Clock",
+          "id": 1269,
+          "count": 9
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 7
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        },
+        {
+          "name": "Tower Keeper",
+          "id": 1270,
+          "count": 4
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 90,
+        "y": 112
+      },
+      {
+        "type": 3,
+        "x": 116,
+        "y": 112
+      },
+      {
+        "type": 1,
+        "x": 86,
+        "y": 120
+      },
+      {
+        "type": 1,
+        "x": 116,
+        "y": 76
+      },
+      {
+        "type": 1,
+        "x": 64,
+        "y": 103
+      },
+      {
+        "type": 2,
+        "x": 212,
+        "y": 160
+      },
+      {
+        "type": 2,
+        "x": 195,
+        "y": 151
+      },
+      {
+        "type": 2,
+        "x": 110,
+        "y": 217
+      }
+    ],
+    "master_room": [
+      229,
+      267
+    ],
+    "treasure": {
+      "box": 1328,
+      "cells": [
+        [
+          224,
+          269
+        ],
+        [
+          225,
+          269
+        ],
+        [
+          225,
+          268
+        ],
+        [
+          224,
+          268
+        ],
+        [
+          222,
+          271
+        ],
+        [
+          223,
+          271
+        ],
+        [
+          224,
+          271
+        ],
+        [
+          225,
+          271
+        ],
+        [
+          226,
+          271
+        ],
+        [
+          227,
+          271
+        ],
+        [
+          227,
+          270
+        ],
+        [
+          227,
+          269
+        ],
+        [
+          227,
+          268
+        ],
+        [
+          227,
+          267
+        ],
+        [
+          227,
+          266
+        ],
+        [
+          226,
+          266
+        ],
+        [
+          225,
+          266
+        ],
+        [
+          224,
+          266
+        ],
+        [
+          223,
+          266
+        ],
+        [
+          222,
+          266
+        ],
+        [
+          222,
+          267
+        ],
+        [
+          222,
+          268
+        ],
+        [
+          222,
+          269
+        ],
+        [
+          222,
+          270
+        ]
+      ]
+    },
+    "steward": {
+      "x": 110,
+      "y": 118,
+      "dir": 0,
+      "name": "Nahzarf#aldeg_cas03"
+    },
+    "kafra": {
+      "x": 118,
+      "y": 76,
+      "dir": 0,
+      "name": "Kafra Staff#aldeg_cas03",
+      "destination": [
+        "Al De Baran",
+        "aldebaran",
+        132,
+        103
+      ]
+    },
+    "dungeon_lever": {
+      "x": 200,
+      "y": 177,
+      "dir": 0,
+      "name": "#aldeg_cas03",
+      "destination": [
+        "gld_dun02",
+        165,
+        38
+      ]
+    },
+    "flags": {
+      "return": [
+        205,
+        186
+      ],
+      "outside": [
+        {
+          "map": "alde_gld",
+          "x": 146,
+          "y": 82,
+          "dir": 8,
+          "name": "Nuernberg#1-2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 138,
+          "y": 82,
+          "dir": 8,
+          "name": "Nuernberg#2"
+        }
+      ],
+      "inside": [
+        {
+          "map": "aldeg_cas03",
+          "x": 176,
+          "y": 175,
+          "dir": 2,
+          "name": "Nuernberg#3-2"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 77,
+          "y": 115,
+          "dir": 2,
+          "name": "Nuernberg#4"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 77,
+          "y": 215,
+          "dir": 2,
+          "name": "Nuernberg#5"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 112,
+          "y": 107,
+          "dir": 2,
+          "name": "Nuernberg#6"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 112,
+          "y": 117,
+          "dir": 2,
+          "name": "Nuernberg#7"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 69,
+          "y": 71,
+          "dir": 2,
+          "name": "Nuernberg#8"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 91,
+          "y": 69,
+          "dir": 2,
+          "name": "Nuernberg#9"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 108,
+          "y": 60,
+          "dir": 2,
+          "name": "Nuernberg#10"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 121,
+          "y": 73,
+          "dir": 2,
+          "name": "Nuernberg#11"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 121,
+          "y": 73,
+          "dir": 2,
+          "name": "Nuernberg#12"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 75,
+          "y": 102,
+          "dir": 2,
+          "name": "Nuernberg#13"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 199,
+          "y": 169,
+          "dir": 2,
+          "name": "Nuernberg#14"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 181,
+          "y": 179,
+          "dir": 2,
+          "name": "Nuernberg#15"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 192,
+          "y": 44,
+          "dir": 2,
+          "name": "Nuernberg#16"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 208,
+          "y": 145,
+          "dir": 2,
+          "name": "Nuernberg#17"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 207,
+          "y": 75,
+          "dir": 2,
+          "name": "Nuernberg#18"
+        },
+        {
+          "map": "aldeg_cas03",
+          "x": 96,
+          "y": 62,
+          "dir": 2,
+          "name": "Nuernberg#19"
+        },
+        {
+          "map": "aldebaran",
+          "x": 134,
+          "y": 97,
+          "dir": 4,
+          "name": "Nuernberg#20"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 229,
+      "y": 267,
+      "dir": 0,
+      "name": "#lever_A03",
+      "exit": [
+        110,
+        119
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "map": "aldeg_cas04",
+    "name": "Wuerzburg",
+    "emperium": [
+      36,
+      217
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 4
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 2
+        },
+        {
+          "name": "Executioner",
+          "id": 1205,
+          "count": 1
+        },
+        {
+          "name": "Penomena",
+          "id": 1216,
+          "count": 10
+        },
+        {
+          "name": "Alarm",
+          "id": 1193,
+          "count": 18
+        },
+        {
+          "name": "Clock",
+          "id": 1269,
+          "count": 9
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 7
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        },
+        {
+          "name": "Tower Keeper",
+          "id": 1270,
+          "count": 4
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 187,
+        "y": 100
+      },
+      {
+        "type": 2,
+        "x": 192,
+        "y": 42
+      },
+      {
+        "type": 2,
+        "x": 148,
+        "y": 88
+      },
+      {
+        "type": 1,
+        "x": 145,
+        "y": 209
+      },
+      {
+        "type": 1,
+        "x": 169,
+        "y": 53
+      },
+      {
+        "type": 1,
+        "x": 198,
+        "y": 77
+      },
+      {
+        "type": 3,
+        "x": 48,
+        "y": 72
+      },
+      {
+        "type": 3,
+        "x": 55,
+        "y": 88
+      }
+    ],
+    "master_room": [
+      83,
+      17
+    ],
+    "treasure": {
+      "box": 1330,
+      "cells": [
+        [
+          84,
+          13
+        ],
+        [
+          85,
+          13
+        ],
+        [
+          85,
+          12
+        ],
+        [
+          84,
+          12
+        ],
+        [
+          82,
+          15
+        ],
+        [
+          83,
+          15
+        ],
+        [
+          84,
+          15
+        ],
+        [
+          85,
+          15
+        ],
+        [
+          86,
+          15
+        ],
+        [
+          87,
+          15
+        ],
+        [
+          87,
+          14
+        ],
+        [
+          87,
+          13
+        ],
+        [
+          87,
+          12
+        ],
+        [
+          87,
+          11
+        ],
+        [
+          87,
+          10
+        ],
+        [
+          86,
+          10
+        ],
+        [
+          85,
+          10
+        ],
+        [
+          84,
+          10
+        ],
+        [
+          83,
+          10
+        ],
+        [
+          82,
+          10
+        ],
+        [
+          82,
+          11
+        ],
+        [
+          82,
+          12
+        ],
+        [
+          82,
+          13
+        ],
+        [
+          82,
+          14
+        ]
+      ]
+    },
+    "steward": {
+      "x": 67,
+      "y": 116,
+      "dir": 0,
+      "name": "Brymhensen#aldeg_cas04"
+    },
+    "kafra": {
+      "x": 45,
+      "y": 88,
+      "dir": 0,
+      "name": "Kafra Staff#aldeg_cas04",
+      "destination": [
+        "Al De Baran",
+        "aldebaran",
+        132,
+        103
+      ]
+    },
+    "dungeon_lever": {
+      "x": 76,
+      "y": 64,
+      "dir": 0,
+      "name": "#aldeg_cas04",
+      "destination": [
+        "gld_dun02",
+        160,
+        148
+      ]
+    },
+    "flags": {
+      "return": [
+        116,
+        217
+      ],
+      "outside": [
+        {
+          "map": "alde_gld",
+          "x": 239,
+          "y": 246,
+          "dir": 2,
+          "name": "Wuerzburg#1-2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 239,
+          "y": 239,
+          "dir": 2,
+          "name": "Wuerzburg#2"
+        }
+      ],
+      "inside": [
+        {
+          "map": "aldeg_cas04",
+          "x": 167,
+          "y": 61,
+          "dir": 2,
+          "name": "Wuerzburg#3-2"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 164,
+          "y": 90,
+          "dir": 2,
+          "name": "Wuerzburg#4"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 129,
+          "y": 193,
+          "dir": 2,
+          "name": "Wuerzburg#5"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 112,
+          "y": 206,
+          "dir": 2,
+          "name": "Wuerzburg#6"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 113,
+          "y": 212,
+          "dir": 2,
+          "name": "Wuerzburg#7"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 77,
+          "y": 117,
+          "dir": 2,
+          "name": "Wuerzburg#8"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 186,
+          "y": 42,
+          "dir": 2,
+          "name": "Wuerzburg#9"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 30,
+          "y": 69,
+          "dir": 2,
+          "name": "Wuerzburg#10"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 55,
+          "y": 97,
+          "dir": 2,
+          "name": "Wuerzburg#11"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 45,
+          "y": 98,
+          "dir": 2,
+          "name": "Wuerzburg#12"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 33,
+          "y": 116,
+          "dir": 2,
+          "name": "Wuerzburg#13"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 130,
+          "y": 180,
+          "dir": 2,
+          "name": "Wuerzburg#14"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 129,
+          "y": 193,
+          "dir": 2,
+          "name": "Wuerzburg#15"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 33,
+          "y": 107,
+          "dir": 2,
+          "name": "Wuerzburg#16"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 133,
+          "y": 220,
+          "dir": 2,
+          "name": "Wuerzburg#17"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 169,
+          "y": 22,
+          "dir": 2,
+          "name": "Wuerzburg#18"
+        },
+        {
+          "map": "aldeg_cas04",
+          "x": 169,
+          "y": 15,
+          "dir": 2,
+          "name": "Wuerzburg#19"
+        },
+        {
+          "map": "aldebaran",
+          "x": 131,
+          "y": 97,
+          "dir": 4,
+          "name": "Wuerzburg#20"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 83,
+      "y": 17,
+      "dir": 0,
+      "name": "#lever_A04",
+      "exit": [
+        67,
+        117
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "map": "aldeg_cas05",
+    "name": "Rothenburg",
+    "emperium": [
+      27,
+      101
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 4
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 2
+        },
+        {
+          "name": "Executioner",
+          "id": 1205,
+          "count": 1
+        },
+        {
+          "name": "Penomena",
+          "id": 1216,
+          "count": 10
+        },
+        {
+          "name": "Alarm",
+          "id": 1193,
+          "count": 18
+        },
+        {
+          "name": "Clock",
+          "id": 1269,
+          "count": 9
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 7
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Dark Lord",
+          "id": 1272,
+          "count": 1
+        },
+        {
+          "name": "Tower Keeper",
+          "id": 1270,
+          "count": 4
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 51,
+        "y": 202
+      },
+      {
+        "type": 2,
+        "x": 188,
+        "y": 79
+      },
+      {
+        "type": 1,
+        "x": 157,
+        "y": 192
+      },
+      {
+        "type": 1,
+        "x": 157,
+        "y": 74
+      },
+      {
+        "type": 3,
+        "x": 27,
+        "y": 221
+      },
+      {
+        "type": 3,
+        "x": 145,
+        "y": 78
+      },
+      {
+        "type": 3,
+        "x": 156,
+        "y": 73
+      },
+      {
+        "type": 3,
+        "x": 41,
+        "y": 112
+      }
+    ],
+    "master_room": [
+      64,
+      8
+    ],
+    "treasure": {
+      "box": 1332,
+      "cells": [
+        [
+          61,
+          12
+        ],
+        [
+          62,
+          12
+        ],
+        [
+          62,
+          11
+        ],
+        [
+          61,
+          11
+        ],
+        [
+          59,
+          14
+        ],
+        [
+          60,
+          14
+        ],
+        [
+          61,
+          14
+        ],
+        [
+          62,
+          14
+        ],
+        [
+          63,
+          14
+        ],
+        [
+          64,
+          14
+        ],
+        [
+          64,
+          13
+        ],
+        [
+          64,
+          12
+        ],
+        [
+          64,
+          11
+        ],
+        [
+          64,
+          10
+        ],
+        [
+          64,
+          9
+        ],
+        [
+          63,
+          9
+        ],
+        [
+          62,
+          9
+        ],
+        [
+          61,
+          9
+        ],
+        [
+          60,
+          9
+        ],
+        [
+          59,
+          9
+        ],
+        [
+          59,
+          10
+        ],
+        [
+          59,
+          11
+        ],
+        [
+          59,
+          12
+        ],
+        [
+          59,
+          13
+        ]
+      ]
+    },
+    "steward": {
+      "x": 51,
+      "y": 179,
+      "dir": 0,
+      "name": "Esmarehk#aldeg_cas05"
+    },
+    "kafra": {
+      "x": 31,
+      "y": 190,
+      "dir": 0,
+      "name": "Kafra Staff#aldeg_cas05",
+      "destination": [
+        "Al De Baran",
+        "aldebaran",
+        132,
+        103
+      ]
+    },
+    "dungeon_lever": {
+      "x": 22,
+      "y": 205,
+      "dir": 0,
+      "name": "#aldeg_cas05",
+      "destination": [
+        "gld_dun02",
+        103,
+        169
+      ]
+    },
+    "flags": {
+      "return": [
+        167,
+        225
+      ],
+      "outside": [
+        {
+          "map": "alde_gld",
+          "x": 265,
+          "y": 93,
+          "dir": 6,
+          "name": "Rothenburg#1-2"
+        },
+        {
+          "map": "alde_gld",
+          "x": 265,
+          "y": 87,
+          "dir": 6,
+          "name": "Rothenburg#2"
+        }
+      ],
+      "inside": [
+        {
+          "map": "aldeg_cas05",
+          "x": 170,
+          "y": 85,
+          "dir": 2,
+          "name": "Rothenburg#3-2"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 142,
+          "y": 212,
+          "dir": 2,
+          "name": "Rothenburg#4"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 149,
+          "y": 196,
+          "dir": 2,
+          "name": "Rothenburg#5"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 41,
+          "y": 180,
+          "dir": 2,
+          "name": "Rothenburg#6"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 38,
+          "y": 201,
+          "dir": 2,
+          "name": "Rothenburg#7"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 65,
+          "y": 182,
+          "dir": 2,
+          "name": "Rothenburg#8"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 65,
+          "y": 205,
+          "dir": 2,
+          "name": "Rothenburg#9"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 10,
+          "y": 218,
+          "dir": 2,
+          "name": "Rothenburg#10"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 10,
+          "y": 218,
+          "dir": 2,
+          "name": "Rothenburg#11"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 164,
+          "y": 201,
+          "dir": 2,
+          "name": "Rothenburg#12"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 14,
+          "y": 117,
+          "dir": 2,
+          "name": "Rothenburg#13"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 10,
+          "y": 225,
+          "dir": 2,
+          "name": "Rothenburg#14"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 187,
+          "y": 59,
+          "dir": 2,
+          "name": "Rothenburg#15"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 154,
+          "y": 51,
+          "dir": 2,
+          "name": "Rothenburg#16"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 22,
+          "y": 211,
+          "dir": 2,
+          "name": "Rothenburg#17"
+        },
+        {
+          "map": "aldeg_cas05",
+          "x": 150,
+          "y": 202,
+          "dir": 2,
+          "name": "Rothenburg#18"
+        },
+        {
+          "map": "aldebaran",
+          "x": 128,
+          "y": 97,
+          "dir": 4,
+          "name": "Rothenburg#19"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 64,
+      "y": 8,
+      "dir": 0,
+      "name": "#lever_A05",
+      "exit": [
+        51,
+        179
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "map": "gefg_cas01",
+    "name": "Repherion",
+    "emperium": [
+      197,
+      181
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Wind Ghost",
+          "id": 1263,
+          "count": 11
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 10
+        },
+        {
+          "name": "Jakk",
+          "id": 1130,
+          "count": 10
+        },
+        {
+          "name": "Marduk",
+          "id": 1140,
+          "count": 20
+        },
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 9
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Phreeoni",
+          "id": 1159,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Mysteltainn",
+          "id": 1203,
+          "count": 1
+        },
+        {
+          "name": "Orc Hero",
+          "id": 1087,
+          "count": 1
+        },
+        {
+          "name": "High Orc",
+          "id": 1213,
+          "count": 10
+        },
+        {
+          "name": "Orc Archer",
+          "id": 1189,
+          "count": 10
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 1,
+        "x": 67,
+        "y": 179
+      },
+      {
+        "type": 1,
+        "x": 184,
+        "y": 20
+      },
+      {
+        "type": 1,
+        "x": 62,
+        "y": 41
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 186
+      },
+      {
+        "type": 2,
+        "x": 50,
+        "y": 186
+      },
+      {
+        "type": 3,
+        "x": 50,
+        "y": 67
+      },
+      {
+        "type": 3,
+        "x": 189,
+        "y": 41
+      },
+      {
+        "type": 3,
+        "x": 200,
+        "y": 167
+      }
+    ],
+    "master_room": [
+      152,
+      117
+    ],
+    "treasure": {
+      "box": 1334,
+      "cells": [
+        [
+          153,
+          113
+        ],
+        [
+          154,
+          113
+        ],
+        [
+          154,
+          112
+        ],
+        [
+          153,
+          112
+        ],
+        [
+          151,
+          115
+        ],
+        [
+          152,
+          115
+        ],
+        [
+          153,
+          115
+        ],
+        [
+          154,
+          115
+        ],
+        [
+          155,
+          115
+        ],
+        [
+          156,
+          115
+        ],
+        [
+          156,
+          114
+        ],
+        [
+          156,
+          113
+        ],
+        [
+          156,
+          112
+        ],
+        [
+          156,
+          111
+        ],
+        [
+          156,
+          110
+        ],
+        [
+          155,
+          110
+        ],
+        [
+          154,
+          110
+        ],
+        [
+          153,
+          110
+        ],
+        [
+          152,
+          110
+        ],
+        [
+          151,
+          110
+        ],
+        [
+          151,
+          111
+        ],
+        [
+          151,
+          112
+        ],
+        [
+          151,
+          113
+        ],
+        [
+          151,
+          114
+        ]
+      ]
+    },
+    "steward": {
+      "x": 40,
+      "y": 48,
+      "dir": 5,
+      "name": "Gnahcher#gefg_cas01"
+    },
+    "kafra": {
+      "x": 83,
+      "y": 47,
+      "dir": 3,
+      "name": "Kafra Staff#gefg_cas01",
+      "destination": [
+        "Geffen",
+        "geffen",
+        120,
+        39
+      ]
+    },
+    "dungeon_lever": {
+      "x": 78,
+      "y": 84,
+      "dir": 0,
+      "name": "#gefg_cas01",
+      "destination": [
+        "gld_dun04",
+        39,
+        258
+      ]
+    },
+    "flags": {
+      "return": [
+        197,
+        36
+      ],
+      "outside": [
+        {
+          "map": "gef_fild13",
+          "x": 148,
+          "y": 51,
+          "dir": 5,
+          "name": "Repherion#1-2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 155,
+          "y": 54,
+          "dir": 5,
+          "name": "Repherion#2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 212,
+          "y": 79,
+          "dir": 6,
+          "name": "Repherion#3"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 211,
+          "y": 71,
+          "dir": 6,
+          "name": "Repherion#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "gefg_cas01",
+          "x": 28,
+          "y": 157,
+          "dir": 4,
+          "name": "Repherion#5-2"
+        },
+        {
+          "map": "gefg_cas01",
+          "x": 22,
+          "y": 156,
+          "dir": 5,
+          "name": "Repherion#6"
+        },
+        {
+          "map": "gefg_cas01",
+          "x": 68,
+          "y": 185,
+          "dir": 3,
+          "name": "Repherion#7"
+        },
+        {
+          "map": "gefg_cas01",
+          "x": 17,
+          "y": 171,
+          "dir": 5,
+          "name": "Repherion#8"
+        },
+        {
+          "map": "gefg_cas01",
+          "x": 59,
+          "y": 16,
+          "dir": 4,
+          "name": "Repherion#9"
+        },
+        {
+          "map": "gefg_cas01",
+          "x": 64,
+          "y": 16,
+          "dir": 4,
+          "name": "Repherion#10"
+        },
+        {
+          "map": "geffen",
+          "x": 109,
+          "y": 123,
+          "dir": 2,
+          "name": "Repherion#11"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 152,
+      "y": 117,
+      "dir": 0,
+      "name": "#lever_G01",
+      "exit": [
+        40,
+        49
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "map": "gefg_cas02",
+    "name": "Eeyolbriggar",
+    "emperium": [
+      176,
+      178
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Wind Ghost",
+          "id": 1263,
+          "count": 11
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 10
+        },
+        {
+          "name": "Jakk",
+          "id": 1130,
+          "count": 10
+        },
+        {
+          "name": "Marduk",
+          "id": 1140,
+          "count": 20
+        },
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 9
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Phreeoni",
+          "id": 1159,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Mysteltainn",
+          "id": 1203,
+          "count": 1
+        },
+        {
+          "name": "Orc Hero",
+          "id": 1087,
+          "count": 1
+        },
+        {
+          "name": "High Orc",
+          "id": 1213,
+          "count": 10
+        },
+        {
+          "name": "Orc Archer",
+          "id": 1189,
+          "count": 10
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 1,
+        "x": 64,
+        "y": 168
+      },
+      {
+        "type": 1,
+        "x": 56,
+        "y": 41
+      },
+      {
+        "type": 1,
+        "x": 166,
+        "y": 25
+      },
+      {
+        "type": 2,
+        "x": 35,
+        "y": 148
+      },
+      {
+        "type": 2,
+        "x": 20,
+        "y": 150
+      },
+      {
+        "type": 3,
+        "x": 19,
+        "y": 41
+      },
+      {
+        "type": 3,
+        "x": 166,
+        "y": 42
+      },
+      {
+        "type": 3,
+        "x": 159,
+        "y": 188
+      }
+    ],
+    "master_room": [
+      145,
+      115
+    ],
+    "treasure": {
+      "box": 1336,
+      "cells": [
+        [
+          139,
+          115
+        ],
+        [
+          140,
+          115
+        ],
+        [
+          140,
+          114
+        ],
+        [
+          139,
+          114
+        ],
+        [
+          137,
+          117
+        ],
+        [
+          138,
+          117
+        ],
+        [
+          139,
+          117
+        ],
+        [
+          140,
+          117
+        ],
+        [
+          141,
+          117
+        ],
+        [
+          142,
+          117
+        ],
+        [
+          142,
+          116
+        ],
+        [
+          142,
+          115
+        ],
+        [
+          142,
+          114
+        ],
+        [
+          142,
+          113
+        ],
+        [
+          142,
+          112
+        ],
+        [
+          141,
+          112
+        ],
+        [
+          140,
+          112
+        ],
+        [
+          139,
+          112
+        ],
+        [
+          138,
+          112
+        ],
+        [
+          137,
+          112
+        ],
+        [
+          137,
+          113
+        ],
+        [
+          137,
+          114
+        ],
+        [
+          137,
+          115
+        ],
+        [
+          137,
+          116
+        ]
+      ]
+    },
+    "steward": {
+      "x": 12,
+      "y": 66,
+      "dir": 5,
+      "name": "Esmarehk#gefg_cas02"
+    },
+    "kafra": {
+      "x": 23,
+      "y": 66,
+      "dir": 3,
+      "name": "Kafra Staff#gefg_cas02",
+      "destination": [
+        "Geffen",
+        "geffen",
+        120,
+        39
+      ]
+    },
+    "dungeon_lever": {
+      "x": 167,
+      "y": 40,
+      "dir": 0,
+      "name": "#gefg_cas02",
+      "destination": [
+        "gld_dun04",
+        125,
+        270
+      ]
+    },
+    "flags": {
+      "return": [
+        178,
+        43
+      ],
+      "outside": [
+        {
+          "map": "gef_fild13",
+          "x": 303,
+          "y": 243,
+          "dir": 4,
+          "name": "Eeyorbriggar#1-2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 312,
+          "y": 243,
+          "dir": 4,
+          "name": "Eeyorbriggar#2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 290,
+          "y": 243,
+          "dir": 4,
+          "name": "Eeyorbriggar#3"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 324,
+          "y": 243,
+          "dir": 4,
+          "name": "Eeyorbriggar#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "gefg_cas02",
+          "x": 65,
+          "y": 130,
+          "dir": 5,
+          "name": "Eeyorbriggar#5-2"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 30,
+          "y": 123,
+          "dir": 5,
+          "name": "Eeyorbriggar#6"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 65,
+          "y": 139,
+          "dir": 6,
+          "name": "Eeyorbriggar#7"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 37,
+          "y": 177,
+          "dir": 6,
+          "name": "Eeyorbriggar#8"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 37,
+          "y": 168,
+          "dir": 6,
+          "name": "Eeyorbriggar#9"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 68,
+          "y": 47,
+          "dir": 2,
+          "name": "Eeyorbriggar#10"
+        },
+        {
+          "map": "gefg_cas02",
+          "x": 68,
+          "y": 36,
+          "dir": 2,
+          "name": "Eeyorbriggar#11"
+        },
+        {
+          "map": "geffen",
+          "x": 112,
+          "y": 129,
+          "dir": 1,
+          "name": "Eeyorbriggar#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 145,
+      "y": 114,
+      "dir": 0,
+      "name": "#lever_G02",
+      "exit": [
+        12,
+        67
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "map": "gefg_cas03",
+    "name": "Yesnelph",
+    "emperium": [
+      244,
+      166
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Wind Ghost",
+          "id": 1263,
+          "count": 11
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 10
+        },
+        {
+          "name": "Jakk",
+          "id": 1130,
+          "count": 10
+        },
+        {
+          "name": "Marduk",
+          "id": 1140,
+          "count": 20
+        },
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 9
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Phreeoni",
+          "id": 1159,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Mysteltainn",
+          "id": 1203,
+          "count": 1
+        },
+        {
+          "name": "Orc Hero",
+          "id": 1087,
+          "count": 1
+        },
+        {
+          "name": "High Orc",
+          "id": 1213,
+          "count": 10
+        },
+        {
+          "name": "Orc Archer",
+          "id": 1189,
+          "count": 10
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 48,
+        "y": 176
+      },
+      {
+        "type": 2,
+        "x": 113,
+        "y": 214
+      },
+      {
+        "type": 1,
+        "x": 48,
+        "y": 207
+      },
+      {
+        "type": 1,
+        "x": 157,
+        "y": 62
+      },
+      {
+        "type": 1,
+        "x": 243,
+        "y": 41
+      },
+      {
+        "type": 3,
+        "x": 157,
+        "y": 45
+      },
+      {
+        "type": 3,
+        "x": 234,
+        "y": 25
+      },
+      {
+        "type": 3,
+        "x": 238,
+        "y": 160
+      }
+    ],
+    "master_room": [
+      275,
+      289
+    ],
+    "treasure": {
+      "box": 1338,
+      "cells": [
+        [
+          269,
+          291
+        ],
+        [
+          270,
+          291
+        ],
+        [
+          270,
+          290
+        ],
+        [
+          269,
+          290
+        ],
+        [
+          267,
+          293
+        ],
+        [
+          268,
+          293
+        ],
+        [
+          269,
+          293
+        ],
+        [
+          270,
+          293
+        ],
+        [
+          271,
+          293
+        ],
+        [
+          272,
+          293
+        ],
+        [
+          272,
+          292
+        ],
+        [
+          272,
+          291
+        ],
+        [
+          272,
+          290
+        ],
+        [
+          272,
+          289
+        ],
+        [
+          272,
+          288
+        ],
+        [
+          271,
+          288
+        ],
+        [
+          270,
+          288
+        ],
+        [
+          269,
+          288
+        ],
+        [
+          268,
+          288
+        ],
+        [
+          267,
+          288
+        ],
+        [
+          267,
+          289
+        ],
+        [
+          267,
+          290
+        ],
+        [
+          267,
+          291
+        ],
+        [
+          267,
+          292
+        ]
+      ]
+    },
+    "steward": {
+      "x": 106,
+      "y": 23,
+      "dir": 5,
+      "name": "Jyang#gefg_cas03"
+    },
+    "kafra": {
+      "x": 116,
+      "y": 89,
+      "dir": 5,
+      "name": "Kafra Staff#gefg_cas03",
+      "destination": [
+        "Geffen",
+        "geffen",
+        120,
+        39
+      ]
+    },
+    "dungeon_lever": {
+      "x": 221,
+      "y": 43,
+      "dir": 0,
+      "name": "#gefg_cas03",
+      "destination": [
+        "gld_dun04",
+        268,
+        251
+      ]
+    },
+    "flags": {
+      "return": [
+        221,
+        30
+      ],
+      "outside": [
+        {
+          "map": "gef_fild13",
+          "x": 78,
+          "y": 182,
+          "dir": 4,
+          "name": "Yesnelph#1-2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 87,
+          "y": 182,
+          "dir": 4,
+          "name": "Yesnelph#2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 73,
+          "y": 295,
+          "dir": 7,
+          "name": "Yesnelph#3"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 113,
+          "y": 274,
+          "dir": 7,
+          "name": "Yesnelph#4"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 144,
+          "y": 235,
+          "dir": 6,
+          "name": "Yesnelph#5"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 144,
+          "y": 244,
+          "dir": 6,
+          "name": "Yesnelph#6"
+        }
+      ],
+      "inside": [
+        {
+          "map": "gefg_cas03",
+          "x": 122,
+          "y": 220,
+          "dir": 6,
+          "name": "Yesnelph#7-2"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 122,
+          "y": 229,
+          "dir": 6,
+          "name": "Yesnelph#8"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 91,
+          "y": 257,
+          "dir": 7,
+          "name": "Yesnelph#9"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 52,
+          "y": 276,
+          "dir": 7,
+          "name": "Yesnelph#10"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 56,
+          "y": 164,
+          "dir": 4,
+          "name": "Yesnelph#11"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 65,
+          "y": 164,
+          "dir": 4,
+          "name": "Yesnelph#12"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 37,
+          "y": 214,
+          "dir": 1,
+          "name": "Yesnelph#13"
+        },
+        {
+          "map": "gefg_cas03",
+          "x": 34,
+          "y": 208,
+          "dir": 1,
+          "name": "Yesnelph#14"
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 132,
+          "dir": 8,
+          "name": "Yesnelph#15"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 275,
+      "y": 289,
+      "dir": 0,
+      "name": "#lever_G03",
+      "exit": [
+        106,
+        24
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "map": "gefg_cas04",
+    "name": "Bergel",
+    "emperium": [
+      174,
+      177
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Wind Ghost",
+          "id": 1263,
+          "count": 11
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 10
+        },
+        {
+          "name": "Jakk",
+          "id": 1130,
+          "count": 10
+        },
+        {
+          "name": "Marduk",
+          "id": 1140,
+          "count": 20
+        },
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 9
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Phreeoni",
+          "id": 1159,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Mysteltainn",
+          "id": 1203,
+          "count": 1
+        },
+        {
+          "name": "Orc Hero",
+          "id": 1087,
+          "count": 1
+        },
+        {
+          "name": "High Orc",
+          "id": 1213,
+          "count": 10
+        },
+        {
+          "name": "Orc Archer",
+          "id": 1189,
+          "count": 10
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 53,
+        "y": 191
+      },
+      {
+        "type": 2,
+        "x": 31,
+        "y": 178
+      },
+      {
+        "type": 1,
+        "x": 49,
+        "y": 220
+      },
+      {
+        "type": 1,
+        "x": 29,
+        "y": 46
+      },
+      {
+        "type": 1,
+        "x": 147,
+        "y": 65
+      },
+      {
+        "type": 3,
+        "x": 57,
+        "y": 46
+      },
+      {
+        "type": 3,
+        "x": 160,
+        "y": 50
+      },
+      {
+        "type": 3,
+        "x": 148,
+        "y": 189
+      }
+    ],
+    "master_room": [
+      116,
+      123
+    ],
+    "treasure": {
+      "box": 1340,
+      "cells": [
+        [
+          115,
+          119
+        ],
+        [
+          116,
+          119
+        ],
+        [
+          116,
+          118
+        ],
+        [
+          115,
+          118
+        ],
+        [
+          113,
+          121
+        ],
+        [
+          114,
+          121
+        ],
+        [
+          115,
+          121
+        ],
+        [
+          116,
+          121
+        ],
+        [
+          117,
+          121
+        ],
+        [
+          118,
+          121
+        ],
+        [
+          118,
+          120
+        ],
+        [
+          118,
+          119
+        ],
+        [
+          118,
+          118
+        ],
+        [
+          118,
+          117
+        ],
+        [
+          118,
+          116
+        ],
+        [
+          117,
+          116
+        ],
+        [
+          116,
+          116
+        ],
+        [
+          115,
+          116
+        ],
+        [
+          114,
+          116
+        ],
+        [
+          113,
+          116
+        ],
+        [
+          113,
+          117
+        ],
+        [
+          113,
+          118
+        ],
+        [
+          113,
+          119
+        ],
+        [
+          113,
+          120
+        ]
+      ]
+    },
+    "steward": {
+      "x": 73,
+      "y": 46,
+      "dir": 3,
+      "name": "Kellvahni#gefg_cas04"
+    },
+    "kafra": {
+      "x": 59,
+      "y": 70,
+      "dir": 3,
+      "name": "Kafra Staff#gefg_cas04",
+      "destination": [
+        "Geffen",
+        "geffen",
+        120,
+        39
+      ]
+    },
+    "dungeon_lever": {
+      "x": 58,
+      "y": 75,
+      "dir": 0,
+      "name": "#gefg_cas04",
+      "destination": [
+        "gld_dun04",
+        268,
+        108
+      ]
+    },
+    "flags": {
+      "return": [
+        168,
+        43
+      ],
+      "outside": [
+        {
+          "map": "gef_fild13",
+          "x": 190,
+          "y": 283,
+          "dir": 3,
+          "name": "Bergel#1-2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 199,
+          "y": 274,
+          "dir": 3,
+          "name": "Bergel#2"
+        }
+      ],
+      "inside": [
+        {
+          "map": "gefg_cas04",
+          "x": 24,
+          "y": 157,
+          "dir": 4,
+          "name": "Bergel#3-2"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 35,
+          "y": 158,
+          "dir": 4,
+          "name": "Bergel#4"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 44,
+          "y": 184,
+          "dir": 4,
+          "name": "Bergel#5"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 51,
+          "y": 184,
+          "dir": 4,
+          "name": "Bergel#6"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 39,
+          "y": 212,
+          "dir": 7,
+          "name": "Bergel#7"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 29,
+          "y": 212,
+          "dir": 1,
+          "name": "Bergel#8"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 24,
+          "y": 73,
+          "dir": 1,
+          "name": "Bergel#9"
+        },
+        {
+          "map": "gefg_cas04",
+          "x": 35,
+          "y": 73,
+          "dir": 4,
+          "name": "Bergel#10"
+        },
+        {
+          "map": "geffen",
+          "x": 127,
+          "y": 130,
+          "dir": 7,
+          "name": "Bergel#11"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 116,
+      "y": 123,
+      "dir": 0,
+      "name": "#lever_G04",
+      "exit": [
+        73,
+        47
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "map": "gefg_cas05",
+    "name": "Mersetzdeitz",
+    "emperium": [
+      194,
+      184
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Evil Druid",
+          "id": 1117,
+          "count": 10
+        },
+        {
+          "name": "Wind Ghost",
+          "id": 1263,
+          "count": 11
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 10
+        },
+        {
+          "name": "Jakk",
+          "id": 1130,
+          "count": 10
+        },
+        {
+          "name": "Marduk",
+          "id": 1140,
+          "count": 20
+        },
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 9
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Phreeoni",
+          "id": 1159,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Mysteltainn",
+          "id": 1203,
+          "count": 1
+        },
+        {
+          "name": "Orc Hero",
+          "id": 1087,
+          "count": 1
+        },
+        {
+          "name": "High Orc",
+          "id": 1213,
+          "count": 10
+        },
+        {
+          "name": "Orc Archer",
+          "id": 1189,
+          "count": 10
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 45,
+        "y": 149
+      },
+      {
+        "type": 2,
+        "x": 71,
+        "y": 163
+      },
+      {
+        "type": 1,
+        "x": 72,
+        "y": 142
+      },
+      {
+        "type": 1,
+        "x": 66,
+        "y": 47
+      },
+      {
+        "type": 1,
+        "x": 177,
+        "y": 50
+      },
+      {
+        "type": 3,
+        "x": 66,
+        "y": 17
+      },
+      {
+        "type": 3,
+        "x": 177,
+        "y": 35
+      },
+      {
+        "type": 3,
+        "x": 193,
+        "y": 166
+      }
+    ],
+    "master_room": [
+      149,
+      106
+    ],
+    "treasure": {
+      "box": 1342,
+      "cells": [
+        [
+          143,
+          110
+        ],
+        [
+          144,
+          110
+        ],
+        [
+          144,
+          109
+        ],
+        [
+          143,
+          109
+        ],
+        [
+          141,
+          112
+        ],
+        [
+          142,
+          112
+        ],
+        [
+          143,
+          112
+        ],
+        [
+          144,
+          112
+        ],
+        [
+          145,
+          112
+        ],
+        [
+          146,
+          112
+        ],
+        [
+          146,
+          111
+        ],
+        [
+          146,
+          110
+        ],
+        [
+          146,
+          109
+        ],
+        [
+          146,
+          108
+        ],
+        [
+          146,
+          107
+        ],
+        [
+          145,
+          107
+        ],
+        [
+          144,
+          107
+        ],
+        [
+          143,
+          107
+        ],
+        [
+          142,
+          107
+        ],
+        [
+          141,
+          107
+        ],
+        [
+          141,
+          108
+        ],
+        [
+          141,
+          109
+        ],
+        [
+          141,
+          110
+        ],
+        [
+          141,
+          111
+        ]
+      ]
+    },
+    "steward": {
+      "x": 70,
+      "y": 52,
+      "dir": 3,
+      "name": "Byohre#gefg_cas05"
+    },
+    "kafra": {
+      "x": 61,
+      "y": 52,
+      "dir": 5,
+      "name": "Kafra Staff#gefg_cas05",
+      "destination": [
+        "Geffen",
+        "geffen",
+        120,
+        39
+      ]
+    },
+    "dungeon_lever": {
+      "x": 65,
+      "y": 22,
+      "dir": 0,
+      "name": "#gefg_cas05",
+      "destination": [
+        "gld_dun04",
+        230,
+        35
+      ]
+    },
+    "flags": {
+      "return": [
+        168,
+        31
+      ],
+      "outside": [
+        {
+          "map": "gef_fild13",
+          "x": 302,
+          "y": 87,
+          "dir": 7,
+          "name": "Mersetzdeitz#1-2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 313,
+          "y": 83,
+          "dir": 0,
+          "name": "Mersetzdeitz#2"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 252,
+          "y": 51,
+          "dir": 2,
+          "name": "Mersetzdeitz#3"
+        },
+        {
+          "map": "gef_fild13",
+          "x": 26,
+          "y": 147,
+          "dir": 2,
+          "name": "Mersetzdeitz#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "gefg_cas05",
+          "x": 77,
+          "y": 185,
+          "dir": 7,
+          "name": "Mersetzdeitz#5-2"
+        },
+        {
+          "map": "gefg_cas05",
+          "x": 92,
+          "y": 181,
+          "dir": 0,
+          "name": "Mersetzdeitz#6"
+        },
+        {
+          "map": "gefg_cas05",
+          "x": 83,
+          "y": 158,
+          "dir": 1,
+          "name": "Mersetzdeitz#7"
+        },
+        {
+          "map": "gefg_cas05",
+          "x": 62,
+          "y": 144,
+          "dir": 7,
+          "name": "Mersetzdeitz#8"
+        },
+        {
+          "map": "gefg_cas05",
+          "x": 62,
+          "y": 66,
+          "dir": 4,
+          "name": "Mersetzdeitz#9"
+        },
+        {
+          "map": "gefg_cas05",
+          "x": 69,
+          "y": 66,
+          "dir": 4,
+          "name": "Mersetzdeitz#10"
+        },
+        {
+          "map": "geffen",
+          "x": 131,
+          "y": 123,
+          "dir": 6,
+          "name": "Mersetzdeitz#11"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 149,
+      "y": 107,
+      "dir": 0,
+      "name": "#lever_G05",
+      "exit": [
+        70,
+        53
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "map": "payg_cas01",
+    "name": "Bright Arbor",
+    "emperium": [
+      139,
+      139
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Greatest General",
+          "id": 1277,
+          "count": 9
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 10
+        },
+        {
+          "name": "Mutant Dragonoid",
+          "id": 1262,
+          "count": 5
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 5
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Horong",
+          "id": 1129,
+          "count": 11
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Kobold Archer",
+          "id": 1282,
+          "count": 4
+        },
+        {
+          "name": "Gargoyle",
+          "id": 1253,
+          "count": 5
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 6
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 229,
+        "y": 92
+      },
+      {
+        "type": 2,
+        "x": 225,
+        "y": 80
+      },
+      {
+        "type": 2,
+        "x": 222,
+        "y": 111
+      },
+      {
+        "type": 2,
+        "x": 99,
+        "y": 45
+      },
+      {
+        "type": 2,
+        "x": 65,
+        "y": 31
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 127
+      },
+      {
+        "type": 2,
+        "x": 51,
+        "y": 144
+      },
+      {
+        "type": 3,
+        "x": 138,
+        "y": 133
+      }
+    ],
+    "master_room": [
+      295,
+      8
+    ],
+    "treasure": {
+      "box": 1344,
+      "cells": [
+        [
+          289,
+          10
+        ],
+        [
+          292,
+          10
+        ],
+        [
+          292,
+          7
+        ],
+        [
+          289,
+          7
+        ],
+        [
+          288,
+          11
+        ],
+        [
+          289,
+          11
+        ],
+        [
+          290,
+          11
+        ],
+        [
+          291,
+          11
+        ],
+        [
+          292,
+          11
+        ],
+        [
+          293,
+          11
+        ],
+        [
+          293,
+          10
+        ],
+        [
+          293,
+          9
+        ],
+        [
+          293,
+          8
+        ],
+        [
+          293,
+          7
+        ],
+        [
+          293,
+          6
+        ],
+        [
+          292,
+          6
+        ],
+        [
+          291,
+          6
+        ],
+        [
+          290,
+          6
+        ],
+        [
+          289,
+          6
+        ],
+        [
+          288,
+          6
+        ],
+        [
+          288,
+          7
+        ],
+        [
+          288,
+          8
+        ],
+        [
+          288,
+          9
+        ],
+        [
+          288,
+          10
+        ]
+      ]
+    },
+    "steward": {
+      "x": 120,
+      "y": 58,
+      "dir": 4,
+      "name": "Kurunnadi#payg_cas01"
+    },
+    "kafra": {
+      "x": 128,
+      "y": 58,
+      "dir": 3,
+      "name": "Kafra Staff#payg_cas01",
+      "destination": [
+        "Payon",
+        "payon",
+        70,
+        100
+      ]
+    },
+    "dungeon_lever": {
+      "x": 101,
+      "y": 25,
+      "dir": 0,
+      "name": "#payg_cas01",
+      "destination": [
+        "gld_dun01",
+        186,
+        165
+      ]
+    },
+    "flags": {
+      "return": [
+        54,
+        144
+      ],
+      "outside": [
+        {
+          "map": "pay_gld",
+          "x": 125,
+          "y": 236,
+          "dir": 4,
+          "name": "Bright Arbor#1-2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 110,
+          "y": 233,
+          "dir": 4,
+          "name": "Bright Arbor#2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 116,
+          "y": 233,
+          "dir": 4,
+          "name": "Bright Arbor#3"
+        },
+        {
+          "map": "pay_gld",
+          "x": 91,
+          "y": 239,
+          "dir": 2,
+          "name": "Bright Arbor#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "payg_cas01",
+          "x": 238,
+          "y": 67,
+          "dir": 4,
+          "name": "Bright Arbor#5-2"
+        },
+        {
+          "map": "payg_cas01",
+          "x": 233,
+          "y": 67,
+          "dir": 4,
+          "name": "Bright Arbor#6"
+        },
+        {
+          "map": "payg_cas01",
+          "x": 221,
+          "y": 123,
+          "dir": 4,
+          "name": "Bright Arbor#7"
+        },
+        {
+          "map": "payg_cas01",
+          "x": 221,
+          "y": 116,
+          "dir": 4,
+          "name": "Bright Arbor#8"
+        },
+        {
+          "map": "payg_cas01",
+          "x": 206,
+          "y": 108,
+          "dir": 4,
+          "name": "Bright Arbor#9"
+        },
+        {
+          "map": "payg_cas01",
+          "x": 212,
+          "y": 108,
+          "dir": 4,
+          "name": "Bright Arbor#10"
+        },
+        {
+          "map": "payon",
+          "x": 90,
+          "y": 322,
+          "dir": 4,
+          "name": "Bright Arbor#11"
+        },
+        {
+          "map": "payon",
+          "x": 166,
+          "y": 177,
+          "dir": 3,
+          "name": "Bright Arbor#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 295,
+      "y": 8,
+      "dir": 0,
+      "name": "#lever_PA01",
+      "exit": [
+        120,
+        59
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "map": "payg_cas02",
+    "name": "Scarlet Palace",
+    "emperium": [
+      38,
+      25
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Greatest General",
+          "id": 1277,
+          "count": 9
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 10
+        },
+        {
+          "name": "Mutant Dragonoid",
+          "id": 1262,
+          "count": 5
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 5
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Horong",
+          "id": 1129,
+          "count": 11
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Kobold Archer",
+          "id": 1282,
+          "count": 4
+        },
+        {
+          "name": "Gargoyle",
+          "id": 1253,
+          "count": 5
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 6
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 237,
+        "y": 54
+      },
+      {
+        "type": 2,
+        "x": 228,
+        "y": 72
+      },
+      {
+        "type": 2,
+        "x": 210,
+        "y": 41
+      },
+      {
+        "type": 2,
+        "x": 57,
+        "y": 241
+      },
+      {
+        "type": 2,
+        "x": 42,
+        "y": 241
+      },
+      {
+        "type": 2,
+        "x": 287,
+        "y": 257
+      },
+      {
+        "type": 2,
+        "x": 264,
+        "y": 272
+      },
+      {
+        "type": 3,
+        "x": 27,
+        "y": 20
+      }
+    ],
+    "master_room": [
+      141,
+      149
+    ],
+    "treasure": {
+      "box": 1346,
+      "cells": [
+        [
+          143,
+          146
+        ],
+        [
+          146,
+          146
+        ],
+        [
+          146,
+          143
+        ],
+        [
+          143,
+          143
+        ],
+        [
+          142,
+          147
+        ],
+        [
+          143,
+          147
+        ],
+        [
+          144,
+          147
+        ],
+        [
+          145,
+          147
+        ],
+        [
+          146,
+          147
+        ],
+        [
+          147,
+          147
+        ],
+        [
+          147,
+          146
+        ],
+        [
+          147,
+          145
+        ],
+        [
+          147,
+          144
+        ],
+        [
+          147,
+          143
+        ],
+        [
+          147,
+          142
+        ],
+        [
+          146,
+          142
+        ],
+        [
+          145,
+          142
+        ],
+        [
+          144,
+          142
+        ],
+        [
+          143,
+          142
+        ],
+        [
+          142,
+          142
+        ],
+        [
+          142,
+          143
+        ],
+        [
+          142,
+          144
+        ],
+        [
+          142,
+          145
+        ],
+        [
+          142,
+          146
+        ]
+      ]
+    },
+    "steward": {
+      "x": 22,
+      "y": 260,
+      "dir": 7,
+      "name": "Cherieos#payg_cas02"
+    },
+    "kafra": {
+      "x": 22,
+      "y": 275,
+      "dir": 5,
+      "name": "Kafra Staff#payg_cas02",
+      "destination": [
+        "Payon",
+        "payon",
+        70,
+        100
+      ]
+    },
+    "dungeon_lever": {
+      "x": 278,
+      "y": 247,
+      "dir": 0,
+      "name": "#payg_cas02",
+      "destination": [
+        "gld_dun01",
+        54,
+        165
+      ]
+    },
+    "flags": {
+      "return": [
+        278,
+        251
+      ],
+      "outside": [
+        {
+          "map": "pay_gld",
+          "x": 292,
+          "y": 112,
+          "dir": 6,
+          "name": "Scarlet Palace#1-2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 292,
+          "y": 120,
+          "dir": 6,
+          "name": "Scarlet Palace#2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 291,
+          "y": 135,
+          "dir": 6,
+          "name": "Scarlet Palace#3"
+        },
+        {
+          "map": "pay_gld",
+          "x": 271,
+          "y": 163,
+          "dir": 0,
+          "name": "Scarlet Palace#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "payg_cas02",
+          "x": 254,
+          "y": 40,
+          "dir": 6,
+          "name": "Scarlet Palace#5-2"
+        },
+        {
+          "map": "payg_cas02",
+          "x": 254,
+          "y": 48,
+          "dir": 6,
+          "name": "Scarlet Palace#6"
+        },
+        {
+          "map": "payg_cas02",
+          "x": 202,
+          "y": 49,
+          "dir": 0,
+          "name": "Scarlet Palace#7"
+        },
+        {
+          "map": "payg_cas02",
+          "x": 209,
+          "y": 49,
+          "dir": 0,
+          "name": "Scarlet Palace#8"
+        },
+        {
+          "map": "payg_cas02",
+          "x": 59,
+          "y": 282,
+          "dir": 4,
+          "name": "Scarlet Palace#9"
+        },
+        {
+          "map": "payg_cas02",
+          "x": 70,
+          "y": 282,
+          "dir": 4,
+          "name": "Scarlet Palace#10"
+        },
+        {
+          "map": "payon",
+          "x": 97,
+          "y": 322,
+          "dir": 4,
+          "name": "Scarlet Palace#11"
+        },
+        {
+          "map": "payon",
+          "x": 166,
+          "y": 173,
+          "dir": 3,
+          "name": "Scarlet Palace#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 149,
+      "y": 149,
+      "dir": 0,
+      "name": "#lever_PA02",
+      "exit": [
+        22,
+        261
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "map": "payg_cas03",
+    "name": "Holy Shadow",
+    "emperium": [
+      269,
+      265
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Greatest General",
+          "id": 1277,
+          "count": 9
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 10
+        },
+        {
+          "name": "Mutant Dragonoid",
+          "id": 1262,
+          "count": 5
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 5
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Horong",
+          "id": 1129,
+          "count": 11
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Kobold Archer",
+          "id": 1282,
+          "count": 4
+        },
+        {
+          "name": "Gargoyle",
+          "id": 1253,
+          "count": 5
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 6
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 245,
+        "y": 37
+      },
+      {
+        "type": 2,
+        "x": 269,
+        "y": 51
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 39
+      },
+      {
+        "type": 2,
+        "x": 41,
+        "y": 39
+      },
+      {
+        "type": 2,
+        "x": 39,
+        "y": 65
+      },
+      {
+        "type": 2,
+        "x": 19,
+        "y": 276
+      },
+      {
+        "type": 2,
+        "x": 37,
+        "y": 277
+      },
+      {
+        "type": 3,
+        "x": 268,
+        "y": 244
+      }
+    ],
+    "master_room": [
+      163,
+      167
+    ],
+    "treasure": {
+      "box": 1348,
+      "cells": [
+        [
+          158,
+          169
+        ],
+        [
+          159,
+          169
+        ],
+        [
+          159,
+          168
+        ],
+        [
+          158,
+          168
+        ],
+        [
+          156,
+          171
+        ],
+        [
+          157,
+          171
+        ],
+        [
+          158,
+          171
+        ],
+        [
+          159,
+          171
+        ],
+        [
+          160,
+          171
+        ],
+        [
+          161,
+          171
+        ],
+        [
+          161,
+          170
+        ],
+        [
+          161,
+          169
+        ],
+        [
+          161,
+          168
+        ],
+        [
+          161,
+          167
+        ],
+        [
+          161,
+          166
+        ],
+        [
+          160,
+          166
+        ],
+        [
+          159,
+          166
+        ],
+        [
+          158,
+          166
+        ],
+        [
+          157,
+          166
+        ],
+        [
+          156,
+          166
+        ],
+        [
+          156,
+          167
+        ],
+        [
+          156,
+          168
+        ],
+        [
+          156,
+          169
+        ],
+        [
+          156,
+          170
+        ]
+      ]
+    },
+    "steward": {
+      "x": 50,
+      "y": 261,
+      "dir": 3,
+      "name": "Gheriot#payg_cas03"
+    },
+    "kafra": {
+      "x": 9,
+      "y": 263,
+      "dir": 5,
+      "name": "Kafra Staff#payg_cas03",
+      "destination": [
+        "Payon",
+        "payon",
+        70,
+        100
+      ]
+    },
+    "dungeon_lever": {
+      "x": 38,
+      "y": 42,
+      "dir": 0,
+      "name": "#payg_cas03",
+      "destination": [
+        "gld_dun01",
+        54,
+        39
+      ]
+    },
+    "flags": {
+      "return": [
+        9,
+        263
+      ],
+      "outside": [
+        {
+          "map": "pay_gld",
+          "x": 321,
+          "y": 298,
+          "dir": 2,
+          "name": "Holy Shadow#1-2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 321,
+          "y": 289,
+          "dir": 2,
+          "name": "Holy Shadow#2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 327,
+          "y": 304,
+          "dir": 1,
+          "name": "Holy Shadow#3"
+        },
+        {
+          "map": "pay_gld",
+          "x": 333,
+          "y": 254,
+          "dir": 4,
+          "name": "Holy Shadow#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "payg_cas03",
+          "x": 236,
+          "y": 54,
+          "dir": 2,
+          "name": "Holy Shadow#5-2"
+        },
+        {
+          "map": "payg_cas03",
+          "x": 236,
+          "y": 45,
+          "dir": 2,
+          "name": "Holy Shadow#6"
+        },
+        {
+          "map": "payg_cas03",
+          "x": 259,
+          "y": 66,
+          "dir": 4,
+          "name": "Holy Shadow#7"
+        },
+        {
+          "map": "payg_cas03",
+          "x": 266,
+          "y": 66,
+          "dir": 4,
+          "name": "Holy Shadow#8"
+        },
+        {
+          "map": "payg_cas03",
+          "x": 34,
+          "y": 31,
+          "dir": 4,
+          "name": "Holy Shadow#9"
+        },
+        {
+          "map": "payg_cas03",
+          "x": 43,
+          "y": 31,
+          "dir": 4,
+          "name": "Holy Shadow#10"
+        },
+        {
+          "map": "payon",
+          "x": 113,
+          "y": 322,
+          "dir": 4,
+          "name": "Holy Shadow#11"
+        },
+        {
+          "map": "payon",
+          "x": 166,
+          "y": 169,
+          "dir": 3,
+          "name": "Holy Shadow#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 163,
+      "y": 167,
+      "dir": 0,
+      "name": "#lever_PA03",
+      "exit": [
+        50,
+        261
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "map": "payg_cas04",
+    "name": "Sacred Altar",
+    "emperium": [
+      270,
+      28
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Greatest General",
+          "id": 1277,
+          "count": 9
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 10
+        },
+        {
+          "name": "Mutant Dragonoid",
+          "id": 1262,
+          "count": 5
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 5
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Horong",
+          "id": 1129,
+          "count": 11
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Kobold Archer",
+          "id": 1282,
+          "count": 4
+        },
+        {
+          "name": "Gargoyle",
+          "id": 1253,
+          "count": 5
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 6
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 251,
+        "y": 212
+      },
+      {
+        "type": 2,
+        "x": 232,
+        "y": 212
+      },
+      {
+        "type": 2,
+        "x": 231,
+        "y": 175
+      },
+      {
+        "type": 2,
+        "x": 32,
+        "y": 287
+      },
+      {
+        "type": 2,
+        "x": 32,
+        "y": 232
+      },
+      {
+        "type": 2,
+        "x": 35,
+        "y": 45
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 17
+      },
+      {
+        "type": 3,
+        "x": 270,
+        "y": 41
+      }
+    ],
+    "master_room": [
+      151,
+      47
+    ],
+    "treasure": {
+      "box": 1350,
+      "cells": [
+        [
+          146,
+          48
+        ],
+        [
+          147,
+          48
+        ],
+        [
+          147,
+          47
+        ],
+        [
+          146,
+          47
+        ],
+        [
+          144,
+          50
+        ],
+        [
+          145,
+          50
+        ],
+        [
+          146,
+          50
+        ],
+        [
+          147,
+          50
+        ],
+        [
+          148,
+          50
+        ],
+        [
+          149,
+          50
+        ],
+        [
+          149,
+          49
+        ],
+        [
+          149,
+          48
+        ],
+        [
+          149,
+          47
+        ],
+        [
+          149,
+          46
+        ],
+        [
+          149,
+          45
+        ],
+        [
+          148,
+          45
+        ],
+        [
+          147,
+          45
+        ],
+        [
+          146,
+          45
+        ],
+        [
+          145,
+          45
+        ],
+        [
+          144,
+          45
+        ],
+        [
+          144,
+          46
+        ],
+        [
+          144,
+          47
+        ],
+        [
+          144,
+          48
+        ],
+        [
+          144,
+          49
+        ]
+      ]
+    },
+    "steward": {
+      "x": 38,
+      "y": 284,
+      "dir": 3,
+      "name": "DJ#payg_cas04"
+    },
+    "kafra": {
+      "x": 40,
+      "y": 235,
+      "dir": 1,
+      "name": "Kafra Staff#payg_cas04",
+      "destination": [
+        "Payon",
+        "payon",
+        70,
+        100
+      ]
+    },
+    "dungeon_lever": {
+      "x": 52,
+      "y": 48,
+      "dir": 0,
+      "name": "#payg_cas04",
+      "destination": [
+        "gld_dun01",
+        186,
+        39
+      ]
+    },
+    "flags": {
+      "return": [
+        40,
+        235
+      ],
+      "outside": [
+        {
+          "map": "pay_gld",
+          "x": 137,
+          "y": 160,
+          "dir": 0,
+          "name": "Sacred Altar#1-2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 143,
+          "y": 160,
+          "dir": 0,
+          "name": "Sacred Altar#2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 133,
+          "y": 151,
+          "dir": 2,
+          "name": "Sacred Altar#3"
+        },
+        {
+          "map": "pay_gld",
+          "x": 153,
+          "y": 166,
+          "dir": 1,
+          "name": "Sacred Altar#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "payg_cas04",
+          "x": 255,
+          "y": 259,
+          "dir": 0,
+          "name": "Sacred Altar#5-2"
+        },
+        {
+          "map": "payg_cas04",
+          "x": 248,
+          "y": 259,
+          "dir": 0,
+          "name": "Sacred Altar#6"
+        },
+        {
+          "map": "payg_cas04",
+          "x": 248,
+          "y": 168,
+          "dir": 6,
+          "name": "Sacred Altar#7"
+        },
+        {
+          "map": "payg_cas04",
+          "x": 248,
+          "y": 160,
+          "dir": 6,
+          "name": "Sacred Altar#8"
+        },
+        {
+          "map": "payg_cas04",
+          "x": 232,
+          "y": 181,
+          "dir": 4,
+          "name": "Sacred Altar#9"
+        },
+        {
+          "map": "payg_cas04",
+          "x": 239,
+          "y": 181,
+          "dir": 4,
+          "name": "Sacred Altar#10"
+        },
+        {
+          "map": "payon",
+          "x": 118,
+          "y": 322,
+          "dir": 4,
+          "name": "Sacred Altar#11"
+        },
+        {
+          "map": "payon",
+          "x": 166,
+          "y": 165,
+          "dir": 3,
+          "name": "Sacred Altar#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 151,
+      "y": 47,
+      "dir": 0,
+      "name": "#lever_PA04",
+      "exit": [
+        38,
+        285
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "map": "payg_cas05",
+    "name": "Bamboo Grove Hill",
+    "emperium": [
+      30,
+      30
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Greatest General",
+          "id": 1277,
+          "count": 9
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 10
+        },
+        {
+          "name": "Mutant Dragonoid",
+          "id": 1262,
+          "count": 5
+        },
+        {
+          "name": "Bathory",
+          "id": 1102,
+          "count": 5
+        },
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Horong",
+          "id": 1129,
+          "count": 11
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Kobold Archer",
+          "id": 1282,
+          "count": 4
+        },
+        {
+          "name": "Gargoyle",
+          "id": 1253,
+          "count": 5
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Moonlight Flower",
+          "id": 1150,
+          "count": 1
+        },
+        {
+          "name": "Eddga",
+          "id": 1115,
+          "count": 1
+        },
+        {
+          "name": "Wanderer",
+          "id": 1208,
+          "count": 6
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 2,
+        "x": 19,
+        "y": 279
+      },
+      {
+        "type": 2,
+        "x": 33,
+        "y": 260
+      },
+      {
+        "type": 2,
+        "x": 266,
+        "y": 234
+      },
+      {
+        "type": 2,
+        "x": 266,
+        "y": 279
+      },
+      {
+        "type": 2,
+        "x": 263,
+        "y": 37
+      },
+      {
+        "type": 2,
+        "x": 263,
+        "y": 21
+      },
+      {
+        "type": 2,
+        "x": 250,
+        "y": 22
+      },
+      {
+        "type": 3,
+        "x": 36,
+        "y": 36
+      }
+    ],
+    "master_room": [
+      153,
+      137
+    ],
+    "treasure": {
+      "box": 1352,
+      "cells": [
+        [
+          155,
+          134
+        ],
+        [
+          158,
+          134
+        ],
+        [
+          158,
+          131
+        ],
+        [
+          155,
+          131
+        ],
+        [
+          154,
+          135
+        ],
+        [
+          155,
+          135
+        ],
+        [
+          156,
+          135
+        ],
+        [
+          157,
+          135
+        ],
+        [
+          158,
+          135
+        ],
+        [
+          159,
+          135
+        ],
+        [
+          159,
+          134
+        ],
+        [
+          159,
+          133
+        ],
+        [
+          159,
+          132
+        ],
+        [
+          159,
+          131
+        ],
+        [
+          159,
+          130
+        ],
+        [
+          158,
+          130
+        ],
+        [
+          157,
+          130
+        ],
+        [
+          156,
+          130
+        ],
+        [
+          155,
+          130
+        ],
+        [
+          154,
+          130
+        ],
+        [
+          154,
+          131
+        ],
+        [
+          154,
+          132
+        ],
+        [
+          154,
+          133
+        ],
+        [
+          154,
+          134
+        ]
+      ]
+    },
+    "steward": {
+      "x": 277,
+      "y": 249,
+      "dir": 3,
+      "name": "Nahzarf#payg_cas05"
+    },
+    "kafra": {
+      "x": 276,
+      "y": 227,
+      "dir": 1,
+      "name": "Kafra Staff#payg_cas05",
+      "destination": [
+        "Payon",
+        "payon",
+        70,
+        100
+      ]
+    },
+    "dungeon_lever": {
+      "x": 249,
+      "y": 15,
+      "dir": 0,
+      "name": "#payg_cas05",
+      "destination": [
+        "gld_dun01",
+        223,
+        202
+      ]
+    },
+    "flags": {
+      "return": [
+        243,
+        27
+      ],
+      "outside": [
+        {
+          "map": "pay_gld",
+          "x": 208,
+          "y": 268,
+          "dir": 4,
+          "name": "Bamboo Grove Hill#1-2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 199,
+          "y": 268,
+          "dir": 4,
+          "name": "Bamboo Grove Hill#2"
+        },
+        {
+          "map": "pay_gld",
+          "x": 190,
+          "y": 277,
+          "dir": 3,
+          "name": "Bamboo Grove Hill#3"
+        },
+        {
+          "map": "pay_gld",
+          "x": 187,
+          "y": 294,
+          "dir": 2,
+          "name": "Bamboo Grove Hill#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "payg_cas05",
+          "x": 32,
+          "y": 249,
+          "dir": 4,
+          "name": "Bamboo Grove Hill#5-2"
+        },
+        {
+          "map": "payg_cas05",
+          "x": 24,
+          "y": 249,
+          "dir": 4,
+          "name": "Bamboo Grove Hill#6"
+        },
+        {
+          "map": "payg_cas05",
+          "x": 62,
+          "y": 271,
+          "dir": 0,
+          "name": "Bamboo Grove Hill#7"
+        },
+        {
+          "map": "payg_cas05",
+          "x": 57,
+          "y": 271,
+          "dir": 0,
+          "name": "Bamboo Grove Hill#8"
+        },
+        {
+          "map": "payg_cas05",
+          "x": 55,
+          "y": 252,
+          "dir": 2,
+          "name": "Bamboo Grove Hill#9"
+        },
+        {
+          "map": "payg_cas05",
+          "x": 55,
+          "y": 260,
+          "dir": 2,
+          "name": "Bamboo Grove Hill#10"
+        },
+        {
+          "map": "payon",
+          "x": 123,
+          "y": 322,
+          "dir": 4,
+          "name": "Bamboo Grove Hill#11"
+        },
+        {
+          "map": "payon",
+          "x": 166,
+          "y": 161,
+          "dir": 3,
+          "name": "Bamboo Grove Hill#12"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 161,
+      "y": 136,
+      "dir": 0,
+      "name": "#lever_PA05",
+      "exit": [
+        277,
+        250
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "map": "prtg_cas01",
+    "name": "Kriemhild",
+    "emperium": [
+      197,
+      197
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 1
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 10
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 5
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 5
+        },
+        {
+          "name": "Stormy Knight",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Gryphon",
+          "id": 1259,
+          "count": 2
+        },
+        {
+          "name": "Chimera",
+          "id": 1283,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Zealotus",
+          "id": 1200,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Guardian Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Guardian Master",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Guardian Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 1,
+        "x": 182,
+        "y": 62
+      },
+      {
+        "type": 1,
+        "x": 182,
+        "y": 116
+      },
+      {
+        "type": 1,
+        "x": 153,
+        "y": 86
+      },
+      {
+        "type": 2,
+        "x": 59,
+        "y": 28
+      },
+      {
+        "type": 2,
+        "x": 50,
+        "y": 36
+      },
+      {
+        "type": 3,
+        "x": 184,
+        "y": 183
+      },
+      {
+        "type": 3,
+        "x": 196,
+        "y": 189
+      },
+      {
+        "type": 3,
+        "x": 107,
+        "y": 179
+      }
+    ],
+    "master_room": [
+      15,
+      209
+    ],
+    "treasure": {
+      "box": 1354,
+      "cells": [
+        [
+          10,
+          209
+        ],
+        [
+          11,
+          209
+        ],
+        [
+          11,
+          208
+        ],
+        [
+          10,
+          208
+        ],
+        [
+          8,
+          211
+        ],
+        [
+          9,
+          211
+        ],
+        [
+          10,
+          211
+        ],
+        [
+          11,
+          211
+        ],
+        [
+          12,
+          211
+        ],
+        [
+          13,
+          211
+        ],
+        [
+          13,
+          210
+        ],
+        [
+          13,
+          209
+        ],
+        [
+          13,
+          208
+        ],
+        [
+          13,
+          207
+        ],
+        [
+          13,
+          206
+        ],
+        [
+          12,
+          206
+        ],
+        [
+          11,
+          206
+        ],
+        [
+          10,
+          206
+        ],
+        [
+          9,
+          206
+        ],
+        [
+          8,
+          206
+        ],
+        [
+          8,
+          207
+        ],
+        [
+          8,
+          208
+        ],
+        [
+          8,
+          209
+        ],
+        [
+          8,
+          210
+        ]
+      ]
+    },
+    "steward": {
+      "x": 112,
+      "y": 181,
+      "dir": 0,
+      "name": "Ahvray#prtg_cas01"
+    },
+    "kafra": {
+      "x": 96,
+      "y": 173,
+      "dir": 0,
+      "name": "Kafra Staff#prtg_cas01",
+      "destination": [
+        "Prontera",
+        "prontera",
+        278,
+        211
+      ]
+    },
+    "dungeon_lever": {
+      "x": 94,
+      "y": 200,
+      "dir": 0,
+      "name": "#prtg_cas01",
+      "destination": [
+        "gld_dun03",
+        28,
+        251
+      ]
+    },
+    "flags": {
+      "return": [
+        96,
+        173
+      ],
+      "outside": [
+        {
+          "map": "prt_gld",
+          "x": 131,
+          "y": 60,
+          "dir": 6,
+          "name": "Kriemhild#1-2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 138,
+          "y": 68,
+          "dir": 6,
+          "name": "Kriemhild#2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 138,
+          "y": 60,
+          "dir": 6,
+          "name": "Kriemhild#3"
+        },
+        {
+          "map": "prt_gld",
+          "x": 135,
+          "y": 60,
+          "dir": 6,
+          "name": "Kriemhild#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "prtg_cas01",
+          "x": 58,
+          "y": 56,
+          "dir": 4,
+          "name": "Kriemhild#5-2"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 64,
+          "y": 56,
+          "dir": 4,
+          "name": "Kriemhild#6"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 76,
+          "y": 32,
+          "dir": 4,
+          "name": "Kriemhild#7"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 84,
+          "y": 32,
+          "dir": 4,
+          "name": "Kriemhild#8"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 94,
+          "y": 39,
+          "dir": 4,
+          "name": "Kriemhild#9"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 94,
+          "y": 24,
+          "dir": 4,
+          "name": "Kriemhild#10"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 73,
+          "y": 14,
+          "dir": 4,
+          "name": "Kriemhild#11"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 73,
+          "y": 6,
+          "dir": 4,
+          "name": "Kriemhild#12"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 55,
+          "y": 46,
+          "dir": 4,
+          "name": "Kriemhild#13"
+        },
+        {
+          "map": "prtg_cas01",
+          "x": 45,
+          "y": 46,
+          "dir": 4,
+          "name": "Kriemhild#14"
+        },
+        {
+          "map": "prontera",
+          "x": 155,
+          "y": 190,
+          "dir": 4,
+          "name": "Kriemhild#15"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 15,
+      "y": 208,
+      "dir": 0,
+      "name": "#Lever_PR01",
+      "exit": [
+        112,
+        183
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "map": "prtg_cas02",
+    "name": "Swanhild",
+    "emperium": [
+      157,
+      174
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 1
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 10
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 5
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 5
+        },
+        {
+          "name": "Stormy Knight",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Gryphon",
+          "id": 1259,
+          "count": 2
+        },
+        {
+          "name": "Chimera",
+          "id": 1283,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Zealotus",
+          "id": 1200,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Guardian Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Guardian Master",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Guardian Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 161,
+        "y": 161
+      },
+      {
+        "type": 3,
+        "x": 153,
+        "y": 161
+      },
+      {
+        "type": 3,
+        "x": 178,
+        "y": 44
+      },
+      {
+        "type": 1,
+        "x": 71,
+        "y": 75
+      },
+      {
+        "type": 1,
+        "x": 49,
+        "y": 28
+      },
+      {
+        "type": 2,
+        "x": 64,
+        "y": 186
+      },
+      {
+        "type": 2,
+        "x": 7,
+        "y": 196
+      },
+      {
+        "type": 2,
+        "x": 75,
+        "y": 175
+      }
+    ],
+    "master_room": [
+      207,
+      229
+    ],
+    "treasure": {
+      "box": 1356,
+      "cells": [
+        [
+          201,
+          228
+        ],
+        [
+          202,
+          228
+        ],
+        [
+          202,
+          227
+        ],
+        [
+          201,
+          227
+        ],
+        [
+          199,
+          230
+        ],
+        [
+          200,
+          230
+        ],
+        [
+          201,
+          230
+        ],
+        [
+          202,
+          230
+        ],
+        [
+          203,
+          230
+        ],
+        [
+          204,
+          230
+        ],
+        [
+          204,
+          229
+        ],
+        [
+          204,
+          228
+        ],
+        [
+          204,
+          227
+        ],
+        [
+          204,
+          226
+        ],
+        [
+          204,
+          225
+        ],
+        [
+          203,
+          225
+        ],
+        [
+          202,
+          225
+        ],
+        [
+          201,
+          225
+        ],
+        [
+          200,
+          225
+        ],
+        [
+          199,
+          225
+        ],
+        [
+          199,
+          226
+        ],
+        [
+          199,
+          227
+        ],
+        [
+          199,
+          228
+        ],
+        [
+          199,
+          229
+        ]
+      ]
+    },
+    "steward": {
+      "x": 94,
+      "y": 61,
+      "dir": 4,
+      "name": "Roy#prtg_cas02"
+    },
+    "kafra": {
+      "x": 71,
+      "y": 36,
+      "dir": 4,
+      "name": "Kafra Staff#prtg_cas02",
+      "destination": [
+        "Prontera",
+        "prontera",
+        278,
+        211
+      ]
+    },
+    "dungeon_lever": {
+      "x": 84,
+      "y": 72,
+      "dir": 0,
+      "name": "#prtg_cas02",
+      "destination": [
+        "gld_dun03",
+        164,
+        268
+      ]
+    },
+    "flags": {
+      "return": [
+        169,
+        55
+      ],
+      "outside": [
+        {
+          "map": "prt_gld",
+          "x": 244,
+          "y": 126,
+          "dir": 8,
+          "name": "Swanhild#1-2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 244,
+          "y": 128,
+          "dir": 8,
+          "name": "Swanhild#2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 236,
+          "y": 126,
+          "dir": 8,
+          "name": "Swanhild#3"
+        },
+        {
+          "map": "prt_gld",
+          "x": 236,
+          "y": 128,
+          "dir": 8,
+          "name": "Swanhild#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "prtg_cas02",
+          "x": 40,
+          "y": 227,
+          "dir": 4,
+          "name": "Swanhild#5-2"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 46,
+          "y": 227,
+          "dir": 4,
+          "name": "Swanhild#6"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 11,
+          "y": 219,
+          "dir": 4,
+          "name": "Swanhild#7"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 11,
+          "y": 214,
+          "dir": 4,
+          "name": "Swanhild#8"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 20,
+          "y": 219,
+          "dir": 4,
+          "name": "Swanhild#9"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 20,
+          "y": 214,
+          "dir": 4,
+          "name": "Swanhild#10"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 79,
+          "y": 227,
+          "dir": 8,
+          "name": "Swanhild#11"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 70,
+          "y": 227,
+          "dir": 8,
+          "name": "Swanhild#12"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 38,
+          "y": 189,
+          "dir": 8,
+          "name": "Swanhild#13"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 34,
+          "y": 189,
+          "dir": 8,
+          "name": "Swanhild#14"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 153,
+          "y": 161,
+          "dir": 4,
+          "name": "Swanhild#15"
+        },
+        {
+          "map": "prtg_cas02",
+          "x": 162,
+          "y": 161,
+          "dir": 4,
+          "name": "Swanhild#16"
+        },
+        {
+          "map": "prontera",
+          "x": 146,
+          "y": 194,
+          "dir": 3,
+          "name": "Swanhild#17"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 207,
+      "y": 228,
+      "dir": 0,
+      "name": "#Lever_PR02",
+      "exit": [
+        94,
+        62
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "map": "prtg_cas03",
+    "name": "Fadhgridh",
+    "emperium": [
+      16,
+      220
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 1
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 10
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 5
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 5
+        },
+        {
+          "name": "Stormy Knight",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Gryphon",
+          "id": 1259,
+          "count": 2
+        },
+        {
+          "name": "Chimera",
+          "id": 1283,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Zealotus",
+          "id": 1200,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Guardian Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Guardian Master",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Guardian Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 191,
+        "y": 190
+      },
+      {
+        "type": 3,
+        "x": 137,
+        "y": 190
+      },
+      {
+        "type": 3,
+        "x": 45,
+        "y": 99
+      },
+      {
+        "type": 1,
+        "x": 50,
+        "y": 87
+      },
+      {
+        "type": 1,
+        "x": 41,
+        "y": 87
+      },
+      {
+        "type": 2,
+        "x": 191,
+        "y": 42
+      },
+      {
+        "type": 2,
+        "x": 179,
+        "y": 43
+      },
+      {
+        "type": 2,
+        "x": 191,
+        "y": 72
+      }
+    ],
+    "master_room": [
+      190,
+      130
+    ],
+    "treasure": {
+      "box": 1358,
+      "cells": [
+        [
+          187,
+          132
+        ],
+        [
+          188,
+          132
+        ],
+        [
+          188,
+          131
+        ],
+        [
+          187,
+          131
+        ],
+        [
+          185,
+          134
+        ],
+        [
+          186,
+          134
+        ],
+        [
+          187,
+          134
+        ],
+        [
+          188,
+          134
+        ],
+        [
+          189,
+          134
+        ],
+        [
+          190,
+          134
+        ],
+        [
+          190,
+          133
+        ],
+        [
+          190,
+          132
+        ],
+        [
+          190,
+          131
+        ],
+        [
+          190,
+          130
+        ],
+        [
+          190,
+          129
+        ],
+        [
+          189,
+          129
+        ],
+        [
+          188,
+          129
+        ],
+        [
+          187,
+          129
+        ],
+        [
+          186,
+          129
+        ],
+        [
+          185,
+          129
+        ],
+        [
+          185,
+          130
+        ],
+        [
+          185,
+          131
+        ],
+        [
+          185,
+          132
+        ],
+        [
+          185,
+          133
+        ]
+      ]
+    },
+    "steward": {
+      "x": 51,
+      "y": 100,
+      "dir": 4,
+      "name": "Sttick#prtg_cas03"
+    },
+    "kafra": {
+      "x": 181,
+      "y": 215,
+      "dir": 4,
+      "name": "Kafra Staff#prtg_cas03",
+      "destination": [
+        "Prontera",
+        "prontera",
+        278,
+        211
+      ]
+    },
+    "dungeon_lever": {
+      "x": 5,
+      "y": 70,
+      "dir": 0,
+      "name": "#prtg_cas03",
+      "destination": [
+        "gld_dun03",
+        164,
+        179
+      ]
+    },
+    "flags": {
+      "return": [
+        181,
+        215
+      ],
+      "outside": [
+        {
+          "map": "prt_gld",
+          "x": 147,
+          "y": 140,
+          "dir": 4,
+          "name": "Fadhgridh#1-2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 147,
+          "y": 136,
+          "dir": 4,
+          "name": "Fadhgridh#2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 158,
+          "y": 140,
+          "dir": 4,
+          "name": "Fadhgridh#3"
+        },
+        {
+          "map": "prt_gld",
+          "x": 158,
+          "y": 136,
+          "dir": 4,
+          "name": "Fadhgridh#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "prtg_cas03",
+          "x": 168,
+          "y": 28,
+          "dir": 4,
+          "name": "Fadhgridh#5-2"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 182,
+          "y": 28,
+          "dir": 4,
+          "name": "Fadhgridh#6"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 43,
+          "y": 50,
+          "dir": 4,
+          "name": "Fadhgridh#7"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 48,
+          "y": 50,
+          "dir": 4,
+          "name": "Fadhgridh#8"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 43,
+          "y": 58,
+          "dir": 4,
+          "name": "Fadhgridh#9"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 48,
+          "y": 58,
+          "dir": 4,
+          "name": "Fadhgridh#10"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 158,
+          "y": 210,
+          "dir": 4,
+          "name": "Fadhgridh#11"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 169,
+          "y": 210,
+          "dir": 4,
+          "name": "Fadhgridh#12"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 162,
+          "y": 201,
+          "dir": 4,
+          "name": "Fadhgridh#13"
+        },
+        {
+          "map": "prtg_cas03",
+          "x": 165,
+          "y": 201,
+          "dir": 4,
+          "name": "Fadhgridh#14"
+        },
+        {
+          "map": "prontera",
+          "x": 143,
+          "y": 203,
+          "dir": 2,
+          "name": "Fadhgridh#15"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 193,
+      "y": 130,
+      "dir": 0,
+      "name": "#Lever_PR03",
+      "exit": [
+        51,
+        101
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "map": "prtg_cas04",
+    "name": "Skoegul",
+    "emperium": [
+      291,
+      14
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 1
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 10
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 5
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 5
+        },
+        {
+          "name": "Stormy Knight",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Gryphon",
+          "id": 1259,
+          "count": 2
+        },
+        {
+          "name": "Chimera",
+          "id": 1283,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Zealotus",
+          "id": 1200,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Guardian Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Guardian Master",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Guardian Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 276,
+        "y": 14
+      },
+      {
+        "type": 3,
+        "x": 274,
+        "y": 35
+      },
+      {
+        "type": 3,
+        "x": 246,
+        "y": 246
+      },
+      {
+        "type": 1,
+        "x": 38,
+        "y": 240
+      },
+      {
+        "type": 1,
+        "x": 29,
+        "y": 240
+      },
+      {
+        "type": 1,
+        "x": 33,
+        "y": 258
+      },
+      {
+        "type": 2,
+        "x": 78,
+        "y": 48
+      },
+      {
+        "type": 2,
+        "x": 36,
+        "y": 61
+      }
+    ],
+    "master_room": [
+      275,
+      160
+    ],
+    "treasure": {
+      "box": 1360,
+      "cells": [
+        [
+          269,
+          162
+        ],
+        [
+          270,
+          162
+        ],
+        [
+          270,
+          161
+        ],
+        [
+          269,
+          161
+        ],
+        [
+          267,
+          164
+        ],
+        [
+          268,
+          164
+        ],
+        [
+          269,
+          164
+        ],
+        [
+          270,
+          164
+        ],
+        [
+          271,
+          164
+        ],
+        [
+          272,
+          164
+        ],
+        [
+          272,
+          163
+        ],
+        [
+          272,
+          162
+        ],
+        [
+          272,
+          161
+        ],
+        [
+          272,
+          160
+        ],
+        [
+          272,
+          159
+        ],
+        [
+          271,
+          159
+        ],
+        [
+          270,
+          159
+        ],
+        [
+          269,
+          159
+        ],
+        [
+          268,
+          159
+        ],
+        [
+          267,
+          159
+        ],
+        [
+          267,
+          160
+        ],
+        [
+          267,
+          161
+        ],
+        [
+          267,
+          162
+        ],
+        [
+          267,
+          163
+        ]
+      ]
+    },
+    "steward": {
+      "x": 259,
+      "y": 265,
+      "dir": 4,
+      "name": "Van Dreth#prtg_cas04"
+    },
+    "kafra": {
+      "x": 258,
+      "y": 247,
+      "dir": 4,
+      "name": "Kafra Staff#prtg_cas04",
+      "destination": [
+        "Prontera",
+        "prontera",
+        278,
+        211
+      ]
+    },
+    "dungeon_lever": {
+      "x": 56,
+      "y": 283,
+      "dir": 0,
+      "name": "#prtg_cas04",
+      "destination": [
+        "gld_dun03",
+        268,
+        203
+      ]
+    },
+    "flags": {
+      "return": [
+        258,
+        247
+      ],
+      "outside": [
+        {
+          "map": "prt_gld",
+          "x": 120,
+          "y": 243,
+          "dir": 6,
+          "name": "Skoegul#1-2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 120,
+          "y": 236,
+          "dir": 6,
+          "name": "Skoegul#2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 122,
+          "y": 243,
+          "dir": 6,
+          "name": "Skoegul#3"
+        },
+        {
+          "map": "prt_gld",
+          "x": 122,
+          "y": 236,
+          "dir": 6,
+          "name": "Skoegul#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "prtg_cas04",
+          "x": 82,
+          "y": 29,
+          "dir": 4,
+          "name": "Skoegul#5-2"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 75,
+          "y": 29,
+          "dir": 4,
+          "name": "Skoegul#6"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 75,
+          "y": 27,
+          "dir": 4,
+          "name": "Skoegul#7"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 82,
+          "y": 27,
+          "dir": 4,
+          "name": "Skoegul#8"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 59,
+          "y": 29,
+          "dir": 4,
+          "name": "Skoegul#9"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 67,
+          "y": 29,
+          "dir": 4,
+          "name": "Skoegul#10"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 258,
+          "y": 25,
+          "dir": 4,
+          "name": "Skoegul#11"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 258,
+          "y": 20,
+          "dir": 4,
+          "name": "Skoegul#12"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 263,
+          "y": 20,
+          "dir": 4,
+          "name": "Skoegul#13"
+        },
+        {
+          "map": "prtg_cas04",
+          "x": 263,
+          "y": 27,
+          "dir": 4,
+          "name": "Skoegul#14"
+        },
+        {
+          "map": "prontera",
+          "x": 167,
+          "y": 203,
+          "dir": 6,
+          "name": "Skoegul#15"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 275,
+      "y": 160,
+      "dir": 0,
+      "name": "#Lever_PR04",
+      "exit": [
+        259,
+        265
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "map": "prtg_cas05",
+    "name": "Gondul",
+    "emperium": [
+      266,
+      266
+    ],
+    "spawns": {
+      "field": [
+        {
+          "name": "Raydric",
+          "id": 1163,
+          "count": 1
+        },
+        {
+          "name": "Khalitzburg",
+          "id": 1132,
+          "count": 10
+        },
+        {
+          "name": "Abysmal Knight",
+          "id": 1219,
+          "count": 5
+        },
+        {
+          "name": "Bloody Knight",
+          "id": 1268,
+          "count": 5
+        },
+        {
+          "name": "Stormy Knight",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        },
+        {
+          "name": "Gryphon",
+          "id": 1259,
+          "count": 2
+        },
+        {
+          "name": "Chimera",
+          "id": 1283,
+          "count": 3
+        },
+        {
+          "name": "Alice",
+          "id": 1275,
+          "count": 1
+        },
+        {
+          "name": "Zealotus",
+          "id": 1200,
+          "count": 1
+        }
+      ],
+      "emperium_room": [
+        {
+          "name": "Guardian Knight",
+          "id": 1268,
+          "count": 1
+        },
+        {
+          "name": "Guardian Master",
+          "id": 1251,
+          "count": 1
+        },
+        {
+          "name": "Hatii",
+          "id": 1252,
+          "count": 1
+        },
+        {
+          "name": "Guardian Knight",
+          "id": 1219,
+          "count": 1
+        },
+        {
+          "name": "Raydric Archer",
+          "id": 1276,
+          "count": 5
+        }
+      ]
+    },
+    "guardians": [
+      {
+        "type": 3,
+        "x": 266,
+        "y": 262
+      },
+      {
+        "type": 3,
+        "x": 287,
+        "y": 280
+      },
+      {
+        "type": 3,
+        "x": 245,
+        "y": 250
+      },
+      {
+        "type": 1,
+        "x": 236,
+        "y": 63
+      },
+      {
+        "type": 1,
+        "x": 251,
+        "y": 63
+      },
+      {
+        "type": 1,
+        "x": 278,
+        "y": 253
+      },
+      {
+        "type": 2,
+        "x": 32,
+        "y": 253
+      },
+      {
+        "type": 2,
+        "x": 44,
+        "y": 248
+      }
+    ],
+    "master_room": [
+      281,
+      176
+    ],
+    "treasure": {
+      "box": 1362,
+      "cells": [
+        [
+          275,
+          178
+        ],
+        [
+          276,
+          178
+        ],
+        [
+          276,
+          177
+        ],
+        [
+          275,
+          177
+        ],
+        [
+          273,
+          180
+        ],
+        [
+          274,
+          180
+        ],
+        [
+          275,
+          180
+        ],
+        [
+          276,
+          180
+        ],
+        [
+          277,
+          180
+        ],
+        [
+          278,
+          180
+        ],
+        [
+          278,
+          179
+        ],
+        [
+          278,
+          178
+        ],
+        [
+          278,
+          177
+        ],
+        [
+          278,
+          176
+        ],
+        [
+          278,
+          175
+        ],
+        [
+          277,
+          175
+        ],
+        [
+          276,
+          175
+        ],
+        [
+          275,
+          175
+        ],
+        [
+          274,
+          175
+        ],
+        [
+          273,
+          175
+        ],
+        [
+          273,
+          176
+        ],
+        [
+          273,
+          177
+        ],
+        [
+          273,
+          178
+        ],
+        [
+          273,
+          179
+        ]
+      ]
+    },
+    "steward": {
+      "x": 36,
+      "y": 37,
+      "dir": 4,
+      "name": "Raynor#prtg_cas05"
+    },
+    "kafra": {
+      "x": 52,
+      "y": 41,
+      "dir": 4,
+      "name": "Kafra Staff#prtg_cas05",
+      "destination": [
+        "Prontera",
+        "prontera",
+        278,
+        211
+      ]
+    },
+    "dungeon_lever": {
+      "x": 212,
+      "y": 95,
+      "dir": 0,
+      "name": "#prtg_cas05",
+      "destination": [
+        "gld_dun03",
+        199,
+        28
+      ]
+    },
+    "flags": {
+      "return": [
+        52,
+        41
+      ],
+      "outside": [
+        {
+          "map": "prt_gld",
+          "x": 199,
+          "y": 243,
+          "dir": 2,
+          "name": "Gondul#1-2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 199,
+          "y": 236,
+          "dir": 2,
+          "name": "Gondul#2"
+        },
+        {
+          "map": "prt_gld",
+          "x": 197,
+          "y": 243,
+          "dir": 2,
+          "name": "Gondul#3"
+        },
+        {
+          "map": "prt_gld",
+          "x": 197,
+          "y": 236,
+          "dir": 2,
+          "name": "Gondul#4"
+        }
+      ],
+      "inside": [
+        {
+          "map": "prtg_cas05",
+          "x": 19,
+          "y": 247,
+          "dir": 4,
+          "name": "Gondul#5-2"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 19,
+          "y": 243,
+          "dir": 4,
+          "name": "Gondul#6"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 26,
+          "y": 247,
+          "dir": 4,
+          "name": "Gondul#7"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 26,
+          "y": 243,
+          "dir": 4,
+          "name": "Gondul#8"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 249,
+          "y": 289,
+          "dir": 4,
+          "name": "Gondul#9"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 256,
+          "y": 289,
+          "dir": 4,
+          "name": "Gondul#10"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 253,
+          "y": 271,
+          "dir": 4,
+          "name": "Gondul#11"
+        },
+        {
+          "map": "prtg_cas05",
+          "x": 273,
+          "y": 257,
+          "dir": 4,
+          "name": "Gondul#12"
+        },
+        {
+          "map": "prontera",
+          "x": 165,
+          "y": 194,
+          "dir": 5,
+          "name": "Gondul#13"
+        }
+      ]
+    },
+    "treasure_lever": {
+      "x": 281,
+      "y": 176,
+      "dir": 0,
+      "name": "#Lever_PR05",
+      "exit": [
+        36,
+        38
+      ]
+    }
+  }
+]

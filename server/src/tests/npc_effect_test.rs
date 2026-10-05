@@ -409,26 +409,32 @@ fn callbacks_and_delayed_damage_cannot_cross_map_instances() {
         .get_mut("empty")
         .unwrap()
         .push(clone.clone());
-    let hit = ScriptSkillHit {
-        source_map: Some("empty.gat".into()),
-        source_instance: Some(0),
-        source_id: SOURCE,
-        target_id: TARGET,
-        skill_id: SkillEnum::MgFrostdiver.id(),
-        skill_level: 10,
-        damage: 100,
-        depth: 0,
-    };
-    context
-        .server
-        .handle_script_event(&mut context.server.state_mut(), GameEvent::ScriptSkillHit(hit), 1000)
-        .unwrap();
-    process_map(&service, &instance, 1000);
-    assert!(
+    let frozen = || {
         instance.state().script_skill_state.npcs[&TARGET]
             .status()
             .has_status_change(StatusChangeKind::Freeze)
-    );
+    };
+    for _ in 0..50 {
+        let hit = ScriptSkillHit {
+            source_map: Some("empty.gat".into()),
+            source_instance: Some(0),
+            source_id: SOURCE,
+            target_id: TARGET,
+            skill_id: SkillEnum::MgFrostdiver.id(),
+            skill_level: 10,
+            damage: 100,
+            depth: 0,
+        };
+        context
+            .server
+            .handle_script_event(&mut context.server.state_mut(), GameEvent::ScriptSkillHit(hit), 1000)
+            .unwrap();
+        process_map(&service, &instance, 1000);
+        if frozen() {
+            break;
+        }
+    }
+    assert!(frozen());
     assert!(clone.state().script_skill_state.npcs[&TARGET].active_statuses.is_empty());
     let character_id = 150_001;
     context

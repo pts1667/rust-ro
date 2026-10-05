@@ -81,6 +81,12 @@ impl Clone for MobTiming {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
+pub enum ModeChange {
+    Set(u32),
+    Add(u32),
+}
+
 #[derive(Setters, Clone)]
 pub struct Mob {
     pub id: u32,
@@ -92,6 +98,7 @@ pub struct Mob {
     pub summoned: bool,
     pub summon_owner: Option<u32>,
     pub summon_ai: u16,
+    pub expires_at: Option<u128>,
     pub event_entry: Option<u32>,
     pub event_npc: Option<crate::server::model::events::map_event::ScriptNpcCallback>,
     pub next_summon_action: u128,
@@ -143,6 +150,13 @@ pub struct Mob {
     pub target_id: Option<u32>,
     pub skill_ready_at: HashMap<usize, u128>,
     pub skill_spawn_done: bool,
+    pub reborn: bool,
+    mode_before_change: Option<u32>,
+    pub loot_items: Vec<(i32, u16, bool)>,
+    pub looted: bool,
+    pub friendly_guilds: Vec<u32>,
+    pub bg_id: u32,
+    pub damage_immune: bool,
 }
 
 pub struct MobMovement {
@@ -295,6 +309,27 @@ impl Mob {
             }
         }
         Ok(outcome)
+    }
+
+    /// Mirrors SC_MODECHANGE: a change that lands back on the original mode cancels the status.
+    pub fn change_mode(&mut self, change: ModeChange) {
+        use models::enums::EnumWithMaskValueU32;
+        use models::enums::mob::MobMode;
+        let original = self.mode_before_change.unwrap_or(self.mode);
+        let requested = match change {
+            ModeChange::Set(mode) => mode,
+            ModeChange::Add(mode) => {
+                let removed = if mode & MobMode::Aggressive.as_flag() == 0 { MobMode::Aggressive.as_flag() } else { 0 };
+                (self.mode & !removed) | mode
+            }
+        };
+        if requested == original || requested == self.mode && self.mode_before_change.is_some() {
+            self.mode = original;
+            self.mode_before_change = None;
+        } else {
+            self.mode_before_change = Some(original);
+            self.mode = requested;
+        }
     }
 
     pub fn resists_status(&self, request: &models::status_change::StatusChangeRequest) -> bool {
@@ -534,6 +569,7 @@ impl Mob {
             summoned: false,
             summon_owner: None,
             summon_ai: 0,
+            expires_at: None,
             event_entry: None,
             event_npc: None,
             next_summon_action: 0,
@@ -575,6 +611,13 @@ impl Mob {
             target_id: None,
             skill_ready_at: HashMap::new(),
             skill_spawn_done: false,
+            reborn: false,
+            mode_before_change: None,
+            loot_items: Vec::new(),
+            looted: false,
+            friendly_guilds: Vec::new(),
+            bg_id: 0,
+            damage_immune: false,
         }
     }
 
@@ -849,6 +892,32 @@ mod status_change_tests {
     }
 
     #[test]
+    fn mode_changes_toggle_back_to_the_original_mode_and_drop_aggression_when_adding_passive_modes() {
+        let original = MobMode::CanMove.as_flag() | MobMode::Aggressive.as_flag() | MobMode::CanAttack.as_flag();
+        let mut mob = mob(original);
+        mob.change_mode(ModeChange::Set(MobMode::CanMove.as_flag()));
+        assert_eq!(mob.mode, MobMode::CanMove.as_flag());
+        mob.change_mode(ModeChange::Set(MobMode::CanMove.as_flag()));
+        assert_eq!(mob.mode, original);
+        mob.change_mode(ModeChange::Add(MobMode::Assist.as_flag()));
+        assert_eq!(mob.mode, MobMode::CanMove.as_flag() | MobMode::CanAttack.as_flag() | MobMode::Assist.as_flag());
+    }
+
+    #[test]
+    fn keeping_sets_def_and_blocks_actions_and_elemental_change_rewrites_element() {
+        let mut mob = mob(0);
+        let keeping = StatusChangeRequest::guaranteed(StatusChangeKind::Keeping, 30_000, 1);
+        assert!(mob.start_status(keeping, 0, 0).is_ok());
+        assert_eq!(mob.status.def(), 90);
+        assert!(mob.blocks_attack() && mob.blocks_movement());
+        let mut change = StatusChangeRequest::guaranteed(StatusChangeKind::ElementalChange, 30_000, 3);
+        change.values[1] = models::enums::EnumWithNumberValue::value(&models::enums::element::Element::Fire) as i32;
+        assert!(mob.start_status(change, 0, 0).is_ok());
+        assert_eq!(*mob.status.element(), models::enums::element::Element::Fire);
+        assert_eq!(mob.status.element_level(), 3);
+    }
+
+    #[test]
     fn movement_and_attack_facing_are_retained_in_mob_snapshots() {
         let mut mob = mob(MobMode::CanMove.as_flag() | MobMode::CanAttack.as_flag());
         mob.face_towards(4, 5);
@@ -985,6 +1054,8 @@ impl ToMapItemSnapshot for Mob {
                 y: self.y,
                 dir: self.dir,
             },
+            guild_id: 0,
+            bg_id: self.bg_id,
         }
     }
 }

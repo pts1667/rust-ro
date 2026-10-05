@@ -178,6 +178,10 @@ impl ScriptSkillService {
             GroundKind::HeavenDrive
                 | GroundKind::Thunderstorm
                 | GroundKind::Pneuma
+                | GroundKind::SafetyWall
+                | GroundKind::Sanctuary
+                | GroundKind::VenomDust
+                | GroundKind::SpiderWeb
                 | GroundKind::Quagmire
                 | GroundKind::Deluge
                 | GroundKind::LandProtector
@@ -192,6 +196,7 @@ impl ScriptSkillService {
                 | GroundKind::Vermilion
                 | GroundKind::Earthquake
                 | GroundKind::GrandCross
+                | GroundKind::GrandDarkness
         ) {
             return Err("This ground skill still requires an actor-specific unit lifecycle".into());
         }

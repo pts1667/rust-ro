@@ -173,6 +173,17 @@ pub fn map_property_packet_in_siege(flags: &MapFlags, packetver: u32, siege_acti
     .concat()
 }
 
+/// Shows the PvP cursor and disables lock-on for duelists, as rathena does for `duel_group`.
+fn apply_duel_property(packet: &mut [u8]) {
+    packet[2..4].copy_from_slice(&1_u16.to_le_bytes());
+    if packet.len() >= 8 {
+        let mask = u32::from_le_bytes(packet[4..8].try_into().unwrap())
+            | MapPropertyFlags::IsParty.as_flag() as u32
+            | MapPropertyFlags::IsNoLockOn.as_flag() as u32;
+        packet[4..8].copy_from_slice(&mask.to_le_bytes());
+    }
+}
+
 pub fn is_map_flag_call(function: Function) -> bool {
     matches!(
         function,
@@ -227,16 +238,25 @@ impl Server {
             self.notify_map_property(state, char_id);
         }
         self.broadcast_npc_event(state, if active { "OnAgitStart" } else { "OnAgitEnd" });
+        let lifecycle = if active {
+            crate::server::model::events::game_event::CastleLifecycle::AgitStart
+        } else {
+            crate::server::model::events::game_event::CastleLifecycle::AgitEnd
+        };
+        self.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CastleLifecycle(lifecycle));
         true
     }
 
     pub(crate) fn notify_map_property(&self, state: &mut ServerState, char_id: u32) {
         if let Some(character) = state.characters().get(&char_id) {
-            let data = map_property_packet_in_siege(
+            let mut data = map_property_packet_in_siege(
                 &state.map_flags(&character.map_instance_key),
                 self.packetver(),
                 state.siege_active,
             );
+            if state.duels.duel_of(char_id).is_some() {
+                apply_duel_property(&mut data);
+            }
             state
                 .pending_map_notifications
                 .push_back(Notification::Char(CharNotification::new(char_id, data)));

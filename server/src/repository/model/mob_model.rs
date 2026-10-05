@@ -68,6 +68,8 @@ pub struct MobModel {
     pub damage_motion: i32,
     pub exp: i32,
     pub job_exp: i32,
+    #[serde(default)]
+    pub mvp_exp: i32,
     pub drops: Vec<Drop>,
     #[serde(default)]
     pub mvp_drops: Vec<Drop>,
@@ -75,6 +77,10 @@ pub struct MobModel {
 }
 
 impl MobModel {
+    pub fn is_mvp(&self) -> bool {
+        self.capabilities.as_ref().is_some_and(|capabilities| capabilities.contains(&MobCapability::Mvp))
+    }
+
     pub fn battle_capabilities(&self) -> u32 {
         let mut flags = match &self.capabilities {
             Some(capabilities) => capabilities.iter().fold(0, |flags, capability| flags | capability.as_flag()),
@@ -156,6 +162,7 @@ impl Default for MobModel {
             damage_motion: 0,
             exp: 0,
             job_exp: 0,
+            mvp_exp: 0,
             drops: Default::default(),
             mvp_drops: Default::default(),
             size: "Medium".to_string(),

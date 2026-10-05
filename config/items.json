@@ -74039,6 +74039,48 @@
       "nouse_sitting": 1
     },
     {
+      "id": 12968,
+      "name_aegis": "Emergency_Scroll1",
+      "name_english": "Emergency Level 1 Scroll",
+      "item_type": "Usable",
+      "price_buy": 2,
+      "weight": 10,
+      "job_flags": 18446744073709551615,
+      "class_flags": 0,
+      "location": 0,
+      "flags": 0,
+      "trade_flags": 0,
+      "script": "unitskilluseid getcharid(3),\"GD_ITEMEMERGENCYCALL\",1;"
+    },
+    {
+      "id": 12969,
+      "name_aegis": "Emergency_Scroll2",
+      "name_english": "Emergency Level 2 Scroll",
+      "item_type": "Usable",
+      "price_buy": 2,
+      "weight": 10,
+      "job_flags": 18446744073709551615,
+      "class_flags": 0,
+      "location": 0,
+      "flags": 0,
+      "trade_flags": 0,
+      "script": "unitskilluseid getcharid(3),\"GD_ITEMEMERGENCYCALL\",2;"
+    },
+    {
+      "id": 12970,
+      "name_aegis": "Emergency_Scroll3",
+      "name_english": "Emergency Level 3 Scroll",
+      "item_type": "Usable",
+      "price_buy": 2,
+      "weight": 10,
+      "job_flags": 18446744073709551615,
+      "class_flags": 0,
+      "location": 0,
+      "flags": 0,
+      "trade_flags": 0,
+      "script": "unitskilluseid getcharid(3),\"GD_ITEMEMERGENCYCALL\",3;"
+    },
+    {
       "job_flags": 18446744073709551615,
       "class_flags": 0,
       "location": 0,

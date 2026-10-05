@@ -21,7 +21,7 @@ def parse_line(line):
         return None
     values = dict(zip(FIELDS, parts))
     extra = parts[12:17] + [""] * (5 - len(parts[12:17]))
-    return {
+    entry = {
         "mob_id": int(values["mob_id"]),
         "state": values["state"].lower(),
         "skill_id": int(values["skill_id"]),
@@ -35,6 +35,11 @@ def parse_line(line):
         "condition_value": values["condition_value"].lower(),
         "values": extra[:5],
     }
+    if len(parts) > 17 and parts[17]:
+        entry["emotion"] = int(parts[17])
+    if len(parts) > 18 and parts[18]:
+        entry["chat"] = int(parts[18])
+    return entry
 
 
 def convert(source):

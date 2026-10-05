@@ -1,0 +1,126 @@
+[
+  {
+    "id": 1,
+    "name": "Tierra Gorge",
+    "required_players": 6,
+    "max_players": 15,
+    "min_level": 80,
+    "max_level": 0,
+    "deserter_seconds": 600,
+    "start_delay_seconds": 0,
+    "solo": true,
+    "party": true,
+    "guild": true,
+    "job_restrictions": [
+      0,
+      23,
+      4001,
+      4023,
+      4045,
+      4190,
+      4191
+    ],
+    "maps": [
+      {
+        "map": "bat_a01",
+        "start_event": "start#bat_a01::OnReadyCheck",
+        "team_a": {
+          "x": 50,
+          "y": 374,
+          "death_event": "",
+          "quit_event": "start#bat_a01::OnGuillaumeQuit",
+          "active_event": "start#bat_a01::OnGuillaumeActive",
+          "variable": "$@TierraBG1_id1"
+        },
+        "team_b": {
+          "x": 42,
+          "y": 16,
+          "death_event": "",
+          "quit_event": "start#bat_a01::OnCroixQuit",
+          "active_event": "start#bat_a01::OnCroixActive",
+          "variable": "$@TierraBG1_id2"
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Flavius",
+    "required_players": 6,
+    "max_players": 15,
+    "min_level": 80,
+    "max_level": 0,
+    "deserter_seconds": 600,
+    "start_delay_seconds": 0,
+    "solo": true,
+    "party": true,
+    "guild": true,
+    "job_restrictions": [
+      0,
+      23,
+      4001,
+      4023,
+      4045,
+      4190,
+      4191
+    ],
+    "maps": [
+      {
+        "map": "bat_b01",
+        "start_event": "start#bat_b01::OnReadyCheck",
+        "team_a": {
+          "x": 10,
+          "y": 290,
+          "death_event": "",
+          "quit_event": "start#bat_b01::OnGuillaumeQuit",
+          "active_event": "start#bat_b01::OnGuillaumeActive",
+          "variable": "$@FlaviusBG1_id1"
+        },
+        "team_b": {
+          "x": 390,
+          "y": 10,
+          "death_event": "",
+          "quit_event": "start#bat_b01::OnCroixQuit",
+          "active_event": "start#bat_b01::OnCroixActive",
+          "variable": "$@FlaviusBG1_id2"
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "KVM (Level 80 and up)",
+    "required_players": 5,
+    "max_players": 15,
+    "min_level": 80,
+    "max_level": 0,
+    "deserter_seconds": 600,
+    "start_delay_seconds": 0,
+    "solo": true,
+    "party": true,
+    "guild": true,
+    "job_restrictions": [],
+    "maps": [
+      {
+        "map": "bat_c01",
+        "start_event": "KvM01_BG::OnStart",
+        "team_a": {
+          "x": 52,
+          "y": 129,
+          "death_event": "KvM01_BG::OnGuillaumeDie",
+          "quit_event": "KvM01_BG::OnGuillaumeQuit",
+          "active_event": "KvM01_BG::OnGuillaumeActive",
+          "variable": "$@KvM01BG_id1"
+        },
+        "team_b": {
+          "x": 147,
+          "y": 55,
+          "death_event": "KvM01_BG::OnCroixDie",
+          "quit_event": "KvM01_BG::OnCroixQuit",
+          "active_event": "KvM01_BG::OnCroixActive",
+          "variable": "$@KvM01BG_id2"
+        }
+      }
+    ]
+  }
+]

@@ -10,6 +10,18 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> {
         5 => job_master(ctx),
         6 => ctx.call(Function::Shop, vec![]).map(|_| ()),
         7 => mount_master(ctx),
+        8 => crate::castle_npcs::steward(ctx),
+        9 => crate::castle_npcs::lever(ctx),
+        10 => crate::castle_npcs::kafra(ctx),
+        11 => crate::wedding_npcs::staff(ctx),
+        12 => crate::wedding_npcs::bishop(ctx),
+        13 => crate::wedding_npcs::divorce(ctx),
+        14 => breeder(ctx),
+        15 => crate::battleground_arena::npc(ctx),
+        16 => crate::battleground_kvm::npc(ctx),
+        17 => crate::battleground_tierra::npc(ctx),
+        18 => crate::battleground_npcs::npc(ctx),
+        19 => crate::castle_npcs::flag(ctx),
         _ => Err(format!("Unknown NPC script {id}")),
     }
 }
@@ -342,6 +354,44 @@ fn mount_master(ctx: &Context) -> Result<(), String> {
             }
         }
         _ => {}
+    }
+    ctx.close()
+}
+
+fn breeder(ctx: &Context) -> Result<(), String> {
+    let Value::Array(args) = ctx.request(Request::Arguments)? else {
+        return Err("NPC arguments are invalid".into());
+    };
+    let [title, kind, job, price, job_name] = args.as_slice() else {
+        return Err("Breeder arguments are invalid".into());
+    };
+    let (title, kind, job_name) = (format!("[{}]", title.text()), kind.text(), job_name.text());
+    let (job, price) = (job.number_value()?, price.number_value()?);
+    let falcon = kind == "falcon";
+    let (animal, skill) = if falcon { ("Falcon", "HT_FALCON") } else { ("Peco Peco", "KN_RIDING") };
+    ctx.mes(&title)?;
+    if ctx.read("BaseJob")?.number_value()? != job {
+        ctx.mes(format!("This {animal} rental service is strictly for {job_name}s."))?;
+        return ctx.close();
+    }
+    ctx.mes(format!("Would you like to rent a {animal}? The rental fee is {price} zeny."))?;
+    ctx.next()?;
+    if ctx.select(&[format!("Rent {animal}"), "Cancel".into()])? != 0 {
+        return ctx.close();
+    }
+    ctx.mes(&title)?;
+    let zeny = ctx.read("Zeny")?.number_value()?;
+    if zeny < price {
+        ctx.mes("You do not have enough zeny.")?;
+    } else if number(ctx, Function::GetSkillLv, vec![skill.into()])? == 0 {
+        ctx.mes(format!("You must first learn the {} skill before I can rent one to you.", if falcon { "Falcon Mastery" } else { "Peco Peco Ride" }))?;
+    } else if number(ctx, if falcon { Function::CheckFalcon } else { Function::CheckRiding }, vec![])? != 0 {
+        ctx.mes(format!("You already have a {animal}."))?;
+    } else if !falcon && number(ctx, Function::IsMounting, vec![])? != 0 {
+        ctx.mes("Please remove your cash mount.")?;
+    } else {
+        ctx.write("Zeny", (zeny - price).into())?;
+        ctx.call(if falcon { Function::SetFalcon } else { Function::SetRiding }, vec![])?;
     }
     ctx.close()
 }

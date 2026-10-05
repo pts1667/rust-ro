@@ -52,6 +52,8 @@ mod delayed;
 mod devotion;
 #[path = "ground_skill.rs"]
 mod ground;
+#[path = "ground_unit_effects.rs"]
+mod ground_unit_effects;
 #[path = "skill_magic.rs"]
 mod magic;
 #[path = "skill_metadata.rs"]
@@ -68,6 +70,8 @@ mod secondary;
 mod splasher;
 #[path = "skill_stealth.rs"]
 mod stealth;
+#[path = "skill_summon.rs"]
+mod summon;
 #[path = "skill_support.rs"]
 mod support;
 #[path = "skill_targeted.rs"]
@@ -106,6 +110,7 @@ pub struct ScriptSkillState {
     pub pending_teleport: Option<PendingTeleportMenu>,
     pub pending_warp_portal: Option<PendingWarpPortalMenu>,
     pub ground_skill_text: Vec<u8>,
+    pub guild_skill_blocked_until: std::collections::BTreeMap<u32, u128>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -179,6 +184,10 @@ pub enum ScriptSkillAction {
         cell: u16,
     },
     AreaStatus {
+        x: u16,
+        y: u16,
+    },
+    Summon {
         x: u16,
         y: u16,
     },
@@ -581,7 +590,7 @@ impl ScriptSkillService {
         ) && skill.name() != "RG_INTIMIDATE")
             || matches!(
                 skill.name().as_str(),
-                "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER"
+                "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT"
             )
         {
             let effect = ScriptSkillEffect {
@@ -1244,12 +1253,15 @@ impl ScriptSkillService {
             "SA_LIGHTNINGLOADER" => Some(WindWeapon),
             "SA_SEISMICWEAPON" => Some(EarthWeapon),
             "CR_AUTOGUARD" => Some(AutoGuard),
+            "CR_REFLECTSHIELD" => Some(ReflectShield),
             "MO_EXPLOSIONSPIRITS" => Some(ExplosionSpirits),
             "LK_AURABLADE" => Some(AuraBlade),
             "LK_CONCENTRATION" => Some(Concentration),
             "NPC_MAGICMIRROR" => Some(MagicMirror),
             "NPC_POWERUP" => Some(IncAttackRate),
-            "NPC_DEFENDER" => Some(Defender),
+            "NPC_DEFENDER" => Some(Armor),
+            "NPC_WEAPONBRAKER" => Some(WeaponBreaker),
+            "KN_AUTOCOUNTER" => Some(AutoCounter),
             "NPC_STONESKIN" | "NPC_ANTIMAGIC" => Some(ArmorChange),
             "NPC_SLOWCAST" => Some(SlowCast),
             "NPC_CRITICALWOUND" => Some(CriticalWound),

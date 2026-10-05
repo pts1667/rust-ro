@@ -12,6 +12,8 @@ use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::Server;
 
+const NPC_DEFENDER_DIVISOR: u32 = 8;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct StatusChangeOutcome {
     pub started: bool,
@@ -195,6 +197,8 @@ impl StatusEffectService {
                 Defender => { values[1] = 5 + 15 * values[0]; values[2] = 50; values[3] = 250 - 50 * values[0]; }
                 Parrying => values[1] = 20 + 3 * values[0],
                 ReflectShield => values[1] = 10 + 3 * values[0],
+                SafetyWall => values[1] = values[0] + 1,
+                WeaponBreaker => values[1] = values[0] * 2 * 100,
                 Provoke => { if !(values[0] == 10 && values[1] == 0 && values[2] == 100) { values[1] = 2 + 3 * values[0]; values[2] = 5 + 5 * values[0]; } }
                 Regeneration => { values[1] = if values[0] == 1 { 2 } else { values[0] }; values[2] = values[0]; }
                 Berserk => { values[1] = (status.max_hp as u64 * 3 * 5 / 100).min(i32::MAX as u64) as i32; values[3] = if values[3] > 0 { values[3] } else { 10000 }; }
@@ -466,7 +470,17 @@ impl StatusEffectService {
             for kind in removable { Self::end_status(status, Some(kind)); }
             return damage;
         }
+        if status.has_status_change(StatusChangeKind::Invincible) { return 0; }
+        if status.has_status_change(StatusChangeKind::Barrier) { return 1; }
         if status.has_status_change(StatusChangeKind::TrickDead) { return 0; }
+        if flags & BattleFlag::Short.as_flag() != 0 && !magical {
+            if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::SafetyWall) {
+                change.values[1] -= 1;
+                if change.values[1] <= 0 { Self::end_status(status, Some(StatusChangeKind::SafetyWall)); }
+                return 0;
+            }
+        }
+        if status.has_status_change(StatusChangeKind::Armor) && flags & BattleFlag::Long.as_flag() != 0 && flags & (BattleFlag::Weapon.as_flag() | BattleFlag::Misc.as_flag()) != 0 { damage /= NPC_DEFENDER_DIVISOR; }
         if physical && status.status_change(StatusChangeKind::AutoGuard).is_some_and(|change| (guard_roll as i32) < change.values[1]) { return 0; }
         if physical && status.status_change(StatusChangeKind::Parrying).is_some_and(|change| (guard_roll as i32) < change.values[1]) { return 0; }
         if physical && flags & BattleFlag::Long.as_flag() != 0 && status.has_status_change(StatusChangeKind::Pneuma) { return 0; }
@@ -673,6 +687,11 @@ impl StatusEffectService {
                 IncreaseAgi => haste = haste.max(25), WindWalk => { haste = haste.max(2 * value); snapshot.set_flee(snapshot.flee().saturating_add(second as i16)); }
                 SpeedUp0 | SpeedUp1 => haste = haste.max(value),
                 Run => haste = haste.max(55),
+                Agiup => haste = haste.max(value),
+                Invincible => haste = haste.max(50),
+                Keeping => snapshot.set_def(90),
+                SpiderWeb => snapshot.set_flee(snapshot.flee() / 2),
+                ElementalChange => if let Ok(element) = models::enums::element::Element::try_from_value(second as usize) { snapshot.set_element(element); snapshot.set_element_level(value.clamp(1, 4) as u8); },
                 Cloaking => {
                     if change.values[3] as u32 & models::status_change::CloakingFlag::AdjacentWall.as_flag() != 0 { haste = haste.max(if value >= 10 { 25 } else { 3 * value - 3 }); }
                     else { slow = slow.max(if value < 3 { 300 } else { 30 - 3 * value }); }
@@ -719,7 +738,7 @@ impl StatusEffectService {
         }
         if status.active_statuses.iter().any(|change| matches!(change.kind, Freeze | Stun | Sleep | Stone)) { snapshot.set_flee(0); }
         snapshot.set_speed((snapshot.speed() as i64 * (100 + slow - haste).max(40) as i64 / 100).clamp(10, u16::MAX as i64) as u16);
-        if status.has_status_change(Defender) { snapshot.set_speed(snapshot.speed().max(200)); }
+        if status.has_status_change(Defender) || status.has_status_change(Armor) { snapshot.set_speed(snapshot.speed().max(200)); }
         if status.has_status_change(SteelBody) { snapshot.set_speed(200); }
         if let Some(change) = status.status_change(WalkSpeed).filter(|change| change.values[0] > 0) { snapshot.set_speed((snapshot.speed() as u32 * 100 / change.values[0] as u32).clamp(10, u16::MAX as u32) as u16); }
         let bonus_haste = snapshot.bonuses_raw().iter().filter_map(|bonus| {
@@ -748,6 +767,36 @@ mod tests {
         assert_eq!(status.active_statuses[0].expires_at, Some(2300));
         assert_eq!(StatusEffectService::expire_statuses(&mut status, 2299), vec![]);
         assert_eq!(StatusEffectService::expire_statuses(&mut status, 2300), vec![StatusChangeKind::Blessing]);
+    }
+
+    #[test]
+    fn npc_barrier_invincible_and_defender_shape_incoming_damage() {
+        use models::status_bonus::BattleFlag;
+        let melee = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        let ranged = BattleFlag::Weapon.as_flag() | BattleFlag::Long.as_flag();
+        let mut status = status();
+        start_for_test(&mut status, StatusChangeKind::Armor, 10000, 1, 0);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, ranged, false, 0, 99), 100);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 800);
+        start_for_test(&mut status, StatusChangeKind::Barrier, 10000, 1, 0);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 1);
+        start_for_test(&mut status, StatusChangeKind::Invincible, 10000, 1, 0);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 0);
+    }
+
+    #[test]
+    fn safety_wall_blocks_melee_hits_by_level_but_not_magic_or_ranged() {
+        use models::status_bonus::BattleFlag;
+        let melee = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        let magic = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag();
+        let mut status = status();
+        start_for_test(&mut status, StatusChangeKind::SafetyWall, 10000, 2, 0);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, magic, false, 0, 99), 100);
+        for _ in 0..3 {
+            assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, melee, false, 0, 99), 0);
+        }
+        assert!(!status.has_status_change(StatusChangeKind::SafetyWall));
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 100, melee, false, 0, 99), 100);
     }
 
     #[test]

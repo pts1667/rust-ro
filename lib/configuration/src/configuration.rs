@@ -71,6 +71,10 @@ pub struct ServerConfig {
     pub packetver: u32,
 }
 
+fn default_guild_max_alliances() -> u8 {
+    3
+}
+
 fn default_enable_legacy_proxy() -> bool {
     true
 }
@@ -132,6 +136,10 @@ pub struct GameConfig {
     pub death_penalty: DeathPenaltyConfig,
     #[serde(default)]
     pub allow_es_magic_players: bool,
+    #[serde(default = "default_guild_max_alliances")]
+    pub guild_max_alliances: u8,
+    #[serde(default)]
+    pub guild_max_castles: u8,
     #[serde(default)]
     pub gvg_damage_rates: MapCombatDamageRates,
     #[serde(default)]

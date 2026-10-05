@@ -113,6 +113,8 @@ pub struct Character {
     pub pending_craft: Option<crate::server::service::script_crafting_service::CraftSession>,
     pub pvp_point: i32,
     pub pvp_won: u32,
+    pub killer: bool,
+    pub bg_id: u32,
     pub pvp_lost: u32,
     pub game_systems: crate::server::model::game_systems::CharacterGameSystems,
     pub account_game_systems: crate::server::model::game_systems::AccountGameSystems,
@@ -209,6 +211,8 @@ impl Character {
             pending_craft: None,
             pvp_point: 0,
             pvp_won: 0,
+            killer: false,
+            bg_id: 0,
             pvp_lost: 0,
             game_systems: Default::default(),
             account_game_systems: Default::default(),
@@ -801,5 +805,7 @@ impl ToMapItemSnapshot for Character {
             y: self.y,
             dir: self.dir,
         })
+        .with_guild(self.game_systems.guild_id)
+        .with_bg(self.bg_id)
     }
 }

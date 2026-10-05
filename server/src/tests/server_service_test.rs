@@ -46,6 +46,10 @@ mod item_dialog_tests;
 #[path = "script_operation_test.rs"]
 mod script_operation_tests;
 
+#[cfg(feature = "unit_tests")]
+#[path = "script_map_command_test.rs"]
+mod script_map_command_tests;
+
 #[path = "world_party_test.rs"]
 mod world_party_tests;
 
@@ -60,6 +64,8 @@ mod item_map_flag_tests;
 
 #[path = "party_warp_test.rs"]
 mod party_warp_tests;
+#[path = "battleground_test.rs"]
+mod battleground_tests;
 
 #[path = "player_trade_test.rs"]
 mod player_trade_tests;

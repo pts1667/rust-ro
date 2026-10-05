@@ -185,7 +185,7 @@ impl MapInstanceState {
         self.dropped_items().get(&dropped_item_id)
     }
 
-    fn dropped_items(&self) -> &hashbrown::HashMap<u32, DroppedItem, NoopHasherU32> {
+    pub fn dropped_items(&self) -> &hashbrown::HashMap<u32, DroppedItem, NoopHasherU32> {
         &self.dropped_items
     }
 
@@ -231,6 +231,10 @@ impl MapInstanceState {
 
     pub fn map_items(&self) -> &hashbrown::HashMap<u32, MapItem, NoopHasherU32> {
         self.map_items.get()
+    }
+
+    pub fn reserve_map_item_id(&self) -> u32 {
+        self.map_items.reserve_id()
     }
 
     pub fn map_items_mut(&mut self) -> &mut MapItems {

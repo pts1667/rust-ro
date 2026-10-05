@@ -178,6 +178,14 @@ impl MapInstanceLoop {
                                         request.y,
                                     );
                                 }
+                                MapEvent::MobSlide {
+                                    mob_id,
+                                    source_x,
+                                    source_y,
+                                    cells,
+                                } => {
+                                    map_instance_service_clone.slide_mob(map_instance.state_mut().as_mut(), mob_id, source_x, source_y, cells);
+                                }
                                 MapEvent::MobKnockback {
                                     mob_id,
                                     source_x,
@@ -232,6 +240,15 @@ impl MapInstanceLoop {
                                     {
                                         error!("Script monster spawn failed on {}: {}", map_instance.name(), error);
                                     }
+                                }
+                                MapEvent::ScriptMobCommand(command) => {
+                                    map_instance_service_clone.script_mob_command(map_instance.state_mut().as_mut(), command);
+                                }
+                                MapEvent::ScriptMapCommand(command) => {
+                                    map_instance_service_clone.script_map_command(map_instance.state_mut().as_mut(), command);
+                                }
+                                MapEvent::CastleCommand(command) => {
+                                    map_instance_service_clone.castle_command(map_instance.state_mut().as_mut(), command);
                                 }
                                 MapEvent::MobDeathClientNotification(mob_location) => {
                                     let map_instance_state = map_instance.state();

@@ -624,6 +624,13 @@ impl CharacterService {
         }
     }
 
+    pub(crate) fn change_job_keeping_level(&self, character: &mut Character, job: JobName) {
+        let job_level = character.status.job_level;
+        self.change_job(character, job, false);
+        character.status.job_level = job_level;
+        self.send_status_update_and_defer_db_update(character.char_id, StatusTypes::Joblevel, job_level);
+    }
+
     fn skill_point(character: &mut Character) -> u32 {
         let job = JobName::from_value(character.status.job as usize);
         if job.is_first_class() {

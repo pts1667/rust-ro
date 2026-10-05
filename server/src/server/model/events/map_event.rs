@@ -56,6 +56,12 @@ pub enum MapEvent {
         source_y: u16,
         cells: u16,
     },
+    MobSlide {
+        mob_id: u32,
+        source_x: u16,
+        source_y: u16,
+        cells: u16,
+    },
     MobLoseTarget {
         mob_id: u32,
     },
@@ -72,6 +78,9 @@ pub enum MapEvent {
         y: u16,
     },
     ScriptSpawn(ScriptSpawn),
+    CastleCommand(CastleCommand),
+    ScriptMobCommand(ScriptMobCommand),
+    ScriptMapCommand(ScriptMapCommand),
     CaptureMob(u32),
     ClaimPetCapture(PetCaptureClaimRequest),
     FinalizePetCapture(PetCaptureFinalize),
@@ -183,6 +192,55 @@ pub struct ScriptSpawn {
     pub size: Option<u8>,
     pub ai: Option<u16>,
     pub owner_id: u32,
+    pub guardian: Option<GuardianSpawn>,
+    pub bg_id: u32,
+    pub max_hp: Option<u32>,
+    pub lifetime_ms: Option<u32>,
+    pub reserved_id: Option<u32>,
+}
+
+/// Script-driven changes to the monsters spawned with a callback event; `None` targets every monster.
+#[derive(Debug, PartialEq, Clone)]
+pub enum ScriptMobCommand {
+    Kill { event_entry: Option<u32> },
+    SetDamageImmunity { event_entry: u32, immune: bool },
+    SetTeam { mob_id: u32, bg_id: u32 },
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct CellArea {
+    pub x1: u16,
+    pub y1: u16,
+    pub x2: u16,
+    pub y2: u16,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum ScriptMapCommand {
+    NpcVisibility { npc_id: u32, visible: bool },
+    SetCell { area: CellArea, cell: models::enums::cell::CellType, enabled: bool },
+    FlagEmblem { castle_map: String, guild_id: u32, version: u16 },
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum CastleCommand {
+    /// Silently removes the listed monster classes, or every monster when `None`.
+    ClearMobs(Option<Vec<i32>>),
+    /// Silently removes every monster whose class is not listed.
+    ClearMobsExcept(Vec<i32>),
+    Spawn(ScriptSpawn),
+    /// Spawns unless a living monster of the same class already stands on that exact cell.
+    SpawnAtEmptyCell(ScriptSpawn),
+    /// Spawns unless a living monster of the same class already stands on the map.
+    SpawnUnlessPresent(ScriptSpawn),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GuardianSpawn {
+    pub defense: i32,
+    pub guard_upgrade: u8,
+    pub emperium: bool,
+    pub friendly_guilds: Vec<u32>,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]

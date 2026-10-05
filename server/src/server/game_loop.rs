@@ -136,6 +136,7 @@ impl Server {
                             warn!("Trap release failed: {error}");
                         }
                     }
+                    GameEvent::CastleLifecycle(event) => server_ref.handle_castle_lifecycle(server_state_mut.as_mut(), event, tick),
                     GameEvent::CharacterSelectionGate(gate) => server_ref.character_selection_gate(server_state_mut.as_mut(), gate, tick),
                     GameEvent::CharacterAdmission(admission) => {
                         server_ref.install_character_admission(server_state_mut.as_mut(), admission)
@@ -329,6 +330,7 @@ impl Server {
                         character.loaded_from_client_side = true;
                         character.clear_map_view();
                         server_ref.notify_map_property(server_state_mut.as_mut(), char_id);
+                        server_ref.enter_pvp_ranking(server_state_mut.as_mut(), char_id);
                     }
                     GameEvent::CharacterMove(_) => {
                         // handled by dedicated thread
@@ -632,6 +634,9 @@ impl Server {
                     GameEvent::Duel(command) => {
                         server_ref.handle_duel_command(server_state_mut.as_mut(), command);
                     }
+                    GameEvent::BattlegroundQueue(command) => {
+                        server_ref.handle_battleground_queue_command(server_state_mut.as_mut(), command);
+                    }
                     GameEvent::CharacterRestoreAllHpAndSP(char_id) => {
                         let character = server_state_mut.characters_mut().get_mut(&char_id).unwrap();
                         let status = StatusService::instance().to_snapshot(&character.status);
@@ -678,6 +683,11 @@ impl Server {
         server_ref
             .script_skill_service()
             .sync_ground_unit_snapshots(server_state_mut.as_mut(), tick);
+        server_ref.apply_guild_auras(server_state_mut.as_mut(), tick);
+        server_ref.castle_clock();
+        server_ref.tick_battlegrounds(server_state_mut.as_mut(), tick);
+        server_ref.tick_cell_statuses(server_state_mut.as_mut(), tick);
+        server_ref.tick_battleground_queues(server_state_mut.as_mut(), tick);
         for char_id in actor_ids {
             if let Some(mut character) = server_state_mut.characters_mut().remove(&char_id) {
                 let map_instance = server_state_mut.get_map_instance_from_character(&character);

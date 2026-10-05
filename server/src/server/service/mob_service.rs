@@ -1,5 +1,6 @@
 use std::sync::mpsc::SyncSender;
 
+use models::enums::EnumWithMaskValueU32;
 use models::enums::mob::MobMode;
 use movement::position::Position;
 
@@ -11,6 +12,14 @@ use crate::server::model::movement::{Movable, Movement};
 use crate::server::model::path::{manhattan_distance, path_search_client_side_algorithm};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::mob::{Mob, MobAction, MobMovement};
+
+pub const MOB_LOOT_CAPACITY: usize = 10;
+const MOB_LOOT_RANGE: u16 = 9;
+
+pub enum LootAction {
+    Walk(MobMovement),
+    Pickup(u32),
+}
 
 pub enum MobAIAction {
     Move(MobMovement),
@@ -79,6 +88,36 @@ impl MobService {
             }
         }
         movement
+    }
+
+    /// Looter mobs walk to the nearest ground item and pick it up; pre-renewal rathena keeps up to ten items per mob.
+    pub fn loot_ai(&self, mob: &mut Mob, items: &[(u32, u16, u16)], cells: &[u16], x_size: u16, y_size: u16, tick: u128) -> Option<LootAction> {
+        if mob.mode & MobMode::Looter.as_flag() == 0
+            || !mob.is_present()
+            || !matches!(mob.action, MobAction::Idle)
+            || mob.target_id.is_some()
+            || mob.loot_items.len() >= MOB_LOOT_CAPACITY
+            || !mob.can_act()
+            || mob.script_cast_until > tick
+            || mob.is_moving()
+        {
+            return None;
+        }
+        let distance = |x: u16, y: u16| mob.x.abs_diff(x).max(mob.y.abs_diff(y));
+        let (id, x, y) = items.iter().copied().filter(|(_, x, y)| distance(*x, *y) <= MOB_LOOT_RANGE).min_by_key(|(_, x, y)| distance(*x, *y))?;
+        if distance(x, y) == 0 {
+            return Some(LootAction::Pickup(id));
+        }
+        if !MobMode::can_move(mob.mode) || mob.blocks_movement() {
+            return None;
+        }
+        let path = path_search_client_side_algorithm(x_size, y_size, cells, mob.x, mob.y, x, y);
+        if path.is_empty() || !mob.transition_to_moving() {
+            return None;
+        }
+        let from = mob.position();
+        mob.movements = Movement::from_path(path, tick);
+        Some(LootAction::Walk(MobMovement { id: mob.id, from, to: Position { x, y, dir: 0 } }))
     }
 
     /// Main AI decision function - called by map instance loop for each mob
@@ -310,6 +349,8 @@ impl MobService {
         for character in characters
             .iter()
             .filter(|c| matches!(c.map_item.object_type(), MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::Mob))
+            .filter(|c| c.guild_id == 0 || !mob.friendly_guilds.contains(&c.guild_id))
+            .filter(|c| mob.bg_id == 0 || c.bg_id != mob.bg_id)
         {
             let distance = manhattan_distance(mob.x, mob.y, character.position.x, character.position.y);
 

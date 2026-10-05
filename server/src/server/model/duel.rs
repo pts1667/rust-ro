@@ -7,6 +7,7 @@ pub enum DuelAction {
     Accept,
     Reject,
     Leave,
+    Killer,
 }
 
 #[derive(Debug, Clone, PartialEq)]

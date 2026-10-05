@@ -4,6 +4,8 @@ use models::enums::EnumWithNumberValue;
 
 use super::{ScriptWorldService, install_state, pet_world_id, protocol, world_data};
 use crate::server::Server;
+use crate::server::model::battleground_queue::BattlegroundQueueCommand;
+use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::game_systems::{BuyingSale, BuyingStore, ScriptWorldRequest, StoreSearchResult};
 use crate::server::state::character::Character;
@@ -86,6 +88,17 @@ impl ScriptWorldService {
             | ScriptWorldRequest::DisablePartyInvites(_)
             | ScriptWorldRequest::PartyMessage(_)
             | ScriptWorldRequest::RefreshParty) => self.party_request(server, state, character, request),
+            ScriptWorldRequest::BattlegroundQueue(action) => {
+                server.add_to_next_tick(GameEvent::BattlegroundQueue(BattlegroundQueueCommand { char_id: character.char_id, action }));
+                Ok(())
+            }
+            ScriptWorldRequest::BattlegroundMessage(message) => {
+                if !message.starts_with(&format!("{} : ", character.name)) {
+                    return Err("Battleground chat sender does not match the character".into());
+                }
+                server.battleground_chat(state, character, &message);
+                Ok(())
+            }
             request @ (ScriptWorldRequest::CreateGuild(_)
             | ScriptWorldRequest::InviteGuild(_)
             | ScriptWorldRequest::AnswerGuildInvite { .. }
@@ -186,6 +199,16 @@ impl ScriptWorldService {
             | ScriptWorldRequest::CompanionAttack { .. }) => self.homunculus_request(server, character, request, now),
             ScriptWorldRequest::FameList(kind) => self.fame_list(character, kind),
             ScriptWorldRequest::CallPartner => self.call_partner(server, state, character),
+            request @ (ScriptWorldRequest::BookingRegister { .. }
+            | ScriptWorldRequest::BookingSearch { .. }
+            | ScriptWorldRequest::BookingDelete
+            | ScriptWorldRequest::BookingUpdate(_)) => self.booking_request(state, character, request),
+            ScriptWorldRequest::CallBaby => self.call_family(server, state, character, false),
+            ScriptWorldRequest::CallParents => self.call_family(server, state, character, true),
+            ScriptWorldRequest::AdoptRequest(account) => self.request_adoption(state, character, account),
+            ScriptWorldRequest::AdoptAnswer { father_account, mother_account, accept } => {
+                self.answer_adoption(server, state, character, father_account, mother_account, accept)
+            }
             ScriptWorldRequest::SetCart(style) => self.set_cart(character, style, false),
             ScriptWorldRequest::ChangeCart(style) => self.set_cart(character, style, true),
             ScriptWorldRequest::RemoveOption => {

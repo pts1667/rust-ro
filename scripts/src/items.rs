@@ -2448,6 +2448,9 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> { match id {
 12702 => item_12702(ctx),
 12706 => item_12706(ctx),
 12708 => item_12708(ctx),
+12968 => item_12968(ctx),
+12969 => item_12969(ctx),
+12970 => item_12970(ctx),
 12999 => item_12999(ctx),
 13000 => item_13000(ctx),
 13001 => item_13001(ctx),
@@ -15316,6 +15319,18 @@ fn item_12708(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::I
 Ok(()) }
 #[inline(never)]
 #[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_12968(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::UnitSkillToId, vec![ctx.call(Function::GetCharacterId, vec![Value::Number(3)])?, Value::String("GD_ITEMEMERGENCYCALL".into()), Value::Number(1)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_12969(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::UnitSkillToId, vec![ctx.call(Function::GetCharacterId, vec![Value::Number(3)])?, Value::String("GD_ITEMEMERGENCYCALL".into()), Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_12970(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::UnitSkillToId, vec![ctx.call(Function::GetCharacterId, vec![Value::Number(3)])?, Value::String("GD_ITEMEMERGENCYCALL".into()), Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
 fn item_12999(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::GetItem, vec![Value::Number(604), Value::Number(3)])?;
 Ok(()) }
 #[inline(never)]
@@ -16767,4 +16782,4 @@ fn bonus_82(ctx: &Context) -> Result<(), String> { {
 let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENHANCE")?])?;
 }
 Ok(()) }
-pub const CATALOG_HASH: u64 = 4727658844579188707;
+pub const CATALOG_HASH: u64 = 17908565436313337341;

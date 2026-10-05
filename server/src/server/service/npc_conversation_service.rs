@@ -18,6 +18,9 @@ impl Server {
         let map_instance = character.current_map_instance();
         let map_item = state.map_item(contact.npc_id, map_name, map_instance).ok_or("NPC is not on this map")?;
         let script = state.map_item_script(&map_item, map_name, map_instance).ok_or("NPC has no compiled program")?;
+        if state.get_map_instance(map_name, map_instance).is_some_and(|instance| instance.state().script_skill_state.npcs.get(&contact.npc_id).is_some_and(|npc| npc.hidden)) {
+            return Err("NPC is disabled".into());
+        }
         if character.x.abs_diff(script.x).max(character.y.abs_diff(script.y)) > crate::server::PLAYER_FOV { return Err("NPC is out of range".into()); }
         let server = self.shared().ok_or("NPC runtime is not bound")?;
         let (sender, receiver) = mpsc::channel(4);

@@ -94,6 +94,12 @@ status_changes! {
     AutoBerserk = 85 => "AUTOBERSERK", Defender = 80 => "DEFENDER", Devotion = 134 => "DEVOTION", Berserk = 112 => "BERSERK", Parrying = 109 => "PARRYING", ReflectShield = 77 => "REFLECTSHIELD",
     Regeneration = 153 => "REGENERATION", Basilica = 116 => "BASILICA", ChaseWalk = 124 => "CHASEWALK", ChaseWalkStrength = 596 => "CHASEWALK2",
     Sma = 239 => "SMA", MagicalAttack = 251 => "MAGICALATTACK",
+    BattleOrders = 152 => "BATTLEORDERS", Leadership = 508 => "LEADERSHIP", GloryWounds = 509 => "GLORYWOUNDS", SoulCold = 510 => "SOULCOLD", HawkEyes = 511 => "HAWKEYES",
+    SafetyWall = 89 => "SAFETYWALL", BrokenArmor = 50 => "BROKENARMOR", BrokenWeapon = 51 => "BROKENWEAPON", Keeping = 66 => "KEEPING", Barrier = 67 => "BARRIER",
+    Armor = 104 => "ARMOR", ElementalChange = 165 => "ELEMENTALCHANGE", ModeChange = 177 => "MODECHANGE", Rebirth = 284 => "REBIRTH",
+    Invincible = 295 => "INVINCIBLE", MaxPain = 668 => "MAXPAIN", WeaponBreaker = 908 => "WEAPONBREAKER", Powerup = 951 => "POWERUP", Agiup = 952 => "AGIUP",
+    SpiderWeb = 133 => "SPIDERWEB", AutoCounter = 87 => "AUTOCOUNTER",
+    EntryQueueApplyDelay = 704 => "ENTRY_QUEUE_APPLY_DELAY", EntryQueueNotifyAdmissionTimeOut = 705 => "ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT",
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, WithMaskValueU32)]
@@ -286,6 +292,13 @@ impl StatusChange {
             }
             Spirit if second == crate::enums::skill_enums::SkillEnum::SlHigh.id() as i32 => vec![BonusType::Str(((third / 65536) & 255) as i8), BonusType::Agi(((third / 256) & 255) as i8), BonusType::Vit((third & 255) as i8), BonusType::Int(((fourth / 65536) & 255) as i8), BonusType::Dex(((fourth / 256) & 255) as i8), BonusType::Luk((fourth & 255) as i8)],
             ChaseWalkStrength => vec![BonusType::Str(stat)],
+            BattleOrders => vec![BonusType::Str(5), BonusType::Int(5), BonusType::Dex(5)],
+            Leadership => vec![BonusType::Str(stat)],
+            GloryWounds => vec![BonusType::Vit(stat)],
+            SoulCold => vec![BonusType::Agi(stat)],
+            HawkEyes => vec![BonusType::Dex(stat)],
+            Powerup => vec![BonusType::AtkPercentage(stat)],
+            Invincible => vec![BonusType::AtkPercentage(100)],
             Nen => vec![BonusType::Str(stat), BonusType::Int(stat)],
             Deluge => vec![BonusType::MaxhpPercentage(second.clamp(-127, 127) as i8), BonusType::DamageUsingElementPercentage(Element::Water, third.clamp(-127, 127) as i8)],
             HitFood | IncHit => vec![BonusType::Hit(amount)], IncHitRate => vec![BonusType::HitPercentage(stat)],

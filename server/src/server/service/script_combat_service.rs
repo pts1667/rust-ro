@@ -367,7 +367,7 @@ fn apply_effect(
             ),
             tick,
         ),
-        CombatEffect::BreakEquipment { weapon } => break_equipment(server, state, request.target_id, weapon),
+        CombatEffect::BreakEquipment { weapon } => break_equipment(server, state, request.target_id, BreakSlot::from_weapon_flag(weapon)),
         CombatEffect::ClassChange => {
             if state.get_character(request.target_id).is_some() {
                 return Ok(());
@@ -671,26 +671,64 @@ fn prepare_drop_item(
     }))
 }
 
-fn break_equipment(server: &Server, state: &mut ServerState, target_id: u32, weapon: bool) -> Result<(), String> {
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum BreakSlot {
+    Weapon,
+    Armor,
+    Shield,
+    Helm,
+}
+
+impl BreakSlot {
+    pub(crate) fn from_weapon_flag(weapon: bool) -> Self {
+        if weapon {
+            Self::Weapon
+        } else {
+            Self::Armor
+        }
+    }
+
+    fn location(self) -> EquipmentLocation {
+        match self {
+            Self::Weapon => EquipmentLocation::HandRight,
+            Self::Armor => EquipmentLocation::Armor,
+            Self::Shield => EquipmentLocation::HandLeft,
+            Self::Helm => EquipmentLocation::HeadTop,
+        }
+    }
+
+    fn unbreakable(self) -> BonusType {
+        match self {
+            Self::Weapon => BonusType::UnbreakableWeapon,
+            Self::Armor => BonusType::UnbreakableArmor,
+            Self::Shield => BonusType::UnbreakableShield,
+            Self::Helm => BonusType::UnbreakableHelm,
+        }
+    }
+
+    fn protection(self) -> StatusChangeKind {
+        match self {
+            Self::Weapon => StatusChangeKind::ProtectWeapon,
+            Self::Armor => StatusChangeKind::ProtectArmor,
+            Self::Shield => StatusChangeKind::ProtectShield,
+            Self::Helm => StatusChangeKind::ProtectHelm,
+        }
+    }
+}
+
+pub(crate) fn break_equipment(server: &Server, state: &mut ServerState, target_id: u32, slot: BreakSlot) -> Result<(), String> {
     let Some(character) = state.characters_mut().get_mut(&target_id) else {
         return Ok(());
     };
-    let snapshot = StatusService::instance().to_snapshot(&character.status);
-    if snapshot.bonuses().iter().any(|bonus| {
-        if weapon {
-            matches!(bonus.bonus(), BonusType::UnbreakableWeapon)
-        } else {
-            matches!(bonus.bonus(), BonusType::UnbreakableArmor)
-        }
-    }) {
+    if character.status.has_status_change(slot.protection()) {
         return Ok(());
     }
-    let location = if weapon {
-        EquipmentLocation::HandRight
-    } else {
-        EquipmentLocation::Armor
+    let snapshot = StatusService::instance().to_snapshot(&character.status);
+    let unbreakable = slot.unbreakable();
+    if snapshot.bonuses().iter().any(|bonus| *bonus.bonus() == unbreakable) {
+        return Ok(());
     }
-    .as_flag();
+    let location = slot.location().as_flag();
     let Some(index) = character.inventory.iter().enumerate().find_map(|(index, item)| {
         item.as_ref()
             .filter(|item| item.equip as u64 & location != 0 && !item.is_damaged)

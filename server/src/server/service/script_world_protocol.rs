@@ -4,6 +4,7 @@ use crate::server::model::game_systems::{
     BuyingOffer, BuyingStore, HomunculusInfoFlag, HomunculusRecord, ItemContainer, ScriptWorldRequest, StorageItemFlag, StoreSearchResult,
     VendingStore,
 };
+use crate::server::model::battleground_queue::BattlegroundQueueAction;
 use crate::server::request_handler::framing::FrameLength;
 use crate::server::service::global_config_service::GlobalConfigService;
 
@@ -44,6 +45,11 @@ fn world_packet_id(id: u16, packetver: u32) -> Option<u16> {
             | 0x015D
             | 0x0161
             | 0x017E
+            | 0x02DB
+            | 0x08D7
+            | 0x08DA
+            | 0x08E0
+            | 0x090A
             | 0x0155
             | 0x0153
             | 0x0217
@@ -68,6 +74,12 @@ fn world_packet_id(id: u16, packetver: u32) -> Option<u16> {
             | 0x07D7
             | 0x07DA
             | 0x02C8
+            | 0x01F9
+            | 0x01F7
+            | 0x0802
+            | 0x0804
+            | 0x0806
+            | 0x0808
     ) {
         return Some(id);
     }
@@ -161,6 +173,11 @@ pub fn world_frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
         0x02C8 => FrameLength::Fixed(3),
         0x0108 => FrameLength::Variable { minimum: 5 },
         0x0165 => FrameLength::Fixed(30),
+        0x01F9 => FrameLength::Fixed(6),
+        0x0802 => FrameLength::Fixed(18),
+        0x0804 | 0x0808 => FrameLength::Fixed(14),
+        0x0806 => FrameLength::Fixed(2),
+        0x01F7 => FrameLength::Fixed(14),
         0x0168 => FrameLength::Fixed(14),
         0x0170 => FrameLength::Fixed(14),
         0x0217 | 0x0218 | 0x0225 => FrameLength::Fixed(2),
@@ -173,7 +190,10 @@ pub fn world_frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
         0x0159 | 0x015B => FrameLength::Fixed(54),
         0x015D => FrameLength::Fixed(42),
         0x0151 => FrameLength::Fixed(6),
-        0x017E => FrameLength::Variable { minimum: 5 },
+        0x017E | 0x02DB => FrameLength::Variable { minimum: 5 },
+        0x08D7 => FrameLength::Fixed(28),
+        0x08DA | 0x090A => FrameLength::Fixed(26),
+        0x08E0 => FrameLength::Fixed(51),
         0x016E => FrameLength::Fixed(186),
         0x0161 | 0x0155 | 0x0153 => FrameLength::Variable { minimum: 4 },
         0x019F | 0x01A9 | 0x0817 | 0x0130 | 0x0234 => FrameLength::Fixed(6),
@@ -284,6 +304,51 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 return Err("Invalid party chat length or terminator".into());
             }
             ScriptWorldRequest::PartyMessage(text(&bytes[4..])?)
+        }
+        0x01F9 => {
+            exact_length(bytes, 6)?;
+            ScriptWorldRequest::AdoptRequest(u32_at(bytes, 2)?)
+        }
+        0x0802 => {
+            exact_length(bytes, 18)?;
+            let mut jobs = [0_i16; 6];
+            for (index, job) in jobs.iter_mut().enumerate() {
+                *job = i16::from(bytes[6 + index * 2]);
+            }
+            ScriptWorldRequest::BookingRegister {
+                level: u16_at(bytes, 2)? as i16,
+                map_id: u16_at(bytes, 4)? as i16,
+                jobs,
+            }
+        }
+        0x0804 => {
+            exact_length(bytes, 14)?;
+            ScriptWorldRequest::BookingSearch {
+                level: u16_at(bytes, 2)? as i16,
+                map_id: u16_at(bytes, 4)? as i16,
+                job: u16_at(bytes, 6)? as i16,
+                last_index: u32_at(bytes, 8)?,
+            }
+        }
+        0x0806 => {
+            exact_length(bytes, 2)?;
+            ScriptWorldRequest::BookingDelete
+        }
+        0x0808 => {
+            exact_length(bytes, 14)?;
+            let mut jobs = [0_i16; 6];
+            for (index, job) in jobs.iter_mut().enumerate() {
+                *job = u16_at(bytes, 2 + index * 2)? as i16;
+            }
+            ScriptWorldRequest::BookingUpdate(jobs)
+        }
+        0x01F7 => {
+            exact_length(bytes, 14)?;
+            ScriptWorldRequest::AdoptAnswer {
+                father_account: u32_at(bytes, 2)?,
+                mother_account: u32_at(bytes, 6)?,
+                accept: u32_at(bytes, 10)? == 1,
+            }
         }
         0x0165 => {
             exact_length(bytes, 30)?;
@@ -406,6 +471,29 @@ pub fn decode_request(bytes: &[u8], packetver: u32) -> Result<Option<ScriptWorld
                 return Err("Invalid guild chat length or terminator".into());
             }
             ScriptWorldRequest::GuildMessage(text(&bytes[4..])?)
+        }
+        0x08D7 => {
+            exact_length(bytes, 28)?;
+            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Apply { kind: u16_at(bytes, 2)?, name: text(&bytes[4..28])? })
+        }
+        0x08DA => {
+            exact_length(bytes, 26)?;
+            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Cancel(text(&bytes[2..26])?))
+        }
+        0x090A => {
+            exact_length(bytes, 26)?;
+            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Number(text(&bytes[2..26])?))
+        }
+        0x08E0 => {
+            exact_length(bytes, 51)?;
+            ScriptWorldRequest::BattlegroundQueue(BattlegroundQueueAction::Reply { accept: bytes[2] == 1 })
+        }
+        0x02DB => {
+            variable_length(bytes, 5, 1)?;
+            if bytes.len() > 259 || bytes.last() != Some(&0) {
+                return Err("Invalid battleground chat length or terminator".into());
+            }
+            ScriptWorldRequest::BattlegroundMessage(text(&bytes[4..])?)
         }
         0x0151 => {
             exact_length(bytes, 6)?;

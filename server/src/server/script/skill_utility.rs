@@ -158,12 +158,14 @@ impl ScriptSkillService {
             "TK_MISSION" => {
                 if !crate::server::service::script_character_service::begin_taekwon_mission(server, character)? { return Err("Taekwon Mission kept the current target".into()); }
             }
-            "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" => {
+            "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" => {
                 let request = match metadata.name.as_str() {
                     "MC_VENDING" => crate::server::model::game_systems::ScriptWorldRequest::PrepareVending { skill_level: effect.level },
                     "MC_PUSHCART" => crate::server::model::game_systems::ScriptWorldRequest::SetCart(1),
                     "AM_CALLHOMUN" => crate::server::model::game_systems::ScriptWorldRequest::CallHomunculus,
                     "WE_CALLPARTNER" => crate::server::model::game_systems::ScriptWorldRequest::CallPartner,
+                    "WE_CALLBABY" => crate::server::model::game_systems::ScriptWorldRequest::CallBaby,
+                    "WE_CALLPARENT" => crate::server::model::game_systems::ScriptWorldRequest::CallParents,
                     "AM_REST" => crate::server::model::game_systems::ScriptWorldRequest::RestHomunculus,
                     _ => crate::server::model::game_systems::ScriptWorldRequest::ResurrectHomunculus { skill_level: effect.level },
                 };

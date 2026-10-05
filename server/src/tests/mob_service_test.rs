@@ -68,6 +68,8 @@ mod tests {
         MapItemSnapshot {
             map_item: MapItem::new(id, 0, MapItemType::Character),
             position: Position { x, y, dir: 0 },
+            guild_id: 0,
+            bg_id: 0,
         }
     }
 
@@ -100,6 +102,31 @@ mod tests {
             MobAction::Attacking { target_id, .. } => assert_eq!(target_id, 100),
             _ => panic!("Expected Attacking state"),
         }
+    }
+
+    #[test]
+    fn test_looter_mob_walks_to_and_picks_up_the_nearest_ground_item_until_full() {
+        use crate::server::service::mob_service::{LootAction, MOB_LOOT_CAPACITY};
+        use models::enums::EnumWithMaskValueU32;
+        use models::enums::mob::MobMode;
+        let context = before_each();
+        let mode = MobMode::CanMove.as_flag() | MobMode::Looter.as_flag();
+        let mut mob = create_mob_with_mode_at(1, 50, 50, mode, 1, 12);
+        let cells: Vec<u16> = vec![1; 100 * 100];
+        let items = vec![(900, 58, 50), (901, 53, 50)];
+
+        let action = context.mob_service.loot_ai(&mut mob, &items, &cells, 100, 100, 10000);
+        assert!(matches!(action, Some(LootAction::Walk(movement)) if movement.to.x == 53));
+
+        let mut standing = create_mob_with_mode_at(2, 53, 50, mode, 1, 12);
+        let action = context.mob_service.loot_ai(&mut standing, &items, &cells, 100, 100, 10000);
+        assert!(matches!(action, Some(LootAction::Pickup(901))));
+
+        standing.loot_items = vec![(501, 1, true); MOB_LOOT_CAPACITY];
+        assert!(context.mob_service.loot_ai(&mut standing, &items, &cells, 100, 100, 10000).is_none());
+
+        let mut plain = create_mob_with_mode_at(3, 53, 50, MobMode::CanMove.as_flag(), 1, 12);
+        assert!(context.mob_service.loot_ai(&mut plain, &items, &cells, 100, 100, 10000).is_none());
     }
 
     #[test]

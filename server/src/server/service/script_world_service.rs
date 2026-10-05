@@ -34,6 +34,10 @@ use crate::server::state::server::ServerState;
 
 #[path = "script_world_companion_skills.rs"]
 mod companion_skills;
+#[path = "script_world_booking.rs"]
+mod booking;
+#[path = "script_world_family.rs"]
+mod family;
 #[path = "script_world_guild.rs"]
 mod guild;
 #[path = "script_world_party.rs"]
@@ -1309,6 +1313,7 @@ impl ScriptWorldService {
                         member,
                         &[Value::Number(CALL_PARTNER_SKILL_ID), Value::Number(1), Value::Number(3)],
                     )?;
+                    server.start_wedding(member)?;
                 }
                 Ok(Value::Number(1))
             }
@@ -1328,7 +1333,9 @@ impl ScriptWorldService {
                     .revision;
                 let revoke = [Value::Number(CALL_PARTNER_SKILL_ID), Value::Number(0), Value::Number(3)];
                 crate::server::service::script_character_service::grant_skill(server, character, &revoke)?;
+                server.drop_wedding_ring(character);
                 if let Some(partner) = server.state_mut().characters_mut().get_mut(&partner_id) {
+                    server.drop_wedding_ring(partner);
                     partner.game_systems.partner_id = 0;
                     partner.game_systems.revision = self
                         .repository

@@ -120,6 +120,8 @@ mod tests {
                 y: character.y + 1,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         let known_skill = KnownSkill {
             value: SkillEnum::SmBash,
@@ -294,6 +296,8 @@ mod tests {
                 y: character.y + 1,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -384,6 +388,8 @@ mod tests {
                 y: character.y + 1,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -472,6 +478,8 @@ mod tests {
                 y: character.y + 1,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -564,6 +572,8 @@ mod tests {
                 y: character.y + 1,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -688,6 +698,8 @@ mod tests {
                 y: character.y,
                 dir: 0,
             },
+            guild_id: 0,
+            bg_id: 0,
         };
         // When
         for scenarii in scenario {

@@ -100,9 +100,20 @@ pub fn coma_chance(source: &StatusSnapshot, target: &StatusSnapshot, flags: u32)
     ComaBonuses::from_bonuses(source.bonuses()).chance(target, flags)
 }
 
+const NPC_MAXPAIN_ATK: u32 = 717;
+
 pub fn physical_reflection(owner: &StatusSnapshot, battle_flags: u32, skill_id: u32, damage: u32) -> u32 {
-    if damage == 0 || battle_flags & BattleFlag::Weapon.as_flag() == 0 || battle_flags & BattleFlag::Short.as_flag() == 0 {
+    let weapon = battle_flags & BattleFlag::Weapon.as_flag() != 0;
+    if damage == 0 || !weapon && battle_flags & BattleFlag::Magic.as_flag() == 0 {
         return 0;
+    }
+    let max_pain = owner
+        .status_change(StatusChangeKind::MaxPain)
+        .filter(|_| skill_id != NPC_MAXPAIN_ATK)
+        .map_or(0, |change| (damage as u64).saturating_mul(change.values[0].max(0) as u64) / 10)
+        .min(u32::MAX as u64) as u32;
+    if !weapon || battle_flags & BattleFlag::Short.as_flag() == 0 {
+        return max_pain;
     }
     let card_rate = owner
         .bonuses()
@@ -121,8 +132,7 @@ pub fn physical_reflection(owner: &StatusSnapshot, battle_flags: u32, skill_id: 
             .filter(|change| skill_id != 0 || change.inherited_from.is_none())
             .map_or(0, |change| change.values[1].max(0) as i64)
     };
-    ((damage as u64).saturating_mul(card_rate as u64) / 100 + (damage as u64).saturating_mul(shield_rate as u64) / 100).min(u32::MAX as u64)
-        as u32
+    (((damage as u64).saturating_mul(card_rate as u64) / 100 + (damage as u64).saturating_mul(shield_rate as u64) / 100).min(u32::MAX as u64) as u32).saturating_add(max_pain)
 }
 
 pub fn magic_reflection(owner: &StatusSnapshot, battle_flags: u32, skill_id: u32, rng: &mut fastrand::Rng) -> Option<MagicReflectionKind> {
@@ -1034,5 +1044,23 @@ mod tests {
             0
         );
         assert_eq!(physical_reflection(&owner, 0, 0, 100), 0);
+    }
+
+    #[test]
+    fn max_pain_reflects_a_level_scaled_share_of_any_range_physical_hit() {
+        let mut owner = target();
+        owner.set_active_statuses(vec![models::status_change::StatusChange {
+            kind: StatusChangeKind::MaxPain,
+            values: [5, 0, 0, 0],
+            started_at: 0,
+            expires_at: None,
+            next_periodic_at: 0,
+            flags: 0,
+            inherited_from: None,
+        }]);
+        let ranged = BattleFlag::Weapon.as_flag() | BattleFlag::Long.as_flag();
+        assert_eq!(physical_reflection(&owner, ranged, 0, 200), 100);
+        assert_eq!(physical_reflection(&owner, ranged, NPC_MAXPAIN_ATK, 200), 0);
+        assert_eq!(physical_reflection(&owner, BattleFlag::Magic.as_flag(), 0, 200), 100);
     }
 }

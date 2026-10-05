@@ -5840,6 +5840,129 @@
       "NoDamage": true,
       "Splash": true
     },
+    "Duration1": 180000,
+    "Duration2": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10010,
+    "MaxLevel": 1,
+    "Name": "GD_BATTLEORDER",
+    "Requires": {
+      "SpCost": 1
+    },
+    "SplashArea": 15,
+    "Status": "BattleOrders",
+    "TargetType": "Self"
+  },
+  {
+    "CastTime": 5000,
+    "CastTimeFlags": {
+      "IgnoreDex": true,
+      "IgnoreItemBonus": true,
+      "IgnoreStatus": true
+    },
+    "DamageFlags": {
+      "NoDamage": true,
+      "Splash": true
+    },
+    "Duration2": 300000,
+    "Flags": {
+      "IgnoreKagehumi": true,
+      "IsGuild": true
+    },
+    "Id": 10013,
+    "MaxLevel": 1,
+    "Name": "GD_EMERGENCYCALL",
+    "Requires": {
+      "SpCost": 1
+    },
+    "TargetType": "Self"
+  },
+  {
+    "Duration1": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10007,
+    "MaxLevel": 1,
+    "Name": "GD_GLORYWOUNDS",
+    "SplashArea": 2,
+    "Status": "GloryWounds",
+    "Unit": {
+      "Flag": {
+        "NoMob": true
+      },
+      "Id": "Gd_Glorywounds",
+      "Interval": -1,
+      "Layout": 2,
+      "Target": "SameGuild"
+    }
+  },
+  {
+    "Duration1": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10009,
+    "MaxLevel": 1,
+    "Name": "GD_HAWKEYES",
+    "SplashArea": 2,
+    "Status": "HawkEyes",
+    "Unit": {
+      "Flag": {
+        "NoMob": true
+      },
+      "Id": "Gd_Hawkeyes",
+      "Interval": -1,
+      "Layout": 2,
+      "Target": "SameGuild"
+    }
+  },
+  {
+    "DamageFlags": {
+      "NoDamage": true,
+      "Splash": true
+    },
+    "Duration2": 300000,
+    "Flags": {
+      "IgnoreKagehumi": true,
+      "IsGuild": true
+    },
+    "Id": 10015,
+    "MaxLevel": 3,
+    "Name": "GD_ITEMEMERGENCYCALL",
+    "TargetType": "Self"
+  },
+  {
+    "Duration1": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10006,
+    "MaxLevel": 1,
+    "Name": "GD_LEADERSHIP",
+    "SplashArea": 2,
+    "Status": "Leadership",
+    "Unit": {
+      "Flag": {
+        "NoMob": true
+      },
+      "Id": "Gd_Leadership",
+      "Interval": -1,
+      "Layout": 2,
+      "Target": "SameGuild"
+    }
+  },
+  {
+    "CastTimeFlags": {
+      "IgnoreDex": true,
+      "IgnoreStatus": true
+    },
+    "DamageFlags": {
+      "NoDamage": true,
+      "Splash": true
+    },
     "Duration1": 60000,
     "Duration2": 300000,
     "Flags": {
@@ -5854,6 +5977,49 @@
     "SplashArea": 15,
     "Status": "Regeneration",
     "TargetType": "Self"
+  },
+  {
+    "CastTime": 10000,
+    "CastTimeFlags": {
+      "IgnoreItemBonus": true,
+      "IgnoreStatus": true
+    },
+    "DamageFlags": {
+      "NoDamage": true,
+      "Splash": true
+    },
+    "Duration2": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10012,
+    "MaxLevel": 1,
+    "Name": "GD_RESTORE",
+    "Requires": {
+      "SpCost": 1
+    },
+    "SplashArea": 15,
+    "TargetType": "Self"
+  },
+  {
+    "Duration1": 300000,
+    "Flags": {
+      "IsGuild": true
+    },
+    "Id": 10008,
+    "MaxLevel": 1,
+    "Name": "GD_SOULCOLD",
+    "SplashArea": 2,
+    "Status": "SoulCold",
+    "Unit": {
+      "Flag": {
+        "NoMob": true
+      },
+      "Id": "Gd_Soulcold",
+      "Interval": -1,
+      "Layout": 2,
+      "Target": "SameGuild"
+    }
   },
   {
     "DamageFlags": {

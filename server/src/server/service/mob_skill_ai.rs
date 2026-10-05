@@ -21,6 +21,7 @@ const RECENT_ATTACK_WINDOW_MS: u128 = 1000;
 const FRIEND_SEARCH_RANGE: u16 = 9;
 const NEARBY_MOB_RANGE: u16 = 9;
 const AFTER_SKILL_WINDOW_MS: u128 = 2000;
+const NPC_RUN_DEFAULT_DISTANCE: u16 = 7;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MobSkillEntry {
@@ -36,6 +37,10 @@ pub struct MobSkillEntry {
     pub condition: String,
     pub condition_value: String,
     pub values: Vec<String>,
+    #[serde(default)]
+    pub emotion: Option<u8>,
+    #[serde(default)]
+    pub chat: Option<u16>,
 }
 
 #[derive(Default)]
@@ -47,6 +52,26 @@ pub struct MobSkillDatabase {
 }
 
 impl MobSkillDatabase {
+    /// Runs the monster's `dead` skills once at lethal damage; returns true when NPC_REBIRTH revived it.
+    pub fn try_rebirth(&self, mob: &mut Mob) -> bool {
+        if mob.reborn {
+            return false;
+        }
+        let revive_level = self
+            .entries_for(mob)
+            .filter(|entry| entry.state == "dead" && entry.condition == "always")
+            .filter(|entry| SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name == "NPC_REBIRTH"))
+            .find(|entry| entry.rate >= 10_000 || fastrand::u32(0..10_000) < entry.rate)
+            .map(|entry| u32::from(entry.level));
+        let Some(level) = revive_level else {
+            return false;
+        };
+        mob.end_status(None);
+        mob.set_hp((mob.status.max_hp() * (20 * level).min(100) / 100).max(1));
+        mob.reborn = true;
+        true
+    }
+
     pub fn from_entries(entries: Vec<MobSkillEntry>) -> Self {
         let mut database = Self::default();
         for entry in entries {
@@ -94,6 +119,7 @@ enum MobSkillState {
     Walk,
     Chase,
     Attack,
+    Loot,
 }
 
 fn state_matches(entry_state: &str, state: MobSkillState, angry: bool) -> bool {
@@ -103,6 +129,7 @@ fn state_matches(entry_state: &str, state: MobSkillState, angry: bool) -> bool {
         "walk" => state == MobSkillState::Walk,
         "chase" => state == MobSkillState::Chase,
         "attack" => state == MobSkillState::Attack,
+        "loot" => state == MobSkillState::Loot,
         "angry" => state == MobSkillState::Attack && angry,
         "follow" => state == MobSkillState::Chase && angry,
         "anytarget" => matches!(state, MobSkillState::Chase | MobSkillState::Attack),
@@ -110,7 +137,10 @@ fn state_matches(entry_state: &str, state: MobSkillState, angry: bool) -> bool {
     }
 }
 
-fn mob_state(mob: &Mob) -> Option<MobSkillState> {
+fn mob_state(mob: &Mob, just_looted: bool) -> Option<MobSkillState> {
+    if just_looted {
+        return Some(MobSkillState::Loot);
+    }
     match mob.action {
         MobAction::Idle => Some(MobSkillState::Idle),
         MobAction::Moving => Some(MobSkillState::Walk),
@@ -147,10 +177,25 @@ fn number(value: &str) -> Option<i64> {
     value.parse().ok()
 }
 
+fn parse_mode(value: &str) -> Option<u32> {
+    match value.strip_prefix("0x") {
+        Some(hex) => u32::from_str_radix(hex, 16).ok(),
+        None => value.parse().ok(),
+    }
+}
+
 enum SpecialMobSkill {
-    Emotion(u8),
-    SummonSlaves { classes: Vec<i32>, amount: u16 },
+    Emotion { emotion: u8, mode: Option<crate::server::state::mob::ModeChange> },
+    SummonSlaves { classes: Vec<i32>, amount: u16, slaves: bool },
     CallSlaves,
+    SelfDamage(u32),
+    Idle,
+    LoseTarget,
+    Suicide,
+    FullHeal,
+    Run { distance: u16 },
+    Revenge,
+    ClassChange { classes: Vec<i32>, extra: u16 },
 }
 
 struct Friend {
@@ -183,6 +228,7 @@ impl MapInstanceService {
             }
         }
         let mob_ids: Vec<u32> = state.mobs().keys().copied().collect();
+        let just_looted: Vec<u32> = state.mobs_mut().values_mut().filter_map(|mob| std::mem::take(&mut mob.looted).then_some(mob.id)).collect();
         let mut casts = Vec::new();
         let mut specials = Vec::new();
         for id in mob_ids {
@@ -195,7 +241,7 @@ impl MapInstanceService {
             if !mob.is_present() || mob.hp() == 0 || mob.script_cast_until > tick {
                 continue;
             }
-            let Some(mob_state) = mob_state(mob) else {
+            let Some(mob_state) = mob_state(mob, just_looted.contains(&id)) else {
                 continue;
             };
             let slaves = state.mobs().values().filter(|other| other.summon_owner == Some(id)).count() as i64;
@@ -258,6 +304,16 @@ impl MapInstanceService {
                     break;
                 }
             }
+            if let Some((key, ..)) = &selected {
+                let emotion = database
+                    .entries_for(mob)
+                    .nth(key / 1_000_000)
+                    .filter(|entry| !SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name.starts_with("NPC_EMOTION")))
+                    .and_then(|entry| entry.emotion);
+                if let Some(emotion) = emotion {
+                    specials.push((id, SpecialMobSkill::Emotion { emotion, mode: None }));
+                }
+            }
             if first_pass || selected.is_some() {
                 if let Some(mob) = state.mobs_mut().get_mut(&id) {
                     mob.skill_spawn_done = true;
@@ -286,8 +342,14 @@ impl MapInstanceService {
 
     fn special_action(mob: &Mob, entry: &MobSkillEntry, metadata: &SkillMetadata) -> Option<SpecialMobSkill> {
         match metadata.name.as_str() {
-            "NPC_EMOTION" => Some(SpecialMobSkill::Emotion(entry.values.first()?.parse().ok()?)),
-            "NPC_SUMMONSLAVE" => {
+            "NPC_EMOTION" | "NPC_EMOTION_ON" => {
+                let mode = entry.values.get(1).and_then(|value| parse_mode(value)).filter(|mode| *mode != 0).map(|mode| {
+                    if metadata.name == "NPC_EMOTION" { crate::server::state::mob::ModeChange::Set(mode) } else { crate::server::state::mob::ModeChange::Add(mode) }
+                });
+                Some(SpecialMobSkill::Emotion { emotion: entry.values.first()?.parse().ok()?, mode })
+            }
+            "NPC_SMOKING" => Some(SpecialMobSkill::SelfDamage(3)),
+            "NPC_SUMMONSLAVE" | "NPC_SUMMONMONSTER" => {
                 let classes: Vec<i32> = entry
                     .values
                     .iter()
@@ -297,9 +359,30 @@ impl MapInstanceService {
                 (!classes.is_empty() && mob.summon_owner.is_none()).then_some(SpecialMobSkill::SummonSlaves {
                     classes,
                     amount: entry.level.max(1),
+                    slaves: metadata.name == "NPC_SUMMONSLAVE",
                 })
             }
             "NPC_CALLSLAVE" => Some(SpecialMobSkill::CallSlaves),
+            "NPC_METAMORPHOSIS" | "NPC_TRANSFORMATION" => {
+                let classes: Vec<i32> = entry
+                    .values
+                    .iter()
+                    .filter_map(|value| value.parse().ok())
+                    .filter(|class| *class > 0)
+                    .collect();
+                (!classes.is_empty()).then_some(SpecialMobSkill::ClassChange {
+                    classes,
+                    extra: entry.level.saturating_sub(1),
+                })
+            }
+            "NPC_TALK" => Some(SpecialMobSkill::Idle),
+            "NPC_PROVOCATION" => Some(SpecialMobSkill::LoseTarget),
+            "NPC_SUICIDE" => Some(SpecialMobSkill::Suicide),
+            "NPC_ALLHEAL" if entry.target == "self" => Some(SpecialMobSkill::FullHeal),
+            "NPC_RUN" => Some(SpecialMobSkill::Run {
+                distance: if entry.level > 1 { entry.level } else { NPC_RUN_DEFAULT_DISTANCE },
+            }),
+            "NPC_REVENGE" => Some(SpecialMobSkill::Revenge),
             _ => None,
         }
     }
@@ -309,7 +392,10 @@ impl MapInstanceService {
             return;
         };
         match special {
-            SpecialMobSkill::Emotion(emotion) => {
+            SpecialMobSkill::Emotion { emotion, mode } => {
+                if let (Some(mode), Some(mob)) = (mode, state.mobs_mut().get_mut(&id)) {
+                    mob.change_mode(mode);
+                }
                 let mut packet = 0x00C0_u16.to_le_bytes().to_vec();
                 packet.extend_from_slice(&id.to_le_bytes());
                 packet.push(emotion);
@@ -332,7 +418,59 @@ impl MapInstanceService {
                     self.warp_mob_to(state, slave, x, y);
                 }
             }
-            SpecialMobSkill::SummonSlaves { classes, amount } => {
+            SpecialMobSkill::Idle => {}
+            SpecialMobSkill::ClassChange { classes, extra } => {
+                if extra > 0 {
+                    self.run_special_mob_skill(
+                        state,
+                        id,
+                        SpecialMobSkill::SummonSlaves { classes: classes.clone(), amount: extra, slaves: true },
+                    );
+                }
+                self.mob_class_change(state, id, classes[fastrand::usize(..classes.len())]);
+            }
+            SpecialMobSkill::LoseTarget => {
+                if let Some(mob) = state.mobs_mut().get_mut(&id) {
+                    mob.lose_target();
+                }
+            }
+            SpecialMobSkill::Suicide => self.mob_vanish_without_reward(state, id),
+            SpecialMobSkill::FullHeal => {
+                if let Some(mob) = state.mobs_mut().get_mut(&id) {
+                    mob.set_hp(mob.status.max_hp());
+                    mob.actor_damages.clear();
+                }
+            }
+            SpecialMobSkill::Run { distance } => {
+                let threat = state
+                    .mobs()
+                    .get(&id)
+                    .and_then(|mob| mob.get_target_id())
+                    .and_then(|target| state.characters().iter().find(|character| character.map_item().id() == target).map(|character| (character.x(), character.y())));
+                if let Some((threat_x, threat_y)) = threat {
+                    if let Some(mob) = state.mobs_mut().get_mut(&id) {
+                        mob.lose_target();
+                    }
+                    self.slide_mob(state, id, threat_x, threat_y, distance);
+                }
+            }
+            SpecialMobSkill::Revenge => {
+                let master_target = state
+                    .mobs()
+                    .get(&id)
+                    .and_then(|mob| mob.summon_owner)
+                    .and_then(|owner| state.mobs().get(&owner))
+                    .and_then(|master| master.get_target_id());
+                if let (Some(target), Some(mob)) = (master_target, state.mobs_mut().get_mut(&id)) {
+                    mob.transition_to_chasing(target);
+                }
+            }
+            SpecialMobSkill::SelfDamage(amount) => {
+                if let Some(mob) = state.mobs_mut().get_mut(&id) {
+                    mob.set_hp(mob.hp().saturating_sub(amount).max(1));
+                }
+            }
+            SpecialMobSkill::SummonSlaves { classes, amount, slaves } => {
                 for _ in 0..amount {
                     let class = classes[fastrand::usize(..classes.len())];
                     let request = ScriptSpawn {
@@ -346,10 +484,15 @@ impl MapInstanceService {
                         size: None,
                         ai: None,
                         owner_id: 0,
+                        guardian: None,
+                        bg_id: 0,
+                        max_hp: None,
+                        lifetime_ms: None,
+                    reserved_id: None,
                     };
                     match self.script_spawn(state, request) {
                         Ok(ids) => {
-                            for slave in ids {
+                            for slave in ids.into_iter().filter(|_| slaves) {
                                 if let Some(slave) = state.mobs_mut().get_mut(&slave) {
                                     slave.summon_owner = Some(id);
                                 }
@@ -445,6 +588,11 @@ impl MapInstanceService {
             }
             "masterattacked" => master_attacked,
             "skillused" => recent && i64::from(mob.last_attack_skill) == value,
+            "groundattacked" => {
+                recent
+                    && SkillMetadata::find(mob.last_attack_skill).is_some_and(|metadata| metadata.target_type.as_deref() == Some("Ground"))
+            }
+            "alchemist" => mob.summon_ai != 0 && mob.status.hp() < mob.status.max_hp(),
             _ => false,
         }
     }
@@ -509,6 +657,7 @@ impl MapInstanceService {
             skill_id: entry.skill_id,
             level: entry.level.min(u16::from(metadata.max_level)),
             cast_cancel: Some(entry.cancelable),
+            message_id: entry.chat,
             ..Default::default()
         };
         if ground_skill || entry.target.starts_with("around") {
@@ -522,4 +671,18 @@ impl MapInstanceService {
 
 fn entry_key(entry: &MobSkillEntry, index: usize) -> usize {
     index * 1_000_000 + entry.skill_id as usize
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn imported_mob_skills_keep_emotion_and_chat_columns() {
+        let entries: Vec<MobSkillEntry> = serde_json::from_str(include_str!("../../../../config/mob_skills.json")).unwrap();
+        assert_eq!(entries.len(), 5494);
+        assert!(entries.iter().any(|entry| entry.emotion == Some(6) && entry.chat.is_none()));
+        assert!(entries.iter().any(|entry| entry.chat == Some(17) && entry.emotion.is_none()));
+        assert_eq!(parse_mode("0x3885"), Some(0x3885));
+    }
 }

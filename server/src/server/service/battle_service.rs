@@ -3320,7 +3320,7 @@ impl BattleService {
         self.grand_cross_skill_damage_with_context(source, target, level, self_target, SkillEnum::CrGrandcross.id())
     }
 
-    fn grand_cross_skill_damage_with_context(
+    pub(crate) fn grand_cross_skill_damage_with_context(
         &self,
         source: &StatusSnapshot,
         target: &StatusSnapshot,

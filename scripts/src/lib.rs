@@ -1,6 +1,12 @@
 use script_sdk::{ABI_VERSION, Context, Request};
 
 mod items;
+mod battleground_arena;
+mod battleground_kvm;
+mod battleground_npcs;
+mod battleground_tierra;
+mod castle_npcs;
+mod wedding_npcs;
 mod npcs;
 mod functions;
 mod events;

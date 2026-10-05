@@ -60,6 +60,8 @@ pub struct MapItem {
 pub struct MapItemSnapshot {
     pub(crate) map_item: MapItem,
     pub(crate) position: Position,
+    pub(crate) guild_id: u32,
+    pub(crate) bg_id: u32,
 }
 
 impl MapItem {
@@ -98,7 +100,25 @@ impl MapItem {
 
 impl MapItemSnapshot {
     pub fn new(map_item: MapItem, position: Position) -> Self {
-        Self { map_item, position }
+        Self { map_item, position, guild_id: 0, bg_id: 0 }
+    }
+
+    pub fn with_guild(mut self, guild_id: u32) -> Self {
+        self.guild_id = guild_id;
+        self
+    }
+
+    pub fn with_bg(mut self, bg_id: u32) -> Self {
+        self.bg_id = bg_id;
+        self
+    }
+
+    pub fn bg_id(&self) -> u32 {
+        self.bg_id
+    }
+
+    pub fn guild_id(&self) -> u32 {
+        self.guild_id
     }
 
     pub fn x(&self) -> u16 {
@@ -161,6 +181,10 @@ impl MapItems {
     }
 
     pub fn generate_id(&mut self) -> u32 {
+        self.reserve_id()
+    }
+
+    pub fn reserve_id(&self) -> u32 {
         self.sequence.fetch_add(1, SeqCst)
     }
 

@@ -70,6 +70,8 @@ pub(crate) fn npc_entry_packet(npc: &NpcSkillState, packetver: u32) -> Vec<u8> {
     packet.set_weapon(u32::from(look(LookType::Weapon)));
     packet.set_shield(u32::from(look(LookType::Shield)));
     packet.set_robe(look(LookType::Robe));
+    packet.set_guid(npc.emblem.0);
+    packet.set_gemblem_ver(npc.emblem.1 as i16);
     packet.set_state(npc.dead_sit);
     packet.fill_raw_with_packetver(Some(packetver));
     packet.raw
@@ -174,9 +176,13 @@ impl MapInstanceService {
             state.script_skill_state.casts.remove(&npc.id);
             state.script_skill_state.generations.remove(&npc.id);
         }
-        state.insert_item(MapItem::new(next.id, next.sprite as i16, MapItemType::Npc));
+        if !next.hidden {
+            state.insert_item(MapItem::new(next.id, next.sprite as i16, MapItemType::Npc));
+        }
         state.script_skill_state.npcs.insert(next.id, next.clone());
-        self.refresh_npc(state, &next);
+        if !next.hidden {
+            self.refresh_npc(state, &next);
+        }
         request.context.reply(Ok(Value::default()));
     }
 

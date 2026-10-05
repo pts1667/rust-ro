@@ -1,6 +1,6 @@
 use crate::enums::*;
 
-#[derive(WithMaskValueU16)]
+#[derive(WithMaskValueU16, Debug, Copy, Clone, PartialEq, Eq)]
 pub enum CellType {
     Walkable,
     Shootable,

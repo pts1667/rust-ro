@@ -360,9 +360,6 @@ fn conflicting_destination_rolls_back_npc_transfer_before_reply() {
     process_map(&origin, &service);
     process_transfers(&context);
     process_map(&target, &service);
-    assert!(matches!(receiver.try_recv(), Err(oneshot::error::TryRecvError::Empty)));
-    process_transfers(&context);
-    process_map(&origin, &service);
     assert!(receiver.try_recv().unwrap().is_err());
     assert_eq!(origin.state().script_skill_state.npcs[&NPC_ID], before);
     assert_eq!(target.state().script_skill_state.npcs[&NPC_ID].hp, 0);

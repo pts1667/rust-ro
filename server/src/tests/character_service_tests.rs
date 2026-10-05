@@ -258,6 +258,7 @@ mod tests {
         let context = before_each(mocked_repository());
         let map_instance_key = MapInstanceKey::new("geffen.gat".to_string(), 0);
         let mut character = create_character();
+        character.status.hp = 1;
         // When
         context
             .character_service

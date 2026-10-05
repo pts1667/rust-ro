@@ -18,7 +18,10 @@ impl Server {
             DuelAction::Create => {
                 let limit = command.argument.parse::<usize>().unwrap_or(0);
                 match state.duels.create(char_id, limit) {
-                    Ok(_) => self.duel_message(char_id, "You have created a duel. Use @invite <name> to invite players."),
+                    Ok(_) => {
+                        self.duel_message(char_id, "You have created a duel. Use @invite <name> to invite players.");
+                        self.notify_map_property(state, char_id);
+                    }
                     Err(error) => self.duel_message(char_id, error),
                 }
             }
@@ -41,7 +44,8 @@ impl Server {
             }
             DuelAction::Accept => match state.duels.accept(char_id) {
                 Ok(duel) => {
-                    for member in state.characters().keys().copied().filter(|id| state.duels.duel_of(*id) == Some(duel)) {
+                    self.notify_map_property(state, char_id);
+                    for member in state.characters().keys().copied().filter(|id| state.duels.duel_of(*id) == Some(duel)).collect::<Vec<_>>() {
                         self.duel_message(member, &format!("{name} joined the duel"));
                     }
                 }
@@ -54,15 +58,31 @@ impl Server {
                     self.duel_message(char_id, "You have no pending duel invitation");
                 }
             }
+            DuelAction::Killer => {
+                let Some(character) = state.characters_mut().get_mut(&char_id) else {
+                    return;
+                };
+                character.killer = !character.killer;
+                let text = if character.killer { "You are now a killer: you can attack any player" } else { "You are no longer a killer" };
+                self.duel_message(char_id, text);
+            }
             DuelAction::Leave => {
                 if state.duels.duel_of(char_id).is_none() {
                     return self.duel_message(char_id, "You are not in a duel");
                 }
                 self.duel_message(char_id, "You left the duel");
-                for member in state.duels.leave(char_id).unwrap_or_default() {
-                    self.duel_message(member, "The duel has ended");
-                }
+                self.leave_duel(state, char_id);
             }
+        }
+    }
+
+    /// Removes a character from its duel, refreshing the client cursor for everyone whose duel ended.
+    pub(crate) fn leave_duel(&self, state: &mut ServerState, char_id: u32) {
+        let remaining = state.duels.leave(char_id);
+        self.notify_map_property(state, char_id);
+        for member in remaining.unwrap_or_default() {
+            self.duel_message(member, "The duel has ended");
+            self.notify_map_property(state, member);
         }
     }
 

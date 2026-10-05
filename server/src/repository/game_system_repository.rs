@@ -271,6 +271,9 @@ pub trait GameSystemRepository: Send + Sync {
     fn divorce_character(&self, _char_id: u32) -> Result<u32, Error> {
         Err(Error::new("Marriage persistence is unavailable".into()))
     }
+    fn adopt_character(&self, _father: u32, _mother: u32, _baby: u32) -> Result<(), Error> {
+        Err(Error::new("Adoption persistence is unavailable".into()))
+    }
     fn create_guild(&self, _master: u32, _name: String) -> Result<GuildRecord, Error> {
         Err(Error::new("Guild persistence is unavailable".into()))
     }
@@ -742,6 +745,31 @@ impl GameSystemRepository for SledRepository {
             b.partner_id = first;
             write_state(systems, first, &mut a)?;
             write_state(systems, second, &mut b)
+        })?;
+        Ok(())
+    }
+
+    fn adopt_character(&self, father: u32, mother: u32, baby: u32) -> Result<(), Error> {
+        (&self.database.game_systems, &self.database.characters).transaction(|(systems, characters)| {
+            for id in [father, mother, baby] {
+                tx_required::<CharacterRecord>(characters, &(id as i32).to_be_bytes())?;
+            }
+            let mut dad: CharacterGameSystems = tx_read(systems, &character_key(father))?.unwrap_or_default();
+            let mut mom: CharacterGameSystems = tx_read(systems, &character_key(mother))?.unwrap_or_default();
+            let mut kid: CharacterGameSystems = tx_read(systems, &character_key(baby))?.unwrap_or_default();
+            if dad.partner_id != mother || mom.partner_id != father {
+                return abort("Parents are not married");
+            }
+            if dad.child_id != 0 || mom.child_id != 0 || kid.father_id != 0 || kid.mother_id != 0 {
+                return abort("Adoption is already in place");
+            }
+            dad.child_id = baby;
+            mom.child_id = baby;
+            kid.father_id = father;
+            kid.mother_id = mother;
+            write_state(systems, father, &mut dad)?;
+            write_state(systems, mother, &mut mom)?;
+            write_state(systems, baby, &mut kid)
         })?;
         Ok(())
     }

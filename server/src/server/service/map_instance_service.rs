@@ -26,14 +26,14 @@ use crate::server::model::events::client_notification::{AreaNotification, AreaNo
 use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent, ScriptEvent};
 use crate::server::model::events::map_event::{CharacterDropItems, MapEvent, MobAttackCharacter, MobDropItems, MobLocation, ScriptSpawn};
 use crate::server::model::map::Map;
-use crate::server::model::map_item::{MapItemSnapshot, MapItemType, ToMapItemSnapshot};
+use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, ToMapItemSnapshot};
 use crate::server::model::status::StatusFromDb;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleService, NormalAttackRoll};
 use crate::server::service::combat_trigger_service::{magic_reflection, physical_reflection};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_combat_service::{MagicReflectionRequest, MobAttackRequest};
-use crate::server::service::mob_service::{MobAIAction, MobService};
+use crate::server::service::mob_service::{LootAction, MobAIAction, MobService};
 use crate::server::service::script_combat_service::{MobCombatEffect, ScriptCombatRequest};
 use crate::server::service::script_service::ScriptService;
 use crate::server::service::status_effect_service::StatusEffectService;
@@ -61,6 +61,8 @@ pub struct MapInstanceService {
     battle_service: BattleService,
     pub(super) server_task_queue: Arc<TasksQueue<GameEvent>>,
 }
+
+pub(crate) const CASTLE_FLAG_ENTRY: u32 = 19;
 
 impl MapInstanceService {
     pub fn start_actor_skill(
@@ -340,6 +342,15 @@ impl MapInstanceService {
             tasks.add_to_first_index(MapEvent::MobDeathClientNotification(death));
             self.mob_die(state, death.mob_id, 0);
         }
+        let expired: Vec<u32> = state
+            .mobs()
+            .values()
+            .filter(|mob| mob.is_present() && mob.expires_at.is_some_and(|expires_at| expires_at <= tick))
+            .map(|mob| mob.id)
+            .collect();
+        for id in expired {
+            self.remove_mob_silently(state, id);
+        }
         let spheres = state
             .mobs()
             .values()
@@ -417,6 +428,13 @@ impl MapInstanceService {
         if mob.status.has_mob_capability(models::enums::mob::MobCapability::KnockbackImmune) {
             return;
         }
+        self.slide_mob(state, mob_id, source_x, source_y, cells);
+    }
+
+    pub fn slide_mob(&self, state: &mut MapInstanceState, mob_id: u32, source_x: u16, source_y: u16, cells: u16) {
+        let Some(mob) = state.get_mob(mob_id).filter(|mob| mob.is_present()) else {
+            return;
+        };
         let from = mob.position();
         let to = knockback_position(state.cells(), state.x_size(), state.y_size(), from, source_x, source_y, cells);
         if from == to {
@@ -582,6 +600,7 @@ impl MapInstanceService {
                 replacement.summoned = old.summoned;
                 replacement.summon_owner = old.summon_owner;
                 replacement.summon_ai = old.summon_ai;
+                replacement.expires_at = old.expires_at;
                 replacement.event_entry = old.event_entry;
                 replacement.event_npc = old.event_npc;
                 replacement.set_hp(
@@ -662,13 +681,15 @@ impl MapInstanceService {
         let mut ids = Vec::with_capacity(request.amount as usize);
         for _ in 0..request.amount {
             let (x, y) = locations[rng.usize(0..locations.len())];
-            let id = state.map_items_mut().generate_id();
+            let id = request.reserved_id.filter(|_| ids.is_empty()).unwrap_or_else(|| state.map_items_mut().generate_id());
             let mut mob = self.mob_from_model(id, x, y, model, 0);
             mob.summoned = true;
             mob.summon_owner = (ai != 0).then_some(request.owner_id);
             mob.summon_ai = ai;
+            mob.expires_at = request.lifetime_ms.map(|lifetime| crate::util::tick::get_tick() + u128::from(lifetime));
             mob.event_entry = event_entry;
             mob.event_npc = request.event_npc;
+            mob.bg_id = request.bg_id;
             if !request.name.is_empty() && request.name != "--ja--" && request.name != "--en--" {
                 mob.name = request.name.clone();
                 mob.name_english = request.name.clone();
@@ -676,6 +697,21 @@ impl MapInstanceService {
             if let Some(size) = size {
                 mob.status.set_size(size);
                 mob.base_status.set_size(size);
+            }
+            if mob.status.max_hp() == 0 {
+                mob.status.set_max_hp(1);
+                mob.status.set_hp(1);
+                mob.base_status.set_max_hp(1);
+                mob.base_status.set_hp(1);
+            }
+            if let Some(max_hp) = request.max_hp.filter(|max_hp| *max_hp > 0) {
+                for status in [&mut mob.status, &mut mob.base_status] {
+                    status.set_max_hp(max_hp);
+                    status.set_hp(max_hp);
+                }
+            }
+            if let Some(guardian) = &request.guardian {
+                Self::apply_castle_strength(&mut mob, guardian);
             }
             if ai == 1 || ai == 3 {
                 mob.mode |= MobMode::Aggressive.as_flag() | MobMode::CanAttack.as_flag();
@@ -697,6 +733,23 @@ impl MapInstanceService {
             },
         ));
         Ok(ids)
+    }
+
+    fn apply_castle_strength(mob: &mut Mob, guardian: &crate::server::model::events::map_event::GuardianSpawn) {
+        let max_hp = mob.base_status.max_hp() + 1000 * guardian.defense.max(0) as u32;
+        let defense = (guardian.defense.max(0) + 2) / 3;
+        for status in [&mut mob.status, &mut mob.base_status] {
+            status.set_max_hp(max_hp);
+            status.set_hp(max_hp);
+            status.set_def(status.def().saturating_add(defense as i16));
+            status.set_mdef(status.mdef().saturating_add(defense as i16));
+        }
+        if !guardian.emperium {
+            let bonus = 2 * u16::from(guardian.guard_upgrade) + 8;
+            mob.atk1 = mob.atk1.saturating_add(bonus);
+            mob.atk2 = mob.atk2.saturating_add(bonus);
+        }
+        mob.friendly_guilds = guardian.friendly_guilds.clone();
     }
 
     fn mob_from_model(&self, id: u32, x: u16, y: u16, model: &crate::repository::model::mob_model::MobModel, spawn_id: u32) -> Mob {
@@ -792,9 +845,28 @@ impl MapInstanceService {
         for mob in map_instance_state.mobs().values() {
             visibility.insert(mob.id, StealthState::from_status(&mob.status_effects));
         }
+        let ground_items: Vec<(u32, u16, u16)> = map_instance_state
+            .dropped_items()
+            .values()
+            .map(|item| (item.map_item_id, item.x(), item.y()))
+            .collect();
+        let mut pickups: Vec<(u32, u32)> = Vec::new();
         for mob in map_instance_state.mobs_mut().values_mut() {
             if mob.summon_ai == 2 {
                 continue;
+            }
+            if !ground_items.is_empty() {
+                match self.mob_service.loot_ai(mob, &ground_items, cells.as_ref(), x_size, y_size, tick) {
+                    Some(LootAction::Walk(movement)) => {
+                        mob_movements.push(movement);
+                        continue;
+                    }
+                    Some(LootAction::Pickup(item_id)) => {
+                        pickups.push((mob.id, item_id));
+                        continue;
+                    }
+                    None => {}
+                }
             }
             let targets = if mob.summon_ai != 0 {
                 hostile_mobs.as_slice()
@@ -818,6 +890,17 @@ impl MapInstanceService {
                     MobAIAction::Move(movement) => mob_movements.push(movement),
                     MobAIAction::Attack(attack) => mob_attacks.push(attack),
                 }
+            }
+        }
+
+        for (mob_id, item_id) in pickups {
+            let Some(item) = map_instance_state.get_dropped_item(item_id).copied() else {
+                continue;
+            };
+            self.remove_dropped_item_from_map(map_instance_state, item_id);
+            if let Some(mob) = map_instance_state.mobs_mut().get_mut(&mob_id) {
+                mob.loot_items.push((item.item_id, item.amount, item.is_identified));
+                mob.looted = true;
             }
         }
 
@@ -980,8 +1063,17 @@ impl MapInstanceService {
             && damage.attacker_id != damage.target_id
             && map_instance_state
                 .get_mob(damage.target_id)
-                .is_some_and(|mob| mob.status.has_mob_capability(models::enums::mob::MobCapability::SkillImmune))
+                .is_some_and(|mob| {
+                    mob.status.has_mob_capability(models::enums::mob::MobCapability::SkillImmune)
+                        || mob.mob_id == 1288
+                            && !crate::server::script::skill::metadata::SkillMetadata::find(damage.skill_id)
+                                .is_some_and(|metadata| metadata.flags.get("TargetEmperium").copied().unwrap_or(false))
+                })
         {
+            damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
+            return;
+        }
+        if damage.healing == 0 && map_instance_state.get_mob(damage.target_id).is_some_and(|mob| mob.damage_immune) {
             damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
             return;
         }
@@ -1027,6 +1119,13 @@ impl MapInstanceService {
         let is_player_attack = map_instance_state
             .get_map_item(damage.attacker_id)
             .is_some_and(|item| *item.object_type() == MapItemType::Character);
+        if is_player_attack && damage.landed && damage.skill_id == 0 && damage.proc_depth < 8 {
+            if let Some(counter) = Self::mob_auto_counter(map_instance_state, &damage) {
+                self.server_task_queue.add_to_first_index(GameEvent::MobAttack(counter));
+                damage.notify_admitted(&self.client_notification_sender, 0, self.configuration_service.packetver());
+                return;
+            }
+        }
         let credited_id = if damage.credit_id == 0 {
             damage.attacker_id
         } else {
@@ -1220,7 +1319,9 @@ impl MapInstanceService {
                         depth: damage.proc_depth,
                     }));
             }
-            if mob.should_die() {
+            if mob.should_die() && crate::server::service::mob_skill_ai::MobSkillDatabase::instance().try_rebirth(mob) {
+                debug!("Mob {} was reborn", mob.id);
+            } else if mob.should_die() {
                 let delay = damage.attacked_at.saturating_sub(tick);
                 Self::add_to_delayed_tick(
                     map_instance_tasks_queue.as_ref(),
@@ -1375,8 +1476,110 @@ impl MapInstanceService {
             mob.set_to_remove();
             (mob.spawn_id, mob.summoned)
         };
+        self.drop_mob_loot(map_instance_state, id);
         if let Some(spawn) = map_instance_state.mob_spawns_tracks_mut().get_mut(&spawn_id).filter(|_| !summoned) {
             spawn.decrement_spawn();
+        }
+    }
+
+    /// A monster in Auto Counter stance negates a melee hit from a player it faces and strikes back at once.
+    fn mob_auto_counter(state: &mut MapInstanceState, damage: &Damage) -> Option<MobAttackRequest> {
+        let melee = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        if damage.battle_flags & melee != melee {
+            return None;
+        }
+        let mob = state
+            .get_mob(damage.target_id)
+            .filter(|mob| mob.is_present() && mob.status_effects.has_status_change(models::status_change::StatusChangeKind::AutoCounter))?;
+        let (attacker_x, attacker_y) = state
+            .characters()
+            .iter()
+            .find(|character| character.map_item().id() == damage.attacker_id)
+            .map(|character| (character.x(), character.y()))?;
+        let distance = mob.x.abs_diff(attacker_x).max(mob.y.abs_diff(attacker_y));
+        let toward_attacker = crate::server::script::skill::ScriptSkillService::direction_to(mob.x, mob.y, attacker_x, attacker_y, mob.dir);
+        let facing_offset = (toward_attacker + 8 - mob.dir % 8) % 8;
+        if distance > 0 && (!matches!(facing_offset, 0 | 1 | 7) || distance > mob.attack_range + 1) {
+            return None;
+        }
+        let request = MobAttackRequest {
+            attack: MobAttackCharacter {
+                mob_id: mob.id,
+                target_char_id: damage.attacker_id,
+                damage: 0,
+                attack_motion: mob.atk_motion,
+                mob_x: mob.x,
+                mob_y: mob.y,
+            },
+            source_status: mob.status.clone(),
+            source_key: state.key().clone(),
+            min_atk: mob.atk1,
+            max_atk: mob.atk2,
+            battle_flags: melee,
+        };
+        let id = mob.id;
+        state.mobs_mut().get_mut(&id)?.end_status(Some(models::status_change::StatusChangeKind::AutoCounter));
+        Some(request)
+    }
+
+    /// Metamorphosis: the monster becomes another class, keeping its HP percentage and position.
+    pub fn mob_class_change(&self, state: &mut MapInstanceState, id: u32, class: i32) {
+        let Some(mob) = state.get_mob(id).filter(|mob| mob.is_present()) else {
+            return;
+        };
+        if i32::from(mob.mob_id) == class || mob.summon_ai != 0 || !mob.friendly_guilds.is_empty() {
+            return;
+        }
+        let Some(model) = self.configuration_service.get_mob_safe(class) else {
+            return;
+        };
+        let hp_rate = u64::from(mob.hp()) * 100 / u64::from(mob.status.max_hp().max(1));
+        let mut changed = self.mob_from_model(id, mob.x, mob.y, model, mob.spawn_id);
+        changed.dir = mob.dir;
+        changed.summoned = mob.summoned;
+        changed.summon_owner = mob.summon_owner;
+        changed.event_entry = mob.event_entry;
+        changed.event_npc = mob.event_npc;
+        changed.skill_spawn_done = true;
+        let hp = (u64::from(changed.status.max_hp()) * hp_rate / 100).max(1) as u32;
+        changed.set_hp(hp);
+        let (x, y) = (changed.x, changed.y);
+        state.mobs_mut().insert(id, changed);
+        let mut packet = 0x01B0_u16.to_le_bytes().to_vec();
+        packet.extend_from_slice(&id.to_le_bytes());
+        packet.push(1);
+        packet.extend_from_slice(&(class as u32).to_le_bytes());
+        self.notify_area(state, x, y, packet);
+    }
+
+    /// Dies without experience, drops or kill events, like a monster that used Suicide.
+    pub fn mob_vanish_without_reward(&self, map_instance_state: &mut MapInstanceState, id: u32) {
+        let Some((spawn_id, summoned)) = map_instance_state.mobs_mut().get_mut(&id).map(|mob| {
+            mob.set_to_remove();
+            (mob.spawn_id, mob.summoned)
+        }) else {
+            return;
+        };
+        self.drop_mob_loot(map_instance_state, id);
+        if let Some(spawn) = map_instance_state.mob_spawns_tracks_mut().get_mut(&spawn_id).filter(|_| !summoned) {
+            spawn.decrement_spawn();
+        }
+    }
+
+    /// Items a looter mob picked up fall back to the ground where it dies.
+    fn drop_mob_loot(&self, map_instance_state: &mut MapInstanceState, id: u32) {
+        let Some((x, y, loot)) = map_instance_state.mobs_mut().get_mut(&id).map(|mob| (mob.x, mob.y, std::mem::take(&mut mob.loot_items))) else {
+            return;
+        };
+        let mut rng = fastrand::Rng::new();
+        let dropped: Vec<DroppedItem> = loot
+            .into_iter()
+            .filter_map(|(item_id, amount, identified)| {
+                self.drop_items(map_instance_state, &mut rng, x, y, item_id, identified, amount, None, Default::default(), false)
+            })
+            .collect();
+        if !dropped.is_empty() {
+            self.notify_drop_items(map_instance_state, x, y, dropped);
         }
     }
 
@@ -1392,6 +1595,149 @@ impl MapInstanceService {
             debug!("Remove dead mob {}", mob);
             map_instance_state.remove_mob(*mob);
         });
+    }
+
+    /// Removes a monster without death events, drops or experience.
+    fn remove_mob_silently(&self, state: &mut MapInstanceState, id: u32) {
+        if let Some(mob) = state.remove_mob(id) {
+            if let Some(track) = state.mob_spawns_tracks_mut().get_mut(&mob.spawn_id).filter(|_| !mob.summoned) {
+                track.decrement_spawn();
+            }
+            self.mob_die_client_notification(state, MobLocation { mob_id: id, x: mob.x, y: mob.y });
+        }
+    }
+
+    pub fn script_mob_command(&self, state: &mut MapInstanceState, command: crate::server::model::events::map_event::ScriptMobCommand) {
+        use crate::server::model::events::map_event::ScriptMobCommand;
+        match command {
+            ScriptMobCommand::Kill { event_entry } => {
+                let doomed: Vec<u32> = state
+                    .mobs()
+                    .values()
+                    .filter(|mob| mob.is_present() && event_entry.is_none_or(|entry| mob.event_entry == Some(entry)))
+                    .map(|mob| mob.id)
+                    .collect();
+                for id in doomed {
+                    self.remove_mob_silently(state, id);
+                }
+            }
+            ScriptMobCommand::SetTeam { mob_id, bg_id } => {
+                if let Some(mob) = state.mobs_mut().get_mut(&mob_id) {
+                    mob.bg_id = bg_id;
+                    mob.target_id = None;
+                }
+            }
+            ScriptMobCommand::SetDamageImmunity { event_entry, immune } => {
+                for mob in state.mobs_mut().values_mut().filter(|mob| mob.event_entry == Some(event_entry)) {
+                    mob.damage_immune = immune;
+                }
+            }
+        }
+    }
+
+    pub fn script_map_command(&self, state: &mut MapInstanceState, command: crate::server::model::events::map_event::ScriptMapCommand) {
+        use crate::server::model::events::map_event::ScriptMapCommand;
+        match command {
+            ScriptMapCommand::NpcVisibility { npc_id, visible } => {
+                let Some(mut npc) = state.script_skill_state.npcs.get(&npc_id).cloned() else { return };
+                if npc.hidden != visible {
+                    return;
+                }
+                npc.hidden = !visible;
+                if visible {
+                    state.insert_item(MapItem::new(npc.id, npc.sprite as i16, MapItemType::Npc));
+                    self.refresh_npc(state, &npc);
+                } else {
+                    state.remove_item_with_id(npc.id);
+                    state.script_skill_state.casts.remove(&npc.id);
+                    self.vanish_npc(state, &npc);
+                }
+                state.script_skill_state.npcs.insert(npc.id, npc);
+            }
+            ScriptMapCommand::FlagEmblem { castle_map, guild_id, version } => {
+                let flags: Vec<u32> = state
+                    .script_skill_state
+                    .npcs
+                    .values()
+                    .filter(|npc| npc.script.entry_id == CASTLE_FLAG_ENTRY && npc.script.constructor_args.first().is_some_and(|map| map.text() == castle_map))
+                    .map(|npc| npc.id)
+                    .collect();
+                for id in flags {
+                    let Some(npc) = state.script_skill_state.npcs.get_mut(&id) else { continue };
+                    npc.emblem = (guild_id, version);
+                    let npc = npc.clone();
+                    if !npc.hidden {
+                        self.refresh_npc(state, &npc);
+                    }
+                }
+            }
+            ScriptMapCommand::SetCell { area, cell, enabled } => {
+                let (x_size, y_size) = (state.x_size(), state.y_size());
+                let mask = cell.as_flag();
+                for y in area.y1.min(area.y2)..=area.y1.max(area.y2) {
+                    for x in area.x1.min(area.x2)..=area.x1.max(area.x2) {
+                        if x >= x_size || y >= y_size {
+                            continue;
+                        }
+                        let index = state.get_cell_index_of(x, y);
+                        if let Some(value) = state.cells_mut().get_mut(index) {
+                            *value = if enabled { *value | mask } else { *value & !mask };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn castle_command(&self, state: &mut MapInstanceState, command: crate::server::model::events::map_event::CastleCommand) {
+        use crate::server::model::events::map_event::CastleCommand;
+        match command {
+            CastleCommand::ClearMobs(_) | CastleCommand::ClearMobsExcept(_) => {
+                let (classes, except) = match command {
+                    CastleCommand::ClearMobs(classes) => (classes, false),
+                    CastleCommand::ClearMobsExcept(classes) => (Some(classes), true),
+                    _ => unreachable!(),
+                };
+                let doomed: Vec<u32> = state
+                    .mobs()
+                    .values()
+                    .filter(|mob| classes.as_ref().is_none_or(|classes| classes.contains(&i32::from(mob.mob_id)) != except))
+                    .map(|mob| mob.id)
+                    .collect();
+                for id in doomed {
+                    if let Some(mob) = state.remove_mob(id) {
+                        if let Some(track) = state.mob_spawns_tracks_mut().get_mut(&mob.spawn_id).filter(|_| !mob.summoned) {
+                            track.decrement_spawn();
+                        }
+                        self.mob_die_client_notification(state, MobLocation { mob_id: id, x: mob.x, y: mob.y });
+                    }
+                }
+            }
+            CastleCommand::Spawn(request) => {
+                if let Err(error) = self.script_spawn(state, request) {
+                    error!("Castle spawn failed on {}: {}", state.key().map_name(), error);
+                }
+            }
+            CastleCommand::SpawnAtEmptyCell(request) => {
+                let occupied = state.mobs().values().any(|mob| {
+                    i32::from(mob.mob_id) == request.mob_id && mob.is_present() && i32::from(mob.x) == request.x && i32::from(mob.y) == request.y
+                });
+                if occupied {
+                    return;
+                }
+                if let Err(error) = self.script_spawn(state, request) {
+                    error!("Castle spawn failed on {}: {}", state.key().map_name(), error);
+                }
+            }
+            CastleCommand::SpawnUnlessPresent(request) => {
+                if state.mobs().values().any(|mob| i32::from(mob.mob_id) == request.mob_id && mob.is_present() && mob.status.hp() > 0) {
+                    return;
+                }
+                if let Err(error) = self.script_spawn(state, request) {
+                    error!("Castle spawn failed on {}: {}", state.key().map_name(), error);
+                }
+            }
+        }
     }
 
     pub fn capture_mob(&self, state: &mut MapInstanceState, id: u32) {

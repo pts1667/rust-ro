@@ -114,6 +114,11 @@ pub fn status_variable(status: &Status, name: &str) -> Option<Value> {
     let value = match name {
         "Zeny" => status.zeny,
         "Class" => status.job,
+        "Upper" => match status.job {
+            4001..=4022 => 1,
+            4023..=4045 => 2,
+            _ => 0,
+        },
         "BaseLevel" => status.base_level,
         "JobLevel" => status.job_level,
         "SkillPoint" => status.skill_point,
@@ -352,6 +357,11 @@ impl ItemScriptHost {
                     arguments.get(1).ok_or("Missing item field")?,
                     configuration,
                 )
+            }
+            Function::GetItemName => {
+                let configuration = crate::server::service::global_config_service::GlobalConfigService::instance();
+                let item = super::utilities::find_item(configuration, arguments.first().ok_or("Missing item")?);
+                Ok(item.map_or_else(|| "null".to_string(), |item| item.name_english.clone()).into())
             }
             Function::GetPetInfo => {
                 let pet = self.status.script_context.as_ref().and_then(|context| {

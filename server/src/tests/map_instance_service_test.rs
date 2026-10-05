@@ -1360,6 +1360,11 @@ mod tests {
             size: Some(2),
             ai: Some(0),
             owner_id: 150000,
+            guardian: None,
+            bg_id: 0,
+            max_hp: None,
+            lifetime_ms: None,
+        reserved_id: None,
         };
         let ids = context.map_instance_service.script_spawn(&mut state, request.clone()).unwrap();
         assert_eq!(ids.len(), 2);

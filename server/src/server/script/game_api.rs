@@ -52,6 +52,16 @@ impl ScriptService {
         }
     }
 
+    pub(crate) fn set_server_temporary(&self, name: &str, value: Value) {
+        let (_, name) = variable_name(name);
+        self.npc_variables.lock().unwrap().insert((3, 0, 0, name, 0), value);
+    }
+
+    pub(crate) fn server_temporary(&self, name: &str) -> Option<Value> {
+        let (_, name) = variable_name(name);
+        self.npc_variables.lock().unwrap().get(&(3, 0, 0, name, 0)).cloned()
+    }
+
     fn read_variable(&self, server: &Server, context: &ScriptRequest, scope: VariableScope, name: String, index: u32) -> Reply {
         Self::validate_variable_scope(context, scope)?;
         let string = name.ends_with('$');
@@ -330,7 +340,7 @@ impl ScriptService {
                     || (function == Function::Monster && super::unit_data::script_actor(state, context)?.is_some()) {
                     return server.npc_background_call(state, context, function, &arguments);
                 }
-                if matches!(function, Function::Rand | Function::Min | Function::Max | Function::Pow | Function::GetTime | Function::GetItemInfo) {
+                if matches!(function, Function::Rand | Function::Min | Function::Max | Function::Pow | Function::GetTime | Function::GetItemInfo | Function::GetItemName) {
                     let mut host = ItemScriptHost::bonuses(models::status::Status::default(), 0);
                     return futures::executor::block_on(host.invoke(Request::Call { function, arguments }));
                 }
@@ -398,6 +408,21 @@ impl ScriptService {
                     server.repository.set_castle_value(&map, field, value).map_err(|error| error.to_string())?;
                     return Ok(Value::Number(0));
                 }
+                if crate::server::service::battleground_service::handles(function) {
+                    return server.battleground_call(state, context.char_id, function, &arguments);
+                }
+                if function == Function::SpecialEffect && context.char_id == 0 {
+                    return server.script_npc_effect(state, context, &arguments);
+                }
+                if crate::server::service::script_map_commands::handles(function) {
+                    return server.script_map_call(state, context, function, &arguments);
+                }
+                if crate::server::service::battleground_queue_service::handles_script_call(function) {
+                    return server.battleground_queue_script_call(state, function, &arguments);
+                }
+                if matches!(function, Function::GetGuildInfo | Function::GetGuildSkillLevel | Function::GuardianSummon) {
+                    return server.castle_script_call(context.char_id, function, &arguments);
+                }
                 if matches!(function, Function::AgitStart | Function::AgitEnd | Function::AgitCheck) {
                     return Ok(Value::Number(match function {
                         Function::AgitCheck => i32::from(state.siege_active),
@@ -422,6 +447,7 @@ impl ScriptService {
                         1 => character.game_systems.party_id,
                         2 => character.game_systems.guild_id,
                         3 => character.account_id,
+                        4 => character.bg_id,
                         _ => 0,
                     }) as i32));
                 }

@@ -9,6 +9,20 @@ use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::movement::Movement;
 
 #[derive(Debug, PartialEq, Clone)]
+pub enum CastleLifecycle {
+    Init,
+    AgitStart,
+    AgitEnd,
+    EmperiumBroken { map: String, guild_id: u32 },
+    GuildBroken { guild_id: u32 },
+    Refresh { map: String, abandoned: bool },
+    AnnounceConquest { map: String, guild_id: u32 },
+    RestartArena { map: String },
+    SummonGuardian { map: String, slot: u8 },
+    DailyTick,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum GameEvent {
     GroundTrapCapture(crate::server::script::skill::trap::GroundTrapCapture),
     GroundTrapRelease(crate::server::script::skill::trap::GroundTrapRelease),
@@ -34,6 +48,7 @@ pub enum GameEvent {
     MobAttack(crate::server::service::map_combat_service::MobAttackRequest),
     ReflectMagic(crate::server::service::map_combat_service::MagicReflectionRequest),
     ScriptSpawned(ScriptSpawned),
+    CastleLifecycle(CastleLifecycle),
     ScriptEvent(ScriptEvent),
     ScriptSpawn(ScriptMapSpawn),
     ScriptUnitSkill(ScriptSkillCast),
@@ -102,6 +117,7 @@ pub enum GameEvent {
     CharacterUpdateSpeed(u32, u16),
     CharacterRestoreAllHpAndSP(u32),
     Duel(crate::server::model::duel::DuelCommand),
+    BattlegroundQueue(crate::server::model::battleground_queue::BattlegroundQueueCommand),
     CharacterRequestCardCompositionList(CharacterEquipItem),
     CharacterSlotCard(CharacterSlotCard),
 }
@@ -127,6 +143,7 @@ impl GameEvent {
             CharacterHotkeyAdd(id, _) | CharacterHotkeyRemove(id, _) | CharacterUpdateSpeed(id, _) => *id,
             CharacterRemoveFromMap(event) => event.char_id,
             Duel(event) => event.char_id,
+            BattlegroundQueue(event) => event.char_id,
             CharacterMove(event) => event.char_id,
             CharacterMemo(event) => event.session.char_id?,
             CharacterRespawn(event) => event.session.char_id?,

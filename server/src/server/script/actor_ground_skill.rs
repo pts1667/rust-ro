@@ -18,6 +18,8 @@ use crate::server::model::events::map_event::MapEvent;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
+const ACTOR_GROUND_KNOCKBACK: u16 = 2;
+
 impl ScriptSkillService {
     pub fn validate_actor_ground(
         &self,
@@ -199,14 +201,14 @@ impl ScriptSkillService {
                 base_duration,
             )
         };
-        let range = if kind == GroundKind::Pneuma {
-            1
-        } else if kind == GroundKind::ArrowShower {
-            metadata.splash(level).unwrap_or(2)
-        } else {
-            metadata.unit_value("Range", level, "Size").unwrap_or(0)
-        }
-        .max(0) as u16;
+        let range = kind.effect_range(
+            if kind == GroundKind::ArrowShower {
+                metadata.splash(level).unwrap_or(2)
+            } else {
+                metadata.unit_value("Range", level, "Size").unwrap_or(0)
+            }
+            .max(0) as u16,
+        );
         let layout = if kind == GroundKind::Earthquake {
             metadata.splash(level).unwrap_or(5).max(0) as u16
         } else if !kind.trap() && kind != GroundKind::ArrowShower {
@@ -220,7 +222,9 @@ impl ScriptSkillService {
         let locations = match kind {
             GroundKind::Firewall => Self::firewall_cells(source.x, source.y, x, y),
             GroundKind::Pneuma => vec![(x, y)],
-            GroundKind::GrandCross => Self::grand_cross_cells(x, y),
+            GroundKind::Sanctuary => Self::sanctuary_cells(x, y),
+            GroundKind::VenomDust => Self::venom_dust_cells(x, y),
+            GroundKind::GrandCross | GroundKind::GrandDarkness => Self::grand_cross_cells(x, y),
             _ => Self::square_cells(x, y, layout),
         };
         let cells = locations
@@ -239,7 +243,7 @@ impl ScriptSkillService {
                     3500
                 } else if kind == GroundKind::Firewall {
                     4 + u16::from(level)
-                } else if kind == GroundKind::GrandCross {
+                } else if matches!(kind, GroundKind::GrandCross | GroundKind::GrandDarkness) {
                     3
                 } else {
                     u16::MAX
@@ -273,7 +277,7 @@ impl ScriptSkillService {
             active_from: tick,
             expires_at: tick + duration,
             next_hit_at: tick
-                + if matches!(kind, GroundKind::GrandCross | GroundKind::Earthquake | GroundKind::StormGust) {
+                + if matches!(kind, GroundKind::GrandCross | GroundKind::GrandDarkness | GroundKind::Earthquake | GroundKind::StormGust) {
                     100
                 } else {
                     0
@@ -559,12 +563,12 @@ impl ScriptSkillService {
             return;
         };
         ground.next_hit_at = tick.saturating_add(ground.interval);
-        if matches!(ground.kind, GroundKind::Earthquake | GroundKind::GrandCross) && ground.waves >= 3 {
+        if matches!(ground.kind, GroundKind::Earthquake | GroundKind::GrandCross | GroundKind::GrandDarkness) && ground.waves >= 3 {
             return;
         }
         if matches!(
             ground.kind,
-            GroundKind::Pneuma | GroundKind::Quagmire | GroundKind::Deluge | GroundKind::LandProtector
+            GroundKind::Pneuma | GroundKind::SafetyWall | GroundKind::Sanctuary | GroundKind::VenomDust | GroundKind::SpiderWeb | GroundKind::Quagmire | GroundKind::Deluge | GroundKind::LandProtector
         ) {
             return;
         }
@@ -613,6 +617,20 @@ impl ScriptSkillService {
         let offensive = object.as_ref().and_then(|skill| skill.as_offensive_skill());
         let split = targets.len() as u32;
         for (target_id, target, player) in targets {
+            if ground.kind == GroundKind::Firewall {
+                let Some(target_position) = state.map_item_snapshot(target_id, &ground.map, ground.instance).map(|item| (item.x(), item.y())) else {
+                    continue;
+                };
+                let range = ground.effect_range;
+                let Some(cell) = ground
+                    .cells
+                    .iter_mut()
+                    .find(|cell| cell.remaining_hits > 0 && cell.x.abs_diff(target_position.0).max(cell.y.abs_diff(target_position.1)) <= range)
+                else {
+                    continue;
+                };
+                cell.remaining_hits -= 1;
+            }
             let flags = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
             let (amount, context) = if let Some(fixed) = source.fixed_damage {
                 let element = match metadata.element(ground.level) {
@@ -653,11 +671,14 @@ impl ScriptSkillService {
                     ground.skill_id,
                 );
                 (server.battle_service().magic_damage_from_context(&source.status, &target, context), Some(context))
-            } else if ground.kind == GroundKind::GrandCross {
-                let (amount, context) =
-                    server
-                        .battle_service()
-                        .grand_cross_damage_signed_with_context(&source.status, &target, ground.level, false);
+            } else if matches!(ground.kind, GroundKind::GrandCross | GroundKind::GrandDarkness) {
+                let (amount, context) = server.battle_service().grand_cross_skill_damage_with_context(
+                    &source.status,
+                    &target,
+                    ground.level,
+                    false,
+                    ground.skill_id,
+                );
                 (amount, Some(context))
             } else if let Some(offensive) = offensive {
                 server
@@ -700,6 +721,47 @@ impl ScriptSkillService {
                 server.add_to_next_tick(GameEvent::CharacterDamage(damage));
             } else {
                 instance.add_to_next_tick(MapEvent::MobDamage(damage));
+            }
+            if ground.kind == GroundKind::GrandDarkness {
+                let request = models::status_change::StatusChangeRequest {
+                    kind: models::status_change::StatusChangeKind::Blind,
+                    duration_ms: metadata.duration(ground.level, true).unwrap_or(0),
+                    values: [i32::from(ground.level), 0, 0, 0],
+                    rate: 10_000,
+                    flags: 0,
+                };
+                if player {
+                    server.add_to_next_tick(GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange {
+                        char_id: target_id,
+                        request,
+                    }));
+                } else {
+                    instance.add_to_next_tick(MapEvent::MobStatusChange { mob_id: target_id, request });
+                }
+            }
+            let knocked_back = match ground.kind {
+                GroundKind::StormGust => true,
+                GroundKind::Firewall => {
+                    *target.element() != Element::Fire && *target.element() != Element::Undead && *target.race() != models::enums::mob::MobRace::RUndead
+                }
+                _ => false,
+            };
+            if knocked_back {
+                if player {
+                    server.add_to_next_tick(GameEvent::CharacterKnockback(crate::server::model::events::game_event::CharacterKnockback {
+                        char_id: target_id,
+                        source_x: ground.source_x,
+                        source_y: ground.source_y,
+                        cells: ACTOR_GROUND_KNOCKBACK,
+                    }));
+                } else {
+                    instance.add_to_next_tick(MapEvent::MobKnockback {
+                        mob_id: target_id,
+                        source_x: ground.source_x,
+                        source_y: ground.source_y,
+                        cells: ACTOR_GROUND_KNOCKBACK,
+                    });
+                }
             }
         }
         ground.waves = ground.waves.saturating_add(1);

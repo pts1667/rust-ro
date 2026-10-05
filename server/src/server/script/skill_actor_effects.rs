@@ -8,6 +8,7 @@ use packets::packets::{Packet, PacketZcUseSkill};
 use script_sdk::Value;
 
 use super::ScriptSkillService;
+use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::actor::{self, ScriptSkillActor};
 use super::ground::GroundKind;
 use super::metadata::SkillMetadata;
@@ -18,11 +19,14 @@ use crate::server::model::events::map_event::{MapEvent, MobDispel, MobProvoke};
 use crate::server::model::map_item::MapItemType;
 use crate::server::service::battle_service::BattleService;
 use crate::server::service::combat_trigger_service::ComaBonuses;
+use crate::server::service::script_combat_service::{BreakSlot, break_equipment};
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 
 const PALM_STRIKE_DELAY: u128 = 1000;
+const INTIMIDATE_WARP_DELAY_MS: u128 = 800;
+const RANDOM_CELL_ATTEMPTS: usize = 64;
 
 impl ScriptSkillService {
     pub(super) fn after_actor_skill_damage(
@@ -42,6 +46,20 @@ impl ScriptSkillService {
         let (_, target) = self.actor_target_status(state, &source, hit.target_id)?;
         if target.hp() == 0 {
             return Ok(());
+        }
+        let weapon_break_rate = source
+            .status
+            .status_change(StatusChangeKind::WeaponBreaker)
+            .map_or(0, |change| change.values[1]);
+        if weapon_break_rate > 0
+            && metadata.damage_type.as_deref() == Some("Weapon")
+            && state.get_character(hit.target_id).is_some()
+            && fastrand::i32(0..10_000) < weapon_break_rate
+        {
+            break_equipment(server, state, hit.target_id, BreakSlot::Weapon)?;
+        }
+        if metadata.name == "RG_INTIMIDATE" && source.object_type == MapItemType::Mob && hit.damage > 0 {
+            self.actor_intimidate_warp(server, state, &source, &hit, &target, tick);
         }
         if metadata.name == "TF_THROWSTONE" {
             let requests = Self::stone_fling_status_requests(false, hit.skill_level);
@@ -88,6 +106,69 @@ impl ScriptSkillService {
         Ok(())
     }
 
+    fn actor_intimidate_warp(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        source: &ScriptSkillActor,
+        hit: &super::ScriptSkillHit,
+        target: &StatusSnapshot,
+        tick: u128,
+    ) {
+        let _ = tick;
+        if target.mob_capabilities() & models::enums::mob::MobCapability::StatusImmune.as_flag() != 0
+            || state
+                .map_flags_for(&source.map, source.instance)
+                .enabled(crate::server::model::map_flags::MapFlag::NoTeleport)
+        {
+            return;
+        }
+        let rate = 50 + 5 * i32::from(hit.skill_level) + source.status.base_level() as i32 - target.base_level() as i32;
+        if fastrand::i32(0..100) >= rate {
+            return;
+        }
+        let Some(instance) = state.get_map_instance(&source.map, source.instance) else {
+            return;
+        };
+        let Some((x, y)) = Self::random_walkable_cell(instance.x_size(), instance.y_size(), instance.state().cells()) else {
+            return;
+        };
+        instance.add_to_delayed_tick(
+            MapEvent::MobWarpTo(crate::server::model::events::map_event::MobWarpTo { mob_id: source.id, x, y }),
+            INTIMIDATE_WARP_DELAY_MS,
+        );
+        if state.get_character(hit.target_id).is_some() {
+            server.add_to_delayed_tick(
+                GameEvent::ScriptWarp(crate::server::model::events::game_event::ScriptWarp {
+                    char_id: hit.target_id,
+                    map: source.map.clone(),
+                    x: x.saturating_add(1),
+                    y,
+                    destination_instance: Some(source.instance),
+                }),
+                INTIMIDATE_WARP_DELAY_MS,
+            );
+        } else {
+            instance.add_to_delayed_tick(
+                MapEvent::MobWarpTo(crate::server::model::events::map_event::MobWarpTo {
+                    mob_id: hit.target_id,
+                    x: x.saturating_add(1),
+                    y,
+                }),
+                INTIMIDATE_WARP_DELAY_MS,
+            );
+        }
+    }
+
+    fn random_walkable_cell(x_size: u16, y_size: u16, cells: &[u16]) -> Option<(u16, u16)> {
+        use models::enums::cell::CellType;
+        use models::enums::EnumWithMaskValueU16;
+        (0..RANDOM_CELL_ATTEMPTS).find_map(|_| {
+            let (x, y) = (fastrand::u16(0..x_size), fastrand::u16(0..y_size));
+            (cells[y as usize * x_size as usize + x as usize] & CellType::Walkable.as_flag() != 0).then_some((x, y))
+        })
+    }
+
     pub(super) fn execute_actor_skill(
         &self,
         server: &Server,
@@ -98,6 +179,23 @@ impl ScriptSkillService {
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill has no pre-renewal definition")?;
         let level = request.level as u8;
+        if matches!(metadata.name.as_str(), "HW_GANBANTEIN" | "MO_BODYRELOCATION") {
+            let (x, y) = request.ground.unwrap_or((source.x, source.y));
+            if metadata.name == "HW_GANBANTEIN" {
+                if fastrand::u8(0..100) < GANBANTEIN_SUCCESS_PERCENT {
+                    self.clear_ground_units_at(&source.map, source.instance, x, y);
+                }
+            } else if source.object_type == MapItemType::Mob {
+                state
+                    .get_map_instance(&source.map, source.instance)
+                    .ok_or("Unit skill map is unavailable")?
+                    .add_to_next_tick(MapEvent::MobWarpTo(crate::server::model::events::map_event::MobWarpTo { mob_id: source.id, x, y }));
+            } else {
+                return Err("Only monsters can use Body Relocation as actors".into());
+            }
+            self.notify_actor_support(source, request, true);
+            return Ok(());
+        }
         if request.ground.is_some() || GroundKind::from_name(&metadata.name).is_some() {
             let (x, y) = if let Some(ground) = request.ground {
                 ground
@@ -138,6 +236,7 @@ impl ScriptSkillService {
                 | "NPC_WIDESTONE"
                 | "NPC_WIDEFREEZE"
                 | "NPC_WIDESTUN"
+                | "NPC_WIDEHELLDIGNITY"
                 | "NPC_DRAGONFEAR"
                 | "AL_CRUCIS"
                 | "NPC_WIDESOULDRAIN"
@@ -314,6 +413,38 @@ impl ScriptSkillService {
                     }));
                 }
             }
+            "TF_BACKSLIDING" => {
+                if source.object_type != MapItemType::Mob {
+                    return Err("Only monsters can back slide as actors".into());
+                }
+                let (dx, dy) = Self::facing_vector(source.dir);
+                let cells = metadata.knockback.as_ref().and_then(|value| value.value(level, "Amount")).unwrap_or(5).clamp(0, i32::from(u16::MAX)) as u16;
+                instance.add_to_next_tick(MapEvent::MobSlide {
+                    mob_id: source.id,
+                    source_x: (i32::from(source.x) + dx).clamp(0, i32::from(u16::MAX)) as u16,
+                    source_y: (i32::from(source.y) + dy).clamp(0, i32::from(u16::MAX)) as u16,
+                    cells,
+                });
+            }
+            "NPC_EXPULSION" => {
+                if state
+                    .map_flags_for(&source.map, source.instance)
+                    .enabled(crate::server::model::map_flags::MapFlag::NoTeleport)
+                {
+                    self.notify_actor_support(source, request, false);
+                    return Ok(());
+                }
+                if player {
+                    server.server_service.schedule_warp_to_walkable_cell_by_character(
+                        &source.map,
+                        crate::server::model::map::RANDOM_CELL.0,
+                        crate::server::model::map::RANDOM_CELL.1,
+                        request.target_id,
+                    );
+                } else {
+                    instance.add_to_next_tick(MapEvent::MobRandomWarp { mob_id: request.target_id });
+                }
+            }
             name if Self::status_for_skill(name).is_some()
                 || metadata.damage_flags.get("NoDamage").copied().unwrap_or(false) && metadata.status.is_some() =>
             {
@@ -337,6 +468,10 @@ impl ScriptSkillService {
                 } else {
                     StatusChangeRequest::guaranteed(kind, metadata.duration(level, false).unwrap_or(0), i32::from(level))
                 };
+                if kind == StatusChangeKind::ElementalChange {
+                    effect.values[0] = if level <= 1 { fastrand::i32(1..=4) } else { i32::from(level).min(4) };
+                    effect.values[1] = Self::npc_element_change(name);
+                }
                 if kind == StatusChangeKind::Provoke && level == 10 {
                     effect.values[1] = 0;
                     effect.values[2] = 100;
@@ -361,6 +496,23 @@ impl ScriptSkillService {
         }
         self.notify_actor_support(source, request, true);
         Ok(())
+    }
+
+    fn npc_element_change(skill_name: &str) -> i32 {
+        use models::enums::element::Element;
+        use models::enums::EnumWithNumberValue;
+        let element = match skill_name {
+            "NPC_CHANGEWATER" => Element::Water,
+            "NPC_CHANGEGROUND" => Element::Earth,
+            "NPC_CHANGEFIRE" => Element::Fire,
+            "NPC_CHANGEWIND" => Element::Wind,
+            "NPC_CHANGEPOISON" => Element::Poison,
+            "NPC_CHANGEHOLY" => Element::Holy,
+            "NPC_CHANGEDARKNESS" => Element::Dark,
+            "NPC_CHANGETELEKINESIS" => Element::Ghost,
+            _ => return fastrand::i32(0..10),
+        };
+        element.value() as i32
     }
 
     pub(super) fn start_actor_target_status(
@@ -499,6 +651,18 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill metadata is unavailable")?;
+        if metadata.name == "NPC_DARKBREATH" {
+            let level = u32::from(request.level).max(1);
+            let percent = if level <= 5 { 100 / (2 * (6 - level)) } else { 50 };
+            let raw = (u64::from(target.hp()) * u64::from(percent) / 100).min(u64::from(u32::MAX)) as u32;
+            let flags = metadata.battle_flags(true);
+            let amount = server
+                .battle_service()
+                .actor_misc_skill_damage_signed(raw, &source.status, target, &Element::Dark, flags, request.skill_id);
+            let mut damage = Self::actor_damage(source, request, request.target_id, tick, flags, true);
+            damage.set_signed_damage(amount);
+            return self.queue_actor_damage(server, state, source, damage);
+        }
         if Self::uses_metadata_magic(&metadata.name) || Self::actor_npc_magic(metadata) {
             let level = request.level as u8;
             if metadata.name == "SL_SMA" {
@@ -555,14 +719,24 @@ impl ScriptSkillService {
             damage.attacked_at += PALM_STRIKE_DELAY;
             return self.queue_actor_damage_after(server, state, source, damage, PALM_STRIKE_DELAY);
         }
-        self.queue_actor_damage(server, state, source, damage)
+        let landed = damage.landed;
+        self.queue_actor_damage(server, state, source, damage)?;
+        let slot = match metadata.name.as_str() {
+            "NPC_ARMORBRAKE" => Some(BreakSlot::Armor),
+            "NPC_HELMBRAKE" => Some(BreakSlot::Helm),
+            "NPC_SHIELDBRAKE" => Some(BreakSlot::Shield),
+            _ => None,
+        };
+        if let Some(slot) = slot.filter(|_| landed && player && fastrand::i32(0..10_000) < 150 * i32::from(request.level)) {
+            break_equipment(server, state, request.target_id, slot)?;
+        }
+        Ok(())
     }
 
     pub(super) fn actor_npc_weapon(metadata: &SkillMetadata) -> bool {
         metadata.name.starts_with("NPC_")
             && metadata.damage_type.as_deref() == Some("Weapon")
             && matches!(metadata.target_type.as_deref(), Some("Attack" | "Self"))
-            && metadata.name != "NPC_VAMPIRE_GIFT"
     }
 
     fn execute_actor_self_destruct(
@@ -577,10 +751,18 @@ impl ScriptSkillService {
         let radius = metadata.splash(request.level as u8).unwrap_or(5).clamp(0, i32::from(u16::MAX)) as u16;
         let hp = source.status.hp().min(i32::MAX as u32) as i32;
         let flags = BattleFlag::Misc.as_flag() | BattleFlag::Short.as_flag() | BattleFlag::Skill.as_flag();
-        for (id, status, _) in self.actor_area_targets(server, state, source, request.skill_id, source.x, source.y, radius) {
+        let knockback = metadata
+            .knockback
+            .as_ref()
+            .and_then(|value| value.value(request.level as u8, "Amount"))
+            .map_or(0, |cells| cells.clamp(0, i32::from(u16::MAX)) as u16);
+        for (id, status, player) in self.actor_area_targets(server, state, source, request.skill_id, source.x, source.y, radius) {
             let mut damage = Self::actor_damage(source, request, id, tick, flags, true);
             damage.set_signed_damage((hp as f32 * BattleService::element_modifier(&Element::Fire, &status)).floor() as i32);
             self.queue_actor_damage(server, state, source, damage)?;
+            if knockback > 0 {
+                self.knock_back_actor_target(server, state, source, id, player, knockback);
+            }
         }
         let mut suicide = Self::actor_damage(source, request, source.id, tick, flags, true);
         suicide.set_signed_damage(hp);
@@ -589,8 +771,7 @@ impl ScriptSkillService {
 
     pub(super) fn actor_metadata_status(metadata: &SkillMetadata) -> bool {
         metadata.damage_flags.get("NoDamage").copied().unwrap_or(false)
-            && metadata.name.starts_with("NPC_")
-            && !metadata.name.starts_with("NPC_WIDE")
+            && (metadata.name.starts_with("NPC_") && !metadata.name.starts_with("NPC_WIDE") || metadata.name == "SA_REVERSEORCISH")
             && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_some()
     }
 
@@ -661,7 +842,11 @@ impl ScriptSkillService {
             let distance = position.map_or(0, |(tx, ty)| tx.abs_diff(x).max(ty.abs_diff(y)));
             let damage = self.build_actor_offensive_damage(server, source, request, id, &status, player, tick, Some(distance))?;
             let landed = damage.landed;
+            let dealt = damage.damage;
             self.queue_actor_damage(server, state, source, damage)?;
+            if metadata.name == "NPC_VAMPIRE_GIFT" && landed && dealt > 0 {
+                self.heal_actor_target(server, state, source, source.id, dealt as u32, 0, tick)?;
+            }
             if metadata.name == "SM_MAGNUM" && landed {
                 self.knock_back_actor_target(server, state, source, id, player, 2);
             }
@@ -786,6 +971,13 @@ impl ScriptSkillService {
         Ok(damage)
     }
 
+    fn npc_weapon_skill_ratio(name: &str, level: u8) -> f32 {
+        match name {
+            "NPC_VAMPIRE_GIFT" => 1.0 + ((level.max(1) - 1) % 5 + 1) as f32,
+            _ => 1.0,
+        }
+    }
+
     fn build_actor_npc_weapon_damage(
         &self,
         server: &Server,
@@ -819,7 +1011,7 @@ impl ScriptSkillService {
                 &source.status,
                 target,
                 player,
-                1.0,
+                Self::npc_weapon_skill_ratio(&metadata.name, level),
                 hits,
                 &server.battle_service().metadata_weapon_element(&source.status, element, request.skill_id),
                 flags,

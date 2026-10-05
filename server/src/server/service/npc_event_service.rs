@@ -81,6 +81,7 @@ impl Server {
     pub(crate) fn schedule_npc_initialization(&self, state: &ServerState) {
         self.broadcast_npc_event(state, "OnInit");
         self.broadcast_npc_event(state, "OnAgitInit");
+        self.add_to_next_tick(GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::Init));
     }
 
     pub(crate) fn broadcast_npc_event(&self, state: &ServerState, event: &str) {
@@ -153,6 +154,42 @@ impl Server {
             count += 1;
         }
         Ok(Value::Number(count))
+    }
+
+    /// Queues `NpcName::OnLabel` as a background event; false when no compiled NPC owns the label.
+    pub(crate) fn trigger_npc_event(&self, state: &ServerState, label: &str) -> bool {
+        let Some((name, _)) = label.split_once("::") else { return false };
+        let Some(entry_id) = ScriptService::event_entry(label) else { return false };
+        let Some((actor, script)) = npcs(state).into_iter().find(|(_, script)| script.name == name) else { return false };
+        self.add_to_next_tick(GameEvent::ScriptNpcEvent(ScriptNpcEvent {
+            npc_id: actor.id,
+            scope_instance: script.scope_instance,
+            entry_id,
+            char_id: None,
+            depth: 1,
+            queued_until: 0,
+            args: None,
+            timer_guard: None,
+        }));
+        true
+    }
+
+    /// Queues `NpcName::OnLabel` with the character attached; false when no compiled NPC owns the label.
+    pub(crate) fn trigger_player_npc_event(&self, state: &ServerState, char_id: u32, label: &str) -> bool {
+        let Some((name, _)) = label.split_once("::") else { return false };
+        let Some(entry_id) = ScriptService::event_entry(label) else { return false };
+        let Some((actor, script)) = npcs(state).into_iter().find(|(_, script)| script.name == name) else { return false };
+        self.add_to_next_tick(GameEvent::ScriptNpcEvent(ScriptNpcEvent {
+            npc_id: actor.id,
+            scope_instance: script.scope_instance,
+            entry_id,
+            char_id: Some(char_id),
+            depth: 1,
+            queued_until: get_tick() + u128::from(self.configuration.scripting.conversation_timeout_secs.max(1)) * 2000,
+            args: None,
+            timer_guard: None,
+        }));
+        true
     }
 
     pub(crate) fn run_npc_event(&self, state: &mut ServerState, event: ScriptNpcEvent, tick: u128) -> Result<(), String> {
@@ -239,6 +276,37 @@ impl Server {
         Ok(())
     }
 
+    /// Spawns a monster on a script-named map, binding its callback event to the compiled NPC that owns it.
+    pub(crate) fn spawn_script_monster(
+        &self,
+        state: &mut ServerState,
+        context: &ScriptRequest,
+        map_name: &str,
+        mut request: crate::server::model::events::map_event::ScriptSpawn,
+    ) -> Result<Option<u32>, String> {
+        let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
+        if let Some((name, _)) = request.event.split_once("::") {
+            let (target, script) = named_npc(state, context, name)?.ok_or("Monster callback NPC is unavailable")?;
+            request.event_npc = Some(crate::server::model::events::map_event::ScriptNpcCallback {
+                npc_id: target.id,
+                scope_instance: script.scope_instance,
+                entry_id: ScriptService::event_entry(&request.event).ok_or("Monster callback has no compiled event entry")?,
+            });
+        }
+        let name = if map_name == "this" { Map::name_without_ext(&npc.map) } else { Map::name_without_ext(map_name) };
+        let id = if name == Map::name_without_ext(&npc.map) { npc.instance } else { 0 };
+        let map = if let Some(map) = state.get_map_instance(&name, id) {
+            map
+        } else {
+            let definition = GlobalConfigService::instance().find_map(&name).ok_or("Monster map is unavailable")?;
+            self.server_service().create_map_instance(state, definition, id)
+        };
+        request.reserved_id = (request.amount == 1).then(|| map.state().reserve_map_item_id());
+        let reserved_id = request.reserved_id;
+        map.add_to_next_tick(MapEvent::ScriptSpawn(request));
+        Ok(reserved_id)
+    }
+
     pub(crate) fn npc_background_call(
         &self,
         state: &mut ServerState,
@@ -248,31 +316,8 @@ impl Server {
     ) -> Reply {
         let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
         if function == Function::Monster {
-            let mut request = self.item_service().spawn_request(arguments, context.char_id)?;
-            if let Some((name, _)) = request.event.split_once("::") {
-                let (target, script) = named_npc(state, context, name)?.ok_or("Monster callback NPC is unavailable")?;
-                request.event_npc = Some(crate::server::model::events::map_event::ScriptNpcCallback {
-                    npc_id: target.id,
-                    scope_instance: script.scope_instance,
-                    entry_id: ScriptService::event_entry(&request.event).ok_or("Monster callback has no compiled event entry")?,
-                });
-            }
-            let name = arguments[0].string_value()?;
-            let name = if name == "this" {
-                Map::name_without_ext(&npc.map)
-            } else {
-                Map::name_without_ext(name)
-            };
-            let id = if name == Map::name_without_ext(&npc.map) { npc.instance } else { 0 };
-            let map = if let Some(map) = state.get_map_instance(&name, id) {
-                map
-            } else {
-                let definition = GlobalConfigService::instance()
-                    .find_map(&name)
-                    .ok_or("Monster map is unavailable")?;
-                self.server_service().create_map_instance(state, definition, id)
-            };
-            map.add_to_next_tick(MapEvent::ScriptSpawn(request));
+            let request = self.item_service().spawn_request(arguments, context.char_id)?;
+            self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
             return Ok(Value::default());
         }
         let packet = super::script_presentation_service::announcement_packet(arguments)?;
