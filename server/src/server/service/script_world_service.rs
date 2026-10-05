@@ -193,6 +193,8 @@ pub fn world_data() -> &'static ScriptWorldData {
 pub struct ScriptWorldService {
     pub(crate) notifications: SyncSender<Notification>,
     pending_notifications: Mutex<VecDeque<Notification>>,
+    pub(crate) party_bookings: crate::server::model::party_booking::PartyBookings,
+    pub(crate) guild_alliance_requests: crate::server::model::guild_alliance_requests::GuildAllianceRequests,
     next_pet_capture_id: AtomicU64,
     next_pet_cast_id: AtomicU64,
     next_pet_loot_id: AtomicU64,
@@ -551,7 +553,7 @@ impl ScriptWorldService {
                 return Ok(true);
             }
         }
-        let versus = map_flags.versus(state.siege_active);
+        let versus = map_flags.versus(state.siege_active());
         let character = state.characters_mut().get_mut(&owner_id).unwrap();
         let mut systems = character.game_systems.clone();
         let mut admitted = 0;
@@ -811,6 +813,8 @@ impl ScriptWorldService {
         Self {
             notifications,
             pending_notifications: Mutex::new(VecDeque::new()),
+            party_bookings: Default::default(),
+            guild_alliance_requests: Default::default(),
             next_pet_capture_id: AtomicU64::new(1),
             next_pet_cast_id: AtomicU64::new(1),
             next_pet_loot_id: AtomicU64::new(fastrand::u64(1..u64::MAX / 2)),

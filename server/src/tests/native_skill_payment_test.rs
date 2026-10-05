@@ -119,7 +119,7 @@ pub(super) fn fixture(arrow: bool, no_delay: bool) -> (ServerServiceTestContext,
         .insert("empty".into(), vec![instance]);
     let mut flags = crate::server::model::map_flags::MapFlags::default();
     flags.set(crate::server::model::map_flags::MapFlag::Pvp, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     let mut target = create_character();
     target.char_id += 1;
     target.map_instance_key = character.map_instance_key.clone();
@@ -512,7 +512,7 @@ fn intimidate_warps_after_eight_hundred_milliseconds_and_only_brings_a_nearby_vi
         let target_id = id + 1;
         if instance_id != 0 {
             let flags = context.server.state().map_flags_for("empty", 0);
-            context.server.state_mut().runtime_map_flags.insert(("empty".into(), instance_id), flags);
+            context.server.map_flag_overrides().insert(("empty".into(), instance_id), flags);
             let instance = crate::server::model::map_instance::MapInstance::from_map(
                 common::test_script_vm(),
                 crate::tests::common::map_instance_helper::create_empty_map(),
@@ -997,7 +997,7 @@ fn support_map_rules_block_learned_skills_and_fly_wings_but_allow_butterfly_wing
     flags.set(MapFlag::Pvp, true, &[]).unwrap();
     flags.set(MapFlag::NoSkill, true, &[]).unwrap();
     flags.set(MapFlag::NoTeleport, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     start(&context, &mut source, SkillEnum::SmBash, 1, 0);
     assert!(!source.is_using_skill());
     assert_eq!(stored_sp(&repository, &source), 1000);
@@ -1061,7 +1061,7 @@ fn final_strike_keeps_damage_and_hp_penalty_in_gvg_without_sliding_the_caster() 
     let (context, _, mut source) = fixture(false, true);
     let mut flags = MapFlags::default();
     flags.set(MapFlag::Gvg, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     let instance = context.server.state().get_map_instance_from_character(&source).unwrap();
     instance.state_mut().cells_mut().fill(CellType::Walkable.as_flag() | CellType::Shootable.as_flag());
     let mut target = crate::tests::common::mob_helper::create_mob(111, "PORING");
@@ -1201,7 +1201,7 @@ fn teleport_rejects_cleared_dead_changed_map_and_unoffered_selections_without_re
         if rejection == "no-teleport" {
             let mut flags = context.server.state().map_flags_for("empty", 0);
             flags.set(MapFlag::NoTeleport, true, &[]).unwrap();
-            context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+            context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
         }
         let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: if rejection == "unoffered" { "prontera" } else { "Random" }.into(), session: None };
         assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, tick).is_err(), "{rejection}");
@@ -1224,7 +1224,7 @@ fn teleport_interrupted_or_blocked_before_menu_opening_does_not_charge() {
         if matches!(rejection, "no-teleport" | "no-skill") {
             let mut flags = context.server.state().map_flags_for("empty", 0);
             flags.set(if rejection == "no-teleport" { MapFlag::NoTeleport } else { MapFlag::NoSkill }, true, &[]).unwrap();
-            context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+            context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
         }
         context.server.state_mut().insert_character(character);
         crate::server::Server::game_loop_iteration(&context.server, 40);

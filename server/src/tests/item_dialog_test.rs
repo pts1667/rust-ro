@@ -76,7 +76,7 @@ fn changing_map_rules_during_item_input_preserves_the_source_and_discards_the_an
     let (server, repository, session, action) = fixture();
     let mut flags = server.state().map_flags_for("empty", 0);
     flags.set(MapFlag::NoItemConsumption, true, &[]).unwrap();
-    server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    server.map_flag_overrides().insert(("empty".into(), 0), flags);
     let sender = session.script_handler_channel_sender.lock().unwrap().clone().unwrap();
     server.runtime().block_on(sender.send(PlayerInput::Text("Blocked announcement".into()))).unwrap();
     let completion = take_completion(&server);

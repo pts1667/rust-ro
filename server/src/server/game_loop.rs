@@ -45,7 +45,7 @@ impl Server {
     pub(crate) fn game_loop_iteration(server_ref: &Server, tick: u128) {
         let _state_loops_guard = server_ref.lock_state_loops();
         let mut server_state_mut = server_ref.state_mut();
-        server_ref.drain_map_notifications(server_state_mut.as_mut());
+        server_ref.drain_map_notifications();
         server_ref.tick_player_trades(server_state_mut.as_mut(), tick as u64);
         server_ref.tick_character_logouts(server_state_mut.as_mut(), tick);
         server_ref.tick_script_timers(server_state_mut.as_mut(), tick);

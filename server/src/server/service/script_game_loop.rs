@@ -923,7 +923,7 @@ impl Server {
             &mut character.status,
             damage.damage,
             damage.battle_flags,
-            map_flags.versus(state.siege_active),
+            map_flags.versus(state.siege_active()),
             damage.skill_id,
         );
         damage.damage = super::map_flag_service::apply_map_combat_damage(
@@ -1204,7 +1204,7 @@ impl Server {
         kill: &crate::server::model::events::game_event::CharacterKillMonster,
     ) {
         if kill.mob_id != 1288
-            || !state.siege_active
+            || !state.siege_active()
             || !state.map_flags(&kill.map_instance_key).enabled(MapFlag::GvgCastle)
         {
             return;

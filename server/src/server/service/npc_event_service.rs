@@ -344,12 +344,12 @@ impl Server {
             })
             .map(|character| character.char_id)
             .collect::<Vec<_>>();
-        state.pending_map_notifications.extend(
+        self.map_notifications.extend(
             recipients
                 .into_iter()
                 .map(|char_id| Notification::Char(CharNotification::new(char_id, packet.clone()))),
         );
-        self.drain_map_notifications(state);
+        self.drain_map_notifications();
         Ok(Value::default())
     }
 }

@@ -260,7 +260,7 @@ impl ScriptSkillService {
             ground.expires_at = tick;
             return;
         }
-        let duration = spider_web_duration(base, layers, instance.state().flags.versus(state.siege_active));
+        let duration = spider_web_duration(base, layers, instance.state().flags.versus(state.siege_active()));
         let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::SpiderWeb, duration, layers + 1);
         request.flags = 0;
         if player {

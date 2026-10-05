@@ -425,7 +425,7 @@ impl ScriptService {
                 }
                 if matches!(function, Function::AgitStart | Function::AgitEnd | Function::AgitCheck) {
                     return Ok(Value::Number(match function {
-                        Function::AgitCheck => i32::from(state.siege_active),
+                        Function::AgitCheck => i32::from(state.siege_active()),
                         _ => i32::from(server.set_siege_active(state, function == Function::AgitStart)),
                     }));
                 }

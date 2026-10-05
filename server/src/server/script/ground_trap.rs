@@ -394,7 +394,7 @@ impl ScriptSkillService {
         let hit_all = ground.kind.trap()
             && *source.status.combat_actor_kind() == models::enums::actor::CombatActorKind::Player
             && self.configuration.config().game.skill_units.traps_target_all_on_versus
-            && state.map_flags_for(&ground.map, ground.instance).versus(state.siege_active);
+            && state.map_flags_for(&ground.map, ground.instance).versus(state.siege_active());
         let allowed = |id| {
             if hit_all {
                 return true;

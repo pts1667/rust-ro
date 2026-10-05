@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::cell::RefCell;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
@@ -23,7 +24,10 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
 use crate::server::model::session::{SessionRecord, SessionRegistry};
+use crate::server::model::character_lifecycle::CharacterSelectionGate;
 use crate::server::model::duel::Duels;
+use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
+use crate::server::model::notification_backlog::NotificationBacklog;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleResultMode, BattleService};
 use crate::server::service::character::character_service::CharacterService;
@@ -65,6 +69,11 @@ pub struct Server {
     sessions: SessionRegistry,
     directory: CharacterDirectory,
     duels: Duels,
+    map_flag_overrides: MapFlagOverrides,
+    siege: SiegeFlag,
+    cell_basilica: Mutex<HashSet<u32>>,
+    character_selection_waiters: Mutex<Vec<CharacterSelectionGate>>,
+    map_notifications: NotificationBacklog,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -97,6 +106,18 @@ impl Server {
 
     pub fn duels(&self) -> &Duels {
         &self.duels
+    }
+
+    pub fn map_flag_overrides(&self) -> &MapFlagOverrides {
+        &self.map_flag_overrides
+    }
+
+    pub fn siege(&self) -> &SiegeFlag {
+        &self.siege
+    }
+
+    pub(crate) fn cell_basilica(&self) -> MutexGuard<'_, HashSet<u32>> {
+        self.cell_basilica.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
     pub fn state(&self) -> &ServerState {
@@ -216,6 +237,8 @@ impl Server {
         let state = ServerState::new(map_items);
         let sessions = state.sessions().clone();
         let directory = state.directory().clone();
+        let map_flag_overrides = state.map_flag_overrides().clone();
+        let siege = state.siege().clone();
         Server {
             configuration,
             repository,
@@ -225,6 +248,11 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            map_flag_overrides,
+            siege,
+            cell_basilica: Mutex::new(HashSet::new()),
+            character_selection_waiters: Mutex::new(Vec::new()),
+            map_notifications: NotificationBacklog::default(),
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -251,6 +279,8 @@ impl Server {
         let state = ServerState::new(map_items);
         let sessions = state.sessions().clone();
         let directory = state.directory().clone();
+        let map_flag_overrides = state.map_flag_overrides().clone();
+        let siege = state.siege().clone();
         Server {
             configuration,
             repository,
@@ -259,6 +289,11 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            map_flag_overrides,
+            siege,
+            cell_basilica: Mutex::new(HashSet::new()),
+            character_selection_waiters: Mutex::new(Vec::new()),
+            map_notifications: NotificationBacklog::default(),
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,

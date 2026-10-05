@@ -11,7 +11,7 @@ fn fixture() -> super::ServerServiceTestContext {
     let (context, _) = super::world_party_tests::fixture();
     let mut flags = MapFlags::default();
     flags.set(MapFlag::Battleground, true, &[1]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
 }
 
@@ -51,7 +51,7 @@ fn joining_requires_a_battleground_map_and_one_team_per_player() {
     let (first, second) = (create_team(&context, 10), create_team(&context, 90));
     assert_eq!(join(&context, first, 150_000), 1);
     assert_eq!(join(&context, second, 150_000), 0);
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), MapFlags::default());
+    context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     let rejected = context.server.battleground_call(
         context.server.state_mut().as_mut(),
         0,

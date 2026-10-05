@@ -110,9 +110,8 @@ impl ServerState {
 
     pub fn map_flags_for(&self, name: &str, instance: u8) -> MapFlags {
         let name = normalize_map(name);
-        self.runtime_map_flags
-            .get(&(name.clone(), instance))
-            .cloned()
+        self.map_flag_overrides()
+            .get(&name, instance)
             .or_else(|| {
                 self.get_map_instance(&name, instance)
                     .map(|instance| instance.map().flags().clone())
@@ -199,30 +198,15 @@ pub fn is_map_flag_call(function: Function) -> bool {
 }
 
 impl Server {
-    pub(crate) fn drain_map_notifications(&self, state: &mut ServerState) {
-        for _ in 0..64 {
-            let Some(notification) = state.pending_map_notifications.pop_front() else {
-                break;
-            };
-            match self.server_service().notification_sender().try_send(notification) {
-                Ok(()) => {}
-                Err(TrySendError::Full(notification)) => {
-                    state.pending_map_notifications.push_front(notification);
-                    break;
-                }
-                Err(TrySendError::Disconnected(_)) => {
-                    state.pending_map_notifications.clear();
-                    break;
-                }
-            }
-        }
+    pub(crate) fn drain_map_notifications(&self) {
+        self.map_notifications.flush(&self.server_service().notification_sender());
     }
 
     pub(crate) fn set_siege_active(&self, state: &mut ServerState, active: bool) -> bool {
-        if state.siege_active == active {
+        if state.siege_active() == active {
             return false;
         }
-        state.siege_active = active;
+        state.siege().set(active);
         let castle_characters: Vec<u32> = state
             .characters()
             .values()
@@ -252,16 +236,14 @@ impl Server {
             let mut data = map_property_packet_in_siege(
                 &state.map_flags(&character.map_instance_key),
                 self.packetver(),
-                state.siege_active,
+                state.siege_active(),
             );
             if self.duels().duel_of(char_id).is_some() {
                 apply_duel_property(&mut data);
             }
-            state
-                .pending_map_notifications
-                .push_back(Notification::Char(CharNotification::new(char_id, data)));
+            self.map_notifications.push(Notification::Char(CharNotification::new(char_id, data)));
         }
-        self.drain_map_notifications(state);
+        self.drain_map_notifications();
     }
 
     pub(crate) fn install_map_flags(&self, state: &mut ServerState, key: &MapInstanceKey, flags: MapFlags) -> Result<(), String> {
@@ -271,12 +253,12 @@ impl Server {
             return Err("Map is unavailable".into());
         }
         let previous = state.map_flags(key);
-        state.runtime_map_flags.insert((name, key.map_instance()), flags.clone());
+        self.map_flag_overrides().insert((name, key.map_instance()), flags.clone());
         if let Some(instance) = instance {
             instance.add_to_next_tick(MapEvent::SetMapFlags(SetMapFlags { flags: flags.clone() }));
         }
-        let packet = map_property_packet_in_siege(&flags, self.packetver(), state.siege_active);
-        let stop_attacks = previous.versus(state.siege_active) && !flags.versus(state.siege_active);
+        let packet = map_property_packet_in_siege(&flags, self.packetver(), state.siege_active());
+        let stop_attacks = previous.versus(state.siege_active()) && !flags.versus(state.siege_active());
         let mut notifications = Vec::new();
         for character in state
             .characters_mut()
@@ -290,8 +272,8 @@ impl Server {
                 notifications.push(Notification::Char(CharNotification::new(character.char_id, packet.clone())));
             }
         }
-        state.pending_map_notifications.extend(notifications);
-        self.drain_map_notifications(state);
+        self.map_notifications.extend(notifications);
+        self.drain_map_notifications();
         Ok(())
     }
 

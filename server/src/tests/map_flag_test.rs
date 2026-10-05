@@ -37,9 +37,7 @@ fn ordinary_maps_deny_hostile_player_skills_before_cast_or_payment() {
     let target = source.char_id + 1;
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .insert(("empty".into(), 0), MapFlags::default());
+        .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context.server.server_service().character_start_use_skill(
         &context.server,
         context.server.state(),
@@ -83,11 +81,8 @@ fn pvp_protects_party_and_guild_members_until_the_corresponding_flags_are_set() 
     assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .get_mut(&("empty".into(), 0))
-        .unwrap()
-        .set(MapFlag::PvpNoParty, true, &[])
+        .map_flag_overrides()
+        .update(("empty".into(), 0), |flags| flags.set(MapFlag::PvpNoParty, true, &[]))
         .unwrap();
     assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
     source.game_systems.guild_id = 8;
@@ -102,11 +97,8 @@ fn pvp_protects_party_and_guild_members_until_the_corresponding_flags_are_set() 
     assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .get_mut(&("empty".into(), 0))
-        .unwrap()
-        .set(MapFlag::PvpNoGuild, true, &[])
+        .map_flag_overrides()
+        .update(("empty".into(), 0), |flags| flags.set(MapFlag::PvpNoGuild, true, &[]))
         .unwrap();
     assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
     assert!(
@@ -122,9 +114,9 @@ fn castle_player_combat_requires_an_active_siege_and_rejects_other_instances() {
     let target = source.char_id + 1;
     let mut flags = MapFlags::default();
     flags.set(MapFlag::GvgCastle, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
-    context.server.state_mut().siege_active = true;
+    context.server.siege().set(true);
     assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
     context
         .server
@@ -153,9 +145,7 @@ fn normal_player_attacks_use_the_player_damage_queue_and_stop_when_pvp_is_disabl
     );
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .insert(("empty".into(), 0), MapFlags::default());
+        .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context
         .server
         .server_service()
@@ -197,9 +187,7 @@ fn a_map_rule_change_before_landed_damage_preserves_hp_and_shield_charges() {
     context.server.state_mut().insert_character(source);
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .insert(("empty".into(), 0), MapFlags::default());
+        .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context
         .server
         .admit_character_damage(context.server.state_mut().as_mut(), damage(source_id, target_id), 1000)
@@ -359,7 +347,7 @@ fn player_gvg_damage_consumes_a_shield_before_applying_the_map_reduction() {
     context.server.state_mut().insert_character(source);
     let mut flags = MapFlags::default();
     flags.set(MapFlag::Gvg, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
         .admit_character_damage(context.server.state_mut().as_mut(), damage(source_id, target_id), 1000)
@@ -405,9 +393,7 @@ fn dispel_can_target_its_own_party_on_an_ordinary_map() {
     let target = source.char_id + 1;
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .insert(("empty".into(), 0), MapFlags::default());
+        .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     assert!(
         !context
             .server

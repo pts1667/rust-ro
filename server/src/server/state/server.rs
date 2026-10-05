@@ -8,6 +8,7 @@ use movement::position::Position;
 
 use crate::server::model::map::MAP_EXT;
 use crate::server::model::map_instance::MapInstance;
+use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, MapItems, ToMapItem, ToMapItemSnapshot};
 use crate::server::model::request::Request;
 use crate::server::model::script::Script;
@@ -27,17 +28,12 @@ pub struct ServerState {
     characters: HashMap<u32, Character, NoopHasherU32>,
     locked_map_item: HashSet<u32, NoopHasherU32>, /* map item that should be removed from map instance, in next tick, avoid to use them
                                                    * meanwhile. */
-    pub runtime_map_flags: HashMap<(String, u8), crate::server::model::map_flags::MapFlags>,
-    pub siege_active: bool,
-    pub guild_alliance_requests: HashMap<u32, (u32, u32)>,
+    map_flag_overrides: MapFlagOverrides,
+    siege: SiegeFlag,
     pub battlegrounds: crate::server::model::battleground::Battlegrounds,
-    pub cell_basilica: std::collections::HashSet<u32>,
-    pub party_bookings: crate::server::model::party_booking::PartyBookings,
-    pub pending_map_notifications: std::collections::VecDeque<crate::server::model::events::client_notification::Notification>,
     pub(crate) script_timers: crate::server::model::script_timer::ScriptTimers,
     pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
     pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
-    pub(crate) character_selection_waiters: Vec<crate::server::model::character_lifecycle::CharacterSelectionGate>,
 }
 
 #[cfg(test)]
@@ -139,17 +135,12 @@ impl ServerState {
             directory: CharacterDirectory::default(),
             characters: Default::default(),
             locked_map_item: Default::default(),
-            runtime_map_flags: Default::default(),
-            siege_active: false,
-            guild_alliance_requests: Default::default(),
+            map_flag_overrides: MapFlagOverrides::default(),
+            siege: SiegeFlag::default(),
             battlegrounds: Default::default(),
-            cell_basilica: Default::default(),
-            party_bookings: Default::default(),
-            pending_map_notifications: Default::default(),
             script_timers: Default::default(),
             character_logins: Default::default(),
             pending_character_logouts: Default::default(),
-            character_selection_waiters: Default::default(),
         }
     }
 
@@ -200,6 +191,18 @@ impl ServerState {
 
     pub fn directory(&self) -> &CharacterDirectory {
         &self.directory
+    }
+
+    pub fn map_flag_overrides(&self) -> &MapFlagOverrides {
+        &self.map_flag_overrides
+    }
+
+    pub fn siege(&self) -> &SiegeFlag {
+        &self.siege
+    }
+
+    pub fn siege_active(&self) -> bool {
+        self.siege.get()
     }
 
     pub fn publish_directory(&self) {

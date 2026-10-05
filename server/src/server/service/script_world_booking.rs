@@ -76,10 +76,10 @@ impl ScriptWorldService {
 
     pub(crate) fn booking_request(&self, state: &mut ServerState, character: &Character, request: BookingRequest) -> Result<(), String> {
         let online: Vec<u32> = state.characters().keys().copied().collect();
-        state.party_bookings.prune(|id| online.contains(&id) || id == character.char_id);
+        self.party_bookings.prune(|id| online.contains(&id) || id == character.char_id);
         match request {
             BookingRequest::BookingRegister { level, map_id, jobs } => {
-                let ad = state.party_bookings.register(character.char_id, &character.name, now_seconds(), level, map_id, jobs);
+                let ad = self.party_bookings.register(character.char_id, &character.name, now_seconds(), level, map_id, jobs);
                 let mut ack = header(REGISTER_ACK);
                 ack.extend_from_slice(&(if ad.is_some() { REGISTER_SUCCESS } else { REGISTER_DUPLICATE }).to_le_bytes());
                 self.send_to(character.char_id, ack);
@@ -90,7 +90,7 @@ impl ScriptWorldService {
                 }
             }
             BookingRequest::BookingSearch { level, map_id, job, last_index } => {
-                let (results, more) = state.party_bookings.search(level, map_id, job, last_index);
+                let (results, more) = self.party_bookings.search(level, map_id, job, last_index);
                 let mut packet = header(SEARCH_ACK);
                 packet.extend_from_slice(&((5 + results.len() * 48) as u16).to_le_bytes());
                 packet.push(u8::from(more));
@@ -101,7 +101,7 @@ impl ScriptWorldService {
             }
             BookingRequest::BookingDelete => {
                 let mut ack = header(DELETE_ACK);
-                match state.party_bookings.delete(character.char_id) {
+                match self.party_bookings.delete(character.char_id) {
                     Some(index) => {
                         ack.extend_from_slice(&DELETE_SUCCESS.to_le_bytes());
                         self.send_to(character.char_id, ack);
@@ -116,7 +116,7 @@ impl ScriptWorldService {
                 }
             }
             BookingRequest::BookingUpdate(jobs) => {
-                if let Some(ad) = state.party_bookings.update(character.char_id, now_seconds(), jobs) {
+                if let Some(ad) = self.party_bookings.update(character.char_id, now_seconds(), jobs) {
                     let mut notice = header(NOTIFY_UPDATE);
                     notice.extend_from_slice(&ad.index.to_le_bytes());
                     push_jobs(&mut notice, &ad.jobs);

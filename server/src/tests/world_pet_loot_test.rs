@@ -215,14 +215,19 @@ fn pet_cargo_return_keeps_capacity_overflow_until_floor_reservation_and_offline_
     cargo(&context, &repository, vec![equipment()]);
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let mut character = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    {
-        let mut state = context.server.state_mut();
-        state.runtime_map_flags.entry((character.map_instance_key.map_without_ext(), 0)).or_default().set(MapFlag::NoDrop, true, &[]).unwrap();
-    }
+    context
+        .server
+        .map_flag_overrides()
+        .update((character.map_instance_key.map_without_ext(), 0), |flags| flags.set(MapFlag::NoDrop, true, &[]))
+        .unwrap();
     assert!(context.server.script_world_service().return_pet_loot_in_state(&context.server, context.server.state(), &mut character, 100).is_err());
     assert_eq!(repository.character_game_systems(150_000).unwrap().pet_loot.unwrap().items, vec![equipment()]);
     assert!(!map_events(&context).iter().any(|event| matches!(event, MapEvent::PreparePetLootDrop(_))));
-    context.server.state_mut().runtime_map_flags.get_mut(&(character.map_instance_key.map_without_ext(), 0)).unwrap().set(MapFlag::NoDrop, false, &[]).unwrap();
+    context
+        .server
+        .map_flag_overrides()
+        .update((character.map_instance_key.map_without_ext(), 0), |flags| flags.set(MapFlag::NoDrop, false, &[]))
+        .unwrap();
     assert!(!context.server.script_world_service().return_pet_loot_in_state(&context.server, context.server.state(), &mut character, 101).unwrap());
     let saved = repository.character_game_systems(150_000).unwrap();
     assert_eq!(saved.pet_loot.as_ref().unwrap().items, vec![equipment()]);
