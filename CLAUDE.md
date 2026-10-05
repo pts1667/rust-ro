@@ -90,6 +90,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `ServerState` (characters and the data handlers touch) is owned by the game loop; the movement loop shares it through `Server::lock_state_loops()`. Other threads must not call `server.state()`/`state_mut()`.
 - Request-handler and notification threads read `Server::sessions()` (`SessionRegistry`, a DashMap) and `Server::directory()` (`CharacterDirectory`, positions published at the end of each loop iteration, up to one tick stale). For anything else, enqueue a `GameEvent`.
 - `MapInstanceState` is behind a `parking_lot::RwLock` (`state()`/`state_mut()` panic after a 10s timeout instead of hanging).
+- Self-contained stores that only need character ids live on `Server` behind their own lock rather than in `ServerState` (`Server::duels()`).
 
 
 ## Files to read or to avoid

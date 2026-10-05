@@ -254,7 +254,7 @@ impl Server {
                 self.packetver(),
                 state.siege_active,
             );
-            if state.duels.duel_of(char_id).is_some() {
+            if self.duels().duel_of(char_id).is_some() {
                 apply_duel_property(&mut data);
             }
             state

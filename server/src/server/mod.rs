@@ -23,6 +23,7 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
 use crate::server::model::session::{SessionRecord, SessionRegistry};
+use crate::server::model::duel::Duels;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleResultMode, BattleService};
 use crate::server::service::character::character_service::CharacterService;
@@ -63,6 +64,7 @@ pub struct Server {
     state_loops_lock: Mutex<()>,
     sessions: SessionRegistry,
     directory: CharacterDirectory,
+    duels: Duels,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -91,6 +93,10 @@ impl Server {
     /// Character positions for threads that must not read `ServerState`.
     pub fn directory(&self) -> &CharacterDirectory {
         &self.directory
+    }
+
+    pub fn duels(&self) -> &Duels {
+        &self.duels
     }
 
     pub fn state(&self) -> &ServerState {
@@ -218,6 +224,7 @@ impl Server {
             state_loops_lock: Mutex::new(()),
             sessions,
             directory,
+            duels: Duels::default(),
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -251,6 +258,7 @@ impl Server {
             state_loops_lock: Mutex::new(()),
             sessions,
             directory,
+            duels: Duels::default(),
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,

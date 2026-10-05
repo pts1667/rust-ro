@@ -34,7 +34,7 @@ impl Server {
             return false;
         };
         if *item.object_type() == MapItemType::Mob {
-            if state.duels.duel_of(source.char_id).is_some() && !state.map_flags(&source.map_instance_key).versus(state.siege_active) {
+            if self.duels().duel_of(source.char_id).is_some() && !state.map_flags(&source.map_instance_key).versus(state.siege_active) {
                 return false;
             }
             return state
@@ -71,7 +71,7 @@ impl Server {
             return false;
         }
         let flags = state.map_flags(&source.map_instance_key);
-        if source.killer || state.duels.same_duel(source.char_id, target.char_id) {
+        if source.killer || self.duels().same_duel(source.char_id, target.char_id) {
             return true;
         }
         if !flags.versus(state.siege_active) {
