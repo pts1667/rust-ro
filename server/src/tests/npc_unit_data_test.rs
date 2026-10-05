@@ -30,13 +30,7 @@ fn fixture() -> (ServerServiceTestContext, Arc<MapInstance>, MapInstanceService,
     let session = Arc::new(
         Session::create_empty(account_id, 42, 0, GlobalConfigService::instance().packetver()).recreate_with_character(character_id),
     );
-    context
-        .server
-        .state()
-        .sessions()
-        .write()
-        .unwrap()
-        .insert(account_id, session.clone());
+    context.server.sessions().add(account_id, session.clone());
     let script = instance.get_script(NPC_ID).unwrap();
     instance
         .state_mut()

@@ -37,7 +37,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
         return Err("Script operation packet has the wrong length".into());
     }
     let session_id = server.ensure_session_exists(&context.socket()).ok_or("No authenticated session")?;
-    let session = server.state().find_session(session_id).ok_or("Session expired")?;
+    let session = server.sessions().find(session_id).ok_or("Session expired")?;
     let char_id = session.char_id.ok_or("No character selected")?;
     let socket = session.map_server_socket.as_ref().ok_or("No map connection")?;
     if !Arc::ptr_eq(socket, &context.socket()) {

@@ -23,7 +23,7 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::path::manhattan_distance;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
-use crate::server::model::session::{Session, SessionRecord, SessionsIter};
+use crate::server::model::session::{SessionRecord, SessionRegistry};
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleResultMode, BattleService};
 use crate::server::service::character::character_service::CharacterService;
@@ -61,6 +61,7 @@ pub struct Server {
     pub repository: Arc<dyn Repository>,
     state: MyUnsafeCell<ServerState>,
     state_loops_lock: Mutex<()>,
+    sessions: SessionRegistry,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -79,6 +80,11 @@ impl Server {
     /// The game loop and the movement loop both mutate `ServerState` from their own thread, they must not run at the same time.
     pub(crate) fn lock_state_loops(&self) -> MutexGuard<'_, ()> {
         self.state_loops_lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// Session registry for threads that must not read `ServerState`.
+    pub fn sessions(&self) -> &SessionRegistry {
+        &self.sessions
     }
 
     pub fn state(&self) -> &ServerState {
@@ -195,12 +201,15 @@ impl Server {
                 GlobalConfigService::instance(),
             ),
         );
+        let state = ServerState::new(map_items);
+        let sessions = state.sessions().clone();
         Server {
             configuration,
             repository,
             tasks_queue,
-            state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state: MyUnsafeCell::new(state),
             state_loops_lock: Mutex::new(()),
+            sessions,
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -224,11 +233,14 @@ impl Server {
             repository.clone(),
             GlobalConfigService::instance(),
         );
+        let state = ServerState::new(map_items);
+        let sessions = state.sessions().clone();
         Server {
             configuration,
             repository,
-            state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state: MyUnsafeCell::new(state),
             state_loops_lock: Mutex::new(()),
+            sessions,
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,
@@ -258,12 +270,7 @@ impl Server {
         self.character_service()
             .save_characters_state_with_positions(characters, positions, get_tick())
             .await;
-        self.state_mut()
-            .sessions()
-            .write()
-            .unwrap()
-            .iter()
-            .for_each(|(_, session)| session.disconnect());
+        self.sessions.for_each(|session| session.disconnect());
     }
 
     pub fn is_alive(&self) -> bool {
@@ -583,7 +590,11 @@ impl Server {
                             }
                             packets_by_session.retain(|buffer| {
                                 if buffer.should_flush() {
-                                    if let Some(tcp_stream) = server_ref.state().get_map_socket_for_char_id(buffer.session_id()) {
+                                    if let Some(tcp_stream) = server_ref
+                                        .sessions()
+                                        .find_by_char_id(buffer.session_id())
+                                        .and_then(|session| session.map_server_socket.clone())
+                                    {
                                         let mut tcp_stream_guard = tcp_stream.write().unwrap();
                                         if tcp_stream_guard.peer_addr().is_ok() {
                                             debug!(
@@ -743,15 +754,11 @@ impl Server {
     }
 
     pub fn ensure_session_exists(&self, tcp_stream: &Arc<RwLock<TcpStream>>) -> Option<u32> {
-        if let Ok(session_guard) = self.state().sessions().read() {
-            let stream_guard = read_lock!(tcp_stream);
-            let session_option = session_guard.find_by_stream(&stream_guard);
-            if session_option.is_none() {
-                debug!("Session does not exist! for socket {:?}", stream_guard);
-                return None;
-            }
-            return Some(session_option.unwrap());
+        let stream_guard = read_lock!(tcp_stream);
+        let session_option = self.sessions.find_by_stream(&stream_guard);
+        if session_option.is_none() {
+            debug!("Session does not exist! for socket {:?}", stream_guard);
         }
-        None
+        session_option
     }
 }

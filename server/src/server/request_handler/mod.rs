@@ -73,7 +73,7 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
             let Some(session_id) = server.ensure_session_exists(&context.socket()) else {
                 return;
             };
-            let Some(session) = server.state().find_session(session_id) else {
+            let Some(session) = server.sessions().find(session_id) else {
                 return;
             };
             let Some(char_id) = session.char_id else {
@@ -129,7 +129,7 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
     if session_id.is_none() {
         return;
     }
-    let session = server.state().get_session(session_id.unwrap());
+    let session = server.sessions().get(session_id.unwrap());
     if let Some(session_record) = server.get_recording_session(session_id.unwrap()) {
         session_record.record(
             get_tick(),

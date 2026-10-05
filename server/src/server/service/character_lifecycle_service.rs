@@ -290,16 +290,7 @@ impl Server {
     pub(crate) fn handle_client_disconnect(&self, state: &mut ServerState, request: ClientDisconnected, tick: u128) {
         let session = state
             .sessions()
-            .read()
-            .unwrap()
-            .values()
-            .find(|session| {
-                session
-                    .map_server_socket
-                    .as_ref()
-                    .is_some_and(|socket| Arc::ptr_eq(socket, &request.socket))
-            })
-            .cloned()
+            .find_by_map_socket(&request.socket)
             .or_else(|| {
                 state
                     .character_logins
