@@ -8,35 +8,31 @@ use movement::position::Position;
 
 use crate::server::model::map::MAP_EXT;
 use crate::server::model::map_instance::MapInstance;
+use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, MapItems, ToMapItem, ToMapItemSnapshot};
 use crate::server::model::request::Request;
 use crate::server::model::script::Script;
-use crate::server::model::session::Session;
+use crate::server::model::session::{Session, SessionRegistry};
 use crate::server::service::script_world_service::{companion_name, companion_snapshots, companion_status_snapshot};
 use crate::server::state::character::Character;
+use crate::server::state::character_directory::CharacterDirectory;
 use crate::util::hasher::NoopHasherU32;
 
 pub struct ServerState {
-    pub(crate) ground_units: HashMap<u32, crate::server::model::ground_unit::GroundUnitSnapshot>,
+    ground_units: crate::server::model::ground_unit::GroundUnitSnapshots,
     map_items: MapItems,
     map_instances: HashMap<String, Vec<Arc<MapInstance>>>,
     map_instances_count: AtomicI8,
-    sessions: Arc<RwLock<HashMap<u32, Arc<Session>>>>,
+    sessions: SessionRegistry,
+    directory: CharacterDirectory,
     characters: HashMap<u32, Character, NoopHasherU32>,
     locked_map_item: HashSet<u32, NoopHasherU32>, /* map item that should be removed from map instance, in next tick, avoid to use them
                                                    * meanwhile. */
-    pub runtime_map_flags: HashMap<(String, u8), crate::server::model::map_flags::MapFlags>,
-    pub siege_active: bool,
-    pub guild_alliance_requests: HashMap<u32, (u32, u32)>,
-    pub duels: crate::server::model::duel::Duels,
-    pub battlegrounds: crate::server::model::battleground::Battlegrounds,
-    pub cell_basilica: std::collections::HashSet<u32>,
-    pub party_bookings: crate::server::model::party_booking::PartyBookings,
-    pub pending_map_notifications: std::collections::VecDeque<crate::server::model::events::client_notification::Notification>,
+    map_flag_overrides: MapFlagOverrides,
+    siege: SiegeFlag,
     pub(crate) script_timers: crate::server::model::script_timer::ScriptTimers,
     pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
     pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
-    pub(crate) character_selection_waiters: Vec<crate::server::model::character_lifecycle::CharacterSelectionGate>,
 }
 
 #[cfg(test)]
@@ -121,11 +117,12 @@ unsafe impl Sync for ServerState {}
 unsafe impl Send for ServerState {}
 
 impl ServerState {
-    pub(crate) fn ground_unit(&self, id: u32, map: &str, instance: u8) -> Option<&crate::server::model::ground_unit::GroundUnitSnapshot> {
-        self.ground_units.get(&id).filter(|unit| {
-            unit.map == crate::server::model::map_instance::MapInstanceKey::new(map.into(), instance)
-                && unit.alive(crate::util::tick::get_tick())
-        })
+    pub(crate) fn ground_units(&self) -> &crate::server::model::ground_unit::GroundUnitSnapshots {
+        &self.ground_units
+    }
+
+    pub(crate) fn ground_unit(&self, id: u32, map: &str, instance: u8) -> Option<crate::server::model::ground_unit::GroundUnitSnapshot> {
+        self.ground_units.get(id, map, instance, crate::util::tick::get_tick())
     }
 
     pub fn new(map_items: MapItems) -> Self {
@@ -134,44 +131,32 @@ impl ServerState {
             map_items,
             map_instances: Default::default(),
             map_instances_count: Default::default(),
-            sessions: Arc::new(RwLock::new(HashMap::<u32, Arc<Session>>::new())),
+            sessions: SessionRegistry::default(),
+            directory: CharacterDirectory::default(),
             characters: Default::default(),
             locked_map_item: Default::default(),
-            runtime_map_flags: Default::default(),
-            siege_active: false,
-            guild_alliance_requests: Default::default(),
-            duels: Default::default(),
-            battlegrounds: Default::default(),
-            cell_basilica: Default::default(),
-            party_bookings: Default::default(),
-            pending_map_notifications: Default::default(),
+            map_flag_overrides: MapFlagOverrides::default(),
+            siege: SiegeFlag::default(),
             script_timers: Default::default(),
             character_logins: Default::default(),
             pending_character_logouts: Default::default(),
-            character_selection_waiters: Default::default(),
         }
     }
 
     pub fn remove_session(&self, session_id: u32) {
-        let mut sessions = self.sessions.write().unwrap();
-        if let Some(session) = sessions.remove(&session_id) {
-            session.cancel_script();
-        }
+        self.sessions.remove(session_id);
     }
 
     pub fn add_session(&self, session_id: u32, session: Arc<Session>) {
-        let mut sessions = self.sessions.write().unwrap();
-        sessions.insert(session_id, session);
+        self.sessions.add(session_id, session);
     }
 
     pub fn get_session(&self, session_id: u32) -> Arc<Session> {
-        let sessions = self.sessions.read().unwrap();
-        let session_ref = sessions.get(&session_id).unwrap();
-        session_ref.clone()
+        self.sessions.get(session_id)
     }
 
     pub fn find_session(&self, session_id: u32) -> Option<Arc<Session>> {
-        self.sessions.read().unwrap().get(&session_id).cloned()
+        self.sessions.find(session_id)
     }
 
     pub fn get_character_unsafe(&self, char_id: u32) -> &Character {
@@ -199,20 +184,31 @@ impl ServerState {
         self.map_items.remove(account_id);
     }
 
-    pub fn get_map_socket_for_char_id(&self, char_id: u32) -> Option<Arc<RwLock<TcpStream>>> {
-        self.sessions
-            .read()
-            .unwrap()
-            .values()
-            .find(|session| session.char_id == Some(char_id))
-            .and_then(|session| session.map_server_socket.clone())
-    }
-
     pub fn insert_map_item(&mut self, id: u32, map_item: MapItem) {
         self.map_items.insert(id, map_item);
     }
 
-    pub fn sessions(&self) -> &Arc<RwLock<HashMap<u32, Arc<Session>>>> {
+    pub fn directory(&self) -> &CharacterDirectory {
+        &self.directory
+    }
+
+    pub fn map_flag_overrides(&self) -> &MapFlagOverrides {
+        &self.map_flag_overrides
+    }
+
+    pub fn siege(&self) -> &SiegeFlag {
+        &self.siege
+    }
+
+    pub fn siege_active(&self) -> bool {
+        self.siege.get()
+    }
+
+    pub fn publish_directory(&self) {
+        self.directory.publish(&self.characters);
+    }
+
+    pub fn sessions(&self) -> &SessionRegistry {
         &self.sessions
     }
 

@@ -187,10 +187,9 @@ impl Server {
             .filter(|character| map.is_none_or(|map| normalize_map(character.current_map_name()) == map))
             .map(|character| character.char_id)
             .collect();
-        state
-            .pending_map_notifications
+        self.map_notifications
             .extend(recipients.into_iter().map(|char_id| Notification::Char(CharNotification::new(char_id, packet.clone()))));
-        self.drain_map_notifications(state);
+        self.drain_map_notifications();
     }
 
     fn castle_friendly_guilds(&self, owner: u32) -> Vec<u32> {
@@ -332,7 +331,7 @@ impl Server {
                 self.castle_announce(state, None, &format!("The [{}] castle has been conquered by the [{guild_name}] guild.", castle.name));
             }
             CastleLifecycle::RestartArena { map } => {
-                if state.siege_active {
+                if state.siege_active() {
                     if let Some(castle) = castle_by_map(&map) {
                         self.start_castle_arena(state, castle);
                     }

@@ -105,7 +105,7 @@ impl ScriptSkillService {
     }
 
     pub fn after_skill_damage(&self, server: &Server, state: &mut ServerState, hit: ScriptSkillHit, tick: u128) -> Result<(), String> {
-        if state.ground_units.contains_key(&hit.target_id) { return Ok(()); }
+        if state.ground_units().contains(hit.target_id) { return Ok(()); }
         if hit.damage == 0 || hit.depth >= 8 {
             return Ok(());
         }

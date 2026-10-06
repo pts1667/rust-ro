@@ -4,7 +4,7 @@ use models::status_change::StatusChangeKind;
 use script_sdk::{Function, Reply, Value};
 
 use crate::server::Server;
-use crate::server::model::battleground::BgPoint;
+use crate::server::model::battleground::{BgMember, BgPoint, MAX_BG_MEMBERS};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::{GameEvent, ScriptWarp};
 use crate::server::model::map_flags::MapFlag;
@@ -20,6 +20,21 @@ const SERVER_NAME: &str = "Server";
 const DEFAULT_DESERTER_SECONDS: u32 = 600;
 
 static NEXT_TICK: AtomicU64 = AtomicU64::new(0);
+
+pub(crate) fn battleground_team_of(state: &ServerState, char_id: u32) -> u32 {
+    state.characters().get(&char_id).map_or(0, |character| character.bg_id)
+}
+
+pub(crate) fn battleground_members(state: &ServerState, bg_id: u32) -> Vec<u32> {
+    let mut members: Vec<u32> = state
+        .characters()
+        .values()
+        .filter(|character| bg_id != 0 && character.bg_id == bg_id)
+        .map(|character| character.char_id)
+        .collect();
+    members.sort_unstable();
+    members
+}
 
 pub(crate) fn handles(function: Function) -> bool {
     matches!(
@@ -118,14 +133,14 @@ impl Server {
                 } else {
                     return Ok(Value::Number(0));
                 };
-                let id = state.battlegrounds.create(cemetery, optional_text(3), optional_text(4), optional_text(5), DEFAULT_DESERTER_SECONDS);
+                let id = self.battlegrounds.create(cemetery, optional_text(3), optional_text(4), optional_text(5), DEFAULT_DESERTER_SECONDS);
                 Ok(Value::Number(id as i32))
             }
             Function::BgJoin => {
                 let bg_id = team(0)?;
                 let char_id = target(4);
                 let destination = match optional_text(1).as_str() {
-                    "" => state.battlegrounds.team(bg_id).and_then(|team| team.cemetery.clone()),
+                    "" => self.battlegrounds.team(bg_id).and_then(|team| team.cemetery.clone()),
                     map => Some(BgPoint { map: normalize_map(map), x: coordinate(number(2)?)?, y: coordinate(number(3)?)? }),
                 };
                 let Some(destination) = destination else { return Ok(Value::Number(0)) };
@@ -138,7 +153,7 @@ impl Server {
             }
             Function::BgLeave | Function::BgDesert => {
                 let char_id = target(0);
-                if state.battlegrounds.team_of(char_id) != 0 {
+                if battleground_team_of(state, char_id) != 0 {
                     self.battleground_leave(state, char_id, false, function == Function::BgDesert);
                 }
                 Ok(Value::default())
@@ -154,21 +169,18 @@ impl Server {
                     return Ok(Value::default());
                 }
                 let destination = BgPoint { map, x: coordinate(number(2)?)?, y: coordinate(number(3)?)? };
-                for char_id in state.battlegrounds.member_ids(bg_id) {
+                for char_id in battleground_members(state, bg_id) {
                     self.battleground_warp(state, char_id, &destination);
                 }
                 Ok(Value::default())
             }
             Function::BgTeamSetXy => {
                 let (x, y) = (coordinate(number(1)?)?, coordinate(number(2)?)?);
-                if let Some(cemetery) = state.battlegrounds.team_mut(team(0)?).and_then(|team| team.cemetery.as_mut()) {
-                    cemetery.x = x;
-                    cemetery.y = y;
-                }
+                self.battlegrounds.set_cemetery_position(team(0)?, x, y);
                 Ok(Value::default())
             }
             Function::BgGetData => {
-                let members = state.battlegrounds.member_ids(team(0)?);
+                let members = battleground_members(state, team(0)?);
                 Ok(match number(1)? {
                     0 => Value::Number(members.len() as i32),
                     1 => Value::Array(members.into_iter().map(|id| Value::Number(id as i32)).collect()),
@@ -178,9 +190,7 @@ impl Server {
             Function::BgGetAreaUsers => {
                 let map = normalize_map(&text(1)?);
                 let (x0, y0, x1, y1) = (number(2)?, number(3)?, number(4)?, number(5)?);
-                let count = state
-                    .battlegrounds
-                    .member_ids(team(0)?)
+                let count = battleground_members(state, team(0)?)
                     .into_iter()
                     .filter_map(|id| state.characters().get(&id))
                     .filter(|member| {
@@ -197,7 +207,7 @@ impl Server {
                     return Ok(Value::default());
                 }
                 let (first, second) = (score(number(1)?), score(number(2)?));
-                state.battlegrounds.set_score(&map, first, second);
+                self.battlegrounds.set_score(&map, first, second);
                 for character in state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map) {
                     self.battleground_send(character.char_id, score_packet(first, second));
                 }
@@ -224,26 +234,32 @@ impl Server {
     pub(crate) fn battleground_join(&self, state: &mut ServerState, bg_id: u32, char_id: u32, entry_point: Option<BgPoint>) -> bool {
         let Some(character) = state.characters().get(&char_id) else { return false };
         let position = (character.x(), character.y());
-        if !state.battlegrounds.join(bg_id, char_id, position, entry_point) {
+        if character.bg_id != 0 || self.battlegrounds.team(bg_id).is_none() || battleground_members(state, bg_id).len() >= MAX_BG_MEMBERS {
             return false;
         }
-        Self::mirror_battleground_team(state, char_id, bg_id);
+        if let Some(character) = state.characters_mut().get_mut(&char_id) {
+            character.bg_id = bg_id;
+            character.bg_tracking = BgMember::joined_at(position, entry_point);
+        }
         self.battleground_sync_member(state, char_id);
         true
     }
 
-    fn mirror_battleground_team(state: &mut ServerState, char_id: u32, bg_id: u32) {
-        if let Some(character) = state.characters_mut().get_mut(&char_id) {
-            character.bg_id = bg_id;
-        }
+    /// Detaches the character from its team; returns the team id, the entry point and the team's deserter time.
+    fn detach_from_battleground(&self, state: &mut ServerState, char_id: u32) -> Option<(u32, Option<BgPoint>, u32)> {
+        let character = state.characters_mut().get_mut(&char_id).filter(|character| character.bg_id != 0)?;
+        let bg_id = std::mem::take(&mut character.bg_id);
+        let entry_point = std::mem::take(&mut character.bg_tracking).entry_point;
+        let team = self.battlegrounds.team(bg_id)?;
+        Some((bg_id, entry_point, team.deserter_seconds))
     }
 
     /// Sends the new member the roster state and announces the member to the rest of the team.
     fn battleground_sync_member(&self, state: &ServerState, char_id: u32) {
         let Some(character) = state.characters().get(&char_id) else { return };
-        let bg_id = state.battlegrounds.team_of(char_id);
+        let bg_id = battleground_team_of(state, char_id);
         let packetver = self.packetver();
-        for other in state.battlegrounds.member_ids(bg_id).into_iter().filter(|id| *id != char_id) {
+        for other in battleground_members(state, bg_id).into_iter().filter(|id| *id != char_id) {
             let Some(other) = state.characters().get(&other) else { continue };
             if other.map_instance_key != character.map_instance_key {
                 continue;
@@ -252,7 +268,7 @@ impl Server {
             self.battleground_send(char_id, position_packet(other.account_id, &other.name, other.status.job, other.x(), other.y()));
             self.battleground_send(char_id, health_packet(packetver, other.account_id, &other.name, other.status.hp, max_hp));
         }
-        let (first, second) = state.battlegrounds.score(&normalize_map(character.current_map_name()));
+        let (first, second) = self.battlegrounds.score(&normalize_map(character.current_map_name()));
         if (first, second) != (0, 0) {
             self.battleground_send(char_id, score_packet(first, second));
         }
@@ -261,21 +277,20 @@ impl Server {
     /// Removes the member from the team; returns the remaining member count.
     pub(crate) fn battleground_leave(&self, state: &mut ServerState, char_id: u32, quit: bool, deserter: bool) -> Option<usize> {
         let quit_event = quit
-            .then(|| state.battlegrounds.team(state.battlegrounds.team_of(char_id)).map(|team| team.quit_event.clone()))
+            .then(|| self.battlegrounds.team(battleground_team_of(state, char_id)).map(|team| team.quit_event.clone()))
             .flatten()
             .filter(|event| !event.is_empty());
-        let (bg_id, entry_point, deserter_seconds) = state.battlegrounds.leave(char_id)?;
-        Self::mirror_battleground_team(state, char_id, 0);
+        let (bg_id, entry_point, deserter_seconds) = self.detach_from_battleground(state, char_id)?;
         if let Some(event) = quit_event {
             self.trigger_npc_event(state, &event);
         }
         let Some(character) = state.characters().get(&char_id) else {
-            return Some(state.battlegrounds.member_ids(bg_id).len());
+            return Some(battleground_members(state, bg_id).len());
         };
         let (account_id, name) = (character.account_id, character.name.clone());
         let save_point = BgPoint { map: normalize_map(&character.save_map), x: character.save_x, y: character.save_y };
         let removal = position_removal_packet(account_id);
-        for other in state.battlegrounds.member_ids(bg_id) {
+        for other in battleground_members(state, bg_id) {
             self.battleground_send(other, removal.clone());
         }
         if !quit {
@@ -294,20 +309,22 @@ impl Server {
             let duration = i32::try_from(deserter_seconds.saturating_mul(1000)).unwrap_or(i32::MAX);
             self.start_battleground_queue_status(state, char_id, StatusChangeKind::EntryQueueNotifyAdmissionTimeOut, duration);
         }
-        Some(state.battlegrounds.member_ids(bg_id).len())
+        Some(battleground_members(state, bg_id).len())
     }
 
     pub(crate) fn battleground_destroy(&self, state: &mut ServerState, bg_id: u32) {
-        let removals: Vec<(u32, Vec<u8>)> = state
-            .battlegrounds
-            .member_ids(bg_id)
+        let removals: Vec<(u32, Vec<u8>)> = battleground_members(state, bg_id)
             .into_iter()
             .filter_map(|id| state.characters().get(&id).map(|character| (id, position_removal_packet(character.account_id))))
             .collect();
-        let members = state.battlegrounds.delete(bg_id);
+        let members = battleground_members(state, bg_id);
         for member in &members {
-            Self::mirror_battleground_team(state, *member, 0);
+            if let Some(character) = state.characters_mut().get_mut(member) {
+                character.bg_id = 0;
+                character.bg_tracking = BgMember::default();
+            }
         }
+        self.battlegrounds.remove_team(bg_id);
         for (_, removal) in &removals {
             for member in &members {
                 self.battleground_send(*member, removal.clone());
@@ -317,14 +334,14 @@ impl Server {
 
     pub(crate) fn battleground_message(&self, state: &ServerState, bg_id: u32, account_id: u32, name: &str, message: &str) {
         let packet = chat_packet(account_id, name, message);
-        for member in state.battlegrounds.member_ids(bg_id) {
+        for member in battleground_members(state, bg_id) {
             self.battleground_send(member, packet.clone());
         }
     }
 
     /// Relays a `name : text` line to the sender's battleground team; false when the sender has none.
     pub(crate) fn battleground_chat(&self, state: &ServerState, sender: &Character, message: &str) -> bool {
-        let bg_id = state.battlegrounds.team_of(sender.char_id);
+        let bg_id = battleground_team_of(state, sender.char_id);
         if bg_id == 0 {
             return false;
         }
@@ -333,11 +350,11 @@ impl Server {
     }
 
     pub(crate) fn battleground_cemetery(&self, state: &ServerState, char_id: u32) -> Option<BgPoint> {
-        state.battlegrounds.team(state.battlegrounds.team_of(char_id))?.cemetery.clone()
+        self.battlegrounds.team(battleground_team_of(state, char_id))?.cemetery.clone()
     }
 
     pub(crate) fn battleground_member_died(&self, state: &ServerState, char_id: u32) {
-        let Some(team) = state.battlegrounds.team(state.battlegrounds.team_of(char_id)) else { return };
+        let Some(team) = self.battlegrounds.team(battleground_team_of(state, char_id)) else { return };
         if !team.die_event.is_empty() {
             self.trigger_player_npc_event(state, char_id, &team.die_event);
         }
@@ -348,13 +365,16 @@ impl Server {
             return;
         }
         NEXT_TICK.store(tick as u64 + TICK_INTERVAL_MS, Ordering::Relaxed);
-        let online: Vec<u32> = state.characters().keys().copied().collect();
-        state.battlegrounds.prune(|id| online.contains(&id));
-        let members: Vec<(u32, u32, u16, u16, u32, bool)> = state
-            .battlegrounds
-            .members_mut()
-            .map(|(bg_id, member)| (bg_id, member.char_id, member.last_x, member.last_y, member.last_hp, member.seen_on_battleground_map))
+        let mut members: Vec<(u32, u32, u16, u16, u32, bool)> = state
+            .characters()
+            .values()
+            .filter(|character| character.bg_id != 0)
+            .map(|character| {
+                let tracking = &character.bg_tracking;
+                (character.bg_id, character.char_id, tracking.last_x, tracking.last_y, tracking.last_hp, tracking.seen_on_battleground_map)
+            })
             .collect();
+        members.sort_unstable_by_key(|member| member.1);
         let packetver = self.packetver();
         for (bg_id, char_id, last_x, last_y, last_hp, seen) in members {
             let Some(character) = state.characters().get(&char_id) else { continue };
@@ -364,9 +384,7 @@ impl Server {
                 continue;
             }
             let (x, y, hp) = (character.x(), character.y(), character.status.hp);
-            let peers: Vec<u32> = state
-                .battlegrounds
-                .member_ids(bg_id)
+            let peers: Vec<u32> = battleground_members(state, bg_id)
                 .into_iter()
                 .filter(|id| *id != char_id)
                 .filter(|id| state.characters().get(id).is_some_and(|peer| peer.map_instance_key == character.map_instance_key))
@@ -388,11 +406,12 @@ impl Server {
             if arrived {
                 self.battleground_sync_member(state, char_id);
             }
-            if let Some((_, member)) = state.battlegrounds.members_mut().find(|(_, member)| member.char_id == char_id) {
-                member.last_x = x;
-                member.last_y = y;
-                member.last_hp = hp;
-                member.seen_on_battleground_map |= on_battleground;
+            if let Some(character) = state.characters_mut().get_mut(&char_id).filter(|character| character.bg_id == bg_id) {
+                let tracking = &mut character.bg_tracking;
+                tracking.last_x = x;
+                tracking.last_y = y;
+                tracking.last_hp = hp;
+                tracking.seen_on_battleground_map |= on_battleground;
             }
         }
     }

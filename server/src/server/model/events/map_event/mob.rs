@@ -139,8 +139,7 @@ pub struct AdminTogglePauseMobMovement;
 impl MapEventHandler for UpdateMobsFov {
     fn handle(self, ctx: &MapEventContext) {
         let UpdateMobsFov { characters } = self;
-        let map_instance_state = ctx.map_instance.state_mut().as_mut();
-        ctx.service.update_mobs_fov(map_instance_state, characters);
+        ctx.service.update_mobs_fov(ctx.map_instance.state_mut().as_mut(), characters);
     }
 }
 
@@ -319,7 +318,8 @@ impl MapEventHandler for AdminKillAllMobs {
 
 impl MapEventHandler for AdminTogglePauseMobMovement {
     fn handle(self, ctx: &MapEventContext) {
-        let map_instance_state = ctx.map_instance.state_mut().as_mut();
-        map_instance_state.set_mob_movement_paused(!map_instance_state.mob_movement_paused());
+        let mut map_instance_state = ctx.map_instance.state_mut();
+        let paused = map_instance_state.mob_movement_paused();
+        map_instance_state.set_mob_movement_paused(!paused);
     }
 }

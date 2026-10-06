@@ -1,11 +1,13 @@
 mod character;
 mod lifecycle;
+mod request;
 mod script;
 mod skill;
 mod world;
 
 pub use character::*;
 pub use lifecycle::*;
+pub use request::*;
 pub use script::*;
 pub use skill::*;
 pub use world::*;
@@ -124,6 +126,9 @@ game_events! {
     CharacterClearFov(CharacterClearFov),
     CharacterJoinGame(CharacterJoinGame),
     CharacterMove(CharacterMovement),
+    CharacterRequestMove(CharacterRequestMove),
+    CharacterRequestName(CharacterRequestName),
+    CharacterChat(CharacterChat),
     CharacterSavePosition(CharacterSavePosition),
     CharacterMemo(crate::server::model::character_lifecycle::CharacterMemo),
     CharacterRespawn(crate::server::model::character_lifecycle::CharacterRespawn),

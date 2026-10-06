@@ -76,9 +76,9 @@ impl Server {
         self.bg_queue_send(char_id, named_packet(0x08D8, Some(result as u8), &[name], None));
     }
 
-    fn apply_notify(&self, state: &ServerState, char_id: u32, name: &str) {
-        let Some(queue) = state.battlegrounds.queues.queue_of(char_id).map(|index| &state.battlegrounds.queues.queues[index]) else { return };
-        self.bg_queue_send(char_id, named_packet(0x08D9, None, &[name], Some(queue.len() as u32)));
+    fn apply_notify(&self, char_id: u32, name: &str) {
+        let Some(queued) = self.battlegrounds.with_queues(|queues| queues.queue_of(char_id).map(|index| queues.queues[index].len())) else { return };
+        self.bg_queue_send(char_id, named_packet(0x08D9, None, &[name], Some(queued as u32)));
     }
 
     fn lobby_notify(&self, char_id: u32, name: &str) {
@@ -165,22 +165,23 @@ impl Server {
     }
 
     pub(crate) fn handle_battleground_queue_command(&self, state: &mut ServerState, command: BattlegroundQueueCommand) {
-        state.battlegrounds.queues.ensure_created();
+        self.battlegrounds.with_queues(|queues| queues.ensure_created());
         let char_id = command.char_id;
         match command.action {
             BattlegroundQueueAction::Apply { kind, name } => self.queue_apply(state, char_id, kind, &name),
             BattlegroundQueueAction::Cancel(name) => {
-                let Some(index) = state.battlegrounds.queues.queue_of(char_id) else {
+                let queue_state = self.battlegrounds.with_queues(|queues| queues.queue_of(char_id).map(|index| queues.queues[index].state));
+                let Some(queue_state) = queue_state else {
                     return self.bg_queue_send(char_id, named_packet(0x08DB, Some(0), &[&name], None));
                 };
-                if state.battlegrounds.queues.queues[index].state == QueueState::SetupDelay {
+                if queue_state == QueueState::SetupDelay {
                     return;
                 }
                 let success = self.battleground_queue_leave(state, char_id, true);
                 self.bg_queue_send(char_id, named_packet(0x08DB, Some(u8::from(success)), &[&name], None));
             }
             BattlegroundQueueAction::Reply { accept } => {
-                if state.battlegrounds.queues.queue_of(char_id).is_none() {
+                if self.battlegrounds.with_queues(|queues| queues.queue_of(char_id)).is_none() {
                     return;
                 }
                 if accept {
@@ -190,12 +191,12 @@ impl Server {
                     self.entry_init(char_id);
                 }
             }
-            BattlegroundQueueAction::Number(name) => self.apply_notify(state, char_id, &name),
+            BattlegroundQueueAction::Number(name) => self.apply_notify(char_id, &name),
         }
     }
 
     fn queue_apply(&self, state: &mut ServerState, char_id: u32, kind: u16, name: &str) {
-        if state.battlegrounds.queues.queue_of(char_id).is_some() {
+        if self.battlegrounds.with_queues(|queues| queues.queue_of(char_id)).is_some() {
             return self.apply_result(char_id, ApplyResult::Duplicate, name);
         }
         let Some(bg) = battleground_type_by_name(name) else {
@@ -237,30 +238,29 @@ impl Server {
         if !self.queue_joinable(state, bg, requester) {
             return;
         }
-        let queues = &state.battlegrounds.queues;
-        let Some(index) = queues
-            .queues
-            .iter()
-            .position(|queue| queue.bg_id == bg.id && !matches!(queue.state, QueueState::SetupDelay | QueueState::Ended))
-        else {
+        let selected = self.battlegrounds.with_queues(|queues| {
+            let index = queues
+                .queues
+                .iter()
+                .position(|queue| queue.bg_id == bg.id && !matches!(queue.state, QueueState::SetupDelay | QueueState::Ended))?;
+            let side = queues.queues[index].choose_side(group.len(), bg, fastrand::bool())?;
+            Some((index, side, queues.queues[index].queue_id))
+        });
+        let Some((index, side, queue_id)) = selected else {
             return self.apply_result(requester, ApplyResult::Reconnect, &bg.name);
         };
-        let Some(side) = queues.queues[index].choose_side(group.len(), bg, fastrand::bool()) else {
-            return self.apply_result(requester, ApplyResult::Reconnect, &bg.name);
-        };
-        let queue_id = queues.queues[index].queue_id;
         while let Some(member) = group.pop() {
-            if state.battlegrounds.queues.queues[index].side_mut(side).len() >= bg.max_players {
+            if self.battlegrounds.with_queues(|queues| queues.queues[index].side_mut(side).len() >= bg.max_players) {
                 break;
             }
-            if state.battlegrounds.queues.queue_of(member).is_some() || !self.queue_joinable(state, bg, member) {
+            if self.battlegrounds.with_queues(|queues| queues.queue_of(member)).is_some() || !self.queue_joinable(state, bg, member) {
                 continue;
             }
-            state.battlegrounds.queues.queues[index].side_mut(side).push(member);
+            self.battlegrounds.with_queues(|queues| queues.queues[index].side_mut(side).push(member));
             self.apply_result(member, ApplyResult::Accept, &bg.name);
-            self.apply_notify(state, member, &bg.name);
+            self.apply_notify(member, &bg.name);
         }
-        let queue = &state.battlegrounds.queues.queues[index];
+        let queue = self.battlegrounds.with_queues(|queues| queues.queues[index].clone());
         match queue.state {
             QueueState::Active => {
                 let map = queue.map_index.map(|map| normalize_map(&bg.maps[map].map));
@@ -284,52 +284,62 @@ impl Server {
 
     /// Reserves a free arena and asks every queued player to accept.
     fn queue_on_ready(&self, state: &mut ServerState, queue_id: u32) {
-        let Some(index) = state.battlegrounds.queues.find(queue_id) else { return };
-        let bg_id = state.battlegrounds.queues.queues[index].bg_id;
+        let Some(index) = self.battlegrounds.with_queues(|queues| queues.find(queue_id)) else { return };
+        let (bg_id, side_sizes) = self
+            .battlegrounds
+            .with_queues(|queues| (queues.queues[index].bg_id, (queues.queues[index].team_a.len(), queues.queues[index].team_b.len())));
         let Some(bg) = battleground_type(bg_id) else { return };
-        let queue = &state.battlegrounds.queues.queues[index];
-        if queue.team_a.len() < bg.required_players || queue.team_b.len() < bg.required_players {
+        if side_sizes.0 < bg.required_players || side_sizes.1 < bg.required_players {
             return;
         }
-        let Some(map_index) = state.battlegrounds.queues.reserve_free_map(bg) else {
-            state.battlegrounds.queues.queues[index].requeue_at = Some(get_tick() as u64 + REQUEUE_INTERVAL_MS);
-            return;
-        };
         let now = get_tick() as u64;
-        let queue = &mut state.battlegrounds.queues.queues[index];
-        queue.map_index = Some(map_index);
-        queue.state = QueueState::SetupDelay;
-        queue.expire_at = Some(now + ADMISSION_WINDOW_MS);
-        let members: Vec<u32> = queue.members().collect();
-        for member in members {
+        let members = self.battlegrounds.with_queues(|queues| {
+            let Some(map_index) = queues.reserve_free_map(bg) else {
+                queues.queues[index].requeue_at = Some(now + REQUEUE_INTERVAL_MS);
+                return None;
+            };
+            let queue = &mut queues.queues[index];
+            queue.map_index = Some(map_index);
+            queue.state = QueueState::SetupDelay;
+            queue.expire_at = Some(now + ADMISSION_WINDOW_MS);
+            Some(queue.members().collect::<Vec<u32>>())
+        });
+        for member in members.unwrap_or_default() {
             self.lobby_notify(member, &bg.name);
         }
     }
 
     fn queue_accept(&self, state: &mut ServerState, char_id: u32) {
-        let Some(index) = state.battlegrounds.queues.queue_of(char_id) else { return };
-        let queue = &mut state.battlegrounds.queues.queues[index];
-        let Some(bg) = battleground_type(queue.bg_id) else { return };
-        let Some(map_index) = queue.map_index else { return };
+        let Some(index) = self.battlegrounds.with_queues(|queues| queues.queue_of(char_id)) else { return };
+        let (bg_id, map_index) = self.battlegrounds.with_queues(|queues| (queues.queues[index].bg_id, queues.queues[index].map_index));
+        let Some(bg) = battleground_type(bg_id) else { return };
+        let Some(map_index) = map_index else { return };
         let map_name = bg.maps[map_index].map.as_str();
-        queue.accepted += 1;
-        self.bg_queue_send(char_id, named_packet(0x08E1, Some(1), &[map_name, map_name], None));
-        match queue.state {
-            QueueState::Active => self.join_active_battleground(state, char_id, index),
-            QueueState::SetupDelay if queue.accepted == bg.required_players * 2 => {
+        let queue_state = self.battlegrounds.with_queues(|queues| {
+            let queue = &mut queues.queues[index];
+            queue.accepted += 1;
+            if queue.state == QueueState::SetupDelay && queue.accepted == bg.required_players * 2 {
                 queue.expire_at = None;
                 queue.start_at = Some(get_tick() as u64 + u64::from(bg.start_delay_seconds) * 1000);
             }
-            _ => {}
+            queue.state
+        });
+        self.bg_queue_send(char_id, named_packet(0x08E1, Some(1), &[map_name, map_name], None));
+        if queue_state == QueueState::Active {
+            self.join_active_battleground(state, char_id, index);
         }
     }
 
     pub(crate) fn battleground_queue_leave(&self, state: &mut ServerState, char_id: u32, apply_delay: bool) -> bool {
-        let Some(index) = state.battlegrounds.queues.queue_of(char_id) else { return false };
-        let queue = &mut state.battlegrounds.queues.queues[index];
-        queue.team_a.retain(|id| *id != char_id);
-        queue.team_b.retain(|id| *id != char_id);
-        let discard = matches!(queue.state, QueueState::Setup | QueueState::SetupDelay) && queue.len() == 0;
+        let left = self.battlegrounds.with_queues(|queues| {
+            let index = queues.queue_of(char_id)?;
+            let queue = &mut queues.queues[index];
+            queue.team_a.retain(|id| *id != char_id);
+            queue.team_b.retain(|id| *id != char_id);
+            let discard = matches!(queue.state, QueueState::Setup | QueueState::SetupDelay) && queue.len() == 0;
+            Some((index, discard))
+        });
+        let Some((index, discard)) = left else { return false };
         if discard {
             self.clear_queue(state, index, true);
         }
@@ -339,25 +349,29 @@ impl Server {
         true
     }
 
-    fn clear_queue(&self, state: &mut ServerState, index: usize, ended: bool) {
-        let queues = &mut state.battlegrounds.queues;
-        if ended {
-            if let Some(map) = queues.queues[index].map_index.and_then(|map| battleground_type(queues.queues[index].bg_id).map(|bg| bg.maps[map].map.clone())) {
-                queues.reserved_maps.remove(&map);
+    fn clear_queue(&self, _state: &mut ServerState, index: usize, ended: bool) {
+        self.battlegrounds.with_queues(|queues| {
+            if ended {
+                let queue = &queues.queues[index];
+                if let Some(map) = queue.map_index.and_then(|map| battleground_type(queue.bg_id).map(|bg| bg.maps[map].map.clone())) {
+                    queues.reserved_maps.remove(&map);
+                }
             }
-        }
-        queues.queues[index].clear(ended);
+            queues.queues[index].clear(ended);
+        });
     }
 
     fn join_active_battleground(&self, state: &mut ServerState, char_id: u32, index: usize) {
-        let queue = &state.battlegrounds.queues.queues[index];
-        let Some(bg) = battleground_type(queue.bg_id) else { return };
-        let Some(map) = queue.map_index.map(|map| &bg.maps[map]) else { return };
-        let Some(side) = queue.side_of(char_id) else { return };
+        let (bg_id, map_index, side) = self
+            .battlegrounds
+            .with_queues(|queues| (queues.queues[index].bg_id, queues.queues[index].map_index, queues.queues[index].side_of(char_id)));
+        let Some(bg) = battleground_type(bg_id) else { return };
+        let Some(map) = map_index.map(|map| &bg.maps[map]) else { return };
+        let Some(side) = side else { return };
         let definition = if side == QueueSide::A { &map.team_a } else { &map.team_b };
         let team_id = self.script_service().server_temporary(&definition.variable).and_then(|value| value.number_value().ok()).unwrap_or(0);
         let team_id = u32::try_from(team_id).unwrap_or(0);
-        if team_id == 0 || state.battlegrounds.team(team_id).is_none() {
+        if team_id == 0 || self.battlegrounds.team(team_id).is_none() {
             self.battleground_queue_leave(state, char_id, true);
             self.apply_result(char_id, ApplyResult::Reconnect, &bg.name);
             self.entry_init(char_id);
@@ -370,7 +384,7 @@ impl Server {
         });
         self.entry_init(char_id);
         if self.battleground_join(state, team_id, char_id, entry_point) {
-            if let Some(team) = state.battlegrounds.team(team_id) {
+            if let Some(team) = self.battlegrounds.team(team_id) {
                 if !team.active_event.is_empty() {
                     let label = team.active_event.clone();
                     self.trigger_player_npc_event(state, char_id, &label);
@@ -380,19 +394,21 @@ impl Server {
     }
 
     fn start_battleground(&self, state: &mut ServerState, index: usize) {
-        let queue = &state.battlegrounds.queues.queues[index];
-        let Some(bg) = battleground_type(queue.bg_id) else {
+        let (bg_id, map_index, side_a, side_b) = self.battlegrounds.with_queues(|queues| {
+            let queue = &queues.queues[index];
+            (queue.bg_id, queue.map_index, queue.team_a.clone(), queue.team_b.clone())
+        });
+        let Some(bg) = battleground_type(bg_id) else {
             return self.clear_queue(state, index, true);
         };
-        let Some(map) = queue.map_index.map(|map| &bg.maps[map]) else {
+        let Some(map) = map_index.map(|map| &bg.maps[map]) else {
             return self.clear_queue(state, index, true);
         };
-        let (side_a, side_b) = (queue.team_a.clone(), queue.team_b.clone());
         let map_name = normalize_map(&map.map);
         let mut team_ids = [0u32; 2];
         for (slot, definition) in [&map.team_a, &map.team_b].into_iter().enumerate() {
             let cemetery = BgPoint { map: map_name.clone(), x: definition.x, y: definition.y };
-            team_ids[slot] = state.battlegrounds.create(
+            team_ids[slot] = self.battlegrounds.create(
                 Some(cemetery),
                 definition.quit_event.clone(),
                 definition.death_event.clone(),
@@ -414,14 +430,15 @@ impl Server {
         self.script_service().set_server_temporary(&map.team_a.variable, Value::Number(team_ids[0] as i32));
         self.script_service().set_server_temporary(&map.team_b.variable, Value::Number(team_ids[1] as i32));
         self.trigger_npc_event(state, &map.start_event);
-        state.battlegrounds.queues.queues[index].state = QueueState::Active;
+        self.battlegrounds.with_queues(|queues| queues.queues[index].state = QueueState::Active);
         self.clear_queue(state, index, false);
     }
 
     fn expire_queue(&self, state: &mut ServerState, index: usize) {
-        let queue = &state.battlegrounds.queues.queues[index];
-        let Some(bg) = battleground_type(queue.bg_id) else { return };
-        let members: Vec<u32> = queue.members().collect();
+        let (bg_id, members) = self
+            .battlegrounds
+            .with_queues(|queues| (queues.queues[index].bg_id, queues.queues[index].members().collect::<Vec<u32>>()));
+        let Some(bg) = battleground_type(bg_id) else { return };
         for member in members {
             self.apply_result(member, ApplyResult::QueueFinished, &bg.name);
             self.entry_init(member);
@@ -431,27 +448,23 @@ impl Server {
 
     pub(crate) fn tick_battleground_queues(&self, state: &mut ServerState, tick: u128) {
         let now = tick as u64;
-        for index in 0..state.battlegrounds.queues.queues.len() {
-            let queue = &state.battlegrounds.queues.queues[index];
-            let (expire, start, requeue, queue_id) = (queue.expire_at, queue.start_at, queue.requeue_at, queue.queue_id);
+        for index in 0..self.battlegrounds.with_queues(|queues| queues.queues.len()) {
+            let (expire, start, requeue, queue_id) = self.battlegrounds.with_queues(|queues| {
+                let queue = &queues.queues[index];
+                (queue.expire_at, queue.start_at, queue.requeue_at, queue.queue_id)
+            });
             if expire.is_some_and(|at| now >= at) {
                 self.expire_queue(state, index);
             } else if start.is_some_and(|at| now >= at) {
-                state.battlegrounds.queues.queues[index].start_at = None;
+                self.battlegrounds.with_queues(|queues| queues.queues[index].start_at = None);
                 self.start_battleground(state, index);
             } else if requeue.is_some_and(|at| now >= at) {
-                state.battlegrounds.queues.queues[index].requeue_at = None;
+                self.battlegrounds.with_queues(|queues| queues.queues[index].requeue_at = None);
                 self.queue_on_ready(state, queue_id);
             }
         }
-        let offline: Vec<u32> = state
-            .battlegrounds
-            .queues
-            .queues
-            .iter()
-            .flat_map(|queue| queue.members())
-            .filter(|id| !state.characters().contains_key(id))
-            .collect();
+        let queued: Vec<u32> = self.battlegrounds.with_queues(|queues| queues.queues.iter().flat_map(|queue| queue.members()).collect());
+        let offline: Vec<u32> = queued.into_iter().filter(|id| !state.characters().contains_key(id)).collect();
         for char_id in offline {
             self.battleground_queue_leave(state, char_id, false);
         }
@@ -461,7 +474,7 @@ impl Server {
         let name = arguments.first().ok_or("Missing argument")?.string_value()?.clone();
         match function {
             Function::BgReserve | Function::BgUnbook => {
-                state.battlegrounds.queues.ensure_created();
+                self.battlegrounds.with_queues(|queues| queues.ensure_created());
                 let reserve = function == Function::BgReserve;
                 let ended = arguments.get(1).and_then(|value| value.number_value().ok()).unwrap_or(0) != 0;
                 let map = normalize_map(&name);
@@ -469,23 +482,23 @@ impl Server {
                     return Ok(Value::Number(0));
                 };
                 let map_index = bg.maps.iter().position(|candidate| candidate.map == map).unwrap_or(0);
-                if reserve {
-                    state.battlegrounds.queues.reserved_maps.insert(map.clone());
-                } else {
-                    state.battlegrounds.queues.reserved_maps.remove(&map);
-                }
-                let affected: Vec<usize> = state
-                    .battlegrounds
-                    .queues
-                    .queues
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, queue)| queue.bg_id == bg.id && queue.map_index == Some(map_index))
-                    .map(|(index, _)| index)
-                    .collect();
+                let affected: Vec<usize> = self.battlegrounds.with_queues(|queues| {
+                    if reserve {
+                        queues.reserved_maps.insert(map.clone());
+                    } else {
+                        queues.reserved_maps.remove(&map);
+                    }
+                    queues
+                        .queues
+                        .iter()
+                        .enumerate()
+                        .filter(|(_, queue)| queue.bg_id == bg.id && queue.map_index == Some(map_index))
+                        .map(|(index, _)| index)
+                        .collect()
+                });
                 for index in affected {
                     if ended {
-                        state.battlegrounds.queues.queues[index].state = QueueState::Ended;
+                        self.battlegrounds.with_queues(|queues| queues.queues[index].state = QueueState::Ended);
                     }
                     if !reserve {
                         self.clear_queue(state, index, true);

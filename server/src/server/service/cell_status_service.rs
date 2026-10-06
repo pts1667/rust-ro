@@ -30,7 +30,7 @@ impl Server {
                 let map = instance.state();
                 let cell = map.cells().get(map.get_cell_index_of(character.x(), character.y())).copied()?;
                 let on_cell = cell & basilica != 0;
-                let granted_by_cell = state.cell_basilica.contains(&character.char_id);
+                let granted_by_cell = self.cell_basilica().contains(&character.char_id);
                 let has_status = character.status.has_status_change(StatusChangeKind::Basilica);
                 match (on_cell, granted_by_cell, has_status) {
                     (true, false, false) | (false, true, _) => Some((character.char_id, on_cell)),
@@ -41,9 +41,9 @@ impl Server {
         let sender = self.server_service().notification_sender();
         for (char_id, entered) in changes {
             if entered {
-                state.cell_basilica.insert(char_id);
+                self.cell_basilica().insert(char_id);
             } else {
-                state.cell_basilica.remove(&char_id);
+                self.cell_basilica().remove(&char_id);
             }
             self.with_character(state, char_id, |character| {
                 if entered {

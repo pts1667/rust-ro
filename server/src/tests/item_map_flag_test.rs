@@ -33,7 +33,7 @@ fn item_fixture(item_id: i32) -> (super::ServerServiceTestContext, Arc<SledRepos
 fn set_flag(context: &super::ServerServiceTestContext, flag: MapFlag) {
     let mut flags = MapFlags::default();
     flags.set(flag, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
 }
 
 #[test]
@@ -66,7 +66,7 @@ fn ordinary_healing_commits_once_after_item_use_is_reenabled() {
     set_flag(&context, MapFlag::NoItemConsumption);
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
     context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action.clone(), &mut character);
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), MapFlags::default());
+    context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action, &mut character);
     let stored: CharacterRecord = database::required(&repository.database.characters, &character.char_id.to_be_bytes()).unwrap();
     let inventory: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();

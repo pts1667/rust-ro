@@ -19,6 +19,17 @@ use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
 impl Server {
+    fn park_character_selection(&self, gate: CharacterSelectionGate) {
+        self.character_selection_waiters
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .push(gate);
+    }
+
+    fn take_character_selection_waiters(&self) -> Vec<CharacterSelectionGate> {
+        std::mem::take(&mut *self.character_selection_waiters.lock().unwrap_or_else(|poisoned| poisoned.into_inner()))
+    }
+
     async fn receive_lifecycle<T>(&self, mut receiver: oneshot::Receiver<Result<T, String>>) -> Result<T, String> {
         let deadline = tokio::time::Instant::now()
             + std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1).saturating_mul(3));
@@ -177,7 +188,7 @@ impl Server {
                 .values()
                 .any(|pending| pending.owner.account_id == gate.session.account_id)
             {
-                state.character_selection_waiters.push(gate);
+                self.park_character_selection(gate);
                 return;
             }
         }
@@ -290,16 +301,7 @@ impl Server {
     pub(crate) fn handle_client_disconnect(&self, state: &mut ServerState, request: ClientDisconnected, tick: u128) {
         let session = state
             .sessions()
-            .read()
-            .unwrap()
-            .values()
-            .find(|session| {
-                session
-                    .map_server_socket
-                    .as_ref()
-                    .is_some_and(|socket| Arc::ptr_eq(socket, &request.socket))
-            })
-            .cloned()
+            .find_by_map_socket(&request.socket)
             .or_else(|| {
                 state
                     .character_logins
@@ -548,14 +550,14 @@ impl Server {
                 self.start_timer_quit_callback(state, char_id, tick);
             }
         }
-        let waiters = std::mem::take(&mut state.character_selection_waiters);
+        let waiters = self.take_character_selection_waiters();
         for gate in waiters {
             if state
                 .pending_character_logouts
                 .values()
                 .any(|pending| pending.owner.account_id == gate.session.account_id)
             {
-                state.character_selection_waiters.push(gate);
+                self.park_character_selection(gate);
             } else {
                 self.reply_character_selection(state, gate);
             }

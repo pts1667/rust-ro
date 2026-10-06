@@ -967,7 +967,7 @@ mod tests {
         assert!(prepare_drop_item(&state, &request, 501, 0).is_err());
         let mut flags = crate::server::model::map_flags::MapFlags::default();
         flags.set(crate::server::model::map_flags::MapFlag::NoMobLoot, true, &[]).unwrap();
-        state.runtime_map_flags.insert(("empty".into(), 0), flags);
+        state.map_flag_overrides().insert(("empty".into(), 0), flags);
         assert!(prepare_drop_item(&state, &request, 501, 1).is_err());
         assert!(old_tasks.pop().unwrap_or_default().is_empty());
     }

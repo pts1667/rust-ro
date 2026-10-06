@@ -6,13 +6,15 @@ use std::net::{Shutdown, TcpStream};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock, Weak};
 
+use dashmap::DashMap;
+
 use packets::packets::{Packet, PacketUnknown};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio::sync::mpsc::Sender;
 
 use crate::server::script::PlayerInput;
-use crate::server::state::character::Character;
+use crate::server::state::character_directory::CharacterPresence;
 
 #[derive(Clone)]
 pub struct SessionBinding(Weak<Session>);
@@ -81,15 +83,15 @@ pub struct Position {
 
 const PACKET_TO_RECORDS: &'static [&'static str; 2] = &["PacketCzRequestMove", "PacketCzPlayerChat"];
 impl SessionRecord {
-    pub fn new(character: &Character, packetver: u32) -> Self {
+    pub fn new(char_id: u32, presence: &CharacterPresence, packetver: u32) -> Self {
         Self {
-            session_id: character.account_id,
-            char_id: Some(character.char_id),
-            map_name: character.map_instance_key.map_name().clone(),
+            session_id: presence.account_id,
+            char_id: Some(char_id),
+            map_name: presence.map_name.clone(),
             position: Position {
-                x: character.x,
-                y: character.y,
-                dir: character.dir,
+                x: presence.x,
+                y: presence.y,
+                dir: presence.dir,
             },
             entries: Mutex::new(vec![]),
             packetver,
@@ -222,13 +224,49 @@ impl SessionRecordEntry {
     }
 }
 
-pub trait SessionsIter {
-    fn find_by_stream(&self, tcp_stream: &TcpStream) -> Option<u32>;
-}
+/// Concurrent session registry shared by the network threads and the game loop.
+/// Never hold a returned reference across another registry call: lookups clone the `Arc`.
+#[derive(Clone, Default)]
+pub struct SessionRegistry(Arc<DashMap<u32, Arc<Session>>>);
 
-impl SessionsIter for HashMap<u32, Arc<Session>> {
-    fn find_by_stream(&self, tcp_stream: &TcpStream) -> Option<u32> {
-        let map_entry_option = self.iter().find(|(_, session)| {
+impl SessionRegistry {
+    pub fn add(&self, session_id: u32, session: Arc<Session>) {
+        self.0.insert(session_id, session);
+    }
+
+    pub fn remove(&self, session_id: u32) {
+        if let Some((_, session)) = self.0.remove(&session_id) {
+            session.cancel_script();
+        }
+    }
+
+    pub fn find(&self, session_id: u32) -> Option<Arc<Session>> {
+        self.0.get(&session_id).map(|session| session.clone())
+    }
+
+    pub fn get(&self, session_id: u32) -> Arc<Session> {
+        self.find(session_id).unwrap()
+    }
+
+    pub fn find_by_char_id(&self, char_id: u32) -> Option<Arc<Session>> {
+        self.0.iter().find(|entry| entry.char_id == Some(char_id)).map(|entry| entry.value().clone())
+    }
+
+    pub fn find_by_map_socket(&self, socket: &Arc<RwLock<TcpStream>>) -> Option<Arc<Session>> {
+        self.0
+            .iter()
+            .find(|entry| entry.map_server_socket.as_ref().is_some_and(|map_socket| Arc::ptr_eq(map_socket, socket)))
+            .map(|entry| entry.value().clone())
+    }
+
+    pub fn for_each(&self, mut action: impl FnMut(&Arc<Session>)) {
+        let sessions: Vec<Arc<Session>> = self.0.iter().map(|entry| entry.value().clone()).collect();
+        sessions.iter().for_each(&mut action);
+    }
+
+    pub fn find_by_stream(&self, tcp_stream: &TcpStream) -> Option<u32> {
+        let found = self.0.iter().find(|entry| {
+            let session = entry.value();
             if session.map_server_socket.is_some() {
                 let map_server_socket = read_lock!(session.map_server_socket.as_ref().unwrap());
                 let is_map_stream = if session.is_simulated {
@@ -249,8 +287,7 @@ impl SessionsIter for HashMap<u32, Arc<Session>> {
             }
             char_server_socket.peer_addr().unwrap() == tcp_stream.peer_addr().unwrap()
         });
-        map_entry_option?;
-        Some(*map_entry_option.unwrap().0)
+        found.map(|entry| *entry.key())
     }
 }
 

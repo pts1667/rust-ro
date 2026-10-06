@@ -30,15 +30,10 @@ use crate::util::tick::get_tick_client;
 
 pub fn handle_char_enter(server: &Server, context: Request) {
     let packet_char_enter = cast!(context.packet(), PacketChEnter);
-    let server_state = server.state();
-    let mut sessions_guard = write_lock!(server_state.sessions());
-
-    if sessions_guard.contains_key(&packet_char_enter.aid) {
-        let session = sessions_guard.get(&packet_char_enter.aid).unwrap().clone();
+    if let Some(session) = server.sessions().find(packet_char_enter.aid) {
         if session.auth_code == packet_char_enter.auth_code && session.user_level == packet_char_enter.user_level {
             let session = Arc::new(session.recreate_with_char_socket(context.socket()));
-            sessions_guard.insert(packet_char_enter.aid, session.clone());
-            drop(sessions_guard);
+            server.sessions().add(packet_char_enter.aid, session.clone());
             let packet_hc_accept_enter_neo_union: Box<dyn Packet> = server.runtime().block_on(async {
                 let mut hc_accept_enter_neo_union = load_chars_info(session.account_id, server).await;
                 if GlobalConfigService::instance().packetver() >= 20130000 {
@@ -365,7 +360,7 @@ pub fn handle_enter_game(server: &Server, context: Request) {
         error!("Not recognized PacketCzEnterX");
         return;
     }
-    let Some(session) = server.state().find_session(aid) else {
+    let Some(session) = server.sessions().find(aid) else {
         write_lock!(context.socket())
             .shutdown(Both)
             .expect("Unable to shutdown incoming socket. Shutdown was done because session does not exists");

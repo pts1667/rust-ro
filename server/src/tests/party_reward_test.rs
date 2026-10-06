@@ -14,9 +14,7 @@ fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>, Vec<u32>) {
     let (context, repository, leader) = super::native_payment_tests::fixture(false, true);
     context
         .server
-        .state_mut()
-        .runtime_map_flags
-        .insert(("empty".into(), 0), Default::default());
+        .map_flag_overrides().insert(("empty".into(), 0), Default::default());
     let ids: Vec<_> = (0..3).map(|offset| leader.char_id + offset).collect();
     let party = PartyRecord {
         id: 1,
@@ -143,7 +141,7 @@ fn live_map_exp_rates_preserve_fractional_contributions_before_party_division() 
     let mut flags = MapFlags::default();
     flags.set(MapFlag::Bexp, true, &[800]).unwrap();
     flags.set(MapFlag::Jexp, true, &[200]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     assert_eq!(
         monster_experience_awards(context.server.state(), &kill, 0),
         ids.iter().map(|id| (*id, (43, 3))).collect()
@@ -158,7 +156,7 @@ fn no_base_exp_suppresses_every_party_base_award_and_keeps_job_exp_atomic() {
     let mut flags = MapFlags::default();
     flags.set(MapFlag::NoBaseExp, true, &[]).unwrap();
     flags.set(MapFlag::Jexp, true, &[200]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
         .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
@@ -178,7 +176,7 @@ fn pvp_maps_do_not_award_player_experience_when_pvp_exp_is_disabled() {
     let kill = kill(&context, &ids);
     let mut flags = MapFlags::default();
     flags.set(MapFlag::Pvp, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
         .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
@@ -255,7 +253,7 @@ fn no_drop_map_preserves_the_exact_equipment_record_and_rejects_before_floor_adm
         .add_items(inventory);
     let mut flags = MapFlags::default();
     flags.set(MapFlag::NoDrop, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     assert!(
         !context
             .server

@@ -407,7 +407,7 @@ impl ScriptWorldService {
             }
             GuildRequest::GuildAllianceRequest(target_id) => {
                 let guild = self.guild_master_of(character)?;
-                if state.siege_active {
+                if state.siege_active() {
                     return Err("Alliances cannot be made during Guild Wars".into());
                 }
                 let target = state
@@ -432,19 +432,18 @@ impl ScriptWorldService {
                 if target_guild.allies.len() >= usize::from(server.configuration.game.guild_max_alliances) {
                     return self.send(character.char_id, vec![0x73, 0x01, 3]);
                 }
-                if state.guild_alliance_requests.contains_key(&target_char) {
+                if !self.guild_alliance_requests.request(target_char, character.char_id, guild.id) {
                     return self.send(character.char_id, vec![0x73, 0x01, 1]);
                 }
-                state.guild_alliance_requests.insert(target_char, (character.char_id, guild.id));
                 let mut packet = protocol::header(0x0171);
                 packet.extend_from_slice(&inviter_account.to_le_bytes());
                 protocol::fixed_string(&mut packet, &guild.name, 24);
                 self.send(target_char, packet)
             }
             GuildRequest::GuildAllianceReply { inviter, accept } => {
-                let (inviter_char, inviting_guild) = state
+                let (inviter_char, inviting_guild) = self
                     .guild_alliance_requests
-                    .remove(&character.char_id)
+                    .take(character.char_id)
                     .ok_or("No pending guild alliance request")?;
                 if !state
                     .characters()
@@ -456,7 +455,7 @@ impl ScriptWorldService {
                 if !accept {
                     return self.send(inviter_char, vec![0x73, 0x01, 2]);
                 }
-                if state.siege_active {
+                if state.siege_active() {
                     return Err("Alliances cannot be made during Guild Wars".into());
                 }
                 let (first, second) = self
@@ -494,7 +493,7 @@ impl ScriptWorldService {
             }
             GuildRequest::GuildRelationBreak { guild_id, .. } => {
                 let before = self.guild_master_of(character)?;
-                if state.siege_active {
+                if state.siege_active() {
                     return Err("Guild relations cannot change during Guild Wars".into());
                 }
                 let hostile = before.opposition.contains(&guild_id);

@@ -459,14 +459,15 @@ impl ScriptSkillService {
             .collect::<Vec<_>>();
         targets.extend(
             state
-                .ground_units
-                .values()
-                .filter(|unit| {
-                    unit.map == crate::server::model::map_instance::MapInstanceKey::new(ground.map.clone(), ground.instance)
+                .ground_units()
+                .matching(|unit| {
+                    unit.map.map_name() == &ground.map
+                        && unit.map.map_instance() == ground.instance
                         && unit.alive(tick)
                         && !unit.used
                         && ground.covers(unit.x, unit.y)
                 })
+                .into_iter()
                 .map(|unit| super::trap::GroundTrapTarget {
                     id: unit.id,
                     x: unit.x,

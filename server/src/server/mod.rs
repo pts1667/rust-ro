@@ -1,9 +1,10 @@
+use std::collections::HashSet;
 use std::cell::RefCell;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, OnceLock, RwLock, Weak, mpsc};
+use std::sync::{Arc, Mutex, MutexGuard, OnceLock, RwLock, Weak, mpsc};
 use std::thread;
 use std::thread::Scope;
 use std::time::Duration;
@@ -20,10 +21,14 @@ use tokio::runtime::Runtime;
 use crate::repository::Repository;
 use crate::server::game_loop::GAME_TICK_RATE;
 use crate::server::model::map_item::MapItems;
-use crate::server::model::path::manhattan_distance;
 use crate::server::model::request::Request;
 use crate::server::model::response::Response;
-use crate::server::model::session::{Session, SessionRecord, SessionsIter};
+use crate::server::model::session::{SessionRecord, SessionRegistry};
+use crate::server::model::battleground::Battlegrounds;
+use crate::server::model::character_lifecycle::CharacterSelectionGate;
+use crate::server::model::duel::Duels;
+use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
+use crate::server::model::notification_backlog::NotificationBacklog;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleResultMode, BattleService};
 use crate::server::service::character::character_service::CharacterService;
@@ -36,6 +41,7 @@ use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
+use crate::server::state::character_directory::CharacterDirectory;
 use crate::server::state::server::ServerState;
 use crate::util::cell::{MyRefMut, MyUnsafeCell};
 use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
@@ -60,6 +66,16 @@ pub struct Server {
     pub configuration: &'static Config,
     pub repository: Arc<dyn Repository>,
     state: MyUnsafeCell<ServerState>,
+    state_loops_lock: Mutex<()>,
+    sessions: SessionRegistry,
+    directory: CharacterDirectory,
+    duels: Duels,
+    battlegrounds: Battlegrounds,
+    map_flag_overrides: MapFlagOverrides,
+    siege: SiegeFlag,
+    cell_basilica: Mutex<HashSet<u32>>,
+    character_selection_waiters: Mutex<Vec<CharacterSelectionGate>>,
+    map_notifications: NotificationBacklog,
     tasks_queue: Arc<TasksQueue<GameEvent>>,
     movement_tasks_queue: Arc<TasksQueue<GameEvent>>,
     server_service: ServerService,
@@ -75,6 +91,41 @@ unsafe impl Sync for Server {}
 unsafe impl Send for Server {}
 
 impl Server {
+    /// The game loop and the movement loop both mutate `ServerState` from their own thread, they must not run at the same time.
+    pub(crate) fn lock_state_loops(&self) -> MutexGuard<'_, ()> {
+        self.state_loops_lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// Session registry for threads that must not read `ServerState`.
+    pub fn sessions(&self) -> &SessionRegistry {
+        &self.sessions
+    }
+
+    /// Character positions for threads that must not read `ServerState`.
+    pub fn directory(&self) -> &CharacterDirectory {
+        &self.directory
+    }
+
+    pub fn duels(&self) -> &Duels {
+        &self.duels
+    }
+
+    pub fn battlegrounds(&self) -> &Battlegrounds {
+        &self.battlegrounds
+    }
+
+    pub fn map_flag_overrides(&self) -> &MapFlagOverrides {
+        &self.map_flag_overrides
+    }
+
+    pub fn siege(&self) -> &SiegeFlag {
+        &self.siege
+    }
+
+    pub(crate) fn cell_basilica(&self) -> MutexGuard<'_, HashSet<u32>> {
+        self.cell_basilica.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
     pub fn state(&self) -> &ServerState {
         self.state.borrow().as_ref()
     }
@@ -189,11 +240,26 @@ impl Server {
                 GlobalConfigService::instance(),
             ),
         );
+        let state = ServerState::new(map_items);
+        let sessions = state.sessions().clone();
+        let directory = state.directory().clone();
+        let map_flag_overrides = state.map_flag_overrides().clone();
+        let siege = state.siege().clone();
         Server {
             configuration,
             repository,
             tasks_queue,
-            state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state: MyUnsafeCell::new(state),
+            state_loops_lock: Mutex::new(()),
+            sessions,
+            directory,
+            duels: Duels::default(),
+            battlegrounds: Battlegrounds::default(),
+            map_flag_overrides,
+            siege,
+            cell_basilica: Mutex::new(HashSet::new()),
+            character_selection_waiters: Mutex::new(Vec::new()),
+            map_notifications: NotificationBacklog::default(),
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
@@ -217,10 +283,25 @@ impl Server {
             repository.clone(),
             GlobalConfigService::instance(),
         );
+        let state = ServerState::new(map_items);
+        let sessions = state.sessions().clone();
+        let directory = state.directory().clone();
+        let map_flag_overrides = state.map_flag_overrides().clone();
+        let siege = state.siege().clone();
         Server {
             configuration,
             repository,
-            state: MyUnsafeCell::new(ServerState::new(map_items)),
+            state: MyUnsafeCell::new(state),
+            state_loops_lock: Mutex::new(()),
+            sessions,
+            directory,
+            duels: Duels::default(),
+            battlegrounds: Battlegrounds::default(),
+            map_flag_overrides,
+            siege,
+            cell_basilica: Mutex::new(HashSet::new()),
+            character_selection_waiters: Mutex::new(Vec::new()),
+            map_notifications: NotificationBacklog::default(),
             tasks_queue,
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,
@@ -250,12 +331,7 @@ impl Server {
         self.character_service()
             .save_characters_state_with_positions(characters, positions, get_tick())
             .await;
-        self.state_mut()
-            .sessions()
-            .write()
-            .unwrap()
-            .iter()
-            .for_each(|(_, session)| session.disconnect());
+        self.sessions.for_each(|session| session.disconnect());
     }
 
     pub fn is_alive(&self) -> bool {
@@ -329,16 +405,20 @@ impl Server {
     }
 
     pub fn start_recording_session(&self, char_id: u32) {
-        let character = self.state().characters().get(&char_id).unwrap();
+        let Some(presence) = self.directory.presence(char_id) else {
+            return;
+        };
         if !self.is_recording_session(char_id) {
             self.recording_sessions
                 .borrow_mut()
-                .push(SessionRecord::new(character, self.packetver()));
+                .push(SessionRecord::new(char_id, &presence, self.packetver()));
         }
     }
 
     pub fn stop_recording_session(&self, char_id: u32) {
-        let session_id = self.state().characters().get(&char_id).unwrap().account_id;
+        let Some(session_id) = self.directory.presence(char_id).map(|presence| presence.account_id) else {
+            return;
+        };
         if let Some(recording) = self.get_recording_session(session_id) {
             recording.finish();
         }
@@ -348,7 +428,9 @@ impl Server {
     }
 
     pub fn is_recording_session(&self, char_id: u32) -> bool {
-        let session_id = self.state().characters().get(&char_id).unwrap().account_id;
+        let Some(session_id) = self.directory.presence(char_id).map(|presence| presence.account_id) else {
+            return false;
+        };
         self.recording_sessions
             .borrow()
             .as_ref()
@@ -365,6 +447,7 @@ impl Server {
     }
 
     pub fn disconnect_character(&self, char_id: u32) {
+        let _state_loops_guard = self.lock_state_loops();
         self.disconnect_character_in_state(self.state_mut().as_mut(), char_id);
     }
 
@@ -574,7 +657,11 @@ impl Server {
                             }
                             packets_by_session.retain(|buffer| {
                                 if buffer.should_flush() {
-                                    if let Some(tcp_stream) = server_ref.state().get_map_socket_for_char_id(buffer.session_id()) {
+                                    if let Some(tcp_stream) = server_ref
+                                        .sessions()
+                                        .find_by_char_id(buffer.session_id())
+                                        .and_then(|session| session.map_server_socket.clone())
+                                    {
                                         let mut tcp_stream_guard = tcp_stream.write().unwrap();
                                         if tcp_stream_guard.peer_addr().is_ok() {
                                             debug!(
@@ -625,16 +712,10 @@ impl Server {
                                         AreaNotificationRangeType::Map => {}
                                         AreaNotificationRangeType::Fov { x, y, exclude_id } => {
                                             server_ref
-                                                .state()
-                                                .characters()
-                                                .iter()
-                                                .filter(|(_, character)| {
-                                                    character.current_map_name() == &area_notification.map_name
-                                                        && character.current_map_instance() == area_notification.map_instance_id
-                                                        && manhattan_distance(character.x(), character.y(), x, y) <= PLAYER_FOV
-                                                        && (exclude_id.is_none() || exclude_id.unwrap() != character.char_id)
-                                                })
-                                                .for_each(|(_, character)| {
+                                                .directory()
+                                                .in_fov(&area_notification.map_name, area_notification.map_instance_id, x, y, PLAYER_FOV, exclude_id)
+                                                .into_iter()
+                                                .for_each(|char_id| {
                                                     if GlobalConfigService::instance().config().server.trace_packet {
                                                         debug_packets_from_vec(
                                                             None,
@@ -646,7 +727,7 @@ impl Server {
                                                     }
                                                     Self::buffer_packets(
                                                         &mut packets_by_session,
-                                                        character.char_id,
+                                                        char_id,
                                                         area_notification.serialized_packet().as_slice(),
                                                     );
                                                 });
@@ -734,15 +815,11 @@ impl Server {
     }
 
     pub fn ensure_session_exists(&self, tcp_stream: &Arc<RwLock<TcpStream>>) -> Option<u32> {
-        if let Ok(session_guard) = self.state().sessions().read() {
-            let stream_guard = read_lock!(tcp_stream);
-            let session_option = session_guard.find_by_stream(&stream_guard);
-            if session_option.is_none() {
-                debug!("Session does not exist! for socket {:?}", stream_guard);
-                return None;
-            }
-            return Some(session_option.unwrap());
+        let stream_guard = read_lock!(tcp_stream);
+        let session_option = self.sessions.find_by_stream(&stream_guard);
+        if session_option.is_none() {
+            debug!("Session does not exist! for socket {:?}", stream_guard);
         }
-        None
+        session_option
     }
 }

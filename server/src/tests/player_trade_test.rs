@@ -390,7 +390,7 @@ fn trade_admission_checks_distance_instance_death_map_rules_conversations_and_ex
             3 => {
                 let mut flags = MapFlags::default();
                 flags.set(MapFlag::NoTrade, true, &[]).unwrap();
-                context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+                context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
             }
             4 => {
                 context
@@ -455,7 +455,7 @@ fn trade_ticks_cancel_both_sides_on_death_departure_map_restriction_and_idle_tim
             3 => {
                 let mut flags = MapFlags::default();
                 flags.set(MapFlag::NoTrade, true, &[]).unwrap();
-                context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+                context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
                 103
             }
             4 => 102 + TRADE_IDLE_TIMEOUT_MS,

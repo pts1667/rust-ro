@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 pub const BOOKING_JOBS: usize = 6;
 pub const BOOKING_RESULTS: usize = 10;
@@ -15,7 +16,7 @@ pub struct BookingAd {
 }
 
 #[derive(Debug, Default)]
-pub struct PartyBookings {
+struct BookingBoard {
     next_index: u32,
     ads: BTreeMap<u32, BookingAd>,
 }
@@ -24,8 +25,8 @@ fn normalized(jobs: [i16; BOOKING_JOBS]) -> [i16; BOOKING_JOBS] {
     jobs.map(|job| if job == 0xFF { NO_JOB } else { job })
 }
 
-impl PartyBookings {
-    pub fn register(&mut self, char_id: u32, name: &str, now: u32, level: i16, map_id: i16, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
+impl BookingBoard {
+    fn register(&mut self, char_id: u32, name: &str, now: u32, level: i16, map_id: i16, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
         if self.ads.contains_key(&char_id) {
             return None;
         }
@@ -42,23 +43,23 @@ impl PartyBookings {
         Some(ad)
     }
 
-    pub fn update(&mut self, char_id: u32, now: u32, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
+    fn update(&mut self, char_id: u32, now: u32, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
         let ad = self.ads.get_mut(&char_id)?;
         ad.started = now;
         ad.jobs = normalized(jobs);
         Some(ad.clone())
     }
 
-    pub fn delete(&mut self, char_id: u32) -> Option<u32> {
+    fn delete(&mut self, char_id: u32) -> Option<u32> {
         self.ads.remove(&char_id).map(|ad| ad.index)
     }
 
-    pub fn prune(&mut self, is_online: impl Fn(u32) -> bool) {
+    fn prune(&mut self, is_online: impl Fn(u32) -> bool) {
         self.ads.retain(|char_id, _| is_online(*char_id));
     }
 
     /// Mirrors rathena: a map or a job filter, never both; results are capped and flagged when more remain.
-    pub fn search(&self, level: i16, map_id: i16, job: i16, last_index: u32) -> (Vec<BookingAd>, bool) {
+    fn search(&self, level: i16, map_id: i16, job: i16, last_index: u32) -> (Vec<BookingAd>, bool) {
         let mut results = Vec::new();
         for ad in self.ads.values() {
             if ad.index < last_index || (level != 0 && (ad.level < level - 15 || ad.level > level)) {
@@ -81,13 +82,45 @@ impl PartyBookings {
     }
 }
 
+/// Party booking ads. Cheap to clone; every clone shares one board, locked per call.
+#[derive(Debug, Default, Clone)]
+pub struct PartyBookings {
+    board: Arc<Mutex<BookingBoard>>,
+}
+
+impl PartyBookings {
+    fn board(&self) -> MutexGuard<'_, BookingBoard> {
+        self.board.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    pub fn register(&self, char_id: u32, name: &str, now: u32, level: i16, map_id: i16, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
+        self.board().register(char_id, name, now, level, map_id, jobs)
+    }
+
+    pub fn update(&self, char_id: u32, now: u32, jobs: [i16; BOOKING_JOBS]) -> Option<BookingAd> {
+        self.board().update(char_id, now, jobs)
+    }
+
+    pub fn delete(&self, char_id: u32) -> Option<u32> {
+        self.board().delete(char_id)
+    }
+
+    pub fn prune(&self, is_online: impl Fn(u32) -> bool) {
+        self.board().prune(is_online)
+    }
+
+    pub fn search(&self, level: i16, map_id: i16, job: i16, last_index: u32) -> (Vec<BookingAd>, bool) {
+        self.board().search(level, map_id, job, last_index)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn booking_lifecycle_and_search_filters() {
-        let mut bookings = PartyBookings::default();
+        let bookings = PartyBookings::default();
         let jobs = [7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
         let ad = bookings.register(1, "Knight", 100, 50, 3, jobs).unwrap();
         assert!(bookings.register(1, "Knight", 100, 50, 3, jobs).is_none());

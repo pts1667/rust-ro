@@ -655,10 +655,10 @@ impl Server {
     }
 
     fn apply_pvp_death(&self, state: &mut ServerState, victim_id: u32, killer_id: u32) {
-        if state.duels.duel_of(victim_id).is_some() {
+        if self.duels().duel_of(victim_id).is_some() {
             self.leave_duel(state, victim_id);
         }
-        state.duels.reject(victim_id);
+        self.duels().reject(victim_id);
         let Some(victim) = state.characters().get(&victim_id) else {
             return;
         };
@@ -748,7 +748,7 @@ impl Server {
     }
 
     pub(crate) fn admit_character_damage(&self, state: &mut ServerState, mut damage: Damage, tick: u128) -> Result<(), String> {
-        if let Some(map) = state.ground_units.get(&damage.target_id).map(|unit| unit.map.clone()) {
+        if let Some(map) = state.ground_units().map_of(damage.target_id) {
             if self
                 .script_skill_service()
                 .apply_ground_unit_damage(self, state, &map, damage, tick)
@@ -923,7 +923,7 @@ impl Server {
             &mut character.status,
             damage.damage,
             damage.battle_flags,
-            map_flags.versus(state.siege_active),
+            map_flags.versus(state.siege_active()),
             damage.skill_id,
         );
         damage.damage = super::map_flag_service::apply_map_combat_damage(
@@ -1204,7 +1204,7 @@ impl Server {
         kill: &crate::server::model::events::game_event::CharacterKillMonster,
     ) {
         if kill.mob_id != 1288
-            || !state.siege_active
+            || !state.siege_active()
             || !state.map_flags(&kill.map_instance_key).enabled(MapFlag::GvgCastle)
         {
             return;

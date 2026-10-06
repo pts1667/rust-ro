@@ -1,8 +1,10 @@
 #![allow(dead_code)]
 use std::collections::HashMap;
+use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::SyncSender;
+use std::time::Duration;
 
 use script_runtime::WasmRuntime;
 
@@ -15,7 +17,7 @@ use crate::server::model::script::Script;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::model::warp::Warp;
 use crate::server::state::map_instance::{MapInstanceState, MobSpawnTrack};
-use crate::util::cell::{MyRef, MyRefMut, MyUnsafeCell};
+use parking_lot::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 use crate::util::string::StringUtil;
 use crate::util::tick::delayed_tick;
 
@@ -69,11 +71,51 @@ pub struct MapInstance {
     tasks_queue: Arc<TasksQueue<MapEvent>>,
     map: &'static Map,
     scripts: Vec<Arc<Script>>,
-    state: MyUnsafeCell<MapInstanceState>,
+    state: RwLock<MapInstanceState>,
     shutdown: AtomicBool,
 }
-unsafe impl Sync for MapInstance {}
-unsafe impl Send for MapInstance {}
+
+const STATE_LOCK_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// Shared access to a map instance's state; derefs to `MapInstanceState`.
+pub struct MapStateRef<'a>(RwLockReadGuard<'a, MapInstanceState>);
+
+/// Exclusive access to a map instance's state; derefs to `MapInstanceState`.
+pub struct MapStateRefMut<'a>(RwLockWriteGuard<'a, MapInstanceState>);
+
+impl MapStateRef<'_> {
+    pub fn as_ref(&self) -> &MapInstanceState {
+        &self.0
+    }
+}
+
+impl MapStateRefMut<'_> {
+    pub fn as_mut(&mut self) -> &mut MapInstanceState {
+        &mut self.0
+    }
+}
+
+impl Deref for MapStateRef<'_> {
+    type Target = MapInstanceState;
+
+    fn deref(&self) -> &MapInstanceState {
+        &self.0
+    }
+}
+
+impl Deref for MapStateRefMut<'_> {
+    type Target = MapInstanceState;
+
+    fn deref(&self) -> &MapInstanceState {
+        &self.0
+    }
+}
+
+impl DerefMut for MapStateRefMut<'_> {
+    fn deref_mut(&mut self) -> &mut MapInstanceState {
+        &mut self.0
+    }
+}
 
 impl MapInstance {
     pub fn from_map(
@@ -100,7 +142,7 @@ impl MapInstance {
             tasks_queue,
             map,
             scripts,
-            state: MyUnsafeCell::new(MapInstanceState::new(
+            state: RwLock::new(MapInstanceState::new(
                 key,
                 map.x_size(),
                 map.y_size(),
@@ -237,11 +279,20 @@ impl MapInstance {
         self.map().y_size()
     }
 
-    pub fn state(&self) -> MyRef<MapInstanceState> {
-        self.state.borrow()
+    /// Panics instead of hanging when the lock can't be taken, a timeout means the same thread re-entered the state.
+    pub fn state(&self) -> MapStateRef<'_> {
+        MapStateRef(
+            self.state
+                .try_read_recursive_for(STATE_LOCK_TIMEOUT)
+                .unwrap_or_else(|| panic!("Timed out reading state of map {}", self.key.map_name())),
+        )
     }
 
-    pub fn state_mut(&self) -> MyRefMut<MapInstanceState> {
-        self.state.borrow_mut()
+    pub fn state_mut(&self) -> MapStateRefMut<'_> {
+        MapStateRefMut(
+            self.state
+                .try_write_for(STATE_LOCK_TIMEOUT)
+                .unwrap_or_else(|| panic!("Timed out locking state of map {}", self.key.map_name())),
+        )
     }
 }

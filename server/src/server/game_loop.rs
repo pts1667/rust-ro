@@ -4,14 +4,17 @@ use std::sync::mpsc::SyncSender;
 use std::thread::sleep;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use movement::position::Position;
 use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
 
 use crate::server::Server;
 use crate::server::model::events::client_notification::{AreaNotification, CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterSavePosition, GameEvent};
+use crate::server::model::events::game_event::{CharacterMovement, CharacterSavePosition, GameEvent};
 use crate::server::model::events::map_event::{MapEvent, UpdateActorVisibility, UpdateMobsFov};
 use crate::server::model::map_item::ToMapItemSnapshot;
 use crate::server::model::movement::{Movable, Movement};
+use crate::server::model::path::path_search_client_side_algorithm;
+use crate::server::state::server::ServerState;
 use crate::server::service::global_config_service::GlobalConfigService;
 
 const MOVEMENT_TICK_RATE: u128 = 20;
@@ -40,8 +43,9 @@ impl Server {
     }
 
     pub(crate) fn game_loop_iteration(server_ref: &Server, tick: u128) {
+        let _state_loops_guard = server_ref.lock_state_loops();
         let mut server_state_mut = server_ref.state_mut();
-        server_ref.drain_map_notifications(server_state_mut.as_mut());
+        server_ref.drain_map_notifications();
         server_ref.tick_player_trades(server_state_mut.as_mut(), tick as u64);
         server_ref.tick_character_logouts(server_state_mut.as_mut(), tick);
         server_ref.tick_script_timers(server_state_mut.as_mut(), tick);
@@ -211,6 +215,50 @@ impl Server {
                         .collect(), }));
             }
         }
+        server_state_mut.publish_directory();
+    }
+
+    fn plan_character_move(state: &ServerState, char_id: u32, destination: Position) -> Option<CharacterMovement> {
+        let character = state.get_character(char_id)?;
+        let Some(map_instance) = state.get_map_instance_from_character(character) else {
+            warn!("Movement request ignored, no map instance for character {char_id}");
+            return None;
+        };
+        let mut current_position = Position {
+            x: character.x(),
+            y: character.y(),
+            dir: 0,
+        };
+        if character.is_moving() {
+            if let Some(previous_movement) = character.peek_movement() {
+                current_position = *previous_movement.position()
+            }
+        }
+        let path = path_search_client_side_algorithm(
+            map_instance.x_size(),
+            map_instance.y_size(),
+            map_instance.state().cells().as_ref(),
+            current_position.x(),
+            current_position.y(),
+            destination.x,
+            destination.y,
+        );
+        let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+        let canmove_tick = character.get_canmove_tick();
+        let start_at = if tick < canmove_tick {
+            debug!("Character movement delayed until canmove_tick: {}ms", canmove_tick - tick);
+            canmove_tick
+        } else {
+            tick
+        };
+        Some(CharacterMovement {
+            char_id,
+            destination,
+            path: Movement::from_path(path, start_at),
+            start_at,
+            current_position,
+            cancel_attack: true,
+        })
     }
 
     pub(crate) fn character_movement_loop(server_ref: Arc<Server>, client_notification_sender_clone: SyncSender<Notification>) {
@@ -219,10 +267,18 @@ impl Server {
                 break;
             }
             let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+            let state_loops_guard = server_ref.lock_state_loops();
             let mut server_state_mut = server_ref.state_mut();
             if let Some(tasks) = server_ref.pop_movement_task() {
                 for task in tasks {
-                    if let GameEvent::CharacterMove(character_movement) = task {
+                    let character_movement = match task {
+                        GameEvent::CharacterMove(character_movement) => Some(character_movement),
+                        GameEvent::CharacterRequestMove(request) => {
+                            Self::plan_character_move(&server_state_mut, request.char_id, request.destination)
+                        }
+                        _ => None,
+                    };
+                    if let Some(character_movement) = character_movement {
                         if server_state_mut.pending_character_logouts.contains_key(&character_movement.char_id) {
                             continue;
                         }
@@ -413,6 +469,9 @@ impl Server {
                 character.transition_to_idle();
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
             }
+            server_state_mut.publish_directory();
+            drop(server_state_mut);
+            drop(state_loops_guard);
 
             let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
             let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;

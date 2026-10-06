@@ -123,6 +123,7 @@ pub async fn character_join_game() -> u32 {
         vec![],
     );
     character.loaded_from_client_side = true;
+    let _state_loops_guard = server.lock_state_loops();
     server.state_mut().insert_character(character);
     let character = server.state().get_character_unsafe(char_id);
     server.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id: character.char_id }));

@@ -129,7 +129,7 @@ impl ScriptSkillService {
                     && ground.cells.iter().any(|cell| cell.id == trap_id && cell.remaining_hits > 0)
             })
             .ok_or("Skill requires a live trap on this map")?;
-        if !spring && ground.source_id != character.char_id && !state.map_flags(&character.map_instance_key).versus(state.siege_active) {
+        if !spring && ground.source_id != character.char_id && !state.map_flags(&character.map_instance_key).versus(state.siege_active()) {
             return Err("Remove Trap can only retrieve your own traps on this map".into());
         }
         let cell = ground.cells.iter().find(|cell| cell.id == trap_id).unwrap();

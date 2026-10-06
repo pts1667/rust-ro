@@ -185,11 +185,11 @@ impl ScriptSkillService {
         if metadata.flags.get("TargetTrap").copied().unwrap_or(false) {
             candidates.extend(
                 state
-                    .ground_units
-                    .values()
-                    .filter(|unit| {
+                    .ground_units()
+                    .matching(|unit| {
                         unit.map == character.map_instance_key && unit.alive(tick) && !unit.used && near(unit.id, unit.x, unit.y)
                     })
+                    .into_iter()
                     .map(|unit| AreaDamageTarget {
                         id: unit.id,
                         x: unit.x,

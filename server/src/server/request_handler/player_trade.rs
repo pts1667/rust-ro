@@ -11,7 +11,7 @@ pub(crate) fn handle_raw(server: &Server, context: &Request) -> Result<bool, Str
     let Some(account_id) = server.ensure_session_exists(&context.socket()) else {
         return Ok(true);
     };
-    let Some(session) = server.state().find_session(account_id) else {
+    let Some(session) = server.sessions().find(account_id) else {
         return Ok(true);
     };
     let Some(char_id) = session.char_id else {

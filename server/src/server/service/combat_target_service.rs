@@ -34,7 +34,7 @@ impl Server {
             return false;
         };
         if *item.object_type() == MapItemType::Mob {
-            if state.duels.duel_of(source.char_id).is_some() && !state.map_flags(&source.map_instance_key).versus(state.siege_active) {
+            if self.duels().duel_of(source.char_id).is_some() && !state.map_flags(&source.map_instance_key).versus(state.siege_active()) {
                 return false;
             }
             return state
@@ -71,14 +71,14 @@ impl Server {
             return false;
         }
         let flags = state.map_flags(&source.map_instance_key);
-        if source.killer || state.duels.same_duel(source.char_id, target.char_id) {
+        if source.killer || self.duels().same_duel(source.char_id, target.char_id) {
             return true;
         }
-        if !flags.versus(state.siege_active) {
+        if !flags.versus(state.siege_active()) {
             return false;
         }
         let (source_team, target_team) = if flags.enabled(MapFlag::Battleground) {
-            (state.battlegrounds.team_of(source.char_id), state.battlegrounds.team_of(target.char_id))
+            (source.bg_id, target.bg_id)
         } else {
             (0, 0)
         };
@@ -128,7 +128,7 @@ impl Server {
 
     fn emperium_attackable(&self, state: &ServerState, source: &Character) -> bool {
         let map = source.current_map_name();
-        if !state.siege_active || !state.map_flags(&source.map_instance_key).enabled(MapFlag::GvgCastle) {
+        if !state.siege_active() || !state.map_flags(&source.map_instance_key).enabled(MapFlag::GvgCastle) {
             return false;
         }
         let guild = source.game_systems.guild_id;

@@ -75,14 +75,15 @@ impl ScriptSkillService {
         {
             targets.extend(
                 state
-                    .ground_units
-                    .values()
-                    .filter(|unit| {
-                        unit.map == crate::server::model::map_instance::MapInstanceKey::new(source.map.clone(), source.instance)
+                    .ground_units()
+                    .matching(|unit| {
+                        unit.map.map_name() == &source.map
+                            && unit.map.map_instance() == source.instance
                             && unit.alive(crate::util::tick::get_tick())
                             && !unit.used
                             && unit.x.abs_diff(x).max(unit.y.abs_diff(y)) <= radius
                     })
+                    .into_iter()
                     .map(|unit| (unit.id, unit.status(), false)),
             );
         }

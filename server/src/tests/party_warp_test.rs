@@ -64,14 +64,14 @@ fn random_party_warp_uses_one_center_and_scatter_within_the_existing_instance() 
 fn party_warp_respects_origin_rules_dead_members_and_source_instance_filters() {
     let (context, _, party_id) = fixture();
     let mut flags = MapFlags::default(); flags.set(MapFlag::NoReturn, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     let mut request = event(party_id, "RandomAll");
     assert_eq!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap().iter().map(|warp| warp.char_id).collect::<Vec<_>>(), vec![150_000]);
     assert!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "empty")).unwrap().is_empty());
     let mut flags = MapFlags::default(); flags.set(MapFlag::NoWarp, true, &[]).unwrap();
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), flags);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     assert!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).is_err());
-    context.server.state_mut().runtime_map_flags.insert(("empty".into(), 0), MapFlags::default());
+    context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     request.source_map = Some("empty".into());
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().map_instance_key = MapInstanceKey::new("empty".into(), 7);
     assert_eq!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap().len(), 1);
