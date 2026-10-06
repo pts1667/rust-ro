@@ -3,7 +3,7 @@ use std::str::FromStr;
 use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 
-use configuration::configuration::ProxyConfig;
+use configuration::configuration::{ProxyConfig, ServerConfig};
 use packets::packets::{Packet, PacketChSendMapInfo, PacketHcNotifyZonesvr, ZserverAddr};
 
 use crate::proxy::{PacketHandler, Proxy};
@@ -13,9 +13,11 @@ use crate::server::service::global_config_service::GlobalConfigService;
 pub struct CharProxy {}
 
 impl CharProxy {
-    pub(crate) fn new(config: &ProxyConfig) -> Proxy<CharProxy> {
+    pub(crate) fn new(config: &ProxyConfig, server: &ServerConfig) -> Proxy<CharProxy> {
         Proxy {
             name: "Char".to_string(),
+            bind_ip: server.bind_ip(),
+            connect_ip: server.connect_ip(),
             local_port: config.local_char_server_port,
             target: SocketAddr::new(
                 IpAddr::from_str(&config.remote_char_server_ip).unwrap(),

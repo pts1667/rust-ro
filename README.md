@@ -77,6 +77,8 @@ First, make a copy from `config.template.json` to `config.json`:
 cd rust-ro
 cp config.template.json config.json
 ```
+`server.host` is the IP address the server and the legacy proxy listen on (default `0.0.0.0`, all interfaces). Use `127.0.0.1` to accept local connections only. It can be overridden at startup with `--host <ip>`, for example `cargo run --package server --bin server -- --host 127.0.0.1`.
+
 Inside this JSON, you will find **database related variables**, **game related variables** (exp_rate, drop_rate etc) as well.
 
 

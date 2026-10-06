@@ -512,11 +512,11 @@ impl Server {
         let (response_sender, single_response_receiver) = std::sync::mpsc::sync_channel::<Response>(0);
         let client_notification_sender_clone = client_notification_sender.clone();
         thread::scope(|server_thread_scope: &Scope| {
-            let listener = TcpListener::bind(format!("0.0.0.0:{port}")).unwrap();
+            let listener = TcpListener::bind(server_ref.configuration.server.bind_address(port)).unwrap();
             // listener.set_nonblocking(true);
             let server_shared_ref = server_ref.clone();
             if enable_client_interfaces {
-                info!("Server listen on 0.0.0.0:{}", port);
+                info!("Server listen on {}", server_ref.configuration.server.bind_address(port));
                 thread::Builder::new()
                     .name("client_connection_thread".to_string())
                     .spawn_scoped(server_thread_scope, move || {
@@ -780,7 +780,7 @@ impl Server {
                         persistence_event_sender.send(PersistenceEvent::Shutdown).unwrap();
                         server_ref_clone.shutdown().await;
                         info!("Hello ctrl+c");
-                        TcpStream::connect(format!("127.0.0.1:{port}"))
+                        TcpStream::connect(server_ref_clone.configuration.server.connect_address(port))
                             .map(|mut stream| stream.flush())
                             .ok();
                     });

@@ -65,7 +65,12 @@ impl MultiPlayerSimulator {
     }
 
     pub fn simulate(&mut self, char_id: u32) {
-        let client_socket = TcpStream::connect(format!("127.0.0.1:{}", GlobalConfigService::instance().config().server.port)).unwrap();
+        let client_socket = TcpStream::connect(
+            GlobalConfigService::instance()
+                .config()
+                .server
+                .connect_address(GlobalConfigService::instance().config().server.port),
+        ).unwrap();
         info!(
             "Start simulation for char {}, created socket: {}",
             char_id,

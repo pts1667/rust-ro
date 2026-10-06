@@ -3,7 +3,7 @@ use std::str::FromStr;
 use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 
-use configuration::configuration::ProxyConfig;
+use configuration::configuration::{ProxyConfig, ServerConfig};
 use packets::packets::Packet;
 
 use crate::proxy::{PacketHandler, Proxy};
@@ -12,9 +12,11 @@ use crate::proxy::{PacketHandler, Proxy};
 pub struct MapProxy {}
 
 impl MapProxy {
-    pub(crate) fn new(config: &ProxyConfig) -> Proxy<MapProxy> {
+    pub(crate) fn new(config: &ProxyConfig, server: &ServerConfig) -> Proxy<MapProxy> {
         Proxy {
             name: "map".to_string(),
+            bind_ip: server.bind_ip(),
+            connect_ip: server.connect_ip(),
             local_port: config.local_map_server_port,
             target: SocketAddr::new(
                 IpAddr::from_str(&config.remote_map_server_ip).unwrap(),

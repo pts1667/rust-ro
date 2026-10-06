@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream};
+use std::net::{IpAddr, Shutdown, SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering::SeqCst;
 use std::sync::{Arc, Mutex};
@@ -18,6 +18,8 @@ pub mod map;
 #[derive(Clone)]
 pub struct Proxy<T: PacketHandler + Clone + Send> {
     pub name: String,
+    pub bind_ip: IpAddr,
+    pub connect_ip: IpAddr,
     pub local_port: u16,
     pub target: SocketAddr,
     pub specific_proxy: T,
@@ -30,7 +32,7 @@ pub trait PacketHandler {
 
 impl<T: 'static + PacketHandler + Clone + Send + Sync> Proxy<T> {
     pub fn proxy(&self, packetver: u32) -> JoinHandle<()> {
-        let listener = TcpListener::bind(format!("0.0.0.0:{}", self.local_port)).unwrap();
+        let listener = TcpListener::bind(SocketAddr::new(self.bind_ip, self.local_port)).unwrap();
         let immutable_self_ref = Arc::new(self.clone()); // make An Arc of self to be able to share it with other threads
         let server_ref = immutable_self_ref.clone(); // cloning the ref to use in thread below
         spawn(move || {
@@ -58,7 +60,7 @@ impl<T: 'static + PacketHandler + Clone + Send + Sync> Proxy<T> {
 
     pub fn shutdown(&self) {
         self.is_alive.store(false, SeqCst);
-        TcpStream::connect(format!("127.0.0.1:{}", self.local_port))
+        TcpStream::connect(SocketAddr::new(self.connect_ip, self.local_port))
             .map(|mut stream| stream.flush())
             .ok();
     }

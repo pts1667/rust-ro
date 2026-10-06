@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, HashMap};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::path::Path;
 use std::{env, fs};
 
@@ -64,11 +65,49 @@ pub struct ServerConfig {
     #[set]
     pub log_level_module_override: Vec<String>,
     pub accounts: Vec<u32>,
+    #[serde(default = "default_host")]
+    #[set]
+    pub host: String,
     pub port: u16,
     pub enable_visual_debugger: bool,
     #[serde(default = "default_enable_legacy_proxy")]
     pub enable_legacy_proxy: bool,
     pub packetver: u32,
+}
+
+impl ServerConfig {
+    pub fn validate_host(&self) -> Result<(), String> {
+        self.host
+            .parse::<IpAddr>()
+            .map(|_| ())
+            .map_err(|_| format!("server.host \"{}\" is not a valid IP address", self.host))
+    }
+
+    pub fn bind_ip(&self) -> IpAddr {
+        self.host.parse().unwrap_or_else(|_| panic!("server.host \"{}\" is not a valid IP address", self.host))
+    }
+
+    /// Wildcard hosts are not connectable, the server reaches itself through loopback instead.
+    pub fn connect_ip(&self) -> IpAddr {
+        let ip = self.bind_ip();
+        match ip {
+            IpAddr::V4(_) if ip.is_unspecified() => IpAddr::V4(Ipv4Addr::LOCALHOST),
+            IpAddr::V6(_) if ip.is_unspecified() => IpAddr::V6(Ipv6Addr::LOCALHOST),
+            _ => ip,
+        }
+    }
+
+    pub fn bind_address(&self, port: u16) -> SocketAddr {
+        SocketAddr::new(self.bind_ip(), port)
+    }
+
+    pub fn connect_address(&self, port: u16) -> SocketAddr {
+        SocketAddr::new(self.connect_ip(), port)
+    }
+}
+
+fn default_host() -> String {
+    "0.0.0.0".to_string()
 }
 
 fn default_guild_max_alliances() -> u8 {
@@ -951,6 +990,7 @@ impl Config {
             ));
         }
         let mut config: Config = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+        config.server.validate_host()?;
 
         if config.server.log_level.is_some() {
             let log_level = config.server.log_level.as_ref().unwrap();
@@ -1244,7 +1284,36 @@ impl Config {
 mod tests {
     use std::fs;
 
-    use crate::configuration::SkillsConfig;
+    use crate::configuration::{ServerConfig, SkillsConfig};
+
+    fn server_config(extra: &str) -> ServerConfig {
+        let json = format!(
+            r#"{{"trace_packet": false, "log_level_module_override": [], "accounts": [], "port": 6901,
+                "enable_visual_debugger": false, "packetver": 20120229 {extra}}}"#
+        );
+        serde_json::from_str(&json).unwrap()
+    }
+
+    #[test]
+    fn host_defaults_to_all_interfaces_and_connects_through_loopback() {
+        let config = server_config("");
+        assert_eq!(config.bind_address(6901).to_string(), "0.0.0.0:6901");
+        assert_eq!(config.connect_address(6901).to_string(), "127.0.0.1:6901");
+    }
+
+    #[test]
+    fn explicit_host_is_used_for_binding_and_connecting() {
+        let config = server_config(r#", "host": "192.168.1.20""#);
+        assert_eq!(config.bind_address(6123).to_string(), "192.168.1.20:6123");
+        assert_eq!(config.connect_address(6123).to_string(), "192.168.1.20:6123");
+        assert_eq!(server_config(r#", "host": "::""#).connect_address(1).to_string(), "[::1]:1");
+    }
+
+    #[test]
+    fn invalid_host_is_rejected() {
+        assert!(server_config(r#", "host": "localhost""#).validate_host().is_err());
+        assert!(server_config(r#", "host": "127.0.0.1""#).validate_host().is_ok());
+    }
 
     #[test]
     fn test_deserialize_skill_config() {

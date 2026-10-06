@@ -62,7 +62,12 @@ pub static mut MAP_DIR: &str = "./config/maps/pre-re";
 #[tokio::main]
 pub async fn main() {
     let _start = Instant::now();
-    CONFIGS.set(Config::load("").unwrap()).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
+    let mut config = Config::load("").unwrap();
+    if let Some(host) = host_argument(std::env::args().skip(1)).unwrap_or_else(|error| exit_with_usage(&error)) {
+        config.server.set_host(host);
+        config.server.validate_host().unwrap_or_else(|error| exit_with_usage(&error));
+    }
+    CONFIGS.set(config).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
 
     setup_logger(configs());
     let runtime = Arc::new(Runtime::new().unwrap());
@@ -143,8 +148,8 @@ pub async fn main() {
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
 
     let proxies = configs().server.enable_legacy_proxy.then(|| {
-        let char_proxy = CharProxy::new(&configs().proxy);
-        let map_proxy = MapProxy::new(&configs().proxy);
+        let char_proxy = CharProxy::new(&configs().proxy, &configs().server);
+        let map_proxy = MapProxy::new(&configs().proxy, &configs().server);
         handles.push(char_proxy.proxy(configs().server.packetver));
         handles.push(map_proxy.proxy(configs().server.packetver));
         (char_proxy, map_proxy)
@@ -214,6 +219,26 @@ fn setup_logger(config: &'static Config) {
         .init();
 }
 
+fn host_argument(mut args: impl Iterator<Item = String>) -> Result<Option<String>, String> {
+    let mut host = None;
+    while let Some(argument) = args.next() {
+        if argument == "--host" {
+            host = Some(args.next().ok_or("--host requires an IP address")?);
+        } else if let Some(value) = argument.strip_prefix("--host=") {
+            host = Some(value.to_string());
+        } else {
+            return Err(format!("unknown argument \"{argument}\""));
+        }
+    }
+    Ok(host)
+}
+
+fn exit_with_usage(error: &str) -> ! {
+    eprintln!("{error}
+Usage: server [--host <ip>]");
+    std::process::exit(2)
+}
+
 pub fn load_scripts() -> HashMap<String, Vec<Script>> {
     ScriptLoader::load_scripts(&configs().scripting.npcs_path).expect("Failed to load Wasm NPC manifest")
 }
@@ -224,4 +249,26 @@ pub fn configs() -> &'static Config {
 
 pub fn create_script_vm() -> Arc<script_runtime::WasmRuntime> {
     script_runtime::WasmRuntime::from_file(&configs().scripting.module_path).expect("Failed to load compiled game scripts")
+}
+
+#[cfg(test)]
+mod host_argument_tests {
+    use super::host_argument;
+
+    fn parse(arguments: &[&str]) -> Result<Option<String>, String> {
+        host_argument(arguments.iter().map(|argument| argument.to_string()))
+    }
+
+    #[test]
+    fn host_is_read_from_either_form() {
+        assert_eq!(parse(&[]), Ok(None));
+        assert_eq!(parse(&["--host", "127.0.0.1"]), Ok(Some("127.0.0.1".to_string())));
+        assert_eq!(parse(&["--host=::1"]), Ok(Some("::1".to_string())));
+    }
+
+    #[test]
+    fn missing_value_and_unknown_arguments_are_errors() {
+        assert!(parse(&["--host"]).is_err());
+        assert!(parse(&["--port", "1"]).is_err());
+    }
 }
