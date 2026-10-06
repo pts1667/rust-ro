@@ -448,6 +448,82 @@ fn npc_ground_cast_keeps_a_live_source_and_damages_player_targets() {
 }
 
 #[test]
+fn npc_hunter_traps_trigger_on_the_players_standing_on_them() {
+    for skill in [
+        SkillEnum::HtClaymoretrap,
+        SkillEnum::HtBlastmine,
+        SkillEnum::HtAnklesnare,
+        SkillEnum::HtShockwave,
+        SkillEnum::HtFlasher,
+    ] {
+        let (context, instance, service, target) = fixture();
+        instance.state_mut().mobs_mut().clear();
+        let (x, y) = {
+            let state = context.server.state();
+            let character = state.get_character(target).expect("trap target is in game");
+            (character.x(), character.y())
+        };
+        let mut cast = request(NPC_ID, 0, skill);
+        cast.ground = Some((x, y));
+        cast.cast_time_adjust_ms = -10000;
+        start(&context, &instance, &service, cast, 1000).unwrap_or_else(|error| panic!("{skill:?}: {error}"));
+        assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1, "{skill:?} did not finish casting");
+        let ticks = [1000, 1040, 1080, 1120];
+        for tick in ticks {
+            context
+                .server
+                .script_skill_service()
+                .tick_ground_skills(&context.server, &context.server.state(), tick);
+        }
+        let mut reached_target = false;
+        while let Some(events) = context.server_task_queue.pop() {
+            for event in events {
+                let hit = match event {
+                    GameEvent::ScriptMapDamage(request) => request.damage.target_id,
+                    GameEvent::GroundTrapEffect(effect) => effect.target_id,
+                    GameEvent::GroundTrapCapture(capture) => capture.target_id,
+                    _ => continue,
+                };
+                reached_target |= context.server.state().get_character(hit).is_some();
+            }
+        }
+        assert!(reached_target, "{skill:?} placed by an NPC never reached the player standing on it");
+    }
+}
+
+#[test]
+fn npc_evil_land_blinds_the_players_inside_it() {
+    let (context, instance, service, target) = fixture();
+    let (x, y) = {
+        let state = context.server.state();
+        let character = state.get_character(target).expect("evil land target is in game");
+        (character.x(), character.y())
+    };
+    let mut cast = request(NPC_ID, 0, SkillEnum::NpcEvilland);
+    cast.ground = Some((x, y));
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1000).unwrap();
+    assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1);
+    let mut blinded = vec![];
+    for tick in [1000, 1040, 2100] {
+        context
+            .server
+            .script_skill_service()
+            .tick_ground_skills(&context.server, &context.server.state(), tick);
+        while let Some(events) = context.server_task_queue.pop() {
+            for event in events {
+                if let GameEvent::CharacterStatusChange(change) = event {
+                    if change.request.kind == StatusChangeKind::Blind {
+                        blinded.push(change.char_id);
+                    }
+                }
+            }
+        }
+    }
+    assert!(blinded.contains(&target), "the player inside Evil Land was not blinded: {blinded:?}");
+}
+
+#[test]
 fn scripted_player_costs_are_atomic_at_completion_and_interrupted_casts_do_not_pay() {
     let (context, instance, service, target) = fixture();
     let source = target - 1;
