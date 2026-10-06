@@ -245,6 +245,106 @@ mod tests {
         assert_eq!(cast!(packets[0], packets::packets::PacketZcNotifyPlayerchat).msg, "@bogus is an Unknown Command.");
     }
 
+    fn chat_replies(context: &super::ServerServiceTestContext) -> Vec<String> {
+        let packetver = GlobalConfigService::instance().packetver();
+        context
+            .test_context
+            .get_sent_packet(vec![packets::packets::PacketZcNotifyPlayerchat::packet_id(packetver)], packetver)
+            .iter()
+            .map(|packet| cast!(packet, packets::packets::PacketZcNotifyPlayerchat).msg.clone())
+            .collect()
+    }
+
+    fn say(context: &super::ServerServiceTestContext, char_id: u32, name: &str, command: &str) {
+        context.server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::CharacterChat(
+            crate::server::model::events::game_event::CharacterChat { char_id, message: format!("{name} : {command}") },
+        ));
+        crate::server::Server::game_loop_iteration(&context.server, 40);
+    }
+
+    fn join_group(context: &super::ServerServiceTestContext, account_id: u32, group: u32) {
+        let mut state = context.server.state_mut();
+        state.set_permission_groups(
+            crate::server::model::permission_groups::PermissionGroups::from_json(include_str!("../../../config/groups.json")).unwrap(),
+        );
+        let session = crate::server::model::session::Session::create_empty(account_id, 1, 1, context.server.packetver())
+            .with_account(crate::server::model::session::AccountSession::new(1, group, 12));
+        state.add_session(account_id, std::sync::Arc::new(session));
+    }
+
+    #[test]
+    fn atcommands_are_limited_to_the_commands_of_the_account_group() {
+        // Given
+        let (context, _repository, character) = super::native_payment_tests::fixture(false, false);
+        let (char_id, account_id, name) = (character.char_id, character.account_id, character.name.clone());
+        context.server.state_mut().insert_character(character);
+        // When
+        say(&context, char_id, &name, "@rates");
+        join_group(&context, account_id, 1);
+        say(&context, char_id, &name, "@rates");
+        say(&context, char_id, &name, "@item 501");
+        // Then
+        let replies = chat_replies(&context);
+        assert_eq!(replies.len(), 3);
+        assert_eq!(replies[0], "@rates is an Unknown Command.", "the default group has no @rates");
+        assert_ne!(replies[1], "@rates is an Unknown Command.", "Super Player may use @rates");
+        assert_eq!(replies[2], "@item is an Unknown Command.", "but not @item");
+    }
+
+    #[test]
+    fn admins_use_every_command_and_aliases_follow_their_canonical_command() {
+        // Given
+        let (context, _repository, character) = super::native_payment_tests::fixture(false, false);
+        let (char_id, account_id, name) = (character.char_id, character.account_id, character.name.clone());
+        context.server.state_mut().insert_character(character);
+        join_group(&context, account_id, 99);
+        // When
+        say(&context, char_id, &name, "@RATES");
+        say(&context, char_id, &name, "@bogus");
+        // Then
+        let replies = chat_replies(&context);
+        assert_ne!(replies[0], "@RATES is an Unknown Command.");
+        assert_eq!(replies[1], "@bogus is an Unknown Command.", "all_commands does not make up commands");
+    }
+
+    #[test]
+    fn ban_commands_update_the_account_and_report_to_the_game_master() {
+        // Given
+        use crate::repository::{CharServerRepository, LoginRepository};
+        let (context, repository, character) = super::native_payment_tests::fixture(false, false);
+        let (char_id, account_id, name) = (character.char_id, character.account_id, character.name.clone());
+        context.server.state_mut().insert_character(character);
+        join_group(&context, account_id, 99);
+        let victim_account = repository.account_create(database::model::AccountRecord::new(0, "victim", "secret")).unwrap();
+        repository
+            .char_create(&database::CharacterCreation {
+                character: database::model::CharacterRecord {
+                    account_id: victim_account as i32,
+                    name: "Victim".into(),
+                    inventory_slots: 100,
+                    ..Default::default()
+                },
+                items: vec![],
+                slot_limit: 12,
+                case_sensitive_names: false,
+            })
+            .unwrap();
+        // When
+        say(&context, char_id, &name, "@ban 1h Victim");
+        let banned = repository.account_by_id(victim_account).unwrap().unwrap().unban_time;
+        say(&context, char_id, &name, "@unban Victim");
+        say(&context, char_id, &name, "@ban 1h Nobody");
+        say(&context, char_id, &name, "@ban soon");
+        // Then
+        let replies = chat_replies(&context);
+        assert_eq!(replies[0], "Login-server has been asked to ban the player 'Victim'.");
+        assert!(banned > chrono::Utc::now().timestamp(), "the account is banned for the next hour");
+        assert_eq!(replies[1], "Login-server has been asked to unban the player 'Victim'.");
+        assert_eq!(replies[2], "The player 'Nobody' doesn't exist.");
+        assert!(replies[3].starts_with("Please enter ban time and a player name"));
+        assert_eq!(repository.account_by_id(victim_account).unwrap().unwrap().unban_time, 0, "unbanned again");
+    }
+
     #[test]
     fn removed_map_item_notification_releases_its_lock_without_a_matching_character() {
         // Given

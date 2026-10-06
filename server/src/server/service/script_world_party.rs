@@ -5,6 +5,7 @@ use super::{ScriptWorldService, install_state, protocol};
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, ScriptWorld};
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::permission_groups::Permission;
 use crate::server::model::game_systems::{PartyChange, PartyInvitation, PartyRecord, ScriptWorldRequest};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -339,6 +340,10 @@ impl ScriptWorldService {
     ) -> Result<(), String> {
         if changes_membership(&request) && state.map_flags(&character.map_instance_key).enabled(MapFlag::PartyLock) {
             return Err("Party membership is locked on this map".into());
+        }
+        let forms_party = matches!(request, PartyRequest::CreateParty { .. } | PartyRequest::AnswerPartyInvite { accept: true, .. });
+        if forms_party && !state.has_permission(character.account_id, Permission::Party) {
+            return Err("Your group is not allowed to create or join parties".into());
         }
         match request {
             PartyRequest::CreateParty {

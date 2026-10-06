@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use packets::packets::{
-    PacketCaLogin, PacketChDeleteChar4Reserved, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3, PacketChSelectChar,
+    PacketCaLogin, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3, PacketChSelectChar,
     PacketCzAckSelectDealtype, PacketCzBlockingPlayCancel, PacketCzChooseMenu, PacketCzContactnpc, PacketCzEnter2, PacketCzInputEditdlg,
     PacketCzInputEditdlgstr, PacketCzItemPickup, PacketCzItemThrow, PacketCzNotifyActorinit, PacketCzPcPurchaseItemlist,
     PacketCzPcSellItemlist, PacketCzPlayerChat, PacketCzReqDisconnect2, PacketCzReqItemcomposition, PacketCzReqItemcompositionList,
@@ -26,8 +26,8 @@ use crate::server::request_handler::action::npc::{
 };
 use crate::server::request_handler::action::skill::handle_use_skill;
 use crate::server::request_handler::char::{
-    handle_blocking_play_cancel, handle_char_enter, handle_delete_reserved_char, handle_disconnect, handle_enter_game, handle_make_char,
-    handle_restart, handle_select_char,
+    handle_blocking_play_cancel, handle_char_enter, handle_disconnect, handle_enter_game, handle_make_char, handle_restart,
+    handle_select_char,
 };
 use crate::server::request_handler::chat::handle_chat;
 use crate::server::request_handler::login::handle_login;
@@ -38,10 +38,12 @@ use crate::util::tick::{get_tick, get_tick_client};
 
 pub mod action;
 pub mod atcommand;
+pub mod atcommand_admin;
 /**
  * This module implement client requests handler.
  */
 pub mod char;
+pub mod char_requests;
 pub mod chat;
 pub mod framing;
 pub mod login;
@@ -57,6 +59,14 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
         Ok(false) => {}
         Err(error) => {
             warn!("Rejected malformed player trade packet: {}", error);
+            return;
+        }
+    }
+    match char_requests::handle_raw(server.as_ref(), &context) {
+        Ok(true) => return,
+        Ok(false) => {}
+        Err(error) => {
+            warn!("Rejected malformed character server packet: {}", error);
             return;
         }
     }
@@ -151,11 +161,6 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
     if context.packet().as_any().downcast_ref::<PacketChMakeChar3>().is_some() {
         debug!("PacketChMakeChar3");
         return handle_make_char(server.as_ref(), context);
-    }
-    // Delete char reservation
-    if context.packet().as_any().downcast_ref::<PacketChDeleteChar4Reserved>().is_some() {
-        debug!("PacketChDeleteChar4Reserved");
-        return handle_delete_reserved_char(server.as_ref(), context);
     }
     // Select char
     if context.packet().as_any().downcast_ref::<PacketChSelectChar>().is_some() {

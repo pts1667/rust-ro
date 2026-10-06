@@ -226,7 +226,7 @@ mod tests {
             .map(|index| AccountRecord {
                 account_id: 2_000_000 + index,
                 username: format!("party-account-{index}"),
-                password: "password".into(),
+                password: "password".into(), ..Default::default()
             })
             .collect();
         let characters = (0..count)

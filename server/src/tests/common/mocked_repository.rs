@@ -33,6 +33,8 @@ impl ScriptVariableRepository for MockedRepository {}
 
 impl LoginRepository for MockedRepository {}
 
+impl crate::repository::CharServerRepository for MockedRepository {}
+
 #[async_trait]
 impl InventoryRepository for MockedRepository {
     async fn character_inventory_update_add(

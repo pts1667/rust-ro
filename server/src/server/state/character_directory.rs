@@ -55,6 +55,10 @@ impl CharacterDirectory {
         }
     }
 
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
     pub fn presence(&self, char_id: u32) -> Option<CharacterPresence> {
         self.0.get(&char_id).map(|presence| presence.clone())
     }

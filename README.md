@@ -46,7 +46,6 @@ To understand what is going on at this project, check the [architectures notes](
   - `lib/configuration`: Structure for configuration with serde deserializer implementation
   - `lib/skills`: Generated structures for skills from `configuration` and also manually implemented skills methods
 - `server`: server core
-  - `server/proxy`: A proxy implementation to be use between a client and an emulator (rathena or hercules) in order to capture packets
   - `server/repository`: data access layer of the server, any access to dabase is written from this layer
   - `server/server`: global event loop, map instance event loop, persistence event loop
   - `server/server/boot`: any method require in order to boostrap server state (script loader, maploader, mob spawn...)
@@ -77,7 +76,7 @@ First, make a copy from `config.template.json` to `config.json`:
 cd rust-ro
 cp config.template.json config.json
 ```
-`server.host` is the IP address the server and the legacy proxy listen on (default `0.0.0.0`, all interfaces). Use `127.0.0.1` to accept local connections only. It can be overridden at startup with `--host <ip>`, for example `cargo run --package server --bin server -- --host 127.0.0.1`.
+`server.host` is the IP address the server listens on (default `0.0.0.0`, all interfaces). Use `127.0.0.1` to accept local connections only. It can be overridden at startup with `--host <ip>`, for example `cargo run --package server --bin server -- --host 127.0.0.1`.
 
 The server accepts raw TCP clients and WebSocket clients (for example roBrowser) on the same `server.port`. A connection that opens with an HTTP upgrade request is switched to WebSocket, and every other connection is treated as raw TCP. Each outgoing write is sent as one binary message, and incoming binary messages are read as the same byte stream a TCP client sends. Text frames and extensions are rejected. TLS (`wss://`) is not handled by the server, terminate it in a reverse proxy. Set `server.enable_websocket` to `false` to accept raw TCP only.
 
@@ -120,7 +119,29 @@ To provision another account, set `ACCOUNT_PASSWORD` and run:
 cargo run --package tools --bin account-setup -- create player
 ```
 
-Add the resulting account ID to `server.accounts` in `config.json`. The tool also supports `seed FILE` for a custom seed file and `characters FILE` for character presets. Existing records are preserved by default; pass `--replace` to replace the supplied records.
+`create` accepts `--sex M|F` and `--group ID`. Accounts are also created in-game when `login.new_account` is enabled, by logging in with a user name ending in `_M` or `_F`. Other commands of the tool:
+
+```shell
+cargo run --package tools --bin account-setup -- group player 99   # permission group of an account
+cargo run --package tools --bin account-setup -- ban player 1893456000   # banned until this unix time, 0 lifts the ban
+cargo run --package tools --bin account-setup -- ipban 10.0.0.* 60   # ban an IP pattern for 60 minutes
+cargo run --package tools --bin account-setup -- unipban 10.0.0.*
+```
+
+The tool also supports `seed FILE` for a custom seed file and `characters FILE` for character presets. Existing records are preserved by default; pass `--replace` to replace the supplied records.
+
+A database created before permission groups existed has no group on its accounts, so they all fall in group 0 (`Player`). Give the administrator the `Admin` group with `account-setup group admin 99`.
+
+#### Login, character server, groups and message of the day
+
+The `login` and `char_server` sections of `config.json` mirror `login_athena.conf` and `char_athena.conf` of rathena (pre-renewal values); the template lists every key with its default. Highlights:
+
+- `login`: account registration (`new_account`, `allowed_regs`, `time_allowed`), minimum lengths, `group_id_to_connect`/`min_group_id_to_connect`, IP ban and DNSBL, login log, server list `subnets`.
+- `char_server`: server name, `max_connect_user`, `char_maintenance`, character creation rules (`start_point`, `start_items`, name checks), deletion rules (`char_del_*`), `pincode`, rename and slot move, `default_map` and fame list sizes. PIN code verification is disabled by default.
+- `server.groups_path` (`config/groups.json`) defines the permission groups and the commands each group may use. It is generated from rathena's `groups.yml` and `atcommands.yml` by `tools/scripts-import/import_groups.py`. A command a group may not use answers like an unknown command.
+- `server.motd_path` (`config/motd.txt`) is sent to each player on map entry; `@reloadmotd` rereads it.
+
+GM commands to manage players are `@ban`/`@unban`, `@charban`/`@charunban`, `@block`/`@unblock` and `@kick`.
 
 ### 5.3 Running the Server
 
@@ -157,8 +178,6 @@ If everything goes right, you should receive something like this output:
 2024-02-11 13:45:55.134622 +01:00 [<unnamed>] [INFO]: load 3392 mob spawns in 19ms
 2024-02-11 13:45:55.152271 +01:00 [main] [INFO]: Loaded 897 map-cache in 44ms
 2024-02-11 13:45:55.378476 +01:00 [main] [INFO]: Executed and cached 1601 item scripts, skipped 891 item scripts (requiring runtime data) in 226ms
-2024-02-11 13:45:55.388987 +01:00 [<unnamed>] [INFO]: Start proxy for map proxy, 6124:5121
-2024-02-11 13:45:55.389135 +01:00 [<unnamed>] [INFO]: Start proxy for Char proxy, 6123:6121
 2024-02-11 13:45:55.389212 +01:00 [main] [WARN]: Visual debugger has been enable in configuration, but feature has not been compiled. Please consider enabling "visual-debugger" feature.
 2024-02-11 13:45:55.389241 +01:00 [main] [INFO]: Server started in 2347ms
 2024-02-11 13:45:55.389292 +01:00 [main] [INFO]: Server listen on 0.0.0.0:6901
@@ -201,12 +220,8 @@ npm run dev
 
 ## 6. Developer Notes
 
-- All packets for account 2000000 are handle by this project.
-- All packets for any other account are proxied (and display in console) to hercules or rathena.
+- Login, char and map packets are all handled by this project on one port.
 - clientinfo.xml to be changed to target port 6901
-
-In proxy mode:
-- login, char, map server to be running using default ports (6900, 6121, 6122)
 
 
 ## 7. Progress Showcase (Compilation)
@@ -232,9 +247,6 @@ Debug server state with a UI
 ### 7.4 Mobs
 ![mobs](doc/img/mob_spawn.PNG)
 
-### 7.5 Proxied packets
-![packets](doc/img/packet_analyzer.PNG)
-
 
 ## 8. What has been done? ✔️
 
@@ -248,7 +260,6 @@ Some list of features that was developed so far:
 - stat simulator and test case generator
 - skills structure generator
 ### 8.2 Server
-- proxy login, char and map request to hercules/rathena login, char and map servers
 - packet debug
 - login
 - char server features(create char, delete char, join game)

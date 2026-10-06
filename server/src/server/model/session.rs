@@ -37,7 +37,51 @@ impl PartialEq for SessionBinding {
     fn eq(&self, other: &Self) -> bool { Weak::ptr_eq(&self.0, &other.0) }
 }
 
+/// Account data and char server state shared by every session generation of one login.
+#[derive(Debug)]
+pub struct AccountSession {
+    pub sex: u8,
+    pub group_id: u32,
+    pub char_slots: u8,
+    pub char_server: Mutex<CharServerState>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct CharServerState {
+    pub pin_seed: u32,
+    pub pin_verified: bool,
+    pub pin_tries: u32,
+    pub new_name: Option<(u32, String)>,
+}
+
+impl Default for AccountSession {
+    fn default() -> Self {
+        Self {
+            sex: 1,
+            group_id: 0,
+            char_slots: configuration::account_config::MAX_CHARS,
+            char_server: Mutex::new(CharServerState::default()),
+        }
+    }
+}
+
+impl AccountSession {
+    pub fn new(sex: u8, group_id: u32, char_slots: u8) -> Self {
+        Self {
+            sex,
+            group_id,
+            char_slots,
+            char_server: Mutex::new(CharServerState::default()),
+        }
+    }
+
+    pub fn char_server(&self) -> std::sync::MutexGuard<'_, CharServerState> {
+        self.char_server.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+}
+
 pub struct Session {
+    pub account: Arc<AccountSession>,
     pub char_server_socket: Option<Arc<RwLock<ClientSocket>>>,
     pub map_server_socket: Option<Arc<RwLock<ClientSocket>>>,
     pub account_id: u32,
@@ -292,6 +336,7 @@ impl SessionRegistry {
 impl Session {
     pub fn create_empty(account_id: u32, auth_code: i32, user_level: u32, packetver: u32) -> Session {
         Session {
+            account: Arc::new(AccountSession::default()),
             char_server_socket: None,
             map_server_socket: None,
             account_id,
@@ -305,8 +350,14 @@ impl Session {
         }
     }
 
+    pub fn with_account(mut self, account: AccountSession) -> Session {
+        self.account = Arc::new(account);
+        self
+    }
+
     pub fn recreate_with_char_socket(&self, char_socket: Arc<RwLock<ClientSocket>>) -> Session {
         Session {
+            account: self.account.clone(),
             char_server_socket: Some(char_socket),
             map_server_socket: self.map_server_socket.clone(),
             account_id: self.account_id,
@@ -322,6 +373,7 @@ impl Session {
 
     pub fn recreate_with_map_socket(&self, map_socket: Arc<RwLock<ClientSocket>>) -> Session {
         Session {
+            account: self.account.clone(),
             char_server_socket: self.char_server_socket.clone(),
             map_server_socket: Some(map_socket),
             account_id: self.account_id,
@@ -342,6 +394,7 @@ impl Session {
         map_socket: Arc<RwLock<ClientSocket>>,
     ) -> Session {
         Session {
+            account: Arc::new(AccountSession::default()),
             char_server_socket: None,
             map_server_socket: Some(map_socket),
             account_id,
@@ -357,6 +410,7 @@ impl Session {
 
     pub fn recreate_with_character(&self, char_id: u32) -> Session {
         Session {
+            account: self.account.clone(),
             char_server_socket: self.char_server_socket.clone(),
             map_server_socket: self.map_server_socket.clone(),
             account_id: self.account_id,
@@ -372,6 +426,7 @@ impl Session {
 
     pub fn recreate_without_character(&self) -> Session {
         Session {
+            account: self.account.clone(),
             char_server_socket: self.char_server_socket.clone(),
             map_server_socket: None,
             account_id: self.account_id,
@@ -387,6 +442,7 @@ impl Session {
 
     pub fn snapshot(&self) -> Session {
         Session {
+            account: self.account.clone(),
             char_server_socket: None,
             map_server_socket: None,
             account_id: self.account_id,

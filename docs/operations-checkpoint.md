@@ -18,7 +18,7 @@ Handoff for the "implement all missing operations" goal (pre-renewal only). It l
 **Platform**
 - Sled replaces PostgreSQL (fresh seed from repository assets, no migration); multi-key transactions cover inventory, script variables, world changes, and reward receipts; no explicit flushes.
 - Wasmtime runs compiled Rust NPC, item, pet, and event code (SDK, offline import tools, guest sources, manifests, compiled bundle). rAthena is an offline reference and import input only.
-- Character admission, map entry, `OnTimerQuit` callbacks, and logout run through the game loop; `server.enable_legacy_proxy` (default true) keeps the legacy login/char/map proxy for accounts not in `server.accounts`.
+- Character admission, map entry, `OnTimerQuit` callbacks, and logout run through the game loop. Login, char selection and map entry are served for every account by the built-in servers; the legacy proxy and `server.accounts` were removed.
 
 **Combat and skills**
 - Equipment/card effects, skill resistance, signed elemental absorption, reflection, procs, and monster classes. Resolved damage packets (legacy 16-bit, 2007 32-bit, 2013 SP-aware) are emitted when queued damage is admitted, through one builder for player, monster, NPC, companion, ground, delayed, splash, and reflected hits.
@@ -108,7 +108,7 @@ Handoff for the "implement all missing operations" goal (pre-renewal only). It l
 - [ ] Live-client verification: trading, hit packet timing and hit counts, traps, Talkie Box/Graffiti, Warp Portal, guild/alliance packets, duel flow, riding, client admission and logout handoff.
 - [ ] Audit item transaction side-effect ordering for untested combinations; card/proc rounding and class/mode immunity across status, visibility, and knockback paths.
 - [x] `config/npc/pre-re/warps/other/sign.txt` restored from the pre-renewal rathena warps, so the include in `scripts_warps.conf` loads.
-- [ ] Retire or disable the legacy proxy path once local admission covers all accounts.
+- [x] Legacy proxy path retired: the built-in login/char path is the only one.
 
 ## Useful implementation entry points
 

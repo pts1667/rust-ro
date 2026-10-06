@@ -1,0 +1,2 @@
+// Message of the day, shown to every player when they enter the game (128 lines at most).
+Welcome! Enjoy! Please report any bugs you find.

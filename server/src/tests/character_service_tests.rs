@@ -377,7 +377,7 @@ mod tests {
         let mut character = create_character();
         character.status.zeny = 0;
         repository.database.seed(&database::model::SeedData {
-            accounts: vec![database::model::AccountRecord { account_id: character.account_id, username: "wallet-test".into(), password: "secret".into() }],
+            accounts: vec![database::model::AccountRecord { account_id: character.account_id, username: "wallet-test".into(), password: "secret".into(), ..Default::default() }],
             characters: vec![database::model::CharacterRecord { char_id: character.char_id as i32, account_id: character.account_id as i32,
                 name: character.name.clone(), inventory_slots: 100, ..Default::default() }], ..Default::default()
         }, false).unwrap();

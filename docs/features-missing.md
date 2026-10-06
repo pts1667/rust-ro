@@ -66,25 +66,38 @@ Cash shop itself **is** in scope (see [Section 6](#6-items-crafting-and-economy)
 
 ## 1. Accounts, login and character server
 
-Evidence: `server/src/server/request_handler/login.rs` and `char.rs`; reference `src/login/*`, `src/char/*`.
+Evidence: `server/src/server/request_handler/login.rs`, `char.rs`, `char_requests.rs`, `server/src/server/service/login_service.rs`, `char_server_service.rs`, `account_admin_service.rs`, `pincode.rs`; reference `src/login/*`, `src/char/*`. Settings live in the `login` and `char_server` sections of `config.json` (see the README).
 
-- [ ] **User level and sex come from the account, not random values.** `authenticate` fills `user_level` with `rng.gen::<u32>()` and `sex` with 1. Read both from the account record (`login/account.hpp`).
-- [ ] **Account creation** (`_M`/`_F` suffix registration, `login_athena.conf: new_account`, `allowed_regs`, `time_allowed`), password handling, `group_id_to_connect`/`min_group_id_to_connect` login gating.
-- [ ] **Account state checks:** ban until time (refuse reasons in `login/loginclif.cpp`), `@ban`/`@unban`/`@charban`, IP ban (`ipban_enable`, `ipban_dynamic_pass_failure_ban*`, `ipban_cleanup_interval`, `use_dnsbl`; `login/ipban.cpp`), last IP/login time, login log (`log_login`, `login/loginlog.cpp`).
-- [ ] **Duplicate login handling:** kick the existing session when the same account logs in again (`login/loginchrif.cpp`).
-- [ ] **Server list data:** real server name, user count with `usercount_*` thresholds, per-IP subnet mapping (`conf/subnet_athena.conf`), `char_maintenance`/`char_new`/`char_new_display`, `max_connect_user`. The list is hard coded to `127.0.0.1` and "Rust ragnarok".
-- [ ] **Character slots and selection list:** `chars_per_account`, `vip_char_increase`, `PacketHcAcceptEnter` content for 20120307 (`char_clif.cpp`), ordering, `char_new`/`gm_allow_group`.
-- [ ] **Character creation rules:** name validation (`char_name_min_length`, `char_name_option`, `char_name_letters`, `name_ignoring_case`, `unknown_char_name`), starting items/zeny/point (`start_point_pre`, `start_items_pre`, `start_zeny`; the `_pre` variants are the pre-renewal values), hair/colour checks and the stat-allocation check of the create packet.
-- [ ] **Character deletion:** rathena at this version uses the e-mail confirmed delete (`PACKETVER_CHAR_DELETEDATE` is false for 20120307); the fork implements `PacketChDeleteChar4Reserved`. **Verify** which packet the 20120307 client sends and add the missing path (`char_del_level`, `char_del_delay`, `char_del_option`, `char_del_restriction`; party/guild leave on delete, `clear_parties`).
-- [ ] **PIN code** (`PACKETVER >= 20110309`, in scope): `pincode_enabled`, `pincode_changetime`, `pincode_maxtry`, `pincode_force`, repeated/sequential rules, PIN state packets in `char_clif.cpp`.
-- [ ] **Character rename** (`PACKETVER >= 20111101` path in `chclif_parse_rename`, `char_rename_party`, `char_rename_guild`) and **slot move** (`char_move_enabled`, `char_movetoused`, `char_moves_unlimited`, `chclif_parse_moveCharSlot`).
-- [ ] **Character server settings:** `default_map`/`default_map_x`/`default_map_y`, `autosave_time`, `save_log`, `char_checkdb`, `fame_list_*` sizes, `guild_exp_rate`, mail return/delete days (`mail_return_days`, `mail_delete_days`, `mail_retrieve`, `mail_return_empty`).
-- [ ] **Map-server hand-off for every account:** `server.enable_legacy_proxy` proxies unknown accounts to an external rathena. Make the built-in login/char path the only path and remove the proxy (also an open item in the checkpoint).
-- [ ] **Config default:** `config.template.json` ships `packetver: 20120229`. The framing tables support 20120229 and 20120307; set the default and tests to 20120307 and decide whether 20120229 stays supported.
-- [ ] **Message of the day** (`conf/motd.txt`, `@reloadmotd`), welcome message on enter.
-- [ ] **Permission groups** (`conf/groups.yml`, `doc/permissions.txt`, `src/map/pc_groups.cpp`): group id per account, permission flags (`can_trade`, `can_party`, `all_skill`, `receive_requests`, `hide_session`, `disable_pvm`, …), command/atcommand lists per group, group id for `getgmlevel`/`getgroupid`. There is no GM or permission model today (`server/src` has no group/permission concept).
-- [ ] **Persistence parity for state rathena keeps in the char server:** `sc_data` (persistent status changes across logout), `skill_cooldown`, `mapreg` variables (`$`, `$@`, `#`, `##` script variable scopes), `hotkeys`, `feel/hate` records, `friends`, `bound` items, `memo` points (done), `show_equip`, `disable_call`, per-character `ignore` list. Cross-check each against `src/char/int_*.cpp` and `sql-files/main.sql`.
-- [ ] **Multiple map servers / inter-server messages** are not needed (single process by design); document the intentional deviation so it is not re-reported.
+- [x] **User level and sex come from the account.** `AccountRecord` carries sex and group; the login reply and char list read them. The old "user level" random value was `login_id2`, which stays random by design.
+- [x] **Account creation** (`_M`/`_F` suffix registration, `new_account`, `allowed_regs`, `time_allowed`, `acc_name_min_length`, `password_min_length`, `start_limited_time`, optional MD5 passwords) and `group_id_to_connect`/`min_group_id_to_connect` gating. Registration flood control keeps rathena's quirk: the window opens after the second registration.
+- [x] **Account state checks:** ban until time and every refuse reason, `@ban`/`@unban`/`@charban`/`@charunban`/`@block`/`@unblock`/`@kick`, IP ban (`ipban_*` including the dynamic failure ban and cleanup), DNSBL (blocking DNS lookup), last IP and login time, login log (`log_login`, pruned after 90 days).
+- [x] **Duplicate login handling:** a second login kicks the connected session (`0x0081` reason 8, then logout).
+- [x] **Server list data:** server name, user count, `char_maintenance`/`char_new`/`char_new_display`, `max_connect_user`, per-IP subnet mapping.
+- [x] **Character slots and selection list:** `chars_per_account`, per-account slots, `PacketHcAcceptEnter` content, ordering, `char_new`/`gm_allow_group`.
+- [x] **Character creation rules:** name validation, `start_point`/`start_items`/`start_zeny`/`start_status_points`, hair and colour checks, the stat-allocation check, refusal codes. Deviation: only one start map is configured by default (`new_1-1`), as the fork has no pre-renewal start choice.
+- [x] **Character deletion:** the client at 20120307 sends the e-mail/birthdate delete (`0x68`/`0x1fb`) and the reserved-delete family (`0x827`/`0x829`/`0x82b`); all of them follow `char_del_level`, `char_del_delay`, `char_del_option` and `char_del_restriction`. The delete cascade removes the character, its items, skills, hotkeys, pets, cart, fame and variables, divorces, de-adopts, and leaves the party and guild (breaking the guild when the character is its master). Limitation: members online at that moment are not refreshed, which is only reachable when `char_del_restriction` is lowered. `clear_parties` is not applicable: it clears the map servers' party cache and the fork has no such cache.
+- [x] **PIN code:** `pincode.*` settings (disabled by default), seeded keypad decrypt, state packets, `maxtry` kick, repeated/sequential rules, expiry.
+- [x] **Character rename and slot move:** `char_rename_party`, `char_rename_guild`, `char_move_enabled`, `char_movetoused`, `char_moves_unlimited`.
+- [x] **Character server settings:** `default_map` fallback, `fame_list_*` sizes, `guild_exp_rate`. Not applicable and removed from the configuration: `autosave_time` (state is persisted by events through the persistence loop, there is no periodic save), `save_log`, `char_checkdb` (rathena's inter-server check), `unknown_char_name` (a deleted character is purged from every record that stores its name). The `mail_*` settings arrive with the mail system ([Section 3](#3-social-and-communication)).
+- [x] **Map-server hand-off for every account:** the legacy proxy, `server.accounts` and `enable_legacy_proxy` are removed.
+- [x] **Config default:** `packetver` is 20120307 in the template and in the tests.
+- [x] **Message of the day** (`config/motd.txt`, `@reloadmotd`) sent on map entry.
+- [x] **Permission groups:** `config/groups.json` is generated from `groups.yml` and `atcommands.yml` (`tools/scripts-import/import_groups.py`) and loaded at startup. Inheritance is a union, as in rathena. Enforced today: command and `@`/`#` command lists (with alias resolution and `log_commands`), `can_trade` (trade, drop, vending and buying store), `can_party`. The other permission flags parse and can be queried through `ServerState::has_permission`, and each is enforced by the feature that owns it. Deviations: the default group loses commands the fork used to allow everyone (`@item`, `@duel`, ...); the seed administrator has group 99 and existing databases need `account-setup group <name> 99`. Fork-only commands (`inspect`, `setblvl`, ...) are limited to groups with `all_commands`. `getgmlevel`/`getgroupid` need a rebuild of the script bundle and stay open (see [Section 13](#13-script-sdk-parity)).
+- [x] **Persistence parity audit** (rathena `int_*.cpp` and `main.sql` against the repositories):
+
+  | State | Status |
+  |---|---|
+  | Status bonuses (`sc_data`) | Persisted per character as bonus sources |
+  | Memo points, hotkeys, skills, inventory, cart, storage, pets, homunculus, mercenary, family, party and guild ids | Persisted |
+  | Script variables (character, account, server scopes, i.e. rathena `mapreg`, `#`, `##`) | Persisted |
+  | Fame lists | Persisted |
+  | Player `skill_cooldown` | Not persisted. Only homunculus and mercenary cooldowns are; cooldowns are lost on logout ([Section 7](#7-skills)) |
+  | `feel`/`hate` (Star Gladiator) | Not implemented ([Section 7](#7-skills)) |
+  | Friends | Not implemented ([Section 3](#3-social-and-communication)) |
+  | Bound items | No bound flag on items ([Section 6](#6-items-crafting-and-economy)) |
+  | `show_equip`, `disable_call`, `ignore` list | Not implemented; `show_equip` and `disable_call` come with `CZ_CONFIG` ([Section 2.1](#21-gameplay-critical)), `ignore` with whisper ([Section 3](#3-social-and-communication)) |
+
+- [x] **Multiple map servers / inter-server messages** are not needed: login, char and map run in one process on one port by design. This is an intentional deviation, do not report it again.
 
 ## 2. Client packets not handled
 

@@ -28,7 +28,9 @@ use crate::server::model::battleground::Battlegrounds;
 use crate::server::model::character_lifecycle::CharacterSelectionGate;
 use crate::server::model::duel::Duels;
 use crate::server::model::map_flag_overrides::{MapFlagOverrides, SiegeFlag};
+use crate::server::model::motd::Motd;
 use crate::server::model::notification_backlog::NotificationBacklog;
+use crate::server::model::permission_groups::PermissionGroups;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::service::battle_service::{BattleResultMode, BattleService};
 use crate::server::service::character::character_service::CharacterService;
@@ -36,6 +38,7 @@ use crate::server::service::character::inventory_service::InventoryService;
 use crate::server::service::character::skill_tree_service::SkillTreeService;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
+use crate::server::service::login_service::LoginService;
 use crate::server::service::script_service::ScriptService;
 use crate::server::model::client_socket::{ClientConnection, ClientSocket};
 use crate::server::service::script_world_service::ScriptWorldService;
@@ -67,6 +70,14 @@ thread_local!(pub static PACKETVER: RefCell<u32> = const { RefCell::new(0) });
 pub const PLAYER_FOV: u16 = 20;
 pub const MOB_FOV: u16 = 14;
 
+fn load_permission_groups(path: &str) -> PermissionGroups {
+    if !std::path::Path::new(path).exists() {
+        warn!("Group file {path} does not exist, only the default Player group is defined");
+        return PermissionGroups::builtin();
+    }
+    PermissionGroups::load(path).unwrap_or_else(|error| panic!("Failed to load the group file {path}: {error}"))
+}
+
 pub struct Server {
     pub configuration: &'static Config,
     pub repository: Arc<dyn Repository>,
@@ -88,6 +99,8 @@ pub struct Server {
     recording_sessions: Mutex<Vec<Arc<SessionRecord>>>,
     shared: OnceLock<Weak<Server>>,
     script_world_service: ScriptWorldService,
+    login_service: LoginService,
+    motd: Motd,
 }
 
 impl Server {
@@ -118,6 +131,14 @@ impl Server {
     /// Character positions for threads that must not read `ServerState`.
     pub fn directory(&self) -> &CharacterDirectory {
         &self.directory
+    }
+
+    pub fn motd(&self) -> &Motd {
+        &self.motd
+    }
+
+    pub fn login_service(&self) -> &LoginService {
+        &self.login_service
     }
 
     pub fn duels(&self) -> &Duels {
@@ -246,7 +267,8 @@ impl Server {
                 GlobalConfigService::instance(),
             ),
         );
-        let state = ServerState::new(map_items);
+        let mut state = ServerState::new(map_items);
+        state.set_permission_groups(load_permission_groups(&configuration.server.groups_path));
         let sessions = state.sessions().clone();
         let directory = state.directory().clone();
         let map_flag_overrides = state.map_flag_overrides().clone();
@@ -271,6 +293,8 @@ impl Server {
             recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
+            login_service: LoginService::new(),
+            motd: Motd::load(&configuration.server.motd_path),
             runtime,
         }
     }
@@ -313,6 +337,8 @@ impl Server {
             recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
+            login_service: LoginService::new(),
+            motd: Motd::default(),
             runtime,
         }
     }
@@ -584,6 +610,11 @@ impl Server {
                                                         )
                                                         .is_some()
                                                             || request_handler::script_operations::frame_length(
+                                                                id,
+                                                                server_shared_ref.packetver(),
+                                                            )
+                                                            .is_some()
+                                                            || request_handler::char_requests::frame_length(
                                                                 id,
                                                                 server_shared_ref.packetver(),
                                                             )

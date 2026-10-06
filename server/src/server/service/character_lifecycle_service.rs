@@ -43,6 +43,40 @@ impl Server {
         }
     }
 
+    fn send_motd(&self, char_id: u32) {
+        let sender = self.server_service().notification_sender();
+        for line in self.motd().lines() {
+            let mut packet = crate::util::packet::playerchat_packet(self.packetver(), &line);
+            use packets::packets::Packet as _;
+            sender
+                .send(crate::server::model::events::client_notification::Notification::Char(
+                    crate::server::model::events::client_notification::CharNotification::new(char_id, std::mem::take(packet.raw_mut())),
+                ))
+                .unwrap_or_else(|_| error!("Failed to send the message of the day to client"));
+        }
+    }
+
+    /// Tells the client why it is being disconnected (`SC_NOTIFY_BAN`), closes its sockets and logs the character out.
+    pub(crate) fn kick_session(&self, session: &Arc<Session>, reason: u8) {
+        let notice = crate::server::request_handler::login::notify_ban_packet(self.packetver(), reason);
+        for socket in [session.char_server_socket.as_ref(), session.map_server_socket.as_ref()].into_iter().flatten() {
+            crate::server::request_handler::login::write_to_socket(socket, &notice);
+            let _ = read_lock!(socket).shutdown(std::net::Shutdown::Both);
+        }
+        if session.char_id.is_some() {
+            self.add_to_next_tick(GameEvent::CharacterLogout(CharacterLogout {
+                session: session.clone(),
+                restart: false,
+            }));
+        } else if self
+            .sessions()
+            .find(session.account_id)
+            .is_some_and(|current| Arc::ptr_eq(&current, session))
+        {
+            self.sessions().remove(session.account_id);
+        }
+    }
+
     pub(crate) fn await_character_selection(&self, session: Arc<Session>) -> Result<Arc<Session>, String> {
         let (sender, receiver) = oneshot::channel();
         self.add_to_next_tick(GameEvent::CharacterSelectionGate(CharacterSelectionGate {
@@ -147,6 +181,7 @@ impl Server {
             character.y(),
         );
         self.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id }));
+        self.send_motd(char_id);
         self.server_service().schedule_warp_to_walkable_cell(state, &map, x, y, char_id);
         self.add_to_next_tick(GameEvent::CharacterInitInventory(CharacterInitInventory { char_id }));
     }

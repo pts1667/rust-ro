@@ -3,7 +3,9 @@
     {
       "account_id": 2000000,
       "username": "admin",
-      "password": "qwertz"
+      "password": "qwertz",
+      "group_id": 99,
+      "sex": "M"
     }
   ],
   "characters": [

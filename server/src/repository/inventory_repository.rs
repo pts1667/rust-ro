@@ -21,7 +21,7 @@ mod damaged_equipment_tests {
     fn equipment_breaking_validates_owner_and_identity_then_commits_damage_and_takeoff_together() {
         let repository=SledRepository::temporary().unwrap();
         let record=InventoryRecord {id:10,item_id:1201,amount:1,equip:2,unique_id:400,card0:255,card1:15*256+3,card2:1,card3:2,..Default::default()};
-        repository.database.seed(&SeedData {accounts:vec![AccountRecord {account_id:2000000,username:"Player".into(),password:"password".into()}],
+        repository.database.seed(&SeedData {accounts:vec![AccountRecord {account_id:2000000,username:"Player".into(),password:"password".into(), ..Default::default() }],
             characters:vec![CharacterRecord {char_id:150000,account_id:2000000,name:"Player".into(),inventory_slots:100,..Default::default()}],
             inventories:vec![CharacterInventory {char_id:150000,items:vec![record.clone()]}],..Default::default()},false).unwrap();
         let item:ItemModel=serde_json::from_value(serde_json::json!({"id":1201,"name_aegis":"Knife","name_english":"Knife","weight":10,"item_type":"Weapon","job_flags":0,"class_flags":0,"location":0,"flags":0,"trade_flags":0})).unwrap();

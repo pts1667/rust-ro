@@ -17,6 +17,7 @@ use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringVal
 use models::status_bonus::StatusBonusFlag;
 use serde::{Deserialize, Deserializer, Serialize};
 
+pub use crate::account_config::{CharServerConfig, LoginConfig};
 use crate::bonus_type_wrapper::BonusTypeWrapper;
 use crate::serde_helper::*;
 
@@ -28,10 +29,13 @@ pub struct Config {
     pub server: ServerConfig,
     pub game: GameConfig,
     pub database: DatabaseConfig,
-    pub proxy: ProxyConfig,
     pub maps: MapConfig,
     #[serde(default)]
     pub scripting: ScriptingConfig,
+    #[serde(default)]
+    pub login: LoginConfig,
+    #[serde(default)]
+    pub char_server: CharServerConfig,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -64,17 +68,18 @@ pub struct ServerConfig {
     pub trace_packet: bool,
     #[set]
     pub log_level_module_override: Vec<String>,
-    pub accounts: Vec<u32>,
     #[serde(default = "default_host")]
     #[set]
     pub host: String,
     pub port: u16,
     pub enable_visual_debugger: bool,
-    #[serde(default = "default_enable_legacy_proxy")]
-    pub enable_legacy_proxy: bool,
     #[serde(default = "default_enable_websocket")]
     pub enable_websocket: bool,
     pub packetver: u32,
+    #[serde(default = "default_groups_path")]
+    pub groups_path: String,
+    #[serde(default = "default_motd_path")]
+    pub motd_path: String,
 }
 
 impl ServerConfig {
@@ -116,8 +121,12 @@ fn default_guild_max_alliances() -> u8 {
     3
 }
 
-fn default_enable_legacy_proxy() -> bool {
-    true
+fn default_groups_path() -> String {
+    "config/groups.json".to_string()
+}
+
+fn default_motd_path() -> String {
+    "config/motd.txt".to_string()
 }
 
 fn default_enable_websocket() -> bool {
@@ -357,18 +366,6 @@ pub struct CityConfig {
     pub name: String,
     pub x: u16,
     pub y: u16,
-}
-
-#[derive(Deserialize, Debug, Clone)]
-pub struct ProxyConfig {
-    pub remote_login_server_ip: String,
-    pub remote_login_server_port: u16,
-    pub remote_char_server_ip: String,
-    pub remote_char_server_port: u16,
-    pub local_char_server_port: u16,
-    pub remote_map_server_ip: String,
-    pub remote_map_server_port: u16,
-    pub local_map_server_port: u16,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, GettersAll)]
@@ -1294,7 +1291,7 @@ mod tests {
 
     fn server_config(extra: &str) -> ServerConfig {
         let json = format!(
-            r#"{{"trace_packet": false, "log_level_module_override": [], "accounts": [], "port": 6901,
+            r#"{{"trace_packet": false, "log_level_module_override": [], "port": 6901,
                 "enable_visual_debugger": false, "packetver": 20120229 {extra}}}"#
         );
         serde_json::from_str(&json).unwrap()

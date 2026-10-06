@@ -17,7 +17,8 @@ use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction};
 use crate::server::model::game_systems::{ItemContainer, PlayerTradePhase, PlayerTradeRequest, ScriptWorldRequest, StoreRequest, ContainerRequest};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
-use crate::server::model::session::Session;
+use crate::server::model::permission_groups::PermissionGroups;
+use crate::server::model::session::{AccountSession, Session};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::player_trade_service::{TRADE_IDLE_TIMEOUT_MS, decode_request};
 
@@ -827,4 +828,51 @@ fn inventory_loading_preserves_distinct_persistent_rows_and_crafted_potion_metad
     character.add_items(vec![increment]);
     assert_eq!(character.inventory_iter().count(), 3);
     assert_eq!(character.inventory[0].as_ref().unwrap().amount, 3);
+}
+
+
+fn move_to_group(context: &ServerServiceTestContext, id: u32, group: u32) {
+    let mut state = context.server.state_mut();
+    let account_id = state.characters().get(&id).unwrap().account_id;
+    let old = state.find_session(account_id).unwrap();
+    let mut session = Session::create_empty(account_id, old.auth_code, old.user_level, context.server.packetver())
+        .with_account(AccountSession::new(1, group, 12));
+    session.char_id = old.char_id;
+    session.map_server_socket = old.map_server_socket.clone();
+    state.add_session(account_id, Arc::new(session));
+}
+
+fn groups_without_trade_for_group_seven() -> PermissionGroups {
+    PermissionGroups::from_json(
+        r#"{"groups": [{"id": 0, "name": "Player", "permissions": ["can_trade"]}, {"id": 7, "name": "Muted", "permissions": []}]}"#,
+    )
+    .unwrap()
+}
+
+#[test]
+fn a_group_without_can_trade_cannot_open_trades() {
+    let (context, _repository) = fixture();
+    context.server.state_mut().set_permission_groups(groups_without_trade_for_group_seven());
+    move_to_group(&context, FIRST, 7);
+    act(&context, FIRST, PlayerTradeRequest::Request(2_000_001), 100).unwrap();
+    assert_closed(&context);
+}
+
+#[test]
+fn trades_cannot_be_opened_with_a_player_whose_group_lacks_can_trade() {
+    let (context, _repository) = fixture();
+    context.server.state_mut().set_permission_groups(groups_without_trade_for_group_seven());
+    move_to_group(&context, SECOND, 7);
+    act(&context, FIRST, PlayerTradeRequest::Request(2_000_001), 100).unwrap();
+    assert_closed(&context);
+}
+
+#[test]
+fn groups_with_can_trade_still_trade_normally() {
+    let (context, _repository) = fixture();
+    context.server.state_mut().set_permission_groups(groups_without_trade_for_group_seven());
+    open(&context);
+    for id in [FIRST, SECOND] {
+        assert!(context.server.state().characters().get(&id).unwrap().game_systems.trade.is_some());
+    }
 }

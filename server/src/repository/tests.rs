@@ -31,7 +31,7 @@ fn repository() -> SledRepository {
                 accounts: vec![AccountRecord {
                     account_id: 2_000_000,
                     username: "player".into(),
-                    password: "password".into(),
+                    password: "password".into(), ..Default::default()
                 }],
                 characters: vec![CharacterRecord {
                     char_id: 150_000,
@@ -318,8 +318,8 @@ fn fresh_repository_seeds_catalogs_item_sources_and_accounts_once() {
         assert!(repository.get_all_items().await.unwrap().len() > 4_000);
         assert!(repository.get_all_mobs().await.unwrap().len() > 1_000);
         assert_eq!(repository.get_item_script(501).await.unwrap(), "itemheal rand(45,65),0;");
-        assert_eq!(repository.login("admin".into(), "qwertz".into()).await.unwrap(), 2_000_000);
-        assert!(repository.login("admin".into(), "wrong".into()).await.is_err());
+        let admin = repository.account_by_name("admin").unwrap().unwrap();
+        assert_eq!((admin.account_id, admin.password.as_str()), (2_000_000, "qwertz"));
         repository.character_update_status(150_000, "zeny".into(), 12).await.unwrap();
         repository.seed_assets(&configuration).unwrap();
         assert_eq!(repository.character_zeny_fetch(150_000).await.unwrap(), 12);

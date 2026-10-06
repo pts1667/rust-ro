@@ -1278,7 +1278,12 @@ impl Server {
             self.repository
                 .character_commit_experience_awards(&awards)
                 .map_err(|error| error.to_string())?;
+            let guild_exp_rate = GlobalConfigService::instance().config().char_server.guild_exp_rate;
             for (char_id, amount) in guild_payouts {
+                let amount = super::char_server_service::guild_exp_gain(amount, guild_exp_rate);
+                if amount == 0 {
+                    continue;
+                }
                 if let Err(error) =
                     self.repository
                         .guild_add_experience(char_id, amount, &super::script_world_service::world_data().guild_experience)

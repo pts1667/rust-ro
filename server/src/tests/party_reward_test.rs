@@ -48,7 +48,7 @@ fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>, Vec<u32>) {
                 database::tx_write(accounts, &character.account_id.to_be_bytes(), &AccountRecord {
                     account_id: character.account_id,
                     username: character.name.clone(),
-                    password: "secret".into(),
+                    password: "secret".into(), ..Default::default()
                 })?;
                 database::tx_write(characters, &id.to_be_bytes(), &CharacterRecord {
                     char_id: id as i32,
