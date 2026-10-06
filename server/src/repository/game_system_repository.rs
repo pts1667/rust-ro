@@ -1517,7 +1517,7 @@ mod tests {
                     accounts: vec![AccountRecord {
                         account_id: 2_000_000,
                         username: "world-test".into(),
-                        password: "password".into(),
+                        password: "password".into(), ..Default::default()
                     }],
                     characters: vec![
                         CharacterRecord {

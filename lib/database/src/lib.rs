@@ -31,6 +31,8 @@ pub struct Database {
     pub item_names: sled::Tree,
     pub mobs: sled::Tree,
     pub game_systems: sled::Tree,
+    pub ip_bans: sled::Tree,
+    pub login_log: sled::Tree,
     _db: sled::Db,
 }
 
@@ -73,27 +75,33 @@ impl Database {
             item_names: db.open_tree("item_names")?,
             mobs: db.open_tree("mobs")?,
             game_systems: db.open_tree("game_systems")?,
+            ip_bans: db.open_tree("ip_bans")?,
+            login_log: db.open_tree("login_log")?,
             _db: db,
         })
     }
 
     pub fn create_account(&self, username: String, password: String) -> Result<u32, DatabaseError> {
-        if username.is_empty() || password.is_empty() {
+        self.create_account_record(AccountRecord::new(0, username, password))
+    }
+
+    /// Creates an account from `template`, assigning the next account id.
+    pub fn create_account_record(&self, template: AccountRecord) -> Result<u32, DatabaseError> {
+        if template.username.is_empty() || template.password.is_empty() {
             return Err(DatabaseError::new("Username and password must be nonempty".into()));
         }
         Ok(
             (&self.accounts, &self.account_names, &self.metadata).transaction(|(accounts, names, metadata)| {
-                if names.get(username.as_bytes())?.is_some() {
+                if names.get(template.username.as_bytes())?.is_some() {
                     return conflict("Username already exists");
                 }
                 let id = next_id(metadata, b"account_id", 1_999_999)? as u32;
                 let account = AccountRecord {
                     account_id: id,
-                    username: username.clone(),
-                    password: password.clone(),
+                    ..template.clone()
                 };
                 tx_write(accounts, &id.to_be_bytes(), &account)?;
-                tx_write(names, username.as_bytes(), &id)?;
+                tx_write(names, template.username.as_bytes(), &id)?;
                 Ok(id)
             })?,
         )

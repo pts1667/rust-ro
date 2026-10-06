@@ -274,7 +274,7 @@ mod tests {
     fn setup() -> (SledRepository, ScriptInventoryTransaction) {
         let repository = SledRepository::temporary().unwrap();
         repository.database.seed(&SeedData {
-            accounts: vec![AccountRecord { account_id: 2_000_000, username: "Player".into(), password: "secret".into() }],
+            accounts: vec![AccountRecord { account_id: 2_000_000, username: "Player".into(), password: "secret".into(), ..Default::default() }],
             characters: vec![CharacterRecord { char_id: 150_000, account_id: 2_000_000, name: "Player".into(), hp: 100, sp: 50, zeny: 100, inventory_slots: 100, ..CharacterRecord::default() }],
             inventories: vec![CharacterInventory { char_id: 150_000, items: vec![
                 InventoryRecord { id: 10, item_id: 501, amount: 2, is_identified: true, ..InventoryRecord::default() },

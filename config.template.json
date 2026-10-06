@@ -1,15 +1,11 @@
 {
   "server": {
-    "accounts": [
-      2000000
-    ],
     "enable_visual_debugger": false,
-    "enable_legacy_proxy": true,
     "enable_websocket": true,
     "log_level_module_override": [],
     "log_level": "info",
     "trace_packet": false,
-    "packetver": 20120229,
+    "packetver": 20120307,
     "host": "0.0.0.0",
     "port": 6901
   },
@@ -198,15 +194,5 @@
         "y": 184
       }
     ]
-  },
-  "proxy": {
-    "local_char_server_port": 6123,
-    "local_map_server_port": 6124,
-    "remote_char_server_ip": "127.0.0.1",
-    "remote_char_server_port": 6121,
-    "remote_login_server_ip": "127.0.0.1",
-    "remote_login_server_port": 6900,
-    "remote_map_server_ip": "127.0.0.1",
-    "remote_map_server_port": 5121
   }
 }

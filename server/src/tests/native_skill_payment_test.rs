@@ -55,7 +55,7 @@ pub(super) fn fixture(arrow: bool, no_delay: bool) -> (ServerServiceTestContext,
                 accounts: vec![AccountRecord {
                     account_id: character.account_id,
                     username: "Caster".into(),
-                    password: "secret".into(),
+                    password: "secret".into(), ..Default::default()
                 }],
                 characters: vec![CharacterRecord {
                     char_id: character.char_id as i32,

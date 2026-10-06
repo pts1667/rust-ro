@@ -383,7 +383,7 @@ mod tests {
                     accounts: vec![AccountRecord {
                         account_id: 2_000_000,
                         username: "Player".into(),
-                        password: "secret".into(),
+                        password: "secret".into(), ..Default::default()
                     }],
                     characters: vec![CharacterRecord {
                         char_id: 150_000,

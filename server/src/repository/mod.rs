@@ -19,6 +19,7 @@ mod tests;
 
 use async_trait::async_trait;
 use configuration::configuration::DatabaseConfig;
+use database::model::{AccountRecord, IpBanRecord, LoginLogRecord};
 use database::Database;
 pub use database::DatabaseError as Error;
 use models::status::{KnownSkill, Status, StatusSnapshot};
@@ -73,10 +74,42 @@ pub trait Repository:
 
 impl Repository for SledRepository {}
 
-#[async_trait]
 pub trait LoginRepository {
-    async fn login(&self, _username: String, _password: String) -> Result<u32, Error> {
-        todo!()
+    fn account_by_name(&self, _name: &str) -> Result<Option<AccountRecord>, Error> {
+        Err(Error::InvalidInput("Account storage is unavailable".into()))
+    }
+    fn account_by_id(&self, _account_id: u32) -> Result<Option<AccountRecord>, Error> {
+        Err(Error::InvalidInput("Account storage is unavailable".into()))
+    }
+    fn account_create(&self, _account: AccountRecord) -> Result<u32, Error> {
+        Err(Error::InvalidInput("Account storage is unavailable".into()))
+    }
+    fn account_update(&self, _account_id: u32, _update: &dyn Fn(&mut AccountRecord)) -> Result<AccountRecord, Error> {
+        Err(Error::InvalidInput("Account storage is unavailable".into()))
+    }
+    fn ip_ban_active(&self, _ip: std::net::Ipv4Addr, _now: i64) -> Result<bool, Error> {
+        Ok(false)
+    }
+    fn ip_ban_add(&self, _ban: IpBanRecord) -> Result<(), Error> {
+        Err(Error::InvalidInput("IP ban storage is unavailable".into()))
+    }
+    fn ip_ban_remove(&self, _list: &str) -> Result<bool, Error> {
+        Err(Error::InvalidInput("IP ban storage is unavailable".into()))
+    }
+    fn ip_ban_cleanup(&self, _now: i64) -> Result<usize, Error> {
+        Ok(0)
+    }
+    fn login_log_append(&self, _record: LoginLogRecord) -> Result<(), Error> {
+        Ok(())
+    }
+    fn login_log_failed_attempts(&self, _ip: &str, _since: i64) -> Result<u32, Error> {
+        Ok(0)
+    }
+    fn login_log_prune(&self, _before: i64) -> Result<usize, Error> {
+        Ok(0)
+    }
+    fn login_log_entries(&self) -> Result<Vec<LoginLogRecord>, Error> {
+        Ok(Vec::new())
     }
 }
 

@@ -36,6 +36,7 @@ use crate::server::service::character::inventory_service::InventoryService;
 use crate::server::service::character::skill_tree_service::SkillTreeService;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
+use crate::server::service::login_service::LoginService;
 use crate::server::service::script_service::ScriptService;
 use crate::server::model::client_socket::{ClientConnection, ClientSocket};
 use crate::server::service::script_world_service::ScriptWorldService;
@@ -88,6 +89,7 @@ pub struct Server {
     recording_sessions: Mutex<Vec<Arc<SessionRecord>>>,
     shared: OnceLock<Weak<Server>>,
     script_world_service: ScriptWorldService,
+    login_service: LoginService,
 }
 
 impl Server {
@@ -118,6 +120,10 @@ impl Server {
     /// Character positions for threads that must not read `ServerState`.
     pub fn directory(&self) -> &CharacterDirectory {
         &self.directory
+    }
+
+    pub fn login_service(&self) -> &LoginService {
+        &self.login_service
     }
 
     pub fn duels(&self) -> &Duels {
@@ -271,6 +277,7 @@ impl Server {
             recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
+            login_service: LoginService::new(),
             runtime,
         }
     }
@@ -313,6 +320,7 @@ impl Server {
             recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
+            login_service: LoginService::new(),
             runtime,
         }
     }

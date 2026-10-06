@@ -8,7 +8,6 @@ extern crate test;
 #[macro_use]
 extern crate tracing;
 
-mod proxy;
 #[macro_use]
 mod util;
 #[cfg(feature = "visual_debugger")]
@@ -25,11 +24,9 @@ use std::io::Write;
 #[cfg(feature = "static_db_update")]
 use std::path::Path;
 use std::sync::Arc;
-use std::thread::JoinHandle;
 use std::time::Instant;
 
 use configuration::configuration::Config;
-use proxy::map::MapProxy;
 use server::Server;
 use tokio::runtime::Runtime;
 use tracing_subscriber::EnvFilter;
@@ -37,7 +34,6 @@ use tracing_subscriber::fmt::time::ChronoLocal;
 
 use self::server::model::events::client_notification::Notification;
 use self::server::model::events::persistence_event::PersistenceEvent;
-use crate::proxy::char::CharProxy;
 use crate::repository::model::item_model::ItemModel;
 #[cfg(feature = "static_db_update")]
 use crate::repository::model::item_model::ItemModels;
@@ -146,16 +142,6 @@ pub async fn main() {
     );
     let server_ref = Arc::new(server);
     let server_ref_clone = server_ref;
-    let mut handles: Vec<JoinHandle<()>> = Vec::new();
-
-    let proxies = configs().server.enable_legacy_proxy.then(|| {
-        let char_proxy = CharProxy::new(&configs().proxy, &configs().server);
-        let map_proxy = MapProxy::new(&configs().proxy, &configs().server);
-        handles.push(char_proxy.proxy(configs().server.packetver));
-        handles.push(map_proxy.proxy(configs().server.packetver));
-        (char_proxy, map_proxy)
-    });
-
 
     if configs().server.enable_visual_debugger {
         #[cfg(feature = "visual_debugger")]
@@ -179,10 +165,6 @@ pub async fn main() {
         persistence_event_sender,
         true,
     );
-    if let Some((char_proxy, map_proxy)) = proxies {
-        map_proxy.shutdown();
-        char_proxy.shutdown();
-    }
 }
 
 fn update_item_and_mob_static_db(_items: &mut Vec<ItemModel>, _mobs: &Vec<MobModel>) {

@@ -26,7 +26,7 @@ fn seeded_database() -> Database {
                 accounts: vec![AccountRecord {
                     account_id: 2_000_000,
                     username: "player".into(),
-                    password: "password".into(),
+                    password: "password".into(), ..Default::default()
                 }],
                 ..SeedData::default()
             },
@@ -62,7 +62,7 @@ fn invalid_inventory_rolls_back_seed_accounts_characters_and_indexes() {
             accounts: vec![AccountRecord {
                 account_id: 2_000_000,
                 username: "player".into(),
-                password: "password".into(),
+                password: "password".into(), ..Default::default()
             }],
             characters: vec![character(150_000, "First", 0)],
             inventories: vec![CharacterInventory {

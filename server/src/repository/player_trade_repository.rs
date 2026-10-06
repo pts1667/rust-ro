@@ -210,8 +210,8 @@ mod tests {
             is_damaged: true, card0: 4001, card1: 4002, ..Default::default() };
         let potion = InventoryRecord { id: 20, item_id: 501, amount: 3, is_identified: true, ..Default::default() };
         repository.database.seed(&SeedData {
-            accounts: vec![AccountRecord { account_id: 2000000, username: "Trader A".into(), password: "password".into() },
-                AccountRecord { account_id: 2000001, username: "Trader B".into(), password: "password".into() }],
+            accounts: vec![AccountRecord { account_id: 2000000, username: "Trader A".into(), password: "password".into(), ..Default::default() },
+                AccountRecord { account_id: 2000001, username: "Trader B".into(), password: "password".into(), ..Default::default() }],
             characters: vec![CharacterRecord { char_id: 150000, account_id: 2000000, name: "Trader A".into(), zeny: 100, hp: 100, inventory_slots: 100, ..Default::default() },
                 CharacterRecord { char_id: 150001, account_id: 2000001, name: "Trader B".into(), zeny: 50, hp: 100, inventory_slots: 100, ..Default::default() }],
             inventories: vec![CharacterInventory { char_id: 150000, items: vec![weapon.clone()] },
