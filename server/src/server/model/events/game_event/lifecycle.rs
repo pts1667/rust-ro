@@ -210,6 +210,9 @@ impl GameEventHandler for CharacterLoadedFromClientSide {
         server.notify_weather(state, char_id);
         server.trigger_map_load_events(state, char_id);
         server.enter_pvp_ranking(state, char_id);
+        server.friend_login(state, char_id);
+        server.mail_login(char_id);
+        server.channel_login(state, char_id);
         Ok(())
     }
 }
@@ -234,6 +237,7 @@ impl GameEventHandler for CharacterChangeMap {
 
     fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let event = self;
+        server.leave_chat_room(state, event.char_id, false);
         if let Err(error) = server.cancel_player_trade(state, event.char_id) {
             warn!("Trade cancellation failed: {error}");
         }

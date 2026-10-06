@@ -1568,6 +1568,9 @@ impl CharacterService {
                         if let Some(store) = &other_character.game_systems.vending_store {
                             packets.extend(vending_store_sign_packet(store));
                         }
+                        if let Some(packet) = crate::server::service::social_service::chat_room_entry_packet(server_state, other_character.char_id) {
+                            packets.extend(packet);
+                        }
                         // if other_character.is_moving() {
                         //     let mut packet_zc_notify_move =
                         // PacketZcNotifyMove::new(self.configuration_service.

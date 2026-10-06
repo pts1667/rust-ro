@@ -121,6 +121,10 @@ fn default_guild_max_alliances() -> u8 {
     3
 }
 
+fn default_friend_auto_add() -> bool {
+    true
+}
+
 fn default_basic_skill_check() -> bool {
     true
 }
@@ -183,6 +187,13 @@ pub struct GameConfig {
     /// Players need Basic Skill level 2 to use emotes.
     #[serde(default = "default_basic_skill_check")]
     pub basic_skill_check: bool,
+    /// Accepting a friend request also adds the requester to the accepter's list.
+    #[serde(default = "default_friend_auto_add")]
+    pub friend_auto_add: bool,
+    #[serde(default)]
+    pub mail: MailConfig,
+    #[serde(default = "default_channels")]
+    pub channels: Vec<ChannelConfig>,
     #[serde(default)]
     pub restart_hp_rate: u8,
     #[serde(default)]
@@ -239,6 +250,88 @@ impl Default for DeathPenaltyConfig {
             zeny: 0,
             max_level_loses_base: false,
             max_level_loses_job: false,
+        }
+    }
+}
+
+/// `mail_*` options of rathena's `battle/misc.conf` and `char_athena.conf`.
+/// A chat channel everyone can join with `@join`, spoken to with a whisper to `#name`.
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct ChannelConfig {
+    /// Name with its leading `#`.
+    pub name: String,
+    /// Shown before the speaker; the name when empty.
+    pub alias: String,
+    /// 0xRRGGBB.
+    pub color: u32,
+    pub autojoin: bool,
+    pub delay_ms: u64,
+    pub leave: bool,
+    pub chat: bool,
+    /// Groups allowed to join, everyone when empty.
+    pub group_ids: Vec<u32>,
+}
+
+impl Default for ChannelConfig {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            alias: String::new(),
+            color: 0xffffff,
+            autojoin: false,
+            delay_ms: 1000,
+            leave: true,
+            chat: true,
+            group_ids: Vec::new(),
+        }
+    }
+}
+
+fn default_channels() -> Vec<ChannelConfig> {
+    let channel = |name: &str, alias: &str, color: u32, leave: bool| ChannelConfig {
+        name: name.to_string(),
+        alias: alias.to_string(),
+        color,
+        leave,
+        ..ChannelConfig::default()
+    };
+    vec![
+        channel("#global", "[Global]", 0xffffff, false),
+        channel("#support", "[Support]", 0x83cfe9, true),
+        channel("#trade", "[Trade]", 0xb6ff00, true),
+    ]
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct MailConfig {
+    /// Percentage of the attached zeny paid on top of it by the sender.
+    pub zeny_fee_percent: u32,
+    /// Zeny paid by the sender for each attached item.
+    pub attachment_price: u32,
+    /// Mails a character can send per day, 0 for no limit.
+    pub daily_count: u32,
+    /// Minimum time between two sent mails.
+    pub delay_ms: u64,
+    /// Unread mails go back to their sender after this many days, 0 to keep them.
+    pub return_days: u32,
+    /// Returned mails are deleted after this many days, 0 to keep them.
+    pub delete_days: u32,
+    /// 0 never, 1 always, 2 when there are unread mails: tell the character about its inbox on login.
+    pub show_status: u8,
+}
+
+impl Default for MailConfig {
+    fn default() -> Self {
+        Self {
+            zeny_fee_percent: 2,
+            attachment_price: 2500,
+            daily_count: 100,
+            delay_ms: 1000,
+            return_days: 15,
+            delete_days: 15,
+            show_status: 0,
         }
     }
 }

@@ -33,6 +33,7 @@ pub struct ServerState {
     pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
     pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
     permission_groups: Arc<crate::server::model::permission_groups::PermissionGroups>,
+    pub(crate) chat_rooms: crate::server::model::chat_room::ChatRooms,
 }
 
 #[cfg(test)]
@@ -156,6 +157,7 @@ impl ServerState {
             character_logins: Default::default(),
             pending_character_logouts: Default::default(),
             permission_groups: Default::default(),
+            chat_rooms: Default::default(),
         }
     }
 

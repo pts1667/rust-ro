@@ -485,6 +485,8 @@ impl Server {
         if let Err(error) = self.cancel_player_trade(state, char_id) {
             warn!("Trade cancellation failed: {error}");
         }
+        self.leave_chat_room(state, char_id, false);
+        self.notify_friends(state, char_id, false);
         let Some(mut character) = state.characters_mut().remove(&char_id) else {
             return;
         };

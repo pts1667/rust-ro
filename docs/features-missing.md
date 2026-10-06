@@ -17,7 +17,7 @@ Everything below is an unchecked task (`- [ ]`) unless stated otherwise. Tasks a
 
 | Area | Reference (rathena, pre-re @ 20120307) | Fork |
 |---|---|---|
-| Client packet handlers | 190 distinct `clif_parse_*` | 133 handled, 57 not (see App. A) |
+| Client packet handlers | 190 distinct `clif_parse_*` | 156 handled, 34 not (see App. A) |
 | Stock NPC definitions | 4,422 `script` + 186 `shop` + 96 shared `function`s | about 550 placements, almost all battleground, castle and custom NPCs |
 | Quests (`db/pre-re/quest_db.yml`) | 2,879 | 0 (no quest log) |
 | Atcommands (`conf/atcommands.yml`) | 314 | about 21 (plus aliases) |
@@ -78,7 +78,7 @@ Evidence: `server/src/server/request_handler/login.rs`, `char.rs`, `char_request
 - [x] **Character deletion:** the client at 20120307 sends the e-mail/birthdate delete (`0x68`/`0x1fb`) and the reserved-delete family (`0x827`/`0x829`/`0x82b`); all of them follow `char_del_level`, `char_del_delay`, `char_del_option` and `char_del_restriction`. The delete cascade removes the character, its items, skills, hotkeys, pets, cart, fame and variables, divorces, de-adopts, and leaves the party and guild (breaking the guild when the character is its master). Limitation: members online at that moment are not refreshed, which is only reachable when `char_del_restriction` is lowered. `clear_parties` is not applicable: it clears the map servers' party cache and the fork has no such cache.
 - [x] **PIN code:** `pincode.*` settings (disabled by default), seeded keypad decrypt, state packets, `maxtry` kick, repeated/sequential rules, expiry.
 - [x] **Character rename and slot move:** `char_rename_party`, `char_rename_guild`, `char_move_enabled`, `char_movetoused`, `char_moves_unlimited`.
-- [x] **Character server settings:** `default_map` fallback, `fame_list_*` sizes, `guild_exp_rate`. Not applicable and removed from the configuration: `autosave_time` (state is persisted by events through the persistence loop, there is no periodic save), `save_log`, `char_checkdb` (rathena's inter-server check), `unknown_char_name` (a deleted character is purged from every record that stores its name). The `mail_*` settings arrive with the mail system ([Section 3](#3-social-and-communication)).
+- [x] **Character server settings:** `default_map` fallback, `fame_list_*` sizes, `guild_exp_rate`. Not applicable and removed from the configuration: `autosave_time` (state is persisted by events through the persistence loop, there is no periodic save), `save_log`, `char_checkdb` (rathena's inter-server check), `unknown_char_name` (a deleted character is purged from every record that stores its name). The mail settings (`mail_return_days`, `mail_delete_days`) live in `game.mail` ([Section 3](#3-social-and-communication)).
 - [x] **Map-server hand-off for every account:** the legacy proxy, `server.accounts` and `enable_legacy_proxy` are removed.
 - [x] **Config default:** `packetver` is 20120307 in the template and in the tests.
 - [x] **Message of the day** (`config/motd.txt`, `@reloadmotd`) sent on map entry.
@@ -93,10 +93,10 @@ Evidence: `server/src/server/request_handler/login.rs`, `char.rs`, `char_request
   | Fame lists | Persisted |
   | Player `skill_cooldown` | Not persisted. Only homunculus and mercenary cooldowns are; cooldowns are lost on logout ([Section 7](#7-skills)) |
   | `feel`/`hate` (Star Gladiator) | Not implemented ([Section 7](#7-skills)) |
-  | Friends | Not implemented ([Section 3](#3-social-and-communication)) |
+  | Friends | Persisted (`friends/{char_id}` in the `game_systems` tree), 40 entries |
   | Bound items | No bound flag on items ([Section 6](#6-items-crafting-and-economy)) |
   | `show_equip`, `disable_call` | Persisted on the character (`CZ_CONFIG`, [Section 2.1](#21-gameplay-critical)) |
-  | `ignore` list | Not implemented; comes with whisper ([Section 3](#3-social-and-communication)) |
+  | `ignore` list | Persisted on the character (rathena keeps it for the session only), 20 names; `ignore_all` stays per session |
 
 - [x] **Multiple map servers / inter-server messages** are not needed: login, char and map run in one process on one port by design. This is an intentional deviation, do not report it again.
 
@@ -106,32 +106,49 @@ Full table with ids and rathena handler names: [Appendix A](#appendix-a-client-p
 
 ### 2.1 Gameplay-critical
 
-- [x] `CZ_CLOSE_DIALOG` (0x0146, `clif_parse_NpcCloseClicked`): the dialog close button is never handled, so the conversation stays open until `conversation_timeout_secs`. Wire it to the conversation service. Closes the active conversation (`Session::close_dialog`), so the script ends instead of waiting for `conversation_timeout_secs`.
-- [x] `CZ_CANCEL_LOCKON` (0x0118, `clif_parse_StopAttack`): stop auto attack. Verify how the fork stops attacks today. Clears the attack target; the request was previously not even framed.
-- [x] `CZ_CHANGE_DIRECTION` (0x0085/0x0361 family, `clif_parse_ChangeDir`): head and body direction broadcast (`ZC_CHANGE_DIRECTION` to the area). Stores the direction and broadcasts `ZC_CHANGE_DIRECTION` (0x009C) to the area without the sender. The head direction is not stored (spawn packets send 0).
-- [x] `CZ_REQ_EMOTION` (0x00BF, `clif_parse_Emotion`): player emotes. The existing `emotion` code is for NPCs and mobs, and 0x01A9 (decoded) is the pet performance packet, not this one. Rules from rathena: ignore ids ≥ `ET_MAX`, require Basic Skill level 2 when `basic_skill_check` is on, refuse the mute emote, at most one per second, then broadcast `ZC_EMOTION` (0x00C0) to the area. Implemented with the rathena rules; `game.basic_skill_check` (default on) is the new configuration entry.
-- [x] `CZ_REQNAME_BYGID` (0x0368, `clif_parse_SolveCharName`): name lookup by id (used by party/guild/search windows). Online characters answer from state, offline ones from the character record, unknown ids answer `Unknown`.
-- [x] `CZ_REQ_DISCONNECT` (0x018A) and `CZ_CLOSE_STORE` (0x0193, `clif_parse_CloseKafra`): **verify**. The fork decodes only the other close/disconnect ids; confirm what the 20120307 client sends when closing the Kafra window and when quitting from the Esc menu. **Verified:** at 20120307 the client sends `0x018A` (decoded as `PacketCzReqDisconnect`, which the old handler missed, so Esc > Exit did nothing) and `0x0193` for the storage close. Both are handled now. Deviation: `prevent_logout` is not applied.
-- [x] `CZ_REQ_MOVETO_MAP`/GM warp (0x0140, `clif_parse_MapMove`): used by GM commands. Routed to `` (permission checked by the command).
-- [x] `CZ_REQ_PVPPOINT` (0x020F, `clif_parse_PVPInfo`): PvP info window. The rank packet 0x019A is sent; the request is not answered. Replies `ZC_ACK_PVPPOINT` (0x0210) from the character PvP counters.
-- [x] `CZ_EQUIPWIN_MICROSCOPE` (0x02D6, `clif_parse_ViewPlayerEquip`): view another player's equipment (respects `show_equip`). Replies `0x0859` with the worn equipment; refused with message 1357 unless the target enabled it or the viewer has `view_equipment`.
-- [x] `CZ_CONFIG` (0x02D8, `clif_parse_configuration`): equipment window visibility, call-permission toggle, pet/homunculus auto-feed. `show_equip` and `disable_call` are persisted on the character and restored on map entry (`0x02DA`, `0x02D9`). Pet and homunculus auto-feed types need packetver 20130000+ and are rejected.
-- [x] `CZ_LESSEFFECT` (0x021D, `clif_parse_LessEffect`): reduce-effects toggle (persisted flag). The flag is kept in memory only, as in rathena (nothing consumes it yet).
-- [x] `CZ_RESET` (0x0197, `clif_parse_ResetChar`): GM stat/skill reset packet. Routed to `` / ``.
-- [x] `CZ_REQ_USER_COUNT` (0x00C1, `clif_parse_HowManyConnections`): `/who`. Replies `ZC_USER_COUNT` (0x00C2) with the number of characters in game.
-- [x] `CZ_CLIENT_VERSION` (0x044A) and progress bar answer `CZ_PROGRESS` (0x02F1, `clif_parse_progressbar`). Accepted and ignored: the script SDK has no progress bar command yet.
-- [x] `CZ_STANDING_RESURRECTION` (0x0292, `clif_parse_AutoRevive`): Token of Siegfried auto revive. Consumes a Token of Siegfried (7621, 6293, 6316) and revives with full HP and SP. Missing: Light of Regeneration.
+- [x] `CZ_CLOSE_DIALOG` (0x0146, `clif_parse_NpcCloseClicked`): the dialog close button is never handled, so the conversation stays open until `conversation_timeout_secs`. Wire it to the conversation service.
+ Closes the active conversation (`Session::close_dialog`), so the script ends instead of waiting for `conversation_timeout_secs`.
+- [x] `CZ_CANCEL_LOCKON` (0x0118, `clif_parse_StopAttack`): stop auto attack. Verify how the fork stops attacks today.
+ Clears the attack target; the request was previously not even framed.
+- [x] `CZ_CHANGE_DIRECTION` (0x0085/0x0361 family, `clif_parse_ChangeDir`): head and body direction broadcast (`ZC_CHANGE_DIRECTION` to the area).
+ Stores the direction and broadcasts `ZC_CHANGE_DIRECTION` (0x009C) to the area without the sender. The head direction is not stored (spawn packets send 0).
+- [x] `CZ_REQ_EMOTION` (0x00BF, `clif_parse_Emotion`): player emotes. The existing `emotion` code is for NPCs and mobs, and 0x01A9 (decoded) is the pet performance packet, not this one. Rules from rathena: ignore ids ≥ `ET_MAX`, require Basic Skill level 2 when `basic_skill_check` is on, refuse the mute emote, at most one per second, then broadcast `ZC_EMOTION` (0x00C0) to the area.
+ Implemented with the rathena rules; `game.basic_skill_check` (default on) is the new configuration entry.
+- [x] `CZ_REQNAME_BYGID` (0x0368, `clif_parse_SolveCharName`): name lookup by id (used by party/guild/search windows).
+ Online characters answer from state, offline ones from the character record, unknown ids answer `Unknown`.
+- [x] `CZ_REQ_DISCONNECT` (0x018A) and `CZ_CLOSE_STORE` (0x0193, `clif_parse_CloseKafra`): **verify**. The fork decodes only the other close/disconnect ids; confirm what the 20120307 client sends when closing the Kafra window and when quitting from the Esc menu.
+ **Verified:** at 20120307 the client sends `0x018A` (decoded as `PacketCzReqDisconnect`, which the old handler missed, so Esc > Exit did nothing) and `0x0193` for the storage close. Both are handled now. Deviation: `prevent_logout` is not applied.
+- [x] `CZ_REQ_MOVETO_MAP`/GM warp (0x0140, `clif_parse_MapMove`): used by GM commands.
+ Routed to `` (permission checked by the command).
+- [x] `CZ_REQ_PVPPOINT` (0x020F, `clif_parse_PVPInfo`): PvP info window. The rank packet 0x019A is sent; the request is not answered.
+ Replies `ZC_ACK_PVPPOINT` (0x0210) from the character PvP counters.
+- [x] `CZ_EQUIPWIN_MICROSCOPE` (0x02D6, `clif_parse_ViewPlayerEquip`): view another player's equipment (respects `show_equip`).
+ Replies `0x0859` with the worn equipment; refused with message 1357 unless the target enabled it or the viewer has `view_equipment`.
+- [x] `CZ_CONFIG` (0x02D8, `clif_parse_configuration`): equipment window visibility, call-permission toggle, pet/homunculus auto-feed.
+ `show_equip` and `disable_call` are persisted on the character and restored on map entry (`0x02DA`, `0x02D9`). Pet and homunculus auto-feed types need packetver 20130000+ and are rejected.
+- [x] `CZ_LESSEFFECT` (0x021D, `clif_parse_LessEffect`): reduce-effects toggle (persisted flag).
+ The flag is kept in memory only, as in rathena (nothing consumes it yet).
+- [x] `CZ_RESET` (0x0197, `clif_parse_ResetChar`): GM stat/skill reset packet.
+ Routed to `` / ``.
+- [x] `CZ_REQ_USER_COUNT` (0x00C1, `clif_parse_HowManyConnections`): `/who`.
+ Replies `ZC_USER_COUNT` (0x00C2) with the number of characters in game.
+- [x] `CZ_CLIENT_VERSION` (0x044A) and progress bar answer `CZ_PROGRESS` (0x02F1, `clif_parse_progressbar`).
+ Accepted and ignored: the script SDK has no progress bar command yet.
+- [x] `CZ_STANDING_RESURRECTION` (0x0292, `clif_parse_AutoRevive`): Token of Siegfried auto revive.
+ Consumes a Token of Siegfried (7621, 6293, 6316) and revives with full HP and SP. Missing: Light of Regeneration.
 - [ ] `CZ_SELECT_AUTOSPELL` (0x01CE, `clif_parse_AutoSpell`): Auto Spell menu (see [Section 7](#7-skills)).
 - [ ] `CZ_REQ_MAKINGARROW` (0x01AE, `clif_parse_SelectArrow`): arrow crafting menu.
 - [ ] `CZ_AGREE_STARPLACE` (0x0254, `clif_parse_FeelSaveOk`): Star Gladiator Sun/Moon/Star place confirmation.
-- [ ] `CZ_DORIDORI` (0x01E7) and `CZ_CHOPOKGI` (0x01ED): Novice "Doridori" and Spirit explosion actions. `CZ_CHOPOKGI` is done (Super Novice prayer at every 10% of the next level starts Explosion Spirits with the level 5 duration). `CZ_DORIDORI` is framed and ignored: its effect doubles the skill SP regeneration, which the fork does not have yet ([Section 8](#8-battle-system-and-server-configuration)).
+- [ ] `CZ_DORIDORI` (0x01E7) and `CZ_CHOPOKGI` (0x01ED): Novice "Doridori" and Spirit explosion actions.
+ `CZ_CHOPOKGI` is done (Super Novice prayer at every 10% of the next level starts Explosion Spirits with the level 5 duration). `CZ_DORIDORI` is framed and ignored: its effect doubles the skill SP regeneration, which the fork does not have yet ([Section 8](#8-battle-system-and-server-configuration)).
 - [ ] `CZ_REQ_WEAPONREFINE` (0x0222, `clif_parse_WeaponRefine`): Whitesmith weapon refine selection (see [Section 6](#6-items-crafting-and-economy)).
-- [x] `CZ_ACK_STORE_PASSWORD` (0x023B/0x0281, `clif_parse_StoragePassword`): storage password dialogs. Accepted and ignored, as rathena does (`@TODO` handler).
+- [x] `CZ_ACK_STORE_PASSWORD` (0x023B/0x0281, `clif_parse_StoragePassword`): storage password dialogs.
+ Accepted and ignored, as rathena does (`@TODO` handler).
 - [ ] `CZ_REQ_ACCOUNTNAME`, `CZ_REQ_STATUS_GM` (0x0213, `clif_parse_Check`) and the other GM packets listed in [Section 14](#14-gm-and-administration).
 
 ### 2.2 Social and communication (details in [Section 3](#3-social-and-communication))
 
-Chat rooms (0x00D5, 0x00D9, 0x00DE, 0x00E0, 0x00E2, 0x00E3), whisper and ignore (0x0096, 0x00CF, 0x00D0, 0x00D3), friends (0x0368/0x0369 family, 0x0203, 0x0208), mail (0x023F-0x0248, 0x0273), auction (0x024B-0x0251, 0x025C, 0x025D), broadcast (0x0099, 0x019C), memorial dungeon command (0x02CF), quest activation (0x02B6).
+Done (framing in `request_handler/social.rs::frame_length`, decoding in `social::handle_raw`): chat rooms (0x00D5, 0x00D9, 0x00DE, 0x00E0, 0x00E2, 0x00E3), whisper and ignore (0x0096, 0x00CF, 0x00D0, 0x00D3), friends (0x0202, 0x0203, 0x0208), mail (0x023F-0x0248, 0x0273), broadcast (0x0099, 0x019C). Still open: auction (0x024B-0x0251, 0x025C, 0x025D; deliberately out of scope, see [Section 3](#3-social-and-communication)), memorial dungeon command (0x02CF, [Section 5](#5-memorial-dungeons-and-instances)), quest activation (0x02B6, [Section 4](#4-quests)).
 
 ### 2.3 Shop UI
 
@@ -141,15 +158,15 @@ Chat rooms (0x00D5, 0x00D9, 0x00DE, 0x00E0, 0x00E2, 0x00E3), whisper and ignore 
 
 Reference: `src/map/chat.cpp`, `src/map/clif.cpp` (`clif_parse_WisMessage`, `clif_parse_FriendsList*`, `clif_parse_PMIgnore*`), `src/map/channel.cpp`, `src/char/int_party.cpp`.
 
-- [ ] **Chat rooms:** create (0x00D5), enter (0x00D9), change settings (0x00DE), change owner (0x00E0), kick (0x00E2), leave (0x00E3), room list entries in the area (`ZC_ROOM_NEWENTRY`, `ZC_DESTROY_ROOM`, …), password and limit, `chatroom` NPC interaction, `ZC_MEMBER_NEWENTRY/EXIT`, chat inside the room, `checkchatting`, `nochat`-related flags. Also the base for **waiting rooms** used by arena and event scripts (`waitingroom`, `enablewaitingroomevent`, `waitingroom2bg`).
-- [ ] **Whispers:** `/w`, `/ex`, `/in`, whisper to NPC (`npc_chat.cpp`), long-distance delivery across maps, error replies (offline, blocked), `PMIgnore`, `PMIgnoreAll`, `PMIgnoreList` (0x00CF, 0x00D0, 0x00D3), whisper log, `@wis`.
-- [ ] **Friends list** (0x0369 family): add request, accept/decline (0x0208), remove (0x0203), online/offline notice, list on login, 40-entry cap, `friend` persistence.
-- [ ] **Emotion** (see [2.1](#21-gameplay-critical)) and shortcut `/` commands that the client sends as chat text: `/where`, `/who`, `/sit`, `/stand`, `/effect`, `/mineffect`, `/nc`, `/ex`, `/in`, `/exp`, `/memo`, `/organize`, `/leave`, `/invite`, `/hi`, `/guild`, `/doridori`.
-- [ ] **Broadcast and announcements:** `@broadcast`, `@kami*`, `@localbroadcast`, GM broadcast packets 0x0099 and 0x019C, `mapannounce`/`areaannounce` colours and `/` flags, NPC `announce` flags (`bc_map`, `bc_area`, `bc_self`, colours).
-- [ ] **Channels** (`conf/channels.conf`, `src/map/channel.cpp`, `@channel`, `#<name>` chat): server-side only, no packet gate. The `nomapchannelautojoin` map flag needs this first.
-- [ ] **Mail (classic):** open box (0x0246/0x023F), read (0x0241), send (0x0248), attachment add/remove (0x0247/0x0244), delete (0x0243), return (0x0273), new-mail notification, zeny attachments, `mail`/`openmail` script commands, mail NPCs (`npc/other/mail.txt`). Reference: `src/map/mail.cpp`, `src/char/int_mail.cpp`.
-- [ ] **Auction:** window, register item, bid, buy-now, search, my-info, cancel (0x024B-0x0251, 0x025C, 0x025D), expiry and mail payout, auction NPC (`npc/other/auction.txt`), `openauction`. Reference: `src/char/int_auction.cpp`, `src/map/clif.cpp` (`clif_Auction_*`).
-- [ ] **Party features still open:** party item share rules and even-share bonus check against `battle/party.conf`, `@partyoption`, `@partyrecall`, party exp share levels (`@partysharelvl`), party member map/HP refresh on map change (`clif_party_hp`), `party_create`/`party_destroy`-style script commands.
+- [x] **Chat rooms:** create, enter, change settings, change owner, kick (`KickChat` permission protects), leave, room entries shown to the area, password, limit, member join/leave packets, chat inside the room (room members do not hear area chat), `NoChat` map flag, Basic Skill 4 and store checks on creation. Rooms live in `ServerState::chat_rooms` (`model/chat_room.rs`), ids start at `0x7000_0000`, the owner leaving passes ownership on, and a map change or logout leaves the room. Deviations: no `npc_isnear` and no cell `nochat` check on creation. Still open: **waiting rooms** (`waitingroom`, `enablewaitingroomevent`, `waitingroom2bg`) and the `chatroom` NPC script interaction ([Section 13](#13-script-sdk-parity)).
+- [x] **Whispers:** `/w`, `/ex`, `/in` (the client turns them into 0x0096/0x00CF/0x00D0/0x00D3), result codes for offline and blocked targets, ignore list and `ignore_all` with rathena's group-level rule (an admin cannot be ignored by a lower group), admin flag in the whisper packet, muted characters (`manner < 0`) cannot talk, whisper to `#channel`. Deviations: the ignore list is persisted. Still open: whisper to an NPC (`NPC:name`, `npc_chat.cpp`), whisper log, `@wis`.
+- [x] **Friends list** (0x0202, 0x0203, 0x0208): add request, accept/decline (honours `@noask`), remove (mutual), online/offline notice, list on login, 40-entry cap, persistence in `friends/{char_id}`. `game.friend_auto_add` (default on) makes an accepted request add the requester to the accepter's list too.
+- [x] **Emotion** (see [2.1](#21-gameplay-critical)) and shortcut `/` commands: the client parses them locally and sends the dedicated packets (`/sit` and `/stand` are actions, `/where` is answered by the client, `/memo`, `/organize`, `/leave`, `/invite`, `/guild`, `/who`, `/hi` (whispers), `/ex`, `/in`, `/doridori` are packets), so no chat-text parsing is needed server-side. `/nc`, `/effect` and `/mineffect` never reach the server.
+- [x] **Broadcast and announcements:** `@kami`, ✔ `@kamib`, ✔ `@kamic`, `@lkami` (and their aliases through the group file), GM broadcast packets 0x0099 and 0x019C (routed to the same commands, so the command permission applies), `ZC_BROADCAST` 0x009A and colored 0x01C3. Still open: the `mapannounce`/`areaannounce` flag audit and `bc_*` colours of the script `announce` commands ([Section 13](#13-script-sdk-parity)).
+- [x] **Channels** (partial): public channels from `game.channels` (defaults `#global`, `#support`, `#trade`, same as `channels.conf`; name, alias, colour, `autojoin`, `delay_ms`, `leave`, `chat`, `group_ids`), `@channel list|join|leave`, ✔ `@join`, and speaking by whisper to `#name` (0x02C1 line coloured per channel, `channel_admin` skips the delay and group limit). Membership is per session. Still open: private channels (`@channel create/ban/kick/setopt/...`), `#map` and `#ally` channels, `bindto`, and the `nomapchannelautojoin` map flag.
+- [x] **Mail (classic):** inbox list (30 mails), read, send (title, body, one item and zeny), attachment add/reset, take attachment (zeny cap and weight/slot checks, restored on failure), delete (refused while an attachment remains), return, new-mail notification, unread-mail return and expiry (`game.mail.return_days`, `delete_days`), `@mail`. Settings in `game.mail` (`zeny_fee_percent`, `attachment_price`, `daily_count`, `delay_ms`, `show_status`). Mail is stored in `mail/{id}` and `mailbox/{char_id}` of the `game_systems` tree. Deviations: the daily counter is kept in memory, the mail is only allowed in towns (`Town` map flag) or for groups with `@mail`. Still open: the `mail`/`openmail` script commands and the mail NPCs ([Section 13](#13-script-sdk-parity)).
+- [ ] **Auction:** deliberately not implemented: rathena ships it disabled (`feature.auction: off`) and the 2012 client windows are unstable. The packets stay unhandled (0x024B-0x0251, 0x025C, 0x025D). Reference if it is ever wanted: `src/char/int_auction.cpp`, `src/map/clif.cpp` (`clif_Auction_*`).
+- [ ] **Party features still open:** party item share rules and even-share bonus check against `battle/party.conf`, `@partyoption`, `@partyrecall`, party exp share levels (`@partysharelvl`), party member map/HP refresh on map change (`clif_party_hp`; `party_tick` already resends HP and position periodically, only the immediate refresh is missing), `party_create`/`party_destroy`-style script commands.
 - [ ] **Guild features still open** beyond the checkpoint: guild storage (`GuildOpenStorage` exists; log, permission and capacity rules per `battle/guild.conf` need checking), `@guildrecall`, `@guildlevelup`, `@breakguild`, guild position permission edge cases, guild alliance limits (`guild_max_alliances` done), guild leave/expulsion message packets, guild member login notifications.
 
 ## 4. Quests
@@ -400,18 +417,9 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_Auction_search` | 0x0251 | `PacketCzAuctionItemSearch` | 3 |
 | `clif_parse_Auction_setitem` | 0x024C | `PacketCzAuctionAddItem` | 3 |
 | `clif_parse_AutoSpell` | 0x01CE | `PacketCzSelectautospell` | 7 |
-| `clif_parse_Broadcast` | 0x0099 | `PacketCzBroadcast` | 3 |
 | `clif_parse_CashShopReqTab` | 0x0846 |  | 6 |
-| `clif_parse_ChangeChatOwner` | 0x00E0 | `PacketCzReqRoleChange` | — |
-| `clif_parse_ChatAddMember` | 0x00D9 | `PacketCzReqEnterRoom` | 3 |
-| `clif_parse_ChatLeave` | 0x00E3 | `PacketCzExitRoom` | 3 |
-| `clif_parse_ChatRoomStatusChange` | 0x00DE | `PacketCzChangeChatroom` | 3 |
 | `clif_parse_Check` | 0x0213 | `PacketCzReqStatusGm` | 14 |
-| `clif_parse_CreateChatRoom` | 0x00D5 | `PacketCzCreateChatroom` | — |
 | `clif_parse_FeelSaveOk` | 0x0254 | `PacketCzAgreeStarplace` | 7 |
-| `clif_parse_FriendsListAdd` | 0x0202, 0x0436, 0x0369 | `PacketCzAddFriends` | 3 |
-| `clif_parse_FriendsListRemove` | 0x0203 | `PacketCzDeleteFriends` | 3 |
-| `clif_parse_FriendsListReply` | 0x0208 | `PacketCzAckReqAddFriends` | 3 |
 | `clif_parse_GMChangeMapType` | 0x0198 | `PacketCzChangeMaptype` | 14 |
 | `clif_parse_GMFullStrip` | 0x07F5 | `PacketCzGmFullstrip` | 14 |
 | `clif_parse_GMHide` | 0x019D | `PacketCzChangeEffectstate` | 14 |
@@ -426,25 +434,11 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_GMShift` | 0x01BA, 0x01BB | `PacketCzRemoveAid` | 14 |
 | `clif_parse_GM_Item_Monster` | 0x013F | `PacketCzItemCreate` | 14 |
 | `clif_parse_ItemListWindowSelected` | 0x07E4, 0x0870 | `PacketCzItemlistwinRes` | out of scope |
-| `clif_parse_KickFromChat` | 0x00E2 | `PacketCzReqExpelMember` | 3 |
-| `clif_parse_LocalBroadcast` | 0x019C |  | 3 |
-| `clif_parse_Mail_delete` | 0x0243 | `PacketCzMailDelete` | 3 |
-| `clif_parse_Mail_getattach` | 0x0244 | `PacketCzMailGetItem` | 3 |
-| `clif_parse_Mail_read` | 0x0241 | `PacketCzMailOpen` | 3 |
-| `clif_parse_Mail_refreshinbox` | 0x023F | `PacketCzMailGetList` | 3 |
-| `clif_parse_Mail_return` | 0x0273 | `PacketCzReqMailReturn` | 3 |
-| `clif_parse_Mail_send` | 0x0248 | `PacketCzMailSend` | 3 |
-| `clif_parse_Mail_setattach` | 0x0247 | `PacketCzMailAddItem` | 3 |
-| `clif_parse_Mail_winopen` | 0x0246 | `PacketCzMailResetItem` | 3 |
 | `clif_parse_MemorialDungeonCommand` | 0x02CF | `PacketCzMemorialdungeonCommand` | 5 |
-| `clif_parse_PMIgnore` | 0x00CF | `PacketCzSettingWhisperPc` | 3 |
-| `clif_parse_PMIgnoreAll` | 0x00D0 | `PacketCzSettingWhisperState` | 3 |
-| `clif_parse_PMIgnoreList` | 0x00D3 | `PacketCzReqWhisperList` | 3 |
 | `clif_parse_RepairItem` | n/a |  | 6 |
 | `clif_parse_SelectArrow` | 0x01AE | `PacketCzReqMakingarrow` | 6/7 |
 | `clif_parse_SkillSelectMenu` | 0x0443 | `PacketCzSkillSelectResponse` | out of scope |
 | `clif_parse_WeaponRefine` | 0x0222 | `PacketCzReqWeaponrefine` | 6 |
-| `clif_parse_WisMessage` | 0x0096 | `PacketCzWhisper` | — |
 | `clif_parse_npccashshop_buy` | 0x0288 | `PacketCzPcBuyCashPointItem` | 6 |
 | `clif_parse_questStateAck` | 0x02B6 | `PacketCzActiveQuest` | 4 |
 | `clif_parse_ranklist_killer` | 0x0237 |  | out of scope (not in 20120307 pre-re) |
@@ -455,7 +449,7 @@ All 314 commands in `conf/atcommands.yml`. A check mark means the fork has a com
 
 <details><summary>314 commands</summary>
 
-✔ `@accept`, `@accinfo`, `@addfame`, `@addperm`, `@addwarp`, `@adjgroup`, `@adopt`, `@agi`, `@agitend`, `@agitend2`, `@agitend3`, `@agitstart`, `@agitstart2`, `@agitstart3`, `@alive`, `@allowks`, `@allskill`, `@auction`, `@autoloot`, `@autolootitem`, `@autoloottype`, `@autotrade`, `@ban`, ✔ `@baselevelup`, `@bodystyle`, `@breakguild`, `@broadcast`, `@camerainfo`, `@cart`, `@cartlist`, `@cash`, `@changedress`, `@changegm`, `@changeleader`, `@channel`, `@changecharsex`, `@changelook`, `@changesex`, `@char_ban`, `@char_block`, `@char_unban`, `@char_unblock`, `@charcommands`, `@checkquest`, `@clanspy`, `@cleanarea`, `@cleanmap`, `@clearcart`, `@cleargstorage`, `@clearstorage`, `@clearweather`, `@clone`, `@cloneequip`, `@clonestat`, `@clouds`, `@clouds2`, `@commands`, `@completequest`, `@con`, `@costume`, `@crt`, `@day`, `@delitem`, `@dex`, `@disguise`, `@disguiseall`, `@disguiseguild`, `@displayskill`, `@displayskillcast`, `@displayskillunit`, `@displaystatus`, `@divorce`, `@doom`, `@doommap`, `@dropall`, ✔ `@duel`, `@dye`, `@effect`, `@email`, `@enchantgradeui`, `@erasequest`, `@evilclone`, `@exp`, `@fakename`, `@feelreset`, `@fireworks`, `@fog`, `@font`, `@fontcolor`, `@follow`, `@fullstrip`, `@gat`, `@guildlevelup`, `@gmotd`, ✔ `@go`, `@grade`, `@guild`, `@guildrecall`, `@guildspy`, `@guildstorage`, `@gvgoff`, `@gvgon`, `@hair_color`, `@hair_style`, `@hatch`, `@hatereset`, ✔ `@heal`, `@healap`, `@help`, `@hide`, `@hidenpc`, `@homevolution`, `@homfriendly`, `@homhungry`, `@hominfo`, `@homlevel`, `@hommutate`, `@homshuffle`, `@homstats`, `@homtalk`, `@identify`, `@identifyall`, `@idsearch`, `@int`, ✔ `@invite`, ✔ `@item`, `@item2`, `@itembound`, `@itembound2`, `@iteminfo`, `@itemlist`, `@itemreset`, `@jail`, `@jailfor`, `@jailtime`, ✔ `@jobchange`, ✔ `@joblevelup`, `@join`, `@jump`, `@jumpto`, `@kami`, `@kamib`, `@kamic`, `@kick`, `@kickall`, `@kill`, `@killable`, ✔ `@killer`, `@killmonster`, `@killmonster2`, `@ksprotection`, `@langtype`, ✔ `@leave`, `@leaves`, `@limitedsale`, `@lkami`, `@load`, `@loadnpc`, `@localbroadcast`, `@lostskill`, `@luk`, `@macrochecker`, `@mail`, `@makeegg`, `@makehomun`, `@mapexit`, `@mapflag`, `@mapinfo`, `@mapmove`, `@marry`, `@me`, `@memo`, `@misceffect`, `@mobinfo`, `@mobsearch`, `@model`, `@monster`, `@monsterbig`, `@monsterignore`, `@monstersmall`, `@mount_peco`, `@mount2`, `@mute`, `@mutearea`, `@night`, `@noask`, `@npcmove`, `@npctalk`, `@nuke`, `@option`, `@party`, `@partyoption`, `@partyrecall`, `@partysharelvl`, `@partyspy`, `@petfriendly`, `@pethungry`, `@petrename`, `@pettalk`, `@points`, `@pow`, `@produce`, `@pvpoff`, `@pvpon`, `@questskill`, `@raise`, `@raisemap`, ✔ `@rates`, `@recall`, `@recallall`, `@refine`, `@refineui`, `@refineui`, `@refresh`, `@refreshall`, ✔ `@reject`, ✔ `@reload`, `@reloadachievementdb`, `@reloadatcommand`, `@reloadattendancedb`, `@reloadbarterdb`, `@reloadbattleconf`, `@reloadcashdb`, `@reloadinstancedb`, `@reloaditemdb`, `@reloadlogconf`, `@reloadmobdb`, `@reloadmotd`, `@reloadmsgconf`, `@reloadnpcfile`, `@reloadpcdb`, `@reloadquestdb`, `@reloadscript`, `@reloadskilldb`, `@reloadstatusdb`, `@repairall`, `@request`, `@reset`, `@resetcooltime`, ✔ `@resetskill`, ✔ `@resetstat`, `@resurrect`, `@rmvperm`, `@roulette`, `@sakura`, `@save`, `@send`, `@servertime`, `@set`, `@setbattleflag`, `@setcard`, `@setquest`, `@showdelay`, `@showexp`, `@showmobs`, `@shownpc`, `@showrate`, `@showzeny`, `@size`, `@sizeall`, `@sizeguild`, `@skillid`, `@skilloff`, `@skillon`, `@skillpoint`, `@skilltree`, `@slaveclone`, `@snow`, `@soulball`, `@sound`, ✔ `@speed`, `@spiritball`, `@spl`, `@sta`, `@stat_all`, `@stats`, `@statuspoint`, `@stockall`, `@storage`, `@storeall`, `@storagelist`, `@str`, `@stylist`, `@summon`, `@tonpc`, `@trade`, `@trait_all`, `@traitpoint`, `@unban`, `@undisguise`, `@undisguiseall`, `@undisguiseguild`, `@unjail`, `@unloadnpc`, `@unloadnpcfile`, `@unmute`, `@uptime`, `@users`, `@useskill`, `@version`, `@vip`, `@vit`, `@where`, `@whereis`, `@who`, `@who2`, `@who3`, `@whodrops`, `@whogm`, `@whomap`, `@whomap2`, `@whomap3`, `@wis`, `@zeny`
+✔ `@accept`, `@accinfo`, `@addfame`, `@addperm`, `@addwarp`, `@adjgroup`, `@adopt`, `@agi`, `@agitend`, `@agitend2`, `@agitend3`, `@agitstart`, `@agitstart2`, `@agitstart3`, `@alive`, `@allowks`, `@allskill`, `@auction`, `@autoloot`, `@autolootitem`, `@autoloottype`, `@autotrade`, `@ban`, ✔ `@baselevelup`, `@bodystyle`, `@breakguild`, `@broadcast`, `@camerainfo`, `@cart`, `@cartlist`, `@cash`, `@changedress`, `@changegm`, `@changeleader`, ✔ `@channel`, `@changecharsex`, `@changelook`, `@changesex`, `@char_ban`, `@char_block`, `@char_unban`, `@char_unblock`, `@charcommands`, `@checkquest`, `@clanspy`, `@cleanarea`, `@cleanmap`, `@clearcart`, `@cleargstorage`, `@clearstorage`, `@clearweather`, `@clone`, `@cloneequip`, `@clonestat`, `@clouds`, `@clouds2`, `@commands`, `@completequest`, `@con`, `@costume`, `@crt`, `@day`, `@delitem`, `@dex`, `@disguise`, `@disguiseall`, `@disguiseguild`, `@displayskill`, `@displayskillcast`, `@displayskillunit`, `@displaystatus`, `@divorce`, `@doom`, `@doommap`, `@dropall`, ✔ `@duel`, `@dye`, `@effect`, `@email`, `@enchantgradeui`, `@erasequest`, `@evilclone`, `@exp`, `@fakename`, `@feelreset`, `@fireworks`, `@fog`, `@font`, `@fontcolor`, `@follow`, `@fullstrip`, `@gat`, `@guildlevelup`, `@gmotd`, ✔ `@go`, `@grade`, `@guild`, `@guildrecall`, `@guildspy`, `@guildstorage`, `@gvgoff`, `@gvgon`, `@hair_color`, `@hair_style`, `@hatch`, `@hatereset`, ✔ `@heal`, `@healap`, `@help`, `@hide`, `@hidenpc`, `@homevolution`, `@homfriendly`, `@homhungry`, `@hominfo`, `@homlevel`, `@hommutate`, `@homshuffle`, `@homstats`, `@homtalk`, `@identify`, `@identifyall`, `@idsearch`, `@int`, ✔ `@invite`, ✔ `@item`, `@item2`, `@itembound`, `@itembound2`, `@iteminfo`, `@itemlist`, `@itemreset`, `@jail`, `@jailfor`, `@jailtime`, ✔ `@jobchange`, ✔ `@joblevelup`, `@join`, `@jump`, `@jumpto`, ✔ `@kami`, `@kamib`, `@kamic`, `@kick`, `@kickall`, `@kill`, `@killable`, ✔ `@killer`, `@killmonster`, `@killmonster2`, `@ksprotection`, `@langtype`, ✔ `@leave`, `@leaves`, `@limitedsale`, ✔ `@lkami`, `@load`, `@loadnpc`, `@localbroadcast`, `@lostskill`, `@luk`, `@macrochecker`, ✔ `@mail`, `@makeegg`, `@makehomun`, `@mapexit`, `@mapflag`, `@mapinfo`, `@mapmove`, `@marry`, `@me`, `@memo`, `@misceffect`, `@mobinfo`, `@mobsearch`, `@model`, `@monster`, `@monsterbig`, `@monsterignore`, `@monstersmall`, `@mount_peco`, `@mount2`, `@mute`, `@mutearea`, `@night`, ✔ `@noask`, `@npcmove`, `@npctalk`, `@nuke`, `@option`, `@party`, `@partyoption`, `@partyrecall`, `@partysharelvl`, `@partyspy`, `@petfriendly`, `@pethungry`, `@petrename`, `@pettalk`, `@points`, `@pow`, `@produce`, `@pvpoff`, `@pvpon`, `@questskill`, `@raise`, `@raisemap`, ✔ `@rates`, `@recall`, `@recallall`, `@refine`, `@refineui`, `@refineui`, `@refresh`, `@refreshall`, ✔ `@reject`, ✔ `@reload`, `@reloadachievementdb`, `@reloadatcommand`, `@reloadattendancedb`, `@reloadbarterdb`, `@reloadbattleconf`, `@reloadcashdb`, `@reloadinstancedb`, `@reloaditemdb`, `@reloadlogconf`, `@reloadmobdb`, `@reloadmotd`, `@reloadmsgconf`, `@reloadnpcfile`, `@reloadpcdb`, `@reloadquestdb`, `@reloadscript`, `@reloadskilldb`, `@reloadstatusdb`, `@repairall`, `@request`, `@reset`, `@resetcooltime`, ✔ `@resetskill`, ✔ `@resetstat`, `@resurrect`, `@rmvperm`, `@roulette`, `@sakura`, `@save`, `@send`, `@servertime`, `@set`, `@setbattleflag`, `@setcard`, `@setquest`, `@showdelay`, `@showexp`, `@showmobs`, `@shownpc`, `@showrate`, `@showzeny`, `@size`, `@sizeall`, `@sizeguild`, `@skillid`, `@skilloff`, `@skillon`, `@skillpoint`, `@skilltree`, `@slaveclone`, `@snow`, `@soulball`, `@sound`, ✔ `@speed`, `@spiritball`, `@spl`, `@sta`, `@stat_all`, `@stats`, `@statuspoint`, `@stockall`, `@storage`, `@storeall`, `@storagelist`, `@str`, `@stylist`, `@summon`, `@tonpc`, `@trade`, `@trait_all`, `@traitpoint`, `@unban`, `@undisguise`, `@undisguiseall`, `@undisguiseguild`, `@unjail`, `@unloadnpc`, `@unloadnpcfile`, `@unmute`, `@uptime`, `@users`, `@useskill`, `@version`, `@vip`, `@vit`, `@where`, `@whereis`, `@who`, `@who2`, `@who3`, `@whodrops`, `@whogm`, `@whomap`, `@whomap2`, `@whomap3`, `@wis`, `@zeny`
 
 </details>
 

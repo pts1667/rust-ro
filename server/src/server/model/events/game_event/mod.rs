@@ -4,6 +4,7 @@ mod lifecycle;
 mod request;
 mod script;
 mod skill;
+mod social;
 mod world;
 
 pub use character::*;
@@ -12,6 +13,7 @@ pub use lifecycle::*;
 pub use request::*;
 pub use script::*;
 pub use skill::*;
+pub use social::*;
 pub use world::*;
 
 use crate::server::Server;
@@ -171,4 +173,5 @@ game_events! {
     CharacterRequestCardCompositionList(CharacterRequestCardCompositionList),
     CharacterSlotCard(CharacterSlotCard),
     CharacterClientCommand(CharacterClientCommand),
+    CharacterSocial(CharacterSocial),
 }

@@ -35,6 +35,28 @@ pub struct CharacterGameSystems {
     pub show_equip: bool,
     /// `CZ_CONFIG` call permission: the character refuses to be summoned.
     pub disable_call: bool,
+    /// `/ex name` list of whisper senders to refuse, up to 20 as in rathena's `MAX_IGNORE_LIST`.
+    pub ignored_names: Vec<String>,
+    #[serde(skip)]
+    pub ignore_all: bool,
+    /// Loaded from the social repository when the character enters the map.
+    #[serde(skip)]
+    pub friends: Vec<crate::repository::social_repository::FriendRecord>,
+    /// Character id of the pending friend request, from either side.
+    #[serde(skip)]
+    pub friend_request: u32,
+    #[serde(skip)]
+    pub no_ask: bool,
+    #[serde(skip)]
+    pub mail_draft: MailDraft,
+    #[serde(skip)]
+    pub last_mail_tick: u128,
+    /// Joined channels (lowercase name) and the tick of the last line spoken in each.
+    #[serde(skip)]
+    pub channels: std::collections::HashMap<String, u128>,
+    /// Day number and mails sent that day, for `mail.daily_count`.
+    #[serde(skip)]
+    pub mails_sent_today: (i64, u32),
     #[serde(skip)]
     pub less_effect: bool,
     #[serde(skip)]
@@ -115,6 +137,14 @@ pub struct CharacterGameSystems {
     pub party_position: Option<(String, u8, u16, u16, u32)>,
     #[serde(skip)]
     pub party_health: Option<(u32, u32)>,
+}
+
+/// The attachments being prepared in the mail window; nothing leaves the inventory until the mail is sent.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct MailDraft {
+    /// Inventory index, amount and item id, the id guarding against a shifted inventory.
+    pub item: Option<(usize, i16, i32)>,
+    pub zeny: u32,
 }
 
 impl CharacterGameSystems {

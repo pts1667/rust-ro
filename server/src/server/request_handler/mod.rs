@@ -52,6 +52,7 @@ pub mod map;
 pub mod movement;
 pub(crate) mod player_trade;
 pub mod script_operations;
+pub mod social;
 mod talkie_box;
 
 pub fn handle(server: Arc<Server>, mut context: Request) {
@@ -70,6 +71,9 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
             warn!("Rejected malformed character server packet: {}", error);
             return;
         }
+    }
+    if social::handle_raw(server.as_ref(), &context) {
+        return;
     }
     match script_operations::handle_raw(server.as_ref(), &context) {
         Ok(true) => return,

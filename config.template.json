@@ -41,6 +41,21 @@
     "job_exp_rate": 1.0,
     "pvp_exp": false,
     "basic_skill_check": true,
+    "friend_auto_add": true,
+    "mail": {
+      "zeny_fee_percent": 2,
+      "attachment_price": 2500,
+      "daily_count": 100,
+      "delay_ms": 1000,
+      "return_days": 15,
+      "delete_days": 15,
+      "show_status": 0
+    },
+    "channels": [
+      { "name": "#global", "alias": "[Global]", "color": 16777215, "leave": false },
+      { "name": "#support", "alias": "[Support]", "color": 8638441 },
+      { "name": "#trade", "alias": "[Trade]", "color": 11992832 }
+    ],
     "party_even_share_bonus": 0,
     "gvg_damage_rates": {
       "weapon_skill": 60,

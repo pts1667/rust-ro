@@ -15,6 +15,10 @@ pub mod script_character_repository;
 pub use script_character_repository::ScriptCharacterRepository;
 pub mod fame_repository;
 pub use fame_repository::FameRepository;
+pub mod social_repository;
+pub use social_repository::SocialRepository;
+pub mod mail_repository;
+pub use mail_repository::MailRepository;
 #[cfg(test)]
 mod tests;
 
@@ -72,6 +76,8 @@ pub trait Repository:
     + ScriptInventoryRepository
     + ScriptCharacterRepository
     + FameRepository
+    + SocialRepository
+    + MailRepository
 {
 }
 

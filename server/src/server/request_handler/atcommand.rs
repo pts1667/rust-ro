@@ -153,6 +153,31 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             }
             return;
         }
+        "kami" | "kamib" | "kamic" | "lkami" => {
+            let reply = server.command_broadcast(char_id, canonical.as_str(), &args.join(" "));
+            if reply.is_empty() {
+                return;
+            }
+            packet_zc_notify_playerchat.set_msg(reply);
+        }
+        "channel" | "main" | "join" => {
+            let reply = server.channel_command(state, char_id, canonical.as_str(), &args);
+            for line in reply.lines() {
+                server.tell(char_id, line);
+            }
+            return;
+        }
+        "mail" => {
+            server.open_mail_window(state, char_id);
+            return;
+        }
+        "noask" => {
+            let enabled = state.characters_mut().get_mut(&char_id).is_some_and(|character| {
+                character.game_systems.no_ask = !character.game_systems.no_ask;
+                character.game_systems.no_ask
+            });
+            packet_zc_notify_playerchat.set_msg(if enabled { "Autorejecting is activated." } else { "Autorejecting is deactivated." }.to_string());
+        }
         "reloadmotd" => {
             server.motd().reload(&server.configuration.server.motd_path);
             packet_zc_notify_playerchat.set_msg("Reloaded the Message of the Day.".to_string());

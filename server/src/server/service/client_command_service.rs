@@ -61,14 +61,14 @@ pub(crate) fn equipment_window_packet(enabled: bool) -> Vec<u8> {
 }
 
 impl Server {
-    fn send_raw(&self, char_id: u32, packet: Vec<u8>) {
+    pub(crate) fn send_raw(&self, char_id: u32, packet: Vec<u8>) {
         self.server_service()
             .notification_sender()
             .send(Notification::Char(CharNotification::new(char_id, packet)))
             .unwrap_or_else(|_| error!("Failed to send client command reply"));
     }
 
-    fn send_area_raw(&self, character: &Character, packet: Vec<u8>, include_self: bool) {
+    pub(crate) fn send_area_raw(&self, character: &Character, packet: Vec<u8>, include_self: bool) {
         let notification = if include_self {
             AreaNotification::from_character(character, packet)
         } else {
@@ -159,7 +159,7 @@ impl Server {
         self.send_area_raw(character, packet, false);
     }
 
-    fn basic_skill_level(character: &Character) -> u8 {
+    pub(crate) fn basic_skill_level(character: &Character) -> u8 {
         character
             .status
             .known_skills
