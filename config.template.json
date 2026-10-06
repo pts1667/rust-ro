@@ -7,7 +7,9 @@
     "trace_packet": false,
     "packetver": 20120307,
     "host": "0.0.0.0",
-    "port": 6901
+    "port": 6901,
+    "groups_path": "config/groups.json",
+    "motd_path": "config/motd.txt"
   },
   "database": {
     "path": "db/sled",
@@ -194,5 +196,72 @@
         "y": 184
       }
     ]
+  },
+  "login": {
+    "new_account": false,
+    "allowed_regs": 1,
+    "time_allowed": 10,
+    "acc_name_min_length": 4,
+    "password_min_length": 4,
+    "group_id_to_connect": -1,
+    "min_group_id_to_connect": -1,
+    "start_limited_time": -1,
+    "use_md5_passwords": false,
+    "log_login": true,
+    "chars_per_account": 0,
+    "ipban_enable": true,
+    "ipban_dynamic_pass_failure_ban": true,
+    "ipban_dynamic_pass_failure_ban_interval": 5,
+    "ipban_dynamic_pass_failure_ban_limit": 7,
+    "ipban_dynamic_pass_failure_ban_duration": 5,
+    "ipban_cleanup_interval": 60,
+    "use_dnsbl": false,
+    "dnsbl_servers": [
+      "bl.blocklist.de",
+      "socks.dnsbl.sorbs.net"
+    ],
+    "subnets": []
+  },
+  "char_server": {
+    "server_name": "Rust ragnarok",
+    "wisp_server_name": "Server",
+    "char_maintenance": 0,
+    "char_new": true,
+    "char_new_display": 0,
+    "max_connect_user": -1,
+    "gm_allow_group": 99,
+    "start_point": "new_1-1,53,111",
+    "start_items": "1201,1,2:2301,1,16",
+    "start_zeny": 0,
+    "start_status_points": 48,
+    "log_char": true,
+    "char_name_min_length": 4,
+    "name_ignoring_case": false,
+    "char_name_option": 1,
+    "char_name_letters": "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+    "char_del_level": 0,
+    "char_del_delay": 86400,
+    "char_del_option": 2,
+    "char_del_restriction": 3,
+    "pincode": {
+      "enabled": false,
+      "changetime": 0,
+      "maxtry": 3,
+      "force": true,
+      "allow_repeated": false,
+      "allow_sequential": false
+    },
+    "char_move_enabled": true,
+    "char_movetoused": true,
+    "char_moves_unlimited": false,
+    "char_rename_party": false,
+    "char_rename_guild": false,
+    "default_map": "prontera",
+    "default_map_x": 156,
+    "default_map_y": 191,
+    "fame_list_alchemist": 10,
+    "fame_list_blacksmith": 10,
+    "fame_list_taekwon": 10,
+    "guild_exp_rate": 100
   }
 }
