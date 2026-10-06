@@ -14,6 +14,17 @@ const INFINITE_DURATION: i32 = -1;
 
 static NEXT_TICK: AtomicU64 = AtomicU64::new(0);
 
+impl ServerState {
+    pub fn cell_has(&self, key: &crate::server::model::map_instance::MapInstanceKey, x: u16, y: u16, cell: CellType) -> bool {
+        self.get_map_instance(key.map_name(), key.map_instance()).is_some_and(|instance| {
+            let map = instance.state();
+            map.cells()
+                .get(map.get_cell_index_of(x, y))
+                .is_some_and(|flags| flags & cell.as_flag() != 0)
+        })
+    }
+}
+
 impl Server {
     /// Mirrors rathena's `pc_cell_basilica`: standing on a basilica cell grants the Basilica status, leaving it removes it.
     pub(crate) fn tick_cell_statuses(&self, state: &mut ServerState, tick: u128) {

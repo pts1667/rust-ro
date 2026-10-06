@@ -172,6 +172,27 @@ pub fn map_property_packet_in_siege(flags: &MapFlags, packetver: u32, siege_acti
     .concat()
 }
 
+const WEATHER_EFFECTS: [(MapFlag, &[u32]); 7] = [
+    (MapFlag::Snow, &[162]),
+    (MapFlag::Sakura, &[163]),
+    (MapFlag::Clouds, &[233]),
+    (MapFlag::Clouds2, &[234]),
+    (MapFlag::Fog, &[515]),
+    (MapFlag::Fireworks, &[297, 299, 301]),
+    (MapFlag::Leaves, &[333]),
+];
+const NIGHT_EFFECT: u32 = 511;
+
+pub fn weather_packets(flags: &MapFlags, actor_id: u32) -> Vec<Vec<u8>> {
+    WEATHER_EFFECTS
+        .iter()
+        .filter(|(flag, _)| flags.enabled(*flag))
+        .flat_map(|(_, effects)| effects.iter().copied())
+        .chain(flags.enabled(MapFlag::NightEnabled).then_some(NIGHT_EFFECT))
+        .map(|effect| [0x01F3_u16.to_le_bytes().to_vec(), actor_id.to_le_bytes().to_vec(), effect.to_le_bytes().to_vec()].concat())
+        .collect()
+}
+
 /// Shows the PvP cursor and disables lock-on for duelists, as rathena does for `duel_group`.
 fn apply_duel_property(packet: &mut [u8]) {
     packet[2..4].copy_from_slice(&1_u16.to_le_bytes());
@@ -246,6 +267,15 @@ impl Server {
         self.drain_map_notifications();
     }
 
+    pub(crate) fn notify_weather(&self, state: &ServerState, char_id: u32) {
+        if let Some(character) = state.characters().get(&char_id) {
+            for packet in weather_packets(&state.map_flags(&character.map_instance_key), char_id) {
+                self.map_notifications.push(Notification::Char(CharNotification::new(char_id, packet)));
+            }
+        }
+        self.drain_map_notifications();
+    }
+
     pub(crate) fn install_map_flags(&self, state: &mut ServerState, key: &MapInstanceKey, flags: MapFlags) -> Result<(), String> {
         let name = normalize_map(key.map_name());
         let instance = state.get_map_instance(&name, key.map_instance());
@@ -270,6 +300,9 @@ impl Server {
             }
             if character.loaded_from_client_side {
                 notifications.push(Notification::Char(CharNotification::new(character.char_id, packet.clone())));
+                for weather in weather_packets(&flags, character.char_id) {
+                    notifications.push(Notification::Char(CharNotification::new(character.char_id, weather)));
+                }
             }
         }
         self.map_notifications.extend(notifications);
@@ -426,5 +459,23 @@ mod tests {
         );
         assert!(flags["pvp_y_1-1"].enabled(MapFlag::Pvp));
         assert_eq!(flags["pvp_n_1-1"].nightmare_drops, vec![(-1, 2, 300)]);
+    }
+
+    #[test]
+    fn weather_and_night_flags_produce_one_self_effect_each() {
+        let mut flags = MapFlags::default();
+        assert!(weather_packets(&flags, 7).is_empty());
+        flags.set(MapFlag::Snow, true, &[]).unwrap();
+        flags.set(MapFlag::Fireworks, true, &[]).unwrap();
+        flags.set(MapFlag::NightEnabled, true, &[]).unwrap();
+        let effects: Vec<u32> = weather_packets(&flags, 7)
+            .iter()
+            .map(|packet| {
+                assert_eq!(packet[..2], 0x01F3_u16.to_le_bytes());
+                assert_eq!(packet[2..6], 7_u32.to_le_bytes());
+                u32::from_le_bytes(packet[6..10].try_into().unwrap())
+            })
+            .collect();
+        assert_eq!(effects, [162, 297, 299, 301, 511]);
     }
 }

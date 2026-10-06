@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use models::enums::cell::CellType;
 use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
 
 use super::{ScriptWorldService, protocol};
@@ -322,7 +323,9 @@ impl ScriptWorldService {
     }
 
     pub(crate) fn prepare_vending(&self, state: &ServerState, character: &mut Character, skill_level: u8) -> Result<(), String> {
-        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending) {
+        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending)
+            || state.cell_has(&character.map_instance_key, character.x(), character.y(), CellType::NoVending)
+        {
             return Err("Vending is disabled on this map".into());
         }
         let level = character
@@ -358,7 +361,9 @@ impl ScriptWorldService {
         title: String,
         offers: Vec<(u16, u16, u32)>,
     ) -> Result<(), String> {
-        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending) {
+        if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending)
+            || state.cell_has(&character.map_instance_key, character.x(), character.y(), CellType::NoVending)
+        {
             return Err("Vending is disabled on this map".into());
         }
         if character.game_systems.vending_slots == 0
@@ -566,7 +571,9 @@ impl ScriptWorldService {
                 items,
             } => self.purchase_vending(server, state, character, account_id, store_id, items),
             StoreRequest::CreateBuyingStore { title, zeny_limit, offers } => {
-                if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
+                if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoBuyingStore)
+                    || state.cell_has(&character.map_instance_key, character.x(), character.y(), CellType::NoVending)
+                {
                     return Err("Buying stores are disabled on this map".into());
                 }
                 if character.game_systems.buying_slots == 0

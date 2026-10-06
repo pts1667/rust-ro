@@ -3,9 +3,10 @@ use std::sync::{Arc, RwLock};
 use std::time::{Duration, Instant};
 
 use database::model::{CharacterInventory, CharacterRecord, InventoryRecord, SeedData};
+use models::enums::cell::CellType;
 use models::enums::item::EquipmentLocation;
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU64, EnumWithNumberValue};
 use models::status::KnownSkill;
 use sled::transaction::Transactional;
 
@@ -576,6 +577,42 @@ fn accepted_trade_blocks_storage_store_creation_item_use_and_equipment_changes()
     );
     context.server.state_mut().insert_character(first);
     assert_eq!(economy(&repository), before);
+}
+
+#[test]
+fn no_vending_cell_rejects_vending_only_on_that_cell() {
+    let (context, _) = fixture();
+    let key = context.server.state().get_character(FIRST).unwrap().map_instance_key.clone();
+    let (x, y) = {
+        let state = context.server.state();
+        let character = state.get_character(FIRST).unwrap();
+        (character.x(), character.y())
+    };
+    let prepare = || {
+        context.server.script_world_service().handle_request(
+            &context.server,
+            &mut *context.server.state_mut(),
+            FIRST,
+            ScriptWorldRequest::Store(StoreRequest::PrepareVending { skill_level: 1 }),
+            102,
+        )
+    };
+    let blocked = "Vending is disabled on this map";
+    assert_ne!(prepare().unwrap_err(), blocked);
+    let set_cell = |enabled: bool| {
+        let state = context.server.state();
+        let instance = state.get_map_instance(key.map_name(), key.map_instance()).unwrap();
+        let mut map = instance.state_mut();
+        let index = map.get_cell_index_of(x, y);
+        let mask = CellType::NoVending.as_flag();
+        let value = &mut map.cells_mut()[index];
+        *value = if enabled { *value | mask } else { *value & !mask };
+    };
+    set_cell(true);
+    assert!(context.server.state().cell_has(&key, x, y, CellType::NoVending));
+    assert_eq!(prepare().unwrap_err(), blocked);
+    set_cell(false);
+    assert_ne!(prepare().unwrap_err(), blocked);
 }
 
 #[test]

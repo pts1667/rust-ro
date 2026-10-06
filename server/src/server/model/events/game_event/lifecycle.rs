@@ -206,6 +206,7 @@ impl GameEventHandler for CharacterLoadedFromClientSide {
         character.loaded_from_client_side = true;
         character.clear_map_view();
         server.notify_map_property(state, char_id);
+        server.notify_weather(state, char_id);
         server.enter_pvp_ranking(state, char_id);
         Ok(())
     }
