@@ -554,7 +554,8 @@ impl ScriptWorldService {
             }
         }
         let versus = map_flags.versus(state.siege_active());
-        let character = state.characters_mut().get_mut(&owner_id).unwrap();
+        state
+            .with_character_taken(owner_id, |state, character| -> Result<bool, String> {
         let mut systems = character.game_systems.clone();
         let mut admitted = 0;
         let mut healed = 0;
@@ -690,7 +691,7 @@ impl ScriptWorldService {
         }
         self.send_mercenary(character, now as u64)?;
         self.send_homunculus(character)?;
-        self.render_companions(server, character, now as u64)?;
+        self.render_companions(server, state, character, now as u64)?;
         let reflected = if damage.landed && damage.proc_depth == 0 {
             crate::server::service::combat_trigger_service::physical_reflection(&snapshot, damage.battle_flags, damage.skill_id, admitted)
         } else {
@@ -728,7 +729,7 @@ impl ScriptWorldService {
                 ActionType::AttackNomotion,
                 (reflected.min(i32::MAX as u32) as i32, 0),
             );
-            if let Some(map) = server.state().get_map_instance_from_character(character) {
+            if let Some(map) = state.get_map_instance_from_character(character) {
                 if map.state().get_mob(reflected.target_id).is_some() {
                     map.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage: reflected }));
                 } else {
@@ -737,11 +738,14 @@ impl ScriptWorldService {
             }
         }
         Ok(true)
+            })
+            .unwrap()
     }
 
     pub fn apply_committed_effects(
         &self,
         server: &Server,
+        state: &ServerState,
         character: &mut Character,
         plan: &WorldEffectPlan,
         mut committed: crate::repository::game_system_repository::CommittedWorldEffects,
@@ -794,7 +798,7 @@ impl ScriptWorldService {
         }
         if guild {
             if let Some(guild) = committed.guild {
-                self.broadcast_guild_summary(server, character, &guild)?;
+                self.broadcast_guild_summary(state, character, &guild)?;
             }
         }
         if let Some((guild_id, items)) = committed.guild_storage {
@@ -802,7 +806,7 @@ impl ScriptWorldService {
             character.game_systems.guild_storage_items = items;
             self.send_storage(character)?;
         }
-        self.render_companions(server, character, now)
+        self.render_companions(server, state, character, now)
     }
 
     pub fn new(
@@ -1011,13 +1015,13 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    pub fn call(&self, server: &Server, character: &mut Character, function: Function, args: &[Value], now: u64) -> Result<Value, String> {
+    pub fn call(&self, server: &Server, state: &mut ServerState, character: &mut Character, function: Function, args: &[Value], now: u64) -> Result<Value, String> {
         if character.game_systems.is_trading() && matches!(function, Function::OpenStorage | Function::GuildOpenStorage) {
             return Err("Storage is unavailable during trading".into());
         }
-        self.validate_call(server.state(), character, function, args, now)?;
+        self.validate_call(state, character, function, args, now)?;
         if pet_support_operation(function) {
-            return self.call_pet_support(server, character, function, args, now);
+            return self.call_pet_support(server, state, character, function, args, now);
         }
         if persistent_world_operation(function) {
             let plan = plan_persistent_effects(character, &[(function, args.to_vec())], now)?;
@@ -1025,7 +1029,7 @@ impl ScriptWorldService {
                 .repository
                 .commit_world_effects(character.char_id, &plan)
                 .map_err(|error| error.to_string())?;
-            self.apply_committed_effects(server, character, &plan, committed, now)?;
+            self.apply_committed_effects(server, state, character, &plan, committed, now)?;
             return Ok(Value::default());
         }
         match function {
@@ -1034,8 +1038,7 @@ impl ScriptWorldService {
                 let pet = if target_id == character.char_id {
                     character.script_character_state().pet
                 } else {
-                    server
-                        .state()
+                    state
                         .get_character(target_id)
                         .and_then(|target| target.script_character_state().pet)
                 };
@@ -1046,8 +1049,7 @@ impl ScriptWorldService {
                     if *name == character.name {
                         character.account_id
                     } else {
-                        server
-                            .state()
+                        state
                             .characters()
                             .values()
                             .find(|target| target.name == *name)
@@ -1090,12 +1092,10 @@ impl ScriptWorldService {
             }
             Function::CheckCart | Function::CheckRiding | Function::CheckFalcon | Function::CheckMadogear | Function::IsMounting => {
                 let target = optional_number(args, 0, character.char_id as i32)? as u32;
-                let other;
                 let target = if target == character.char_id {
                     &*character
                 } else {
-                    other = server.state();
-                    other.get_character(target).ok_or("State query character is offline")?
+                    state.get_character(target).ok_or("State query character is offline")?
                 };
                 let present = match function {
                     Function::CheckCart => {
@@ -1200,7 +1200,7 @@ impl ScriptWorldService {
                 *calls = calls.saturating_add(1).min(i32::MAX as u32);
                 self.persist(character)?;
                 self.send_mercenary(character, now)?;
-                self.render_companions(server, character, now)?;
+                self.render_companions(server, state, character, now)?;
                 Ok(Value::default())
             }
             Function::MercenaryHeal => {
@@ -1237,12 +1237,12 @@ impl ScriptWorldService {
                     .guild_add_experience(character.char_id, number(args, 0)? as u64, &world_data().guild_experience)
                     .map_err(|error| error.to_string())?;
                 if let Some(guild) = guild {
-                    self.broadcast_guild_summary(server, character, &guild)?;
+                    self.broadcast_guild_summary(state, character, &guild)?;
                 }
                 Ok(Value::default())
             }
             Function::BuyingStore => {
-                if server.state().map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
+                if state.map_flags(&character.map_instance_key).enabled(crate::server::model::map_flags::MapFlag::NoBuyingStore) {
                     return Err("Buying stores are disabled on this map".into());
                 }
                 if character.status.hp == 0 || character.game_systems.is_trading() || character.game_systems.vending_store.is_some()
@@ -1296,7 +1296,6 @@ impl ScriptWorldService {
             Function::Marriage => {
                 let name = args[0].string_value()?.to_string();
                 let first = character.char_id;
-                let mut state = server.state_mut();
                 let partner = state
                     .characters_mut()
                     .values_mut()
@@ -1347,7 +1346,7 @@ impl ScriptWorldService {
                 let revoke = [Value::Number(CALL_PARTNER_SKILL_ID), Value::Number(0), Value::Number(3)];
                 crate::server::service::script_character_service::grant_skill(server, character, &revoke)?;
                 server.drop_wedding_ring(character);
-                if let Some(partner) = server.state_mut().characters_mut().get_mut(&partner_id) {
+                if let Some(partner) = state.characters_mut().get_mut(&partner_id) {
                     server.drop_wedding_ring(partner);
                     partner.game_systems.partner_id = 0;
                     partner.game_systems.revision = self
@@ -1416,13 +1415,9 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    pub fn tick(&self, server: &Server, character: &mut Character, now: u64) -> Result<bool, String> {
-        self.tick_in_state(server, server.state(), character, now)
-    }
-
     pub fn tick_in_state(&self, server: &Server, state: &ServerState, character: &mut Character, now: u64) -> Result<bool, String> {
         self.drain_notifications()?;
-        self.party_tick(server, character, now)?;
+        self.party_tick(server, state, character, now)?;
         if now < character.game_systems.last_companion_tick + 40 {
             return Ok(false);
         }
@@ -1637,8 +1632,8 @@ impl ScriptWorldService {
         self.tick_pet_support(server, state, character, now)?;
         self.tick_pet_loot(server, state, character, now)?;
         self.refresh_pet_bonuses(server, character, previous_pet_bonus);
-        self.render_companions(server, character, now)?;
-        self.reveal_companions(server, character, now)?;
+        self.render_companions(server, state, character, now)?;
+        self.reveal_companions(server, state, character, now)?;
         self.tick_companion_skills(server, character, now);
         self.companion_attack(server, state, character, now)?;
         Ok(changed)
@@ -1999,7 +1994,7 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    fn render_companions(&self, server: &Server, character: &mut Character, now: u64) -> Result<(), String> {
+    fn render_companions(&self, server: &Server, state: &ServerState, character: &mut Character, now: u64) -> Result<(), String> {
         if character.status.status_change(StatusChangeKind::Devotion).is_some_and(|status| {
             let protector = status.values[0] as u32;
             (1_200_000_000..1_300_000_000).contains(&protector)
@@ -2069,7 +2064,7 @@ impl ScriptWorldService {
             }
         }
         for (index, (id, class, kind, hp, max_hp)) in active.into_iter().enumerate() {
-            let (x, y) = self.companion_next_position(server, character, id, index as u16, now);
+            let (x, y) = self.companion_next_position(state, character, id, index as u16, now);
             let position = CompanionPosition {
                 x,
                 y,
@@ -2128,8 +2123,8 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    fn companion_next_position(&self, server: &Server, character: &mut Character, id: u32, index: u16, now: u64) -> (u16, u16) {
-        let follow = companion_follow_position(server, character, index);
+    fn companion_next_position(&self, state: &ServerState, character: &mut Character, id: u32, index: u16, now: u64) -> (u16, u16) {
+        let follow = companion_follow_position(state, character, index);
         let Some(previous) = character.game_systems.rendered_companions.get(&id).copied() else {
             return follow;
         };
@@ -2164,7 +2159,7 @@ impl ScriptWorldService {
             }
         });
         let range = companion_attack_range(character, id);
-        let Some(map) = server.state().get_map_instance_from_character(character) else {
+        let Some(map) = state.get_map_instance_from_character(character) else {
             return (previous.x, previous.y);
         };
         let map_state = map.state();
@@ -2172,7 +2167,7 @@ impl ScriptWorldService {
             if let Some(mob) = map_state.get_mob(target).filter(|mob| {
                 mob.hp() > 0
                     && mob.summon_ai == 0
-                    && !server.state().contains_locked_map_item(target)
+                    && !state.contains_locked_map_item(target)
                     && source.as_ref().is_some_and(|source| {
                         companion_can_target(
                             source,
@@ -2391,8 +2386,8 @@ pub fn pet_world_id(id: u32) -> u32 {
     1_000_000_000 + id
 }
 
-fn companion_follow_position(server: &Server, character: &Character, index: u16) -> (u16, u16) {
-    let Some(map) = server.state().get_map_instance_from_character(character) else {
+fn companion_follow_position(state: &ServerState, character: &Character, index: u16) -> (u16, u16) {
+    let Some(map) = state.get_map_instance_from_character(character) else {
         return (character.x, character.y);
     };
     let state = map.state();
@@ -2696,7 +2691,7 @@ fn companion_can_target(
 }
 
 impl ScriptWorldService {
-    fn reveal_companions(&self, server: &Server, character: &Character, now: u64) -> Result<(), String> {
+    fn reveal_companions(&self, server: &Server, state: &ServerState, character: &Character, now: u64) -> Result<(), String> {
         for actor in companion_snapshots(character) {
             let Some(status) = companion_status_snapshot(character, actor.map_item().id()) else {
                 continue;
@@ -2720,7 +2715,7 @@ impl ScriptWorldService {
             }
             server.script_skill_service().reveal_from_actor(
                 server,
-                server.state(),
+                state,
                 &crate::server::script::skill::ScriptRevealActor {
                     actor_id: actor.map_item().id(),
                     credit_id: character.char_id,

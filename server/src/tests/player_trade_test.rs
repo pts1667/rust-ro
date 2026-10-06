@@ -134,15 +134,17 @@ fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>) {
 }
 
 fn act(context: &ServerServiceTestContext, id: u32, request: PlayerTradeRequest, now: u64) -> Result<(), String> {
-    let character = context.server.state().characters().get(&id).unwrap();
-    let session = context.server.state().find_session(character.account_id).unwrap();
+    let guard_137 = context.server.state();
+    let character = guard_137.characters().get(&id).unwrap();
+    let session = guard_137.find_session(character.account_id).unwrap();
     let action = PlayerTradeAction {
         char_id: id,
         account_id: character.account_id,
         auth_code: session.auth_code,
         request,
     };
-    context.server.handle_player_trade(context.server.state_mut().as_mut(), action, now)
+    drop(guard_137);
+    context.server.handle_player_trade(&mut *context.server.state_mut(), action, now)
 }
 
 fn open(context: &ServerServiceTestContext) {
@@ -308,7 +310,8 @@ fn trade_two_phase_commit_moves_exact_instances_stacks_and_wallets_once() {
     act(&context, SECOND, PlayerTradeRequest::Confirm, 110).unwrap();
     assert_closed(&context);
     for (id, expected_zeny, expected_potions) in [(FIRST, 104, 4), (SECOND, 46, 5)] {
-        let character = context.server.state().characters().get(&id).unwrap();
+        let guard_311 = context.server.state();
+        let character = guard_311.characters().get(&id).unwrap();
         let stored: CharacterRecord = database::required(&repository.database.characters, &id.to_be_bytes()).unwrap();
         assert_eq!(character.status.zeny, expected_zeny);
         assert_eq!(stored.zeny as u32, expected_zeny);
@@ -316,11 +319,13 @@ fn trade_two_phase_commit_moves_exact_instances_stacks_and_wallets_once() {
             character.inventory_iter().find(|(_, item)| item.item_id == 501).unwrap().1.amount,
             expected_potions
         );
+        drop(guard_311);
         assert_eq!(packet(&context, id, 0x00F0), vec![0xF0, 0, 0]);
         let wallet = packet(&context, id, 0x00B1);
         assert_eq!(i32::from_le_bytes(wallet[4..8].try_into().unwrap()) as u32, expected_zeny);
     }
-    let second = context.server.state().characters().get(&SECOND).unwrap();
+    let guard_323 = context.server.state();
+    let second = guard_323.characters().get(&SECOND).unwrap();
     let weapon = second.inventory_iter().find(|(_, item)| item.item_id == 1201).unwrap().1;
     assert_eq!(
         (
@@ -333,6 +338,7 @@ fn trade_two_phase_commit_moves_exact_instances_stacks_and_wallets_once() {
         ),
         (10, 987654, 7, false, true, [255, 3, 71, 72])
     );
+    drop(guard_323);
     assert_eq!(
         database::required::<i32>(&repository.database.inventory_owners, &10_i32.to_be_bytes()).unwrap(),
         SECOND as i32
@@ -461,7 +467,7 @@ fn trade_ticks_cancel_both_sides_on_death_departure_map_restriction_and_idle_tim
             4 => 102 + TRADE_IDLE_TIMEOUT_MS,
             _ => unreachable!(),
         };
-        context.server.tick_player_trades(context.server.state_mut().as_mut(), now);
+        context.server.tick_player_trades(&mut *context.server.state_mut(), now);
         assert_closed(&context);
         assert_eq!(economy(&repository), before);
         for id in [FIRST, SECOND] {
@@ -541,7 +547,7 @@ fn accepted_trade_blocks_storage_store_creation_item_use_and_equipment_changes()
             context
                 .server
                 .script_world_service()
-                .handle_request(&context.server, context.server.state_mut().as_mut(), FIRST, request, 102)
+                .handle_request(&context.server, &mut *context.server.state_mut(), FIRST, request, 102)
                 .is_err()
         );
     }
@@ -559,7 +565,7 @@ fn accepted_trade_blocks_storage_store_creation_item_use_and_equipment_changes()
     );
     context.server.item_service().use_item_in_state(
         &context.server,
-        context.server.state(),
+        &mut context.server.state(),
         context.runtime(),
         crate::server::model::events::game_event::CharacterUseItem {
             char_id: FIRST,
@@ -622,7 +628,7 @@ fn trade_network_router_requires_current_map_socket_and_game_loop_handles_the_ac
     assert!(
         context
             .server
-            .handle_player_trade(context.server.state_mut().as_mut(), stale, 101)
+            .handle_player_trade(&mut *context.server.state_mut(), stale, 101)
             .is_err()
     );
     assert!(

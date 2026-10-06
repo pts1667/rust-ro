@@ -254,7 +254,7 @@ pub enum PartyRequest {
 
 
 impl ScriptWorldService {
-    pub fn initialize_party(&self, server: &Server, character: &mut Character) -> Result<(), String> {
+    pub fn initialize_party(&self, server: &Server, state: &ServerState, character: &mut Character) -> Result<(), String> {
         self.send(character.char_id, vec![
             0xC9,
             0x02,
@@ -271,7 +271,6 @@ impl ScriptWorldService {
             .ok_or("Character party no longer exists")?;
         character.game_systems.party = Some(party.clone());
         let records = self.repository.party_member_records(party.id).map_err(|error| error.to_string())?;
-        let state = server.state();
         let packet = roster_packet(&party, &roster(state, character, &records, None));
         for member in &party.members {
             self.send(*member, packet.clone())?;
@@ -303,11 +302,10 @@ impl ScriptWorldService {
         self.area(character, names_packet(character))
     }
 
-    pub fn disconnect_party(&self, server: &Server, character: &mut Character) -> Result<(), String> {
+    pub fn disconnect_party(&self, state: &ServerState, character: &mut Character) -> Result<(), String> {
         character.game_systems.party_invitation = None;
         if let Some(party) = cached_party(character) {
             let records = self.repository.party_member_records(party.id).map_err(|error| error.to_string())?;
-            let state = server.state();
             let packet = roster_packet(party, &roster(state, character, &records, Some(character.char_id)));
             for member in &party.members {
                 if *member != character.char_id {
@@ -648,7 +646,7 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    pub(crate) fn party_tick(&self, server: &Server, character: &mut Character, now: u64) -> Result<(), String> {
+    pub(crate) fn party_tick(&self, server: &Server, state: &ServerState, character: &mut Character, now: u64) -> Result<(), String> {
         let Some(party) = cached_party(character).cloned() else {
             return Ok(());
         };
@@ -680,7 +678,6 @@ impl ScriptWorldService {
             }));
         }
         if health_changed || position_changed || map_changed {
-            let state = server.state();
             for member in &party.members {
                 if *member == character.char_id {
                     continue;

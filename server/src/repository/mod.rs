@@ -195,7 +195,7 @@ pub trait CharacterRepository: ScriptCharacterRepository {
 }
 
 #[async_trait]
-pub trait InventoryRepository {
+pub trait InventoryRepository: Send + Sync {
     async fn character_set_item_damaged(&self, _char_id: u32, _item: InventoryItemModel) -> Result<(), Error> {
         Err(Error::InvalidInput("Equipment damage persistence is unavailable".into()))
     }

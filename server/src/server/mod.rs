@@ -43,7 +43,6 @@ use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character_directory::CharacterDirectory;
 use crate::server::state::server::ServerState;
-use crate::util::cell::{MyRefMut, MyUnsafeCell};
 use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
 use crate::util::tick::{delayed_tick, get_tick};
 
@@ -57,6 +56,10 @@ pub mod script;
 pub mod service;
 pub mod state;
 
+pub(crate) type StateGuard<'a> = parking_lot::MutexGuard<'a, ServerState>;
+
+const STATE_LOCK_TIMEOUT: Duration = Duration::from_secs(10);
+
 thread_local!(pub static PACKETVER: RefCell<u32> = const { RefCell::new(0) });
 // Todo make this configurable
 pub const PLAYER_FOV: u16 = 20;
@@ -65,8 +68,7 @@ pub const MOB_FOV: u16 = 14;
 pub struct Server {
     pub configuration: &'static Config,
     pub repository: Arc<dyn Repository>,
-    state: MyUnsafeCell<ServerState>,
-    state_loops_lock: Mutex<()>,
+    state: parking_lot::Mutex<ServerState>,
     sessions: SessionRegistry,
     directory: CharacterDirectory,
     duels: Duels,
@@ -81,19 +83,29 @@ pub struct Server {
     server_service: ServerService,
     shutdown: AtomicBool,
     runtime: Arc<Runtime>,
-    recording_sessions: MyUnsafeCell<Vec<SessionRecord>>,
+    recording_sessions: Mutex<Vec<Arc<SessionRecord>>>,
     shared: OnceLock<Weak<Server>>,
     script_world_service: ScriptWorldService,
 }
 
-unsafe impl Sync for Server {}
-
-unsafe impl Send for Server {}
-
 impl Server {
-    /// The game loop and the movement loop both mutate `ServerState` from their own thread, they must not run at the same time.
-    pub(crate) fn lock_state_loops(&self) -> MutexGuard<'_, ()> {
-        self.state_loops_lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    /// Only the game loop and the movement loop take this lock for the length of an iteration, everything else receives
+    /// `&mut ServerState` as a parameter. Panics instead of hanging when the lock can't be taken, a timeout means a
+    /// function called `lock_state` while its caller already held the state.
+    pub(crate) fn lock_state(&self) -> StateGuard<'_> {
+        self.state
+            .try_lock_for(STATE_LOCK_TIMEOUT)
+            .unwrap_or_else(|| panic!("Timed out locking ServerState"))
+    }
+
+    #[cfg(any(test, feature = "visual_debugger"))]
+    pub fn state(&self) -> StateGuard<'_> {
+        self.lock_state()
+    }
+
+    #[cfg(test)]
+    pub fn state_mut(&self) -> StateGuard<'_> {
+        self.lock_state()
     }
 
     /// Session registry for threads that must not read `ServerState`.
@@ -124,14 +136,6 @@ impl Server {
 
     pub(crate) fn cell_basilica(&self) -> MutexGuard<'_, HashSet<u32>> {
         self.cell_basilica.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
-    }
-
-    pub fn state(&self) -> &ServerState {
-        self.state.borrow().as_ref()
-    }
-
-    pub fn state_mut(&self) -> MyRefMut<ServerState> {
-        self.state.borrow_mut()
     }
 
     pub(crate) fn pop_task(&self) -> Option<Vec<GameEvent>> {
@@ -249,8 +253,7 @@ impl Server {
             configuration,
             repository,
             tasks_queue,
-            state: MyUnsafeCell::new(state),
-            state_loops_lock: Mutex::new(()),
+            state: parking_lot::Mutex::new(state),
             sessions,
             directory,
             duels: Duels::default(),
@@ -263,7 +266,7 @@ impl Server {
             movement_tasks_queue,
             server_service,
             shutdown: AtomicBool::new(false),
-            recording_sessions: MyUnsafeCell::new(vec![]),
+            recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
             runtime,
@@ -291,8 +294,7 @@ impl Server {
         Server {
             configuration,
             repository,
-            state: MyUnsafeCell::new(state),
-            state_loops_lock: Mutex::new(()),
+            state: parking_lot::Mutex::new(state),
             sessions,
             directory,
             duels: Duels::default(),
@@ -306,7 +308,7 @@ impl Server {
             movement_tasks_queue: Arc::new(Default::default()),
             server_service,
             shutdown: AtomicBool::new(false),
-            recording_sessions: MyUnsafeCell::new(vec![]),
+            recording_sessions: Mutex::new(vec![]),
             shared: OnceLock::new(),
             script_world_service,
             runtime,
@@ -315,12 +317,11 @@ impl Server {
 
     pub async fn shutdown(&self) {
         self.shutdown.store(true, Ordering::Relaxed);
-        self.state
-            .borrow()
+        let state = self.lock_state();
+        state
             .map_instances()
             .iter()
             .for_each(|(_, instances)| instances.iter().for_each(|instance| instance.shutdown()));
-        let state = self.state.borrow();
         let characters: Vec<_> = state.characters().values().collect();
         let positions = characters
             .iter()
@@ -409,9 +410,8 @@ impl Server {
             return;
         };
         if !self.is_recording_session(char_id) {
-            self.recording_sessions
-                .borrow_mut()
-                .push(SessionRecord::new(char_id, &presence, self.packetver()));
+            self.recording_sessions()
+                .push(Arc::new(SessionRecord::new(char_id, &presence, self.packetver())));
         }
     }
 
@@ -422,8 +422,7 @@ impl Server {
         if let Some(recording) = self.get_recording_session(session_id) {
             recording.finish();
         }
-        self.recording_sessions
-            .borrow_mut()
+        self.recording_sessions()
             .retain(|recording_session_id| recording_session_id.session_id != session_id);
     }
 
@@ -431,24 +430,20 @@ impl Server {
         let Some(session_id) = self.directory.presence(char_id).map(|presence| presence.account_id) else {
             return false;
         };
-        self.recording_sessions
-            .borrow()
-            .as_ref()
+        self.recording_sessions()
             .iter()
             .any(|recording_session_id| recording_session_id.session_id == session_id)
     }
 
-    pub fn get_recording_session(&self, session_id: u32) -> Option<&SessionRecord> {
-        self.recording_sessions
-            .borrow()
-            .as_ref()
+    pub fn get_recording_session(&self, session_id: u32) -> Option<Arc<SessionRecord>> {
+        self.recording_sessions()
             .iter()
             .find(|recording_session_id| recording_session_id.session_id == session_id)
+            .cloned()
     }
 
-    pub fn disconnect_character(&self, char_id: u32) {
-        let _state_loops_guard = self.lock_state_loops();
-        self.disconnect_character_in_state(self.state_mut().as_mut(), char_id);
+    fn recording_sessions(&self) -> MutexGuard<'_, Vec<Arc<SessionRecord>>> {
+        self.recording_sessions.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
     pub(crate) fn disconnect_character_in_state(&self, state: &mut ServerState, char_id: u32) {
@@ -479,7 +474,7 @@ impl Server {
         {
             warn!("Pet loot return deferred on disconnect: {error}");
         }
-        if let Err(error) = self.script_world_service().disconnect_party(self, &mut character) {
+        if let Err(error) = self.script_world_service().disconnect_party(state, &mut character) {
             warn!("Party disconnect failed: {error}");
         }
         if let Err(error) = self.script_world_service().disconnect(&mut character) {

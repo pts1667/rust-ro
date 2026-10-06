@@ -50,18 +50,18 @@ fn active_pet_queries_use_real_owner_context_in_both_npc_and_item_hosts() {
     let mut host = ItemScriptHost::bonuses(source.status.clone(), 0);
     for field in 0..=10 {
         let expected = pet_information(Some(&snapshot), field);
-        assert_eq!(context.server.script_world_service().call(&context.server, &mut source, Function::GetPetInfo,
+        assert_eq!(context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut source, Function::GetPetInfo,
             &[Value::Number(field), Value::Number(150_000)], 100).unwrap(), expected);
         assert_eq!(context.runtime().block_on(host.invoke(Request::Call { function: Function::GetPetInfo,
             arguments: vec![Value::Number(field)] })).unwrap(), expected);
     }
     source.game_systems.pet.as_mut().unwrap().incubating = true;
     source.refresh_script_context();
-    assert_eq!(context.server.script_world_service().call(&context.server, &mut source, Function::GetPetInfo,
+    assert_eq!(context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut source, Function::GetPetInfo,
         &[Value::Number(2)], 100).unwrap(), Value::String("null".into()));
-    assert_eq!(context.server.script_world_service().call(&context.server, &mut source, Function::GetPetInfo,
+    assert_eq!(context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut source, Function::GetPetInfo,
         &[Value::Number(3)], 100).unwrap(), Value::Number(0));
-    assert_eq!(context.server.script_world_service().call(&context.server, &mut source, Function::GetPetInfo,
+    assert_eq!(context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut source, Function::GetPetInfo,
         &[Value::Number(2), Value::Number(999)], 100).unwrap(), Value::String("null".into()));
 }
 
@@ -131,7 +131,7 @@ fn pet_starvation_persists_the_loyalty_loss_and_updates_the_client_stats() {
     crate::server::service::script_world_service::install_state(&mut character, saved);
     assert_eq!(StatusService::instance().to_snapshot(&character.status).bonus_luk(), 2);
     let service = context.server.script_world_service();
-    assert!(service.tick_in_state(&context.server, context.server.state(), &mut character, 100).unwrap());
+    assert!(service.tick_in_state(&context.server, &context.server.state(), &mut character, 100).unwrap());
     assert_eq!(character.game_systems.pet.as_ref().unwrap().intimacy, 905);
     assert_eq!(repository.character_game_systems(character.char_id).unwrap().pet.unwrap().intimacy, 905);
     assert_eq!(StatusService::instance().to_snapshot(&character.status).bonus_luk(), 0);
@@ -171,12 +171,12 @@ fn capture_fixture() -> (super::super::ServerServiceTestContext, Arc<crate::repo
 
 fn claim(context: &super::super::ServerServiceTestContext, service: &MapInstanceService) -> PetCaptureClaimResult {
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    context.server.script_world_service().call(&context.server, &mut source, Function::Pet, &[Value::Number(1002)], 100).unwrap();
+    context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut source, Function::Pet, &[Value::Number(1002)], 100).unwrap();
     context.server.state_mut().insert_character(source);
     request(context, 150_000, ScriptWorldRequest::Pet(PetRequest::CapturePet(42))).unwrap();
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let request = map.pop_task().unwrap().into_iter().find_map(|event| match event { MapEvent::ClaimPetCapture(request) => Some(request), _ => None }).unwrap();
-    service.claim_pet_capture_with_roll(map.state_mut().as_mut(), request, 101, 0);
+    service.claim_pet_capture_with_roll(&mut *map.state_mut(), request, 101, 0);
     context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
         GameEvent::PetCaptureClaimResult(result) => Some(result), _ => None,
     }).unwrap()
@@ -191,8 +191,8 @@ fn pet_egg_commit_waits_for_the_map_claim_and_duplicate_acknowledgements_are_ide
     assert!(map.state().get_mob(42).is_none());
     assert!(map.state().pending_pet_captures.contains_key(&result.claim_id));
     let world = context.server.script_world_service();
-    world.complete_pet_capture(&context.server, context.server.state_mut().as_mut(), result.clone(), 102).unwrap();
-    world.complete_pet_capture(&context.server, context.server.state_mut().as_mut(), result, 103).unwrap();
+    world.complete_pet_capture(&context.server, &mut *context.server.state_mut(), result.clone(), 102).unwrap();
+    world.complete_pet_capture(&context.server, &mut *context.server.state_mut(), result, 103).unwrap();
     let inventory = context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap();
     assert_eq!(inventory.len(), 1);
     let definition = world_data().pets.iter().find(|pet| pet.class_id == 1002).unwrap();
@@ -201,7 +201,7 @@ fn pet_egg_commit_waits_for_the_map_claim_and_duplicate_acknowledgements_are_ide
     for event in map.pop_task().unwrap() {
         if let MapEvent::FinalizePetCapture(finalize) = event {
             assert!(finalize.commit);
-            map_service.finalize_pet_capture(map.state_mut().as_mut(), finalize);
+            map_service.finalize_pet_capture(&mut *map.state_mut(), finalize);
         }
     }
     assert!(map.state().pending_pet_captures.is_empty());
@@ -217,14 +217,14 @@ fn a_pet_egg_capacity_failure_restores_the_claim_without_creating_any_persistent
         database::tx_write(characters, &150_000_i32.to_be_bytes(), &character)
     }).unwrap();
     let result = claim(&context, &map_service);
-    assert!(context.server.script_world_service().complete_pet_capture(&context.server, context.server.state_mut().as_mut(), result, 102).is_err());
+    assert!(context.server.script_world_service().complete_pet_capture(&context.server, &mut *context.server.state_mut(), result, 102).is_err());
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
     assert_eq!(repository.database.game_systems.scan_prefix(b"pet/").count(), 0);
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     for event in map.pop_task().unwrap() {
         if let MapEvent::FinalizePetCapture(finalize) = event {
             assert!(!finalize.commit);
-            map_service.finalize_pet_capture(map.state_mut().as_mut(), finalize);
+            map_service.finalize_pet_capture(&mut *map.state_mut(), finalize);
         }
     }
     assert_eq!(map.state().get_mob(42).unwrap().hp(), 10);
@@ -236,16 +236,16 @@ fn a_pet_egg_capacity_failure_restores_the_claim_without_creating_any_persistent
 fn disabling_pet_capture_between_map_claim_and_egg_commit_restores_the_exact_live_monster() {
     let (context, repository, map_service) = capture_fixture();
     let result = claim(&context, &map_service);
-    context.server.map_flag_call(context.server.state_mut().as_mut(), 150_000, Function::SetMapFlag,
+    context.server.map_flag_call(&mut *context.server.state_mut(), 150_000, Function::SetMapFlag,
         &[Value::String("empty".into()), Value::Number(MapFlag::NoPetCapture as i32)]).unwrap();
-    context.server.script_world_service().complete_pet_capture(&context.server, context.server.state_mut().as_mut(), result, 102).unwrap();
+    context.server.script_world_service().complete_pet_capture(&context.server, &mut *context.server.state_mut(), result, 102).unwrap();
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
     assert_eq!(repository.database.game_systems.scan_prefix(b"pet/").count(), 0);
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     for event in map.pop_task().unwrap() {
         if let MapEvent::FinalizePetCapture(finalize) = event {
             assert!(!finalize.commit);
-            map_service.finalize_pet_capture(map.state_mut().as_mut(), finalize);
+            map_service.finalize_pet_capture(&mut *map.state_mut(), finalize);
         }
     }
     assert_eq!(map.state().get_mob(42).unwrap().hp(), 10);
@@ -316,13 +316,13 @@ fn timed_pet_bonus_recalculates_thresholds_before_the_live_heal_and_is_removed_w
     source.status.hp = baseline.max_hp() / 2;
     source.status.sp = baseline.max_sp();
     let world = context.server.script_world_service();
-    world.call(&context.server, &mut source, Function::PetSkillBonus,
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetSkillBonus,
         &[Value::from("bMaxHPrate"), Value::Number(100), Value::Number(1), Value::Number(1)], 100).unwrap();
-    world.call(&context.server, &mut source, Function::PetSkillSupport,
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetSkillSupport,
         &[Value::from("AL_HEAL"), Value::Number(1), Value::Number(1), Value::Number(25), Value::Number(100)], 100).unwrap();
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 1040).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 1040).unwrap();
     assert_eq!(StatusService::instance().to_snapshot(&source.status).max_hp(), baseline.max_hp());
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 1100).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 1100).unwrap();
     assert_eq!(StatusService::instance().to_snapshot(&source.status).max_hp(), baseline.max_hp() * 2);
     let heal = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
         GameEvent::ScriptWorld(world) if matches!(world.request, ScriptWorldRequest::Companion(CompanionRequest::HealByCompanion { .. })) => Some(world.request),
@@ -336,7 +336,7 @@ fn timed_pet_bonus_recalculates_thresholds_before_the_live_heal_and_is_removed_w
     source.game_systems.pet.as_mut().unwrap().equipped_item = 0;
     source.refresh_script_context();
     assert_eq!(StatusService::instance().to_snapshot(&source.status).max_hp(), baseline.max_hp());
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 1140).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 1140).unwrap();
     assert_eq!(source.game_systems.pet_support.as_ref().unwrap().bonus.as_ref().unwrap().next_at, None);
     assert!(!source.game_systems.pet_support.as_ref().unwrap().bonus.as_ref().unwrap().active);
 }
@@ -353,31 +353,33 @@ fn pet_recovery_is_scheduled_from_a_new_status_and_cast_completion_rechecks_map_
     source.status.hp = baseline.max_hp();
     source.status.sp = baseline.max_sp();
     let world = context.server.script_world_service();
-    world.call(&context.server, &mut source, Function::PetRecovery, &[Value::from("SC_POISON"), Value::Number(1)], 100).unwrap();
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetRecovery, &[Value::from("SC_POISON"), Value::Number(1)], 100).unwrap();
     assert!(StatusEffectService::start(&context.server, &mut source,
         StatusChangeRequest::guaranteed(StatusChangeKind::Poison, 60000, 1), 200, &context.client_notification_sender).unwrap());
     assert_eq!(source.game_systems.pet_support.as_ref().unwrap().recovery.as_ref().unwrap().next_at, Some(1200));
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 1160).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 1160).unwrap();
     assert_eq!(source.game_systems.pet_support.as_ref().unwrap().recovery.as_ref().unwrap().next_at, Some(1200));
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 1200).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 1200).unwrap();
     let cured = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
         GameEvent::CharacterEndStatus(status) => Some(status), _ => None,
     }).expect("Recovery timer did not request the actual status cure");
     StatusEffectService::end(&context.server, &mut source, cured.kind, 1200, &context.client_notification_sender);
     assert!(!source.status.has_status_change(StatusChangeKind::Poison));
-    world.call(&context.server, &mut source, Function::PetSkillSupport,
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetSkillSupport,
         &[Value::from("PR_MAGNIFICAT"), Value::Number(1), Value::Number(1), Value::Number(100), Value::Number(100)], 1200).unwrap();
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 2200).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 2200).unwrap();
     let casting = source.game_systems.pet_support.as_ref().unwrap().casting.as_ref().unwrap().clone();
     assert!(casting.completes_at > 2200);
     context.server.state_mut().insert_character(source);
-    context.server.map_flag_call(context.server.state_mut().as_mut(), 150_000, Function::SetMapFlag,
+    context.server.map_flag_call(&mut *context.server.state_mut(), 150_000, Function::SetMapFlag,
         &[Value::from("empty"), Value::Number(MapFlag::NoSkill as i32)]).unwrap();
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::FinishPetSupport(casting.id)), casting.completes_at).unwrap();
-    let source = context.server.state().get_character(150_000).unwrap();
+    let guard_378 = context.server.state();
+    let source = guard_378.get_character(150_000).unwrap();
     assert!(source.game_systems.pet_support.as_ref().unwrap().casting.is_none());
     assert!(!source.status.has_status_change(StatusChangeKind::Magnificat));
+    drop(guard_378);
     assert!(!context.server_task_queue.pop().unwrap_or_default().into_iter().any(|event| matches!(event,
         GameEvent::CharacterStatusChange(status) if status.request.kind == StatusChangeKind::Magnificat)));
 }
@@ -404,7 +406,7 @@ fn finish_pet_cast(context: &super::super::ServerServiceTestContext, world: &Scr
     let casting = context.server.state().get_character(150_000).unwrap().game_systems.pet_support.as_ref()
         .and_then(|support| support.casting.as_ref()).cloned();
     if let Some(casting) = casting {
-        world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+        world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
             ScriptWorldRequest::Pet(PetRequest::FinishPetSupport(casting.id)), casting.completes_at).unwrap();
         casting.completes_at
     } else { 3000 }
@@ -413,23 +415,23 @@ fn finish_pet_cast(context: &super::super::ServerServiceTestContext, world: &Scr
 #[test]
 fn pet_target_hooks_obey_the_config_and_loyalty_and_normal_damage_uses_the_real_pet_actor() {
     let (context, _, map_service, world) = pet_combat_fixture();
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: true }), 100).unwrap();
     let actor = pet_world_id(77);
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands.get(&actor).is_none());
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().game_systems.pet.as_mut().unwrap().intimacy = 899;
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands.get(&actor).is_none());
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().game_systems.pet.as_mut().unwrap().intimacy = 910;
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     assert_eq!(context.server.state().get_character(150_000).unwrap().game_systems.companion_commands[&actor].target, Some(42));
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let mut landed = None;
     for tick in (3000..60000).step_by(3000) {
         let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-        world.tick_in_state(&context.server, context.server.state(), &mut source, tick).unwrap();
+        world.tick_in_state(&context.server, &context.server.state(), &mut source, tick).unwrap();
         context.server.state_mut().insert_character(source);
         if let Some(damage) = map.pop_task().unwrap_or_default().into_iter().find_map(|event| match event {
             MapEvent::MobDamage(MobDamage { damage }) if damage.landed && damage.damage > 0 => Some(damage), _ => None,
@@ -437,7 +439,7 @@ fn pet_target_hooks_obey_the_config_and_loyalty_and_normal_damage_uses_the_real_
     }
     let damage = landed.expect("The real pet actor never dealt a normal attack");
     assert_eq!((damage.attacker_id, damage.credit_id, damage.target_id, damage.skill_id), (actor, 150_000, 42, 0));
-    map_service.mob_being_attacked(map.state_mut().as_mut(), damage, map.task_queue(), damage.attacked_at);
+    map_service.mob_being_attacked(&mut *map.state_mut(), damage, map.task_queue(), damage.attacked_at);
     assert_eq!(map.state().get_mob(42).unwrap().hp(), 0);
     let kill = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
         GameEvent::CharacterKillMonster(kill) => Some(kill), _ => None,
@@ -457,19 +459,19 @@ fn pet_fixed_skill_preserves_elements_and_applies_real_capped_absorption_without
     let stored: database::model::CharacterRecord = database::required(&repository.database.characters, &150_000_i32.to_be_bytes()).unwrap();
     let before_sp = context.server.state().get_character(150_000).unwrap().status.sp;
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    world.call(&context.server, &mut source, Function::PetSkillAttack2,
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetSkillAttack2,
         &[Value::from("NPC_WINDATTACK"), Value::Number(200), Value::Number(2), Value::Number(100), Value::Number(0)], 100).unwrap();
     context.server.state_mut().insert_character(source);
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);
     let completion = finish_pet_cast(&context, &world);
     let damage = map.pop_task().unwrap().into_iter().find_map(|event| match event { MapEvent::MobDamage(MobDamage { damage }) => Some(damage), _ => None }).unwrap();
     assert_eq!((damage.attacker_id, damage.credit_id, damage.damage), (pet_world_id(77), 150_000, 0));
     assert_eq!(damage.healing, (200.0 * -modifier).floor() as u32);
-    map_service.mob_being_attacked(map.state_mut().as_mut(), damage, map.task_queue(), completion as u128);
+    map_service.mob_being_attacked(&mut *map.state_mut(), damage, map.task_queue(), completion as u128);
     let mob = map.state().get_mob(42).unwrap().clone();
     assert_eq!(mob.hp(), 10u32.saturating_add(damage.healing).min(mob.status.max_hp()));
     assert!(mob.actor_damages.is_empty());
@@ -486,23 +488,23 @@ fn pet_fixed_heaven_drive_places_real_ground_cells_and_hits_each_covered_enemy_o
     let mob = crate::tests::common::mob_helper::create_mob_at_position(43, "PORING", 51, 50);
     map.state_mut().insert_mob(mob);
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    world.call(&context.server, &mut source, Function::PetSkillAttack2,
+    world.call(&context.server, &mut context.server.state_mut(), &mut source, Function::PetSkillAttack2,
         &[Value::from("WZ_HEAVENDRIVE"), Value::Number(200), Value::Number(1), Value::Number(100), Value::Number(0)], 100).unwrap();
     context.server.state_mut().insert_character(source);
-    world.handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    world.handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetCombatTarget { target_id: 42, retaliation: false }), 100).unwrap();
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    world.tick_in_state(&context.server, context.server.state(), &mut source, 3000).unwrap();
+    world.tick_in_state(&context.server, &context.server.state(), &mut source, 3000).unwrap();
     context.server.state_mut().insert_character(source);
     let completion = finish_pet_cast(&context, &world);
     assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(MobDamage { damage: _ }))));
-    context.server.script_skill_service().tick_ground_skills(&context.server, context.server.state(), completion as u128 + 40);
+    context.server.script_skill_service().tick_ground_skills(&context.server, &context.server.state(), completion as u128 + 40);
     let damage = map.pop_task().unwrap_or_default().into_iter().filter_map(|event| match event {
         MapEvent::MobDamage(MobDamage { damage }) => Some(damage), _ => None,
     }).collect::<Vec<_>>();
     assert_eq!(damage.len(), 2);
     assert!(damage.iter().all(|damage| damage.attacker_id == pet_world_id(77) && damage.credit_id == 150_000
         && damage.skill_id == 91 && damage.damage > 0));
-    context.server.script_skill_service().tick_ground_skills(&context.server, context.server.state(), completion as u128 + 80);
+    context.server.script_skill_service().tick_ground_skills(&context.server, &context.server.state(), completion as u128 + 80);
     assert!(!map.pop_task().unwrap_or_default().into_iter().any(|event| matches!(event, MapEvent::MobDamage(MobDamage { damage: _ }))));
 }

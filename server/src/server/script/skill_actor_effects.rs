@@ -607,10 +607,13 @@ impl ScriptSkillService {
             .companion_owner(target_id, &source.map, source.instance)
             .map(|owner| owner.char_id)
         {
-            let character = state.characters_mut().get_mut(&owner_id).ok_or("Companion owner disconnected")?;
-            server
-                .script_world_service()
-                .heal_companion(server, character, target_id, hp, sp, tick as u64)?;
+            state
+                .with_character_taken(owner_id, |state, character| {
+                    server
+                        .script_world_service()
+                        .heal_companion(server, state, character, target_id, hp, sp, tick as u64)
+                })
+                .ok_or("Companion owner disconnected")??;
         } else if let Some(instance) = state.get_map_instance(&source.map, source.instance) {
             instance.add_to_next_tick(MapEvent::MobHeal(MobHeal { mob_id: target_id, hp, sp }));
         }

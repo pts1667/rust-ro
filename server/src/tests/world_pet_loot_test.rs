@@ -42,7 +42,7 @@ fn loot_fixture(capacity: u8) -> (super::super::super::ServerServiceTestContext,
     systems.pet = Some(pet(1002, character.char_id));
     let saved = repository.save_character_game_systems(character.char_id, &systems).unwrap();
     install_state(&mut character, saved);
-    context.server.script_world_service().call(&context.server, &mut character, Function::PetLoot, &[Value::Number(i32::from(capacity))], 100).unwrap();
+    context.server.script_world_service().call(&context.server, &mut context.server.state_mut(), &mut character, Function::PetLoot, &[Value::Number(i32::from(capacity))], 100).unwrap();
     character.game_systems.rendered_companions.insert(pet_world_id(77), CompanionPosition { x: 50, y: 50, map_instance: 0 });
     let map = context.server.state().get_map_instance_from_character(&character).unwrap();
     map.state_mut().insert_item(character.to_map_item());
@@ -51,7 +51,7 @@ fn loot_fixture(capacity: u8) -> (super::super::super::ServerServiceTestContext,
         MobService::new(context.client_notification_sender.clone(), GlobalConfigService::instance()), context.server_task_queue.clone());
     let mut actors = vec![character.to_map_item_snapshot()];
     actors.extend(companion_snapshots(&character));
-    service.update_mobs_fov(map.state_mut().as_mut(), actors);
+    service.update_mobs_fov(&mut *map.state_mut(), actors);
     context.server.state_mut().insert_character(character);
     (context, repository, service)
 }
@@ -109,7 +109,7 @@ fn server_events(context: &super::super::super::ServerServiceTestContext) -> Vec
 }
 
 fn claim(context: &super::super::super::ServerServiceTestContext, service: &MapInstanceService, target_id: u32) -> PetLootClaimResult {
-    context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+    context.server.script_world_service().handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
         ScriptWorldRequest::Pet(PetRequest::PetLootTarget(target_id)), 100).unwrap();
     assert!(context.server.state().contains_locked_map_item(target_id));
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.pet_loot.is_none());
@@ -117,7 +117,7 @@ fn claim(context: &super::super::super::ServerServiceTestContext, service: &MapI
         MapEvent::ClaimPetLoot(request) => Some(request), _ => None,
     }).unwrap();
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
-    service.claim_pet_loot(map.state_mut().as_mut(), request, 101);
+    service.claim_pet_loot(&mut *map.state_mut(), request, 101);
     server_events(context).into_iter().find_map(|event| match event { GameEvent::PetLootClaimResult(result) => Some(result), _ => None }).unwrap()
 }
 
@@ -131,17 +131,17 @@ fn pet_loot_claim_waits_for_exact_map_custody_blocks_player_pickup_and_commits_o
     assert!(map.state().get_map_item(9000).is_some());
     assert_eq!(result.item, Some(dropped));
     let mut character = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    assert!(!context.server.server_service().character_pickup_item(&context.server, context.server.state_mut().as_mut(), &mut character, 9000, &map).unwrap());
+    assert!(!context.server.server_service().character_pickup_item(&context.server, &mut *context.server.state_mut(), &mut character, 9000, &map).unwrap());
     assert!(character.inventory.is_empty());
     context.server.state_mut().insert_character(character);
-    context.server.script_world_service().complete_pet_loot(&context.server, context.server.state_mut().as_mut(), result.clone(), 102).unwrap();
+    context.server.script_world_service().complete_pet_loot(&context.server, &mut *context.server.state_mut(), result.clone(), 102).unwrap();
     let saved = repository.character_game_systems(150_000).unwrap();
     assert_eq!(saved.pet_loot.as_ref().unwrap().items, vec![equipment()]);
-    context.server.script_world_service().complete_pet_loot(&context.server, context.server.state_mut().as_mut(), result, 103).unwrap();
+    context.server.script_world_service().complete_pet_loot(&context.server, &mut *context.server.state_mut(), result, 103).unwrap();
     assert_eq!(repository.character_game_systems(150_000).unwrap().revision, saved.revision);
     let finalizes = map_events(&context).into_iter().filter_map(|event| match event { MapEvent::FinalizePetLoot(finalize) => Some(finalize), _ => None }).collect::<Vec<_>>();
     assert!(finalizes.iter().all(|finalize| finalize.commit));
-    for finalize in finalizes { map_service.finalize_pet_loot(map.state_mut().as_mut(), finalize); }
+    for finalize in finalizes { map_service.finalize_pet_loot(&mut *map.state_mut(), finalize); }
     assert!(map.state().get_map_item(9000).is_none());
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
 }
@@ -154,11 +154,11 @@ fn stale_pet_loot_commit_restores_the_exact_floor_item_without_awarding_cargo() 
     let mut current = repository.character_game_systems(150_000).unwrap();
     current.font = 3;
     repository.save_character_game_systems(150_000, &current).unwrap();
-    assert!(context.server.script_world_service().complete_pet_loot(&context.server, context.server.state_mut().as_mut(), result, 102).is_err());
+    assert!(context.server.script_world_service().complete_pet_loot(&context.server, &mut *context.server.state_mut(), result, 102).is_err());
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     for event in map_events(&context) { if let MapEvent::FinalizePetLoot(finalize) = event {
         assert!(!finalize.commit);
-        map_service.finalize_pet_loot(map.state_mut().as_mut(), finalize);
+        map_service.finalize_pet_loot(&mut *map.state_mut(), finalize);
     } }
     assert_eq!(map.state().get_dropped_item(9000), Some(&dropped));
     assert!(repository.character_game_systems(150_000).unwrap().pet_loot.is_none());
@@ -180,7 +180,7 @@ fn pet_loot_configuration_and_consumption_rollback_together_then_return_exact_eq
     let mut newer = repository.character_game_systems(150_000).unwrap();
     newer.font = 3;
     let committed = repository.save_character_game_systems(150_000, &newer).unwrap();
-    assert!(context.server.item_service().finish_item_effects(&context.server, context.runtime(), &mut character, &action, &source_item, effects.clone()).is_err());
+    assert!(context.server.item_service().finish_item_effects_in_state(&context.server, &mut context.server.state_mut(), context.runtime(), &mut character, &action, &source_item, effects.clone()).is_err());
     assert_eq!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap()[0].amount, 2);
     assert_eq!(repository.character_game_systems(150_000).unwrap().pet_loot.as_ref().unwrap().items, vec![equipment()]);
     install_state(&mut character, committed);
@@ -189,7 +189,7 @@ fn pet_loot_configuration_and_consumption_rollback_together_then_return_exact_eq
         stored.inventory_slots = 0;
         database::tx_write(tree, &150_000_i32.to_be_bytes(), &stored)
     }).unwrap();
-    assert!(context.server.item_service().finish_item_effects(&context.server, context.runtime(), &mut character, &action, &source_item, effects.clone()).is_err());
+    assert!(context.server.item_service().finish_item_effects_in_state(&context.server, &mut context.server.state_mut(), context.runtime(), &mut character, &action, &source_item, effects.clone()).is_err());
     assert_eq!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap()[0].amount, 2);
     assert_eq!(repository.character_game_systems(150_000).unwrap().pet_loot.as_ref().unwrap().items, vec![equipment()]);
     repository.database.characters.transaction(|tree| {
@@ -197,7 +197,7 @@ fn pet_loot_configuration_and_consumption_rollback_together_then_return_exact_eq
         stored.inventory_slots = 2;
         database::tx_write(tree, &150_000_i32.to_be_bytes(), &stored)
     }).unwrap();
-    context.server.item_service().finish_item_effects(&context.server, context.runtime(), &mut character, &action, &source_item, effects).unwrap();
+    context.server.item_service().finish_item_effects_in_state(&context.server, &mut context.server.state_mut(), context.runtime(), &mut character, &action, &source_item, effects).unwrap();
     let items = context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap();
     assert_eq!(items.iter().find(|item| item.item_id == 501).unwrap().amount, 1);
     let returned = items.iter().find(|item| item.item_id == 1201).unwrap();
@@ -220,7 +220,7 @@ fn pet_cargo_return_keeps_capacity_overflow_until_floor_reservation_and_offline_
         .map_flag_overrides()
         .update((character.map_instance_key.map_without_ext(), 0), |flags| flags.set(MapFlag::NoDrop, true, &[]))
         .unwrap();
-    assert!(context.server.script_world_service().return_pet_loot_in_state(&context.server, context.server.state(), &mut character, 100).is_err());
+    assert!(context.server.script_world_service().return_pet_loot_in_state(&context.server, &context.server.state(), &mut character, 100).is_err());
     assert_eq!(repository.character_game_systems(150_000).unwrap().pet_loot.unwrap().items, vec![equipment()]);
     assert!(!map_events(&context).iter().any(|event| matches!(event, MapEvent::PreparePetLootDrop(_))));
     context
@@ -228,24 +228,24 @@ fn pet_cargo_return_keeps_capacity_overflow_until_floor_reservation_and_offline_
         .map_flag_overrides()
         .update((character.map_instance_key.map_without_ext(), 0), |flags| flags.set(MapFlag::NoDrop, false, &[]))
         .unwrap();
-    assert!(!context.server.script_world_service().return_pet_loot_in_state(&context.server, context.server.state(), &mut character, 101).unwrap());
+    assert!(!context.server.script_world_service().return_pet_loot_in_state(&context.server, &context.server.state(), &mut character, 101).unwrap());
     let saved = repository.character_game_systems(150_000).unwrap();
     assert_eq!(saved.pet_loot.as_ref().unwrap().items, vec![equipment()]);
     assert!(saved.pet_loot.as_ref().unwrap().pending_drop.is_some());
     let request: PetLootDropRequest = map_events(&context).into_iter().find_map(|event| match event { MapEvent::PreparePetLootDrop(request) => Some(request), _ => None }).unwrap();
-    map_service.prepare_pet_loot_drop(map.state_mut().as_mut(), request);
+    map_service.prepare_pet_loot_drop(&mut *map.state_mut(), request);
     let result: PetLootDropResult = server_events(&context).into_iter().find_map(|event| match event { GameEvent::PetLootDropResult(result) => Some(result), _ => None }).unwrap();
     assert!(result.accepted);
     assert!(map.state().map_items().values().all(|item| *item.object_type() != crate::server::model::map_item::MapItemType::DroppedItem));
     context.server.script_world_service().disconnect(&mut character).unwrap();
-    context.server.script_world_service().complete_pet_loot_drop(&context.server, context.server.state_mut().as_mut(), result.clone(), 602).unwrap();
+    context.server.script_world_service().complete_pet_loot_drop(&context.server, &mut *context.server.state_mut(), result.clone(), 602).unwrap();
     let revision = repository.character_game_systems(150_000).unwrap().revision;
     assert!(repository.character_game_systems(150_000).unwrap().pet_loot.is_none());
-    context.server.script_world_service().complete_pet_loot_drop(&context.server, context.server.state_mut().as_mut(), result, 603).unwrap();
+    context.server.script_world_service().complete_pet_loot_drop(&context.server, &mut *context.server.state_mut(), result, 603).unwrap();
     assert_eq!(repository.character_game_systems(150_000).unwrap().revision, revision);
     for event in map_events(&context) { if let MapEvent::FinalizePetLootDrop(finalize) = event {
         assert!(finalize.commit);
-        map_service.finalize_pet_loot_drop(map.state_mut().as_mut(), finalize);
+        map_service.finalize_pet_loot_drop(&mut *map.state_mut(), finalize);
     } }
     let drops = map.state().map_items().values().filter_map(|item| map.state().get_dropped_item(item.id()).copied()).collect::<Vec<_>>();
     assert_eq!(drops.len(), 1);
@@ -257,14 +257,14 @@ fn pet_cargo_return_keeps_capacity_overflow_until_floor_reservation_and_offline_
 fn pet_performance_returns_cargo_to_the_floor_even_when_inventory_has_room() {
     let (context, repository, map_service) = loot_fixture(30);
     cargo(&context, &repository, vec![equipment()]);
-    context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000, ScriptWorldRequest::Pet(PetRequest::PetMenu(2)), 100).unwrap();
+    context.server.script_world_service().handle_request(&context.server, &mut *context.server.state_mut(), 150_000, ScriptWorldRequest::Pet(PetRequest::PetMenu(2)), 100).unwrap();
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
     let request = map_events(&context).into_iter().find_map(|event| match event { MapEvent::PreparePetLootDrop(request) => Some(request), _ => None }).unwrap();
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
-    map_service.prepare_pet_loot_drop(map.state_mut().as_mut(), request);
+    map_service.prepare_pet_loot_drop(&mut *map.state_mut(), request);
     let result = server_events(&context).into_iter().find_map(|event| match event { GameEvent::PetLootDropResult(result) => Some(result), _ => None }).unwrap();
-    context.server.script_world_service().complete_pet_loot_drop(&context.server, context.server.state_mut().as_mut(), result, 602).unwrap();
-    for event in map_events(&context) { if let MapEvent::FinalizePetLootDrop(finalize) = event { map_service.finalize_pet_loot_drop(map.state_mut().as_mut(), finalize); } }
+    context.server.script_world_service().complete_pet_loot_drop(&context.server, &mut *context.server.state_mut(), result, 602).unwrap();
+    for event in map_events(&context) { if let MapEvent::FinalizePetLootDrop(finalize) = event { map_service.finalize_pet_loot_drop(&mut *map.state_mut(), finalize); } }
     assert!(repository.character_game_systems(150_000).unwrap().pet_loot.is_none());
     assert!(context.runtime().block_on(repository.character_inventory_fetch(150_000)).unwrap().is_empty());
     assert_eq!(map.state().map_items().values().filter(|item| *item.object_type() == crate::server::model::map_item::MapItemType::DroppedItem).count(), 1);
@@ -323,26 +323,26 @@ fn pet_loot_ai_walks_to_owned_floor_items_and_returns_full_cargo_without_combat_
     let mut moved = false;
     for tick in (100..=1000).step_by(40) {
         let mut character = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-        context.server.script_world_service().tick_in_state(&context.server, context.server.state(), &mut character, tick).unwrap();
+        context.server.script_world_service().tick_in_state(&context.server, &context.server.state(), &mut character, tick).unwrap();
         moved |= character.game_systems.rendered_companions[&pet_world_id(77)].x > 50;
         context.server.state_mut().insert_character(character);
         for event in server_events(&context) { if let GameEvent::ScriptWorld(request) = event {
             if let ScriptWorldRequest::Pet(PetRequest::PetLootTarget(id)) = request.request {
                 assert_eq!(id, 9001);
-                context.server.script_world_service().handle_request(&context.server, context.server.state_mut().as_mut(), 150_000,
+                context.server.script_world_service().handle_request(&context.server, &mut *context.server.state_mut(), 150_000,
                     ScriptWorldRequest::Pet(PetRequest::PetLootTarget(id)), tick).unwrap();
             }
         } }
         for event in map_events(&context) { if let MapEvent::ClaimPetLoot(request) = event {
             assert_eq!(request.target_id, 9001);
-            map_service.claim_pet_loot(map.state_mut().as_mut(), request, u128::from(tick + 1));
+            map_service.claim_pet_loot(&mut *map.state_mut(), request, u128::from(tick + 1));
         } }
         for event in server_events(&context) { if let GameEvent::PetLootClaimResult(result) = event {
             assert!(result.item.is_some());
-            context.server.script_world_service().complete_pet_loot(&context.server, context.server.state_mut().as_mut(), result, tick + 2).unwrap();
+            context.server.script_world_service().complete_pet_loot(&context.server, &mut *context.server.state_mut(), result, tick + 2).unwrap();
             for event in map_events(&context) { if let MapEvent::FinalizePetLoot(finalize) = event {
                 assert!(finalize.commit);
-                map_service.finalize_pet_loot(map.state_mut().as_mut(), finalize);
+                map_service.finalize_pet_loot(&mut *map.state_mut(), finalize);
             } }
             acquired = true;
         } }

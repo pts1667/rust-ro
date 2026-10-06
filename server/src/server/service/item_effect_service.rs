@@ -125,11 +125,7 @@ impl ItemService {
     }
 
     #[metrics::elapsed]
-    pub fn use_item(&self, server: &Server, runtime: &Runtime, action: CharacterUseItem, character: &mut Character) {
-        self.use_item_in_state(server, server.state(), runtime, action, character);
-    }
-
-    pub(crate) fn use_item_in_state(&self, server: &Server, state: &ServerState, runtime: &Runtime, action: CharacterUseItem, character: &mut Character) {
+    pub(crate) fn use_item_in_state(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, action: CharacterUseItem, character: &mut Character) {
         let Some(item) = character.get_item_from_inventory(action.index).cloned().filter(|item| item.item_type().is_consumable() && item.amount > 0) else { return; };
         if character.is_dead() || self.validate_item_in_state(server, state, character, &item).is_err() { self.notify_use(character, &action, item.amount, false); return; }
         let mut host = self.prepare_host(server, character, item.item_id as u32, true);
@@ -141,7 +137,7 @@ impl ItemService {
             }
         }
         if Self::script_metadata(item.item_id as u32).is_some_and(|metadata| metadata.interactive) {
-            if let Err(error) = self.start_item_dialog(server, character, action.clone(), &item, host) {
+            if let Err(error) = self.start_item_dialog(server, state, character, action.clone(), &item, host) {
                 warn!("Item conversation could not start: {error}");
                 self.notify_use(character, &action, item.amount, false);
             }
@@ -154,17 +150,13 @@ impl ItemService {
         self.notify_use(character, &action, count, result.is_ok());
     }
 
-    pub(crate) fn finish_item_effects(&self, server: &Server, runtime: &Runtime, character: &mut Character, action: &CharacterUseItem, item: &InventoryItemModel, effects: Vec<ItemEffect>) -> Result<(), String> {
-        self.finish_item_effects_in_state(server, server.state(), runtime, character, action, item, effects)
-    }
-
-    pub(crate) fn finish_item_effects_in_state(&self, server: &Server, state: &ServerState, runtime: &Runtime, character: &mut Character, action: &CharacterUseItem, item: &InventoryItemModel, effects: Vec<ItemEffect>) -> Result<(), String> {
+    pub(crate) fn finish_item_effects_in_state(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, character: &mut Character, action: &CharacterUseItem, item: &InventoryItemModel, effects: Vec<ItemEffect>) -> Result<(), String> {
         if character.is_dead() { return Err("Character died before the item script completed".into()); }
         self.validate_item_in_state(server, state, character, item)?;
             let no_consume = self.configuration_service.get_item(item.item_id).flags & ItemFlag::NoConsume.as_flag() != 0;
             let delayed = item.item_type() == ItemType::DelayConsume && effects.iter().any(|effect| matches!(effect, ItemEffect::Call { function: Function::ItemSkill, arguments } if self.configuration_service.find_skill_config(&arguments[0]).is_some_and(|skill| skill.name() != "AL_TELEPORT")));
             let consumption = (!no_consume && !delayed).then(|| Self::consumption(&item, 1));
-            self.commit_effects(server, runtime, character, effects, consumption.as_ref())?;
+            self.commit_effects(server, state, runtime, character, effects, consumption.as_ref())?;
             if delayed && !no_consume {
                 if let Some(pending) = character.pending_item_skill.as_mut() { pending.item_index = Some(action.index); pending.source_item = Some((item.id, item.item_id, item.unique_id)); }
             }
@@ -185,10 +177,10 @@ impl ItemService {
         ScriptItemConsumption { inventory_id: item.id, item_id: item.item_id, unique_id: item.unique_id, amount }
     }
 
-    pub(crate) fn consume_pending_item(&self, server: &Server, character: &mut Character, index: usize) -> Result<(), String> {
+    pub(crate) fn consume_pending_item(&self, server: &Server, state: &mut ServerState, character: &mut Character, index: usize) -> Result<(), String> {
         let item = character.get_item_from_inventory(index).cloned().ok_or("Delayed consumable is no longer in inventory")?;
         if !item.item_type().is_consumable() { return Err("Delayed item is not consumable".into()); }
-        self.commit_effects(server, server.runtime(), character, vec![], Some(&Self::consumption(&item, 1)))?;
+        self.commit_effects(server, state, server.runtime(), character, vec![], Some(&Self::consumption(&item, 1)))?;
         self.notify_use(character, &CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index }, item.amount - 1, true);
         Ok(())
     }
@@ -361,11 +353,11 @@ impl ItemService {
         Ok(())
     }
 
-    pub(crate) fn apply_effects(&self, server: &Server, runtime: &Runtime, character: &mut Character, effects: Vec<ItemEffect>) -> Result<(), String> {
-        self.commit_effects(server, runtime, character, effects, None)
+    pub(crate) fn apply_effects(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, character: &mut Character, effects: Vec<ItemEffect>) -> Result<(), String> {
+        self.commit_effects(server, state, runtime, character, effects, None)
     }
 
-    fn commit_effects(&self, server: &Server, _runtime: &Runtime, character: &mut Character, effects: Vec<ItemEffect>, consumption: Option<&ScriptItemConsumption>) -> Result<(), String> {
+    fn commit_effects(&self, server: &Server, state: &mut ServerState, _runtime: &Runtime, character: &mut Character, effects: Vec<ItemEffect>, consumption: Option<&ScriptItemConsumption>) -> Result<(), String> {
         self.validate_effects(&effects)?;
         let tick = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
         let mut grants = vec![];
@@ -403,7 +395,7 @@ impl ItemService {
                     variables.push(Variable { scope, name, index: 0, value: value.clone() });
                 }
                 ItemEffect::Call { function, arguments } => {
-                    if ScriptWorldService::handles(*function) { server.script_world_service().validate_call(server.state(), &projected, *function, arguments, tick as u64)?; }
+                    if ScriptWorldService::handles(*function) { server.script_world_service().validate_call(state, &projected, *function, arguments, tick as u64)?; }
                     match function {
                         Function::GetItem => {
                             let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
@@ -476,7 +468,7 @@ impl ItemService {
                 self.send(character.char_id, packet.raw);
             }
             if let (Some(plan), Some(saved)) = (&world, result.world) {
-                server.script_world_service().apply_committed_effects(server, character, plan, saved, tick as u64)?;
+                server.script_world_service().apply_committed_effects(server, state, character, plan, saved, tick as u64)?;
             }
             server.script_service().install_temporary_variables(character.char_id, &variables);
         }
@@ -485,7 +477,7 @@ impl ItemService {
                 ItemEffect::Heal { .. } => {},
                 ItemEffect::GuildStorageOpen(_) => {},
                 ItemEffect::Call { function, arguments } if function != Function::GetItem && function != Function::DelItem && function != Function::ResetSkills && function != Function::GetExperience && !persistent_world_operation(function) => {
-                    self.apply_game_call(server, character, function, arguments, tick)?;
+                    self.apply_game_call(server, state, character, function, arguments, tick)?;
                 }
                 ItemEffect::Write { .. } | ItemEffect::Grant { .. } | ItemEffect::Call { .. } | ItemEffect::PoolDraw(_) => {},
             }
@@ -574,7 +566,7 @@ impl ItemService {
             ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id, guardian: None, bg_id: 0, max_hp: None, lifetime_ms: None, reserved_id: None })
     }
 
-    fn apply_game_call(&self, server: &Server, character: &mut Character, function: Function, arguments: Vec<Value>, tick: u128) -> Result<(), String> {
+    fn apply_game_call(&self, server: &Server, state: &mut ServerState, character: &mut Character, function: Function, arguments: Vec<Value>, tick: u128) -> Result<(), String> {
         match function {
             Function::ItemSkill => {
                 let skill = self.configuration_service.find_skill_config(&arguments[0]).ok_or("Unknown skill")?;
@@ -614,8 +606,8 @@ impl ItemService {
                 server.character_service().gain_job_exp_unrated(character, arguments[1].number_value()? as u32);
             }
             Function::ResetSkills => server.character_service().reset_skills(character, true),
-            Function::OpenStorage => { server.script_world_service().call(server, character, function, &arguments, tick as u64)?; }
-            function if ScriptWorldService::handles(function) => { server.script_world_service().call(server, character, function, &arguments, tick as u64)?; }
+            Function::OpenStorage => { server.script_world_service().call(server, state, character, function, &arguments, tick as u64)?; }
+            function if ScriptWorldService::handles(function) => { server.script_world_service().call(server, state, character, function, &arguments, tick as u64)?; }
             function => return Err(format!("Invalid game effect {function:?}")),
         }
         Ok(())

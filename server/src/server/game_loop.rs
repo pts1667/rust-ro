@@ -14,7 +14,7 @@ use crate::server::model::events::map_event::{MapEvent, UpdateActorVisibility, U
 use crate::server::model::map_item::ToMapItemSnapshot;
 use crate::server::model::movement::{Movable, Movement};
 use crate::server::model::path::path_search_client_side_algorithm;
-use crate::server::state::server::ServerState;
+use crate::server::state::server::{ServerState, find_map_instance};
 use crate::server::service::global_config_service::GlobalConfigService;
 
 const MOVEMENT_TICK_RATE: u128 = 20;
@@ -23,7 +23,7 @@ pub const GAME_TICK_RATE: u128 = 40;
 impl Server {
     pub(crate) fn game_loop(server_ref: Arc<Server>) {
         server_ref.bind_shared();
-        server_ref.schedule_npc_initialization(&server_ref.state());
+        server_ref.schedule_npc_initialization(&server_ref.lock_state());
         loop {
             if !server_ref.is_alive() {
                 break;
@@ -43,12 +43,11 @@ impl Server {
     }
 
     pub(crate) fn game_loop_iteration(server_ref: &Server, tick: u128) {
-        let _state_loops_guard = server_ref.lock_state_loops();
-        let mut server_state_mut = server_ref.state_mut();
+        let mut server_state_mut = server_ref.lock_state();
         server_ref.drain_map_notifications();
-        server_ref.tick_player_trades(server_state_mut.as_mut(), tick as u64);
-        server_ref.tick_character_logouts(server_state_mut.as_mut(), tick);
-        server_ref.tick_script_timers(server_state_mut.as_mut(), tick);
+        server_ref.tick_player_trades(&mut server_state_mut, tick as u64);
+        server_ref.tick_character_logouts(&mut server_state_mut, tick);
+        server_ref.tick_script_timers(&mut server_state_mut, tick);
 
         let actor_ids: Vec<_> = server_state_mut
             .characters()
@@ -65,18 +64,18 @@ impl Server {
                 server_ref.script_skill_service().tick_character_state(&mut character, tick);
                 server_ref
                     .script_skill_service()
-                    .tick_revealing_statuses(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                    .tick_revealing_statuses(server_ref, &mut server_state_mut, &mut character, tick);
                 server_ref
                     .script_skill_service()
-                    .tick_devotion_links(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                    .tick_devotion_links(server_ref, &mut server_state_mut, &mut character, tick);
                 server_ref
                     .script_skill_service()
-                    .tick_stealth(server_ref, server_state_mut.as_mut(), &mut character, tick);
+                    .tick_stealth(server_ref, &mut server_state_mut, &mut character, tick);
                 crate::server::service::script_combat_service::tick_character(server_ref, &mut character, tick);
                 if let Err(error) =
                     server_ref
                         .script_world_service()
-                        .tick_in_state(server_ref, server_state_mut.as_mut(), &mut character, tick as u64)
+                        .tick_in_state(server_ref, &mut server_state_mut, &mut character, tick as u64)
                 {
                     warn!("World tick failed: {error}");
                 }
@@ -85,13 +84,13 @@ impl Server {
         }
         server_ref
             .script_skill_service()
-            .sync_ground_unit_snapshots(server_state_mut.as_mut(), tick);
+            .sync_ground_unit_snapshots(&mut server_state_mut, tick);
         server_ref
             .script_skill_service()
-            .tick_ground_skills(server_ref, server_state_mut.as_mut(), tick);
+            .tick_ground_skills(server_ref, &mut server_state_mut, tick);
         server_ref
             .script_skill_service()
-            .sync_ground_unit_snapshots(server_state_mut.as_mut(), tick);
+            .sync_ground_unit_snapshots(&mut server_state_mut, tick);
         if let Some(tasks) = server_ref.pop_task() {
             for task in tasks {
                 let (task, logout_owner) = if let GameEvent::ScriptLogoutAction(action) = task {
@@ -116,7 +115,7 @@ impl Server {
                     continue;
                 }
                 let event_name = task.name();
-                if let Err(error) = task.dispatch(server_ref, server_state_mut.as_mut(), tick) {
+                if let Err(error) = task.dispatch(server_ref, &mut server_state_mut, tick) {
                     warn!("{event_name} failed: {error}");
                 }
             }
@@ -129,25 +128,25 @@ impl Server {
             .collect();
         server_ref
             .script_skill_service()
-            .sync_ground_unit_snapshots(server_state_mut.as_mut(), tick);
-        server_ref.apply_guild_auras(server_state_mut.as_mut(), tick);
+            .sync_ground_unit_snapshots(&mut server_state_mut, tick);
+        server_ref.apply_guild_auras(&mut server_state_mut, tick);
         server_ref.castle_clock();
-        server_ref.tick_battlegrounds(server_state_mut.as_mut(), tick);
-        server_ref.tick_cell_statuses(server_state_mut.as_mut(), tick);
-        server_ref.tick_battleground_queues(server_state_mut.as_mut(), tick);
+        server_ref.tick_battlegrounds(&mut server_state_mut, tick);
+        server_ref.tick_cell_statuses(&mut server_state_mut, tick);
+        server_ref.tick_battleground_queues(&mut server_state_mut, tick);
         for char_id in actor_ids {
             if let Some(mut character) = server_state_mut.characters_mut().remove(&char_id) {
                 let map_instance = server_state_mut.get_map_instance_from_character(&character);
                 if let Some(map_instance) = map_instance {
                     server_ref.character_service().load_units_in_fov(
-                        server_state_mut.as_mut(),
+                        &mut server_state_mut,
                         &mut character,
                         map_instance.state().borrow().as_ref(),
                     );
                 }
                 let target_visible = !character.is_attacking()
                     || server_ref.player_target_allowed(
-                        server_state_mut.as_mut(),
+                        &mut server_state_mut,
                         &character,
                         character.attack().target,
                         crate::server::service::visibility_service::TargetingMode::Direct,
@@ -159,16 +158,16 @@ impl Server {
                 {
                     server_ref
                         .server_service
-                        .character_attack(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                        .character_attack(server_ref, &mut server_state_mut, tick, &mut character);
                 } else {
                     character.clear_attack();
                 }
                 server_ref
                     .server_service
-                    .character_pending_skill(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                    .character_pending_skill(server_ref, &mut server_state_mut, tick, &mut character);
                 server_ref
                     .server_service
-                    .character_use_skill(server_ref, server_state_mut.as_mut(), tick, &mut character);
+                    .character_use_skill(server_ref, &mut server_state_mut, tick, &mut character);
                 server_ref.character_service().regen_hp(&mut character, tick);
                 server_ref.character_service().regen_sp(&mut character, tick);
                 character.refresh_script_context();
@@ -267,8 +266,7 @@ impl Server {
                 break;
             }
             let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-            let state_loops_guard = server_ref.lock_state_loops();
-            let mut server_state_mut = server_ref.state_mut();
+            let mut server_state_mut = server_ref.lock_state();
             if let Some(tasks) = server_ref.pop_movement_task() {
                 for task in tasks {
                     let character_movement = match task {
@@ -372,8 +370,9 @@ impl Server {
             // teleport in front -> server movement faster than client movement
             // teleport back -> server movement slower than client movement
             let mut character_finished_to_move = vec![];
-            for (_, character) in server_state_mut
-                .characters_mut()
+            let mut warps_to_schedule = vec![];
+            let (characters, map_instances) = server_state_mut.characters_mut_with_map_instances();
+            for (_, character) in characters
                 .iter_mut()
                 .filter(|(_, character)| character.is_moving())
             {
@@ -404,17 +403,11 @@ impl Server {
                         }
                         character.set_last_moved_at(tick);
                         character.update_position(movement.position().x, movement.position().y);
-                        let map_ref = server_ref.state().get_map_instance_from_character(character);
+                        let map_ref = find_map_instance(map_instances, character.current_map_name(), character.current_map_instance());
                         if let Some(map_ref) = map_ref {
                             if map_ref.state().is_warp_cell(movement.position().x, movement.position().y) {
                                 let warp = map_ref.get_warp_at(movement.position().x, movement.position().y).unwrap();
-                                server_ref.server_service.schedule_warp_to_walkable_cell(
-                                    server_ref.state_mut().as_mut(),
-                                    warp.dest_map_name.as_str(),
-                                    warp.to_x,
-                                    warp.to_y,
-                                    character.char_id,
-                                );
+                                warps_to_schedule.push((character.char_id, warp));
                                 character.clear_movement();
                                 continue;
                             }
@@ -469,9 +462,13 @@ impl Server {
                 character.transition_to_idle();
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
             }
+            for (char_id, warp) in warps_to_schedule {
+                server_ref
+                    .server_service
+                    .schedule_warp_to_walkable_cell(&mut server_state_mut, warp.dest_map_name.as_str(), warp.to_x, warp.to_y, char_id);
+            }
             server_state_mut.publish_directory();
             drop(server_state_mut);
-            drop(state_loops_guard);
 
             let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
             let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;

@@ -27,7 +27,7 @@ fn fixture() -> (Arc<Server>, Arc<SledRepository>, Arc<Session>, CharacterUseIte
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
     let server = Arc::new(context.server);
     server.bind_shared();
-    server.item_service().use_item(&server, server.runtime(), action.clone(), &mut character);
+    server.item_service().use_item_in_state(&server, &mut server.state_mut(), server.runtime(), action.clone(), &mut character);
     server.state_mut().insert_character(character);
     (server, repository, session, action)
 }
@@ -55,7 +55,7 @@ fn megaphone_input_stages_effects_and_consumes_only_on_main_loop_completion() {
     let completion = take_completion(&server);
     assert!(completion.error.is_none(), "{:?}", completion.error);
     assert_eq!(server.runtime().block_on(repository.character_inventory_fetch(action.char_id as i32)).unwrap()[0].amount, 2);
-    server.handle_script_event(server.state_mut().as_mut(), GameEvent::ItemScriptComplete(completion), 100).unwrap();
+    server.handle_script_event(&mut *server.state_mut(), GameEvent::ItemScriptComplete(completion), 100).unwrap();
     assert_eq!(server.runtime().block_on(repository.character_inventory_fetch(action.char_id as i32)).unwrap()[0].amount, 1);
     assert!(session.script_handler_channel_sender.lock().unwrap().is_none());
 }
@@ -66,7 +66,7 @@ fn cancelled_item_conversation_keeps_the_original_consumable() {
     session.cancel_script();
     let completion = take_completion(&server);
     assert!(completion.error.is_some());
-    server.handle_script_event(server.state_mut().as_mut(), GameEvent::ItemScriptComplete(completion), 100).unwrap();
+    server.handle_script_event(&mut *server.state_mut(), GameEvent::ItemScriptComplete(completion), 100).unwrap();
     assert_eq!(server.runtime().block_on(repository.character_inventory_fetch(action.char_id as i32)).unwrap()[0].amount, 2);
 }
 
@@ -81,7 +81,7 @@ fn changing_map_rules_during_item_input_preserves_the_source_and_discards_the_an
     server.runtime().block_on(sender.send(PlayerInput::Text("Blocked announcement".into()))).unwrap();
     let completion = take_completion(&server);
     assert!(completion.error.is_none());
-    assert!(server.handle_script_event(server.state_mut().as_mut(), GameEvent::ItemScriptComplete(completion), 100).is_err());
+    assert!(server.handle_script_event(&mut *server.state_mut(), GameEvent::ItemScriptComplete(completion), 100).is_err());
     assert_eq!(server.runtime().block_on(repository.character_inventory_fetch(action.char_id as i32)).unwrap()[0].amount, 2);
     assert!(server.pop_task().is_none());
     assert!(session.script_handler_channel_sender.lock().unwrap().is_none());
@@ -94,7 +94,7 @@ fn replacing_the_item_slot_during_input_prevents_consumption_and_announcement() 
     let sender = session.script_handler_channel_sender.lock().unwrap().clone().unwrap();
     server.runtime().block_on(sender.send(PlayerInput::Text("Stale message".into()))).unwrap();
     let completion = take_completion(&server);
-    assert!(server.handle_script_event(server.state_mut().as_mut(), GameEvent::ItemScriptComplete(completion), 100).is_err());
+    assert!(server.handle_script_event(&mut *server.state_mut(), GameEvent::ItemScriptComplete(completion), 100).is_err());
     assert_eq!(server.runtime().block_on(repository.character_inventory_fetch(action.char_id as i32)).unwrap()[0].amount, 2);
     assert!(server.pop_task().is_none());
 }

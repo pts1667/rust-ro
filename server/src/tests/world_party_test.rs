@@ -72,7 +72,7 @@ fn request(context: &ServerServiceTestContext, actor: u32, request: ScriptWorldR
     context
         .server
         .script_world_service()
-        .handle_request(&context.server, context.server.state_mut().as_mut(), actor, request, 100)
+        .handle_request(&context.server, &mut *context.server.state_mut(), actor, request, 100)
 }
 
 fn wait_packet(context: &ServerServiceTestContext, actor: u32, id: u16) -> Vec<u8> {
@@ -133,11 +133,13 @@ fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_
     }))
     .unwrap();
     for id in [150_000, 150_001] {
-        let live = &context.server.state().get_character(id).unwrap().game_systems;
+        let guard_136 = context.server.state();
+        let live = &guard_136.get_character(id).unwrap().game_systems;
         let saved = repository.character_game_systems(id).unwrap();
         assert_eq!(live.revision, saved.revision);
         assert_eq!(live.party_members, vec![150_000, 150_001]);
         assert_eq!(live.party.as_ref().unwrap().members, live.party_members);
+        drop(guard_136);
     }
     assert!(
         request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::ExpelParty {
@@ -171,10 +173,12 @@ fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_
     request(&context, 150_001, ScriptWorldRequest::Party(PartyRequest::LeaveParty)).unwrap();
     assert!(repository.party(party_id).unwrap().is_none());
     for id in [150_000, 150_001] {
-        let live = &context.server.state().get_character(id).unwrap().game_systems;
+        let guard_174 = context.server.state();
+        let live = &guard_174.get_character(id).unwrap().game_systems;
         assert_eq!(live.party_id, 0);
         assert!(live.party.is_none() && live.party_members.is_empty());
         assert_eq!(live.revision, repository.character_game_systems(id).unwrap().revision);
+        drop(guard_174);
     }
     assert_eq!(wait_packet(&context, 150_000, 0x0105).len(), 31);
 }
@@ -218,7 +222,7 @@ fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notifi
         service
             .handle_request(
                 &context.server,
-                context.server.state_mut().as_mut(),
+                &mut *context.server.state_mut(),
                 150_000,
                 ScriptWorldRequest::Party(PartyRequest::CreateParty {
                     name: "Committed Party".into(),
@@ -229,11 +233,13 @@ fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notifi
             )
             .is_err()
     );
-    let live = &context.server.state().get_character(150_000).unwrap().game_systems;
+    let guard_232 = context.server.state();
+    let live = &guard_232.get_character(150_000).unwrap().game_systems;
     let saved = repository.character_game_systems(150_000).unwrap();
     assert_ne!(saved.party_id, 0);
     assert_eq!((live.party_id, live.revision), (saved.party_id, saved.revision));
     assert!(live.party.is_some());
+    drop(guard_232);
 }
 
 fn install_homunculus(context: &ServerServiceTestContext, repository: &SledRepository, statuses: &[StatusChangeKind]) -> u32 {
@@ -300,19 +306,13 @@ fn companion_magic_reflection_precedes_absorption_and_reflected_magic_cannot_bou
         context
             .server
             .script_world_service()
-            .handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 100)
+            .handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 100)
             .unwrap()
     );
-    let homunculus = context
-        .server
-        .state()
-        .get_character(150_001)
-        .unwrap()
-        .game_systems
-        .homunculus
-        .as_ref()
-        .unwrap();
+    let state = context.server.state();
+    let homunculus = state.get_character(150_001).unwrap().game_systems.homunculus.as_ref().unwrap();
     assert_eq!((homunculus.hp, homunculus.sp), (100, 0));
+    drop(state);
     let reflected = context
         .server_task_queue
         .pop()
@@ -340,16 +340,18 @@ fn companion_magic_reflection_precedes_absorption_and_reflected_magic_cannot_bou
             .script_world_service()
             .handle_companion_damage(
                 &context.server,
-                context.server.state_mut().as_mut(),
+                &mut *context.server.state_mut(),
                 Damage { landed: false, ..damage },
                 101
             )
             .unwrap()
     );
-    let live = context.server.state().get_character(150_001).unwrap();
+    let guard_349 = context.server.state();
+    let live = guard_349.get_character(150_001).unwrap();
     let homunculus = live.game_systems.homunculus.as_ref().unwrap();
     assert_eq!((homunculus.hp, homunculus.sp), (100, 12));
     assert_eq!(live.status.sp, owner_sp);
+    drop(guard_349);
     assert_eq!(repository.character_game_systems(150_001).unwrap().homunculus.unwrap().sp, 12);
     assert!(context.server_task_queue.is_empty());
 }
@@ -385,7 +387,7 @@ fn companion_damage_rejected_by_persistence_does_not_mutate_live_pools_or_shield
         context
             .server
             .script_world_service()
-            .handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 100)
+            .handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 100)
             .is_err()
     );
     assert_eq!(context.server.state().get_character(150_001).unwrap().game_systems, before);
@@ -397,7 +399,7 @@ fn companion_damage_rejected_by_persistence_does_not_mutate_live_pools_or_shield
 fn companion_gvg_reduction_follows_shields_and_reflects_only_the_admitted_loss() {
     let (context, repository) = fixture();
     let id = install_homunculus(&context, &repository, &[StatusChangeKind::Kyrie, StatusChangeKind::ReflectShield]);
-    context.server.map_flag_call(context.server.state_mut().as_mut(), 150_001, Function::SetMapFlag,
+    context.server.map_flag_call(&mut *context.server.state_mut(), 150_001, Function::SetMapFlag,
         &[Value::from("empty"), Value::Number(crate::server::model::map_flags::MapFlag::Gvg as i32)]).unwrap();
     let damage = Damage { notification: None,
         source_kind: models::enums::actor::CombatActorKind::Player,
@@ -408,13 +410,15 @@ fn companion_gvg_reduction_follows_shields_and_reflects_only_the_admitted_loss()
         skill_id: 0, skill_level: 0, landed: true, proc_depth: 0, defenses_applied: true,
         magic_context: None, right_hand_damage: None,
     };
-    context.server.script_world_service().handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 100).unwrap();
-    let live = context.server.state().get_character(150_001).unwrap();
+    context.server.script_world_service().handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 100).unwrap();
+    let guard_412 = context.server.state();
+    let live = guard_412.get_character(150_001).unwrap();
     let homunculus = live.game_systems.homunculus.as_ref().unwrap();
     assert_eq!(homunculus.hp, 84);
     assert!(!homunculus.statuses.iter().any(|status| status.kind == StatusChangeKind::Kyrie));
     let saved = repository.character_game_systems(150_001).unwrap();
     assert_eq!((saved.revision, saved.homunculus.as_ref()), (live.game_systems.revision, Some(homunculus)));
+    drop(guard_412);
     let reflected = context.server_task_queue.pop().unwrap().into_iter().find_map(|event| match event {
         GameEvent::CharacterDamage(CharacterDamage { damage }) => Some(damage), _ => None,
     }).expect("Companion Reflect Shield did not use the actual admitted damage");
@@ -432,10 +436,10 @@ fn companion_status_alternatives_commit_only_the_first_actual_success_and_roll_b
     rejected.flags = 0;
     rejected.rate = 0;
     let before = repository.character_game_systems(150_001).unwrap();
-    assert!(world.handle_companion_status_alternatives(&context.server, context.server.state_mut().as_mut(), id,
+    assert!(world.handle_companion_status_alternatives(&context.server, &mut *context.server.state_mut(), id,
         vec![rejected.clone(), rejected.clone()], 100).unwrap());
     assert_eq!(repository.character_game_systems(150_001).unwrap(), before);
-    assert!(world.handle_companion_status_alternatives(&context.server, context.server.state_mut().as_mut(), id,
+    assert!(world.handle_companion_status_alternatives(&context.server, &mut *context.server.state_mut(), id,
         vec![rejected, StatusChangeRequest::guaranteed(StatusChangeKind::Blind, 1000, 1),
             StatusChangeRequest::guaranteed(StatusChangeKind::Sleep, 1000, 1)], 100).unwrap());
     let saved = repository.character_game_systems(150_001).unwrap();
@@ -447,7 +451,7 @@ fn companion_status_alternatives_commit_only_the_first_actual_success_and_roll_b
     let mut competing = saved;
     competing.font = 2;
     let competing = repository.save_character_game_systems(150_001, &competing).unwrap();
-    assert!(world.handle_companion_status_alternatives(&context.server, context.server.state_mut().as_mut(), id,
+    assert!(world.handle_companion_status_alternatives(&context.server, &mut *context.server.state_mut(), id,
         vec![StatusChangeRequest::guaranteed(StatusChangeKind::Sleep, 1000, 1)], 101).is_err());
     assert_eq!(context.server.state().get_character(150_001).unwrap().game_systems, live);
     assert_eq!(repository.character_game_systems(150_001).unwrap(), competing);
@@ -463,7 +467,7 @@ fn companion_pressure_bypasses_lex_assumptio_and_kyrie_without_consuming_the_shi
             right_hand_damage: None, attacked_at: 100, damage_motion: 0,
             battle_flags: BattleFlag::Misc.as_flag() | BattleFlag::Skill.as_flag() | BattleFlag::Long.as_flag(),
             skill_id: SkillEnum::PaPressure.id(), skill_level: 1, landed: true, proc_depth: 0, defenses_applied: true, magic_context: None };
-        context.server.script_world_service().handle_companion_damage(&context.server, context.server.state_mut().as_mut(), pressure, 100).unwrap();
+        context.server.script_world_service().handle_companion_damage(&context.server, &mut *context.server.state_mut(), pressure, 100).unwrap();
         let saved = repository.character_game_systems(150_001).unwrap();
         let homunculus = saved.homunculus.unwrap();
         assert_eq!(homunculus.hp, 60);
@@ -500,8 +504,9 @@ fn companion_elemental_absorption_heals_atomically_without_reflection_or_damage_
         right_hand_damage: None,
     };
     let service = context.server.script_world_service();
-    assert!(service.handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 100).unwrap());
-    let live = context.server.state().get_character(150_001).unwrap();
+    assert!(service.handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 100).unwrap());
+    let guard_504 = context.server.state();
+    let live = guard_504.get_character(150_001).unwrap();
     let homunculus = live.game_systems.homunculus.as_ref().unwrap();
     assert_eq!((homunculus.hp, homunculus.sp), (100, 0));
     assert_eq!(homunculus.statuses, statuses);
@@ -509,10 +514,11 @@ fn companion_elemental_absorption_heals_atomically_without_reflection_or_damage_
     assert!(context.server_task_queue.is_empty());
 
     let mut dead = live.game_systems.clone();
+    drop(guard_504);
     dead.homunculus.as_mut().unwrap().hp = 0;
     let dead = repository.save_character_game_systems(150_001, &dead).unwrap();
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().game_systems = dead.clone();
-    assert!(service.handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 101).unwrap());
+    assert!(service.handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 101).unwrap());
     assert_eq!(repository.character_game_systems(150_001).unwrap(), dead);
     assert_eq!(context.server.state().get_character(150_001).unwrap().game_systems, dead);
 
@@ -523,7 +529,7 @@ fn companion_elemental_absorption_heals_atomically_without_reflection_or_damage_
     let mut competing = before.clone();
     competing.font = 3;
     let competing = repository.save_character_game_systems(150_001, &competing).unwrap();
-    assert!(service.handle_companion_damage(&context.server, context.server.state_mut().as_mut(), damage, 102).is_err());
+    assert!(service.handle_companion_damage(&context.server, &mut *context.server.state_mut(), damage, 102).is_err());
     assert_eq!(context.server.state().get_character(150_001).unwrap().game_systems, before);
     assert_eq!(repository.character_game_systems(150_001).unwrap(), competing);
 }
@@ -539,6 +545,7 @@ fn vip_queries_return_active_boolean_expiry_and_remaining_time_for_the_removed_s
             service
                 .call(
                     &context.server,
+                    &mut context.server.state_mut(),
                     &mut source,
                     Function::VipStatus,
                     &[Value::Number(mode), Value::String("Walkiry".into())],
@@ -551,6 +558,7 @@ fn vip_queries_return_active_boolean_expiry_and_remaining_time_for_the_removed_s
             service
                 .call(
                     &context.server,
+                    &mut context.server.state_mut(),
                     &mut source,
                     Function::VipStatus,
                     &[Value::Number(mode)],
@@ -562,7 +570,7 @@ fn vip_queries_return_active_boolean_expiry_and_remaining_time_for_the_removed_s
     }
     assert!(
         service
-            .call(&context.server, &mut source, Function::VipStatus, &[Value::Number(4)], 60_000)
+            .call(&context.server, &mut context.server.state_mut(), &mut source, Function::VipStatus, &[Value::Number(4)], 60_000)
             .is_err()
     );
 }

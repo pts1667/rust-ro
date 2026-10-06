@@ -179,7 +179,7 @@ impl Server {
                     let effect = ItemEffect::Heal { hp: number(5)?, sp: number(6)?, percentage: true, item_scaling: false, item_id: 0 };
                     for char_id in members {
                         let Some(mut character) = state.characters_mut().remove(&char_id) else { continue };
-                        if let Err(error) = self.item_service().apply_effects(self, self.runtime(), &mut character, vec![effect.clone()]) {
+                        if let Err(error) = self.item_service().apply_effects(self, state, self.runtime(), &mut character, vec![effect.clone()]) {
                             warn!("Area heal failed for {char_id}: {error}");
                         }
                         state.insert_character(character);

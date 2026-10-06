@@ -159,9 +159,9 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    pub(crate) fn call_pet_support(&self, server: &Server, character: &mut Character, function: Function, args: &[Value], now: u64) -> Result<Value, String> {
+    pub(crate) fn call_pet_support(&self, server: &Server, state: &ServerState, character: &mut Character, function: Function, args: &[Value], now: u64) -> Result<Value, String> {
         self.initialize_pet_support(server, character, now)?;
-        if function == Function::PetLoot { return self.call_pet_loot(server, character, args, now); }
+        if function == Function::PetLoot { return self.call_pet_loot(server, state, character, args, now); }
         let pet = active_pet(character)?.clone();
         let mut support = character.game_systems.pet_support.clone().ok_or("Pet support state is unavailable")?;
         configure(&mut support, &pet,

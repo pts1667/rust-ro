@@ -55,6 +55,7 @@ impl ScriptWorldService {
     pub(crate) fn heal_companion(
         &self,
         server: &Server,
+        state: &ServerState,
         character: &mut Character,
         target_id: u32,
         hp: u32,
@@ -77,7 +78,7 @@ impl ScriptWorldService {
             super::install_state(character, saved);
             self.send_homunculus(character)?;
             self.send_mercenary(character, now)?;
-            self.render_companions(server, character, now)?;
+            self.render_companions(server, state, character, now)?;
         }
         Ok(())
     }
@@ -118,11 +119,15 @@ impl ScriptWorldService {
                 let (x, y) = crate::server::script::skill::ScriptSkillService::knockback_destination(position.x(), position.y(), source_x, source_y, cells,
                     |x, y| x < map.x_size() && y < map.y_size() && map_state.cells()[y as usize * map.x_size() as usize + x as usize] & CellType::Walkable.as_flag() != 0);
                 if (x, y) == (position.x(), position.y()) { return Ok(()); }
-                let owner = state.characters_mut().get_mut(&owner_id).unwrap();
-                owner.game_systems.rendered_companions.insert(request.target_id, crate::server::model::game_systems::CompanionPosition { x, y, map_instance: request.map.map_instance() });
-                owner.game_systems.companion_commands.entry(request.target_id).or_default().destination = None;
-                self.render_companions(server, owner, now as u64)?;
-                self.area(owner, crate::server::service::ground_trap_service::trap_fix_position(request.target_id, x, y))?;
+                drop(map_state);
+                state
+                    .with_character_taken(owner_id, |state, owner| -> Result<(), String> {
+                        owner.game_systems.rendered_companions.insert(request.target_id, crate::server::model::game_systems::CompanionPosition { x, y, map_instance: request.map.map_instance() });
+                        owner.game_systems.companion_commands.entry(request.target_id).or_default().destination = None;
+                        self.render_companions(server, state, owner, now as u64)?;
+                        self.area(owner, crate::server::service::ground_trap_service::trap_fix_position(request.target_id, x, y))
+                    })
+                    .unwrap()?;
             }
             GroundTrapEffectKind::Status(_) => {}
         }
@@ -161,7 +166,8 @@ impl ScriptWorldService {
         let Some(owner) = owner else {
             return Ok((1_000_000_000..1_300_000_000).contains(&target_id));
         };
-        let character = state.characters_mut().get_mut(&owner).unwrap();
+        state
+            .with_character_taken(owner, |state, character| -> Result<bool, String> {
         if character
             .game_systems
             .pet
@@ -188,11 +194,13 @@ impl ScriptWorldService {
                 }
                 self.send_homunculus(character)?;
                 self.send_mercenary(character, now as u64)?;
-                self.render_companions(server, character, now as u64)?;
+                self.render_companions(server, state, character, now as u64)?;
             }
             break;
         }
         Ok(true)
+            })
+            .unwrap()
     }
 
     pub fn handle_companion_end_status(
@@ -227,7 +235,8 @@ impl ScriptWorldService {
         let Some(owner) = owner else {
             return Ok((1_000_000_000..1_300_000_000).contains(&target_id));
         };
-        let character = state.characters_mut().get_mut(&owner).unwrap();
+        state
+            .with_character_taken(owner, |state, character| -> Result<bool, String> {
         if character
             .game_systems
             .pet
@@ -267,9 +276,11 @@ impl ScriptWorldService {
             }
             self.send_homunculus(character)?;
             self.send_mercenary(character, now as u64)?;
-            self.render_companions(server, character, now as u64)?;
+            self.render_companions(server, state, character, now as u64)?;
         }
         Ok(true)
+            })
+            .unwrap()
     }
 
     pub fn companion_skill_source(&self, character: &Character, skill_id: u32) -> Option<(u32, u8)> {
@@ -450,7 +461,7 @@ impl ScriptWorldService {
             let (target, position, _) = if metadata.name == "MA_REMOVETRAP" {
                 trap_target(server, character, &source, target_id, now)?
             } else {
-                self.skill_target(server, state, character, target_id)?
+                self.skill_target(state, character, target_id)?
             };
             (target, position)
         };
@@ -600,7 +611,7 @@ impl ScriptWorldService {
             if metadata.name == "MA_REMOVETRAP" {
                 trap_target(server, character, &source, cast.target_id, now)?
             } else {
-                self.skill_target(server, state, character, cast.target_id)?
+                self.skill_target(state, character, cast.target_id)?
             }
         };
         validate_companion_target_job(metadata, character.status.job)?;
@@ -679,7 +690,7 @@ impl ScriptWorldService {
                 mob.hp() > 0
                     && mob.summon_ai == 0
                     && u32::from(position.x.abs_diff(mob.x).max(position.y.abs_diff(mob.y))) <= radius
-                    && !server.state().contains_locked_map_item(mob.id)
+                    && !state.contains_locked_map_item(mob.id)
             }) {
                 let resolved = server.script_skill_service().resolve_companion_skill_with_context(
                     server,
@@ -711,7 +722,7 @@ impl ScriptWorldService {
                 let (x, y) = if let Some(position) = cast.ground {
                     position
                 } else {
-                    let (_, position, _) = self.skill_target(server, state, character, *target_id)?;
+                    let (_, position, _) = self.skill_target(state, character, *target_id)?;
                     (position.x, position.y)
                 };
                 server.script_skill_service().validate_actor_ground_with_options(
@@ -814,7 +825,7 @@ impl ScriptWorldService {
                     let (x, y) = if let Some(position) = cast.ground {
                         position
                     } else {
-                        let (_, position, _) = self.skill_target(server, state, character, target_id)?;
+                        let (_, position, _) = self.skill_target(state, character, target_id)?;
                         (position.x, position.y)
                     };
                     server.script_skill_service().place_actor_ground_skill_with_options(
@@ -1026,7 +1037,6 @@ impl ScriptWorldService {
 
     fn skill_target(
         &self,
-        server: &Server,
         state: &ServerState,
         character: &Character,
         id: u32,
@@ -1086,14 +1096,13 @@ impl ScriptWorldService {
                 u32::from(super::companion_health(owner, id).unwrap().2),
             ));
         }
-        let map = server
-            .state()
+        let map = state
             .get_map_instance_from_character(character)
             .ok_or("Companion map is unavailable")?;
         let map_state = map.state();
         let mob = map_state
             .get_mob(id)
-            .filter(|mob| mob.hp() > 0 && !server.state().contains_locked_map_item(id))
+            .filter(|mob| mob.hp() > 0 && !state.contains_locked_map_item(id))
             .ok_or("Companion skill target is unavailable")?;
         Ok((
             mob.status.clone(),
@@ -1106,7 +1115,7 @@ impl ScriptWorldService {
         ))
     }
 
-    pub(crate) fn destroy_companion(&self, server: &Server, character: &mut Character, id: u32, now: u64) -> Result<(), String> {
+    pub(crate) fn destroy_companion(&self, server: &Server, state: &ServerState, character: &mut Character, id: u32, now: u64) -> Result<(), String> {
         if let Some(homunculus) = character
             .game_systems
             .homunculus
@@ -1128,7 +1137,7 @@ impl ScriptWorldService {
         }
         self.persist(character)?;
         self.send_homunculus(character)?;
-        self.render_companions(server, character, now)
+        self.render_companions(server, state, character, now)
     }
 }
 
@@ -1434,7 +1443,7 @@ impl ScriptWorldService {
                 }
                 Ok(())
             }
-            CompanionRequest::HealCompanion { target_id, hp, sp } => self.heal_companion(server, character, target_id, hp, sp, now),
+            CompanionRequest::HealCompanion { target_id, hp, sp } => self.heal_companion(server, state, character, target_id, hp, sp, now),
             CompanionRequest::UseCompanionSkill {
                 skill_id,
                 skill_level,
@@ -1447,12 +1456,12 @@ impl ScriptWorldService {
                 y,
             } => self.begin_companion_ground_skill(server, state, character, skill_id, skill_level, x, y, now),
             CompanionRequest::FinishCompanionSkill(id) => self.finish_companion_skill(server, state, character, id, now),
-            CompanionRequest::CompanionSelfDestruct(id) => self.destroy_companion(server, character, id, now),
+            CompanionRequest::CompanionSelfDestruct(id) => self.destroy_companion(server, state, character, id, now),
             CompanionRequest::DismissMercenary(command) => {
                 if command == 2 {
                     character.game_systems.mercenary = None;
                     self.persist(character)?;
-                    self.render_companions(server, character, now)
+                    self.render_companions(server, state, character, now)
                 } else {
                     self.send_mercenary(character, now)
                 }

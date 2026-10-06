@@ -549,13 +549,13 @@ impl ScriptService {
                         Ok(Value::default())
                     }
                     function if crate::server::service::script_world_service::ScriptWorldService::handles(function) => {
-                        server.script_world_service().call(server, &mut character, function, &arguments, crate::util::tick::get_tick() as u64)
+                        server.script_world_service().call(server, state, &mut character, function, &arguments, crate::util::tick::get_tick() as u64)
                     }
                     function => {
                         let mut host = server.item_service().prepare_host(server, &character, 0, true);
                         let reply = futures::executor::block_on(host.invoke(Request::Call { function, arguments: arguments.clone() }))?;
                         if !host.bonuses.drain().is_empty() { return Err("Bonus grants require an equipment or automatic-bonus program".into()); }
-                        server.item_service().apply_effects(server, server.runtime(), &mut character, host.effects)?;
+                        server.item_service().apply_effects(server, state, server.runtime(), &mut character, host.effects)?;
                         Ok(reply)
                     }
                 } })();

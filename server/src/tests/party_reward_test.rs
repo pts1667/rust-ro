@@ -114,12 +114,12 @@ fn party_kill_combines_contributions_before_dividing_and_persists_every_recipien
     let (context, repository, ids) = fixture();
     let kill = kill(&context, &ids);
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         ids.iter().map(|id| (*id, (3, 1))).collect()
     );
     context
         .server
-        .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
+        .reward_monster_kill(&mut *context.server.state_mut(), kill, 100)
         .unwrap();
     for id in ids {
         let state = context.server.state();
@@ -143,7 +143,7 @@ fn live_map_exp_rates_preserve_fractional_contributions_before_party_division() 
     flags.set(MapFlag::Jexp, true, &[200]).unwrap();
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         ids.iter().map(|id| (*id, (43, 3))).collect()
     );
 }
@@ -159,12 +159,14 @@ fn no_base_exp_suppresses_every_party_base_award_and_keeps_job_exp_atomic() {
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
-        .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
+        .reward_monster_kill(&mut *context.server.state_mut(), kill, 100)
         .unwrap();
     for id in ids {
-        let live = context.server.state().get_character(id).unwrap();
+        let guard_165 = context.server.state();
+        let live = guard_165.get_character(id).unwrap();
         let stored: CharacterRecord = database::required(&repository.database.characters, &id.to_be_bytes()).unwrap();
         assert_eq!((live.status.base_exp, live.status.job_exp), (0, 3));
+        drop(guard_165);
         assert_eq!((stored.base_exp, stored.job_exp), (0, 3));
     }
 }
@@ -179,12 +181,14 @@ fn pvp_maps_do_not_award_player_experience_when_pvp_exp_is_disabled() {
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
-        .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
+        .reward_monster_kill(&mut *context.server.state_mut(), kill, 100)
         .unwrap();
     for id in ids {
-        let live = context.server.state().get_character(id).unwrap();
+        let guard_185 = context.server.state();
+        let live = guard_185.get_character(id).unwrap();
         let stored: CharacterRecord = database::required(&repository.database.characters, &id.to_be_bytes()).unwrap();
         assert_eq!((live.status.base_exp, live.status.job_exp), (0, 0));
+        drop(guard_185);
         assert_eq!((stored.base_exp, stored.job_exp), (0, 0));
     }
 }
@@ -199,17 +203,17 @@ fn pet_exp_to_master_filters_only_pet_awards_and_keeps_the_shared_damage_denomin
         damage: 1,
     });
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         ids.iter().map(|id| (*id, (2, 1))).collect()
     );
     let enabled =
-        crate::server::service::script_experience_service::monster_experience_awards_with_pets(context.server.state(), &kill, 0, true, 100);
+        crate::server::service::script_experience_service::monster_experience_awards_with_pets(&context.server.state(), &kill, 0, true, 100);
     assert_eq!(enabled, ids.iter().map(|id| (*id, (4, 2))).collect());
     let half =
-        crate::server::service::script_experience_service::monster_experience_awards_with_pets(context.server.state(), &kill, 0, true, 50);
+        crate::server::service::script_experience_service::monster_experience_awards_with_pets(&context.server.state(), &kill, 0, true, 50);
     assert_eq!(half, ids.iter().map(|id| (*id, (3, 1))).collect());
     kill.contributions.retain(|entry| entry.actor_id >= 1_000_000_000);
-    assert!(monster_experience_awards(context.server.state(), &kill, 0).is_empty());
+    assert!(monster_experience_awards(&context.server.state(), &kill, 0).is_empty());
 }
 
 #[test]
@@ -258,7 +262,7 @@ fn no_drop_map_preserves_the_exact_equipment_record_and_rejects_before_floor_adm
         !context
             .server
             .server_service()
-            .character_drop_item(&context.server, context.server.state_mut().as_mut(), CharacterRemoveItem {
+            .character_drop_item(&context.server, &mut *context.server.state_mut(), CharacterRemoveItem {
                 char_id: ids[0],
                 index: 0,
                 amount: 1,
@@ -267,17 +271,11 @@ fn no_drop_map_preserves_the_exact_equipment_record_and_rejects_before_floor_adm
             .unwrap()
     );
     assert_eq!(self::inventory(&repository, ids[0]), vec![record]);
-    let character = context.server.state().get_character(ids[0]).unwrap();
+    let guard_270 = context.server.state();
+    let character = guard_270.get_character(ids[0]).unwrap();
     assert_eq!(character.get_item_from_inventory(0).unwrap().unique_id, 779);
-    assert!(
-        context
-            .server
-            .state()
-            .get_map_instance_from_character(character)
-            .unwrap()
-            .task_queue()
-            .is_empty()
-    );
+    assert!(guard_270.get_map_instance_from_character(character).unwrap().task_queue().is_empty());
+    drop(guard_270);
 }
 
 #[test]
@@ -296,7 +294,7 @@ fn stale_party_recipient_rolls_back_every_award_and_preserves_live_progression()
     assert!(
         context
             .server
-            .reward_monster_kill(context.server.state_mut().as_mut(), kill, 100)
+            .reward_monster_kill(&mut *context.server.state_mut(), kill, 100)
             .is_err()
     );
     for (index, id) in ids.into_iter().enumerate() {
@@ -314,7 +312,7 @@ fn dead_offline_and_other_instance_members_receive_no_party_rewards() {
     let kill = kill(&context, &ids);
     context.server.state_mut().characters_mut().get_mut(&ids[2]).unwrap().status.hp = 0;
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         [(ids[0], (5, 2)), (ids[1], (5, 2))].into_iter().collect()
     );
     context
@@ -325,7 +323,7 @@ fn dead_offline_and_other_instance_members_receive_no_party_rewards() {
         .unwrap()
         .loaded_from_client_side = false;
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         [(ids[0], (10, 4))].into_iter().collect()
     );
     context.server.state_mut().characters_mut().get_mut(&ids[2]).unwrap().status.hp = 30;
@@ -337,7 +335,7 @@ fn dead_offline_and_other_instance_members_receive_no_party_rewards() {
         .unwrap()
         .map_instance_key = crate::server::model::map_instance::MapInstanceKey::new("empty".into(), 1);
     assert_eq!(
-        monster_experience_awards(context.server.state(), &kill, 0),
+        monster_experience_awards(&context.server.state(), &kill, 0),
         [(ids[0], (10, 4))].into_iter().collect()
     );
 }
@@ -375,11 +373,10 @@ fn floor_item(context: &ServerServiceTestContext, picker: u32, amount: u16) -> m
         attributes: Default::default(),
         player_dropped: false,
     };
-    let instance = context
-        .server
-        .state()
-        .get_map_instance_from_character(context.server.state().get_character(picker).unwrap())
-        .unwrap();
+    let instance = {
+        let state = context.server.state();
+        state.get_map_instance_from_character(state.get_character(picker).unwrap()).unwrap()
+    };
     instance.state_mut().insert_dropped_item(item);
     context
         .server
@@ -400,7 +397,7 @@ fn pick_up(context: &ServerServiceTestContext, picker: u32, item: u32) -> Result
         context
             .server
             .server_service()
-            .character_pickup_item(&context.server, state.as_mut(), &mut character, item, instance.as_ref());
+            .character_pickup_item(&context.server, &mut state, &mut character, item, instance.as_ref());
     state.insert_character(character);
     result
 }
@@ -427,11 +424,10 @@ fn failed_party_loot_keeps_the_floor_item_available_for_a_later_pickup() {
     let item = floor_item(&context, ids[0], 2);
     assert!(pick_up(&context, ids[0], item.map_item_id).is_err());
     assert!(!context.server.state().contains_locked_map_item(item.map_item_id));
-    let instance = context
-        .server
-        .state()
-        .get_map_instance_from_character(context.server.state().get_character(ids[0]).unwrap())
-        .unwrap();
+    let instance = {
+        let state = context.server.state();
+        state.get_map_instance_from_character(state.get_character(ids[0]).unwrap()).unwrap()
+    };
     assert!(instance.state().get_dropped_item(item.map_item_id).is_some());
     assert!(instance.task_queue().is_empty());
     for id in &ids {
@@ -542,7 +538,7 @@ fn real_player_drop_and_party_pickup_preserve_the_equipment_instance() {
         MobService::new(context.client_notification_sender.clone(), GlobalConfigService::instance()),
         context.server_task_queue.clone(),
     );
-    map_service.character_drop_items_and_send_packet(instance.state_mut().as_mut(), CharacterDropItems {
+    map_service.character_drop_items_and_send_packet(&mut *instance.state_mut(), CharacterDropItems {
         owner_id: ids[0],
         char_x: source.x,
         char_y: source.y,

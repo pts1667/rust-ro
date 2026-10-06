@@ -40,7 +40,7 @@ fn ordinary_maps_deny_hostile_player_skills_before_cast_or_payment() {
         .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context.server.server_service().character_start_use_skill(
         &context.server,
-        context.server.state(),
+        &context.server.state(),
         &mut source,
         CharacterUseSkill {
             char_id: 150000,
@@ -56,11 +56,11 @@ fn ordinary_maps_deny_hostile_player_skills_before_cast_or_payment() {
     let stored =
         database::required::<database::model::CharacterRecord>(&repository.database.characters, &source.char_id.to_be_bytes()).unwrap();
     assert_eq!(stored.sp, 1000);
-    assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(!context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     assert!(
         context
             .server
-            .player_skill_target_allowed(context.server.state(), &source, target, SkillEnum::AlBlessing.id(), false)
+            .player_skill_target_allowed(&context.server.state(), &source, target, SkillEnum::AlBlessing.id(), false)
     );
 }
 
@@ -68,7 +68,7 @@ fn ordinary_maps_deny_hostile_player_skills_before_cast_or_payment() {
 fn pvp_protects_party_and_guild_members_until_the_corresponding_flags_are_set() {
     let (context, _, mut source) = super::native_payment_tests::fixture(false, true);
     let target = source.char_id + 1;
-    assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     source.game_systems.party_id = 7;
     context
         .server
@@ -78,13 +78,13 @@ fn pvp_protects_party_and_guild_members_until_the_corresponding_flags_are_set() 
         .unwrap()
         .game_systems
         .party_id = 7;
-    assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(!context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     context
         .server
         .map_flag_overrides()
         .update(("empty".into(), 0), |flags| flags.set(MapFlag::PvpNoParty, true, &[]))
         .unwrap();
-    assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     source.game_systems.guild_id = 8;
     context
         .server
@@ -94,17 +94,17 @@ fn pvp_protects_party_and_guild_members_until_the_corresponding_flags_are_set() 
         .unwrap()
         .game_systems
         .guild_id = 8;
-    assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(!context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     context
         .server
         .map_flag_overrides()
         .update(("empty".into(), 0), |flags| flags.set(MapFlag::PvpNoGuild, true, &[]))
         .unwrap();
-    assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     assert!(
         !context
             .server
-            .player_combat_target_allowed(context.server.state(), &source, source.char_id)
+            .player_combat_target_allowed(&context.server.state(), &source, source.char_id)
     );
 }
 
@@ -115,9 +115,9 @@ fn castle_player_combat_requires_an_active_siege_and_rejects_other_instances() {
     let mut flags = MapFlags::default();
     flags.set(MapFlag::GvgCastle, true, &[]).unwrap();
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
-    assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(!context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     context.server.siege().set(true);
-    assert!(context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(context.server.player_combat_target_allowed(&context.server.state(), &source, target));
     context
         .server
         .state_mut()
@@ -125,7 +125,7 @@ fn castle_player_combat_requires_an_active_siege_and_rejects_other_instances() {
         .get_mut(&target)
         .unwrap()
         .map_instance_key = crate::server::model::map_instance::MapInstanceKey::new("empty".into(), 7);
-    assert!(!context.server.player_combat_target_allowed(context.server.state(), &source, target));
+    assert!(!context.server.player_combat_target_allowed(&context.server.state(), &source, target));
 }
 
 #[test]
@@ -136,7 +136,7 @@ fn normal_player_attacks_use_the_player_damage_queue_and_stop_when_pvp_is_disabl
     context
         .server
         .server_service()
-        .character_attack(&context.server, context.server.state(), 1000, &mut source);
+        .character_attack(&context.server, &context.server.state(), 1000, &mut source);
     let tasks = context.server_task_queue.pop().unwrap_or_default();
     assert!(
         tasks
@@ -149,7 +149,7 @@ fn normal_player_attacks_use_the_player_damage_queue_and_stop_when_pvp_is_disabl
     context
         .server
         .server_service()
-        .character_attack(&context.server, context.server.state(), 2000, &mut source);
+        .character_attack(&context.server, &context.server.state(), 2000, &mut source);
     assert!(!source.is_attacking());
     assert!(
         context
@@ -190,13 +190,15 @@ fn a_map_rule_change_before_landed_damage_preserves_hp_and_shield_charges() {
         .map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     context
         .server
-        .admit_character_damage(context.server.state_mut().as_mut(), damage(source_id, target_id), 1000)
+        .admit_character_damage(&mut *context.server.state_mut(), damage(source_id, target_id), 1000)
         .unwrap();
-    let target = context.server.state().characters().get(&target_id).unwrap();
+    let guard_195 = context.server.state();
+    let target = guard_195.characters().get(&target_id).unwrap();
     assert_eq!(target.status.hp, 1000);
     assert_eq!(target.status.status_change(StatusChangeKind::Kyrie).unwrap().values, [
         1, 200, 3, 0
     ]);
+    drop(guard_195);
 }
 
 #[test]
@@ -208,7 +210,7 @@ fn live_map_flag_calls_update_the_main_state_and_enqueue_the_same_flags_for_the_
     context.server.state_mut().insert_character(source);
     context
         .server
-        .map_flag_call(context.server.state_mut().as_mut(), source_id, Function::SetMapFlag, &[
+        .map_flag_call(&mut *context.server.state_mut(), source_id, Function::SetMapFlag, &[
             Value::from("empty.gat"),
             Value::from(MapFlag::NoTeleport as i32),
         ])
@@ -217,7 +219,7 @@ fn live_map_flag_calls_update_the_main_state_and_enqueue_the_same_flags_for_the_
     assert_eq!(
         context
             .server
-            .map_flag_call(context.server.state_mut().as_mut(), source_id, Function::GetMapFlag, &[
+            .map_flag_call(&mut *context.server.state_mut(), source_id, Function::GetMapFlag, &[
                 Value::from("empty"),
                 Value::from(MapFlag::NoTeleport as i32)
             ])
@@ -234,7 +236,7 @@ fn live_map_flag_calls_update_the_main_state_and_enqueue_the_same_flags_for_the_
     );
     context
         .server
-        .map_flag_call(context.server.state_mut().as_mut(), source_id, Function::RemoveMapFlag, &[
+        .map_flag_call(&mut *context.server.state_mut(), source_id, Function::RemoveMapFlag, &[
             Value::from("empty"),
             Value::from(MapFlag::NoTeleport as i32),
         ])
@@ -350,11 +352,13 @@ fn player_gvg_damage_consumes_a_shield_before_applying_the_map_reduction() {
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     context
         .server
-        .admit_character_damage(context.server.state_mut().as_mut(), damage(source_id, target_id), 1000)
+        .admit_character_damage(&mut *context.server.state_mut(), damage(source_id, target_id), 1000)
         .unwrap();
-    let target = context.server.state().get_character(target_id).unwrap();
+    let guard_355 = context.server.state();
+    let target = guard_355.get_character(target_id).unwrap();
     assert_eq!(target.status.hp, 960);
     assert!(!target.status.has_status_change(StatusChangeKind::Kyrie));
+    drop(guard_355);
 }
 
 #[test]
@@ -373,7 +377,7 @@ fn status_alternatives_on_the_player_event_stop_after_the_first_accepted_status(
         context
             .server
             .handle_script_event(
-                context.server.state_mut().as_mut(),
+                &mut *context.server.state_mut(),
                 GameEvent::CharacterStatusAlternatives(CharacterStatusAlternatives {
                     char_id: target,
                     requests: vec![first, StatusChangeRequest::guaranteed(StatusChangeKind::Blind, 10000, 1)],
@@ -381,9 +385,11 @@ fn status_alternatives_on_the_player_event_stop_after_the_first_accepted_status(
                 1000,
             )
             .unwrap();
-        let status = &context.server.state().get_character(target).unwrap().status;
+        let guard_384 = context.server.state();
+        let status = &guard_384.get_character(target).unwrap().status;
         assert_eq!(status.has_status_change(StatusChangeKind::Stun), first_succeeds);
         assert_eq!(status.has_status_change(StatusChangeKind::Blind), !first_succeeds);
+        drop(guard_384);
     }
 }
 
@@ -397,7 +403,7 @@ fn dispel_can_target_its_own_party_on_an_ordinary_map() {
     assert!(
         !context
             .server
-            .player_skill_target_allowed(context.server.state(), &source, target, SkillEnum::SaDispell.id(), false)
+            .player_skill_target_allowed(&context.server.state(), &source, target, SkillEnum::SaDispell.id(), false)
     );
     source.game_systems.party_id = 7;
     context
@@ -411,10 +417,10 @@ fn dispel_can_target_its_own_party_on_an_ordinary_map() {
     assert!(
         context
             .server
-            .player_skill_target_allowed(context.server.state(), &source, target, SkillEnum::SaDispell.id(), false)
+            .player_skill_target_allowed(&context.server.state(), &source, target, SkillEnum::SaDispell.id(), false)
     );
     assert!(context.server.player_skill_target_allowed(
-        context.server.state(),
+        &context.server.state(),
         &source,
         source.char_id,
         SkillEnum::SaDispell.id(),
