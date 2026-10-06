@@ -17,8 +17,10 @@ mod tests {
         server.state();
         println!("test1");
         let char_id = character_join_game().await;
-        let character = server.state().get_character_unsafe(char_id);
-        let map_instance = server.state().get_map_instance_from_character(character).clone().unwrap();
+        let map_instance = {
+            let state = server.state();
+            state.get_map_instance_from_character(state.get_character_unsafe(char_id)).unwrap()
+        };
         for _ in 0..60 {
             map_instance.add_to_delayed_tick(MapEvent::AdminKillAllMobs(AdminKillAllMobs { char_id }), 26);
             // Then

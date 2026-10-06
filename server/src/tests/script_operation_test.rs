@@ -42,12 +42,12 @@ pub(super) fn identification_fixture(source: bool) -> (super::ServerServiceTestC
     character.add_items(context.runtime().block_on(repository.character_inventory_fetch(character.char_id as i32)).unwrap());
     let selected = usize::from(source);
     if source {
-        context.server.item_service().use_item(&context.server, context.runtime(), CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 }, &mut character);
+        context.server.item_service().use_item_in_state(&context.server, &mut context.server.state_mut(), context.runtime(), CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 }, &mut character);
     } else {
         character.status.known_skills.push(KnownSkill { value: SkillEnum::McIdentify, level: 1 });
         let id = character.char_id;
         context.server.state_mut().insert_character(character);
-        context.server.handle_character_skill(context.server.state_mut().as_mut(), CharacterUseSkill { char_id: id, target_id: id, skill_id: SkillEnum::McIdentify.id(), skill_level: 1 }, 100).unwrap();
+        context.server.handle_character_skill(&mut *context.server.state_mut(), CharacterUseSkill { char_id: id, target_id: id, skill_id: SkillEnum::McIdentify.id(), skill_level: 1 }, 100).unwrap();
         character = context.server.state_mut().characters_mut().remove(&id).unwrap();
     }
     assert!(character.pending_item_skill.is_some());
@@ -154,7 +154,7 @@ fn live_rank_events_preserve_resources_on_promotion_and_atomically_cap_demotion(
     character.status.sp = normal_pools.1;
     let id = character.char_id;
     context.server.state_mut().insert_character(character);
-    context.server.handle_script_event(context.server.state_mut().as_mut(), GameEvent::FameChanged(FameChanged { category: FameCategory::Taekwon, ranked_creators: vec![id] }), 100).unwrap();
+    context.server.handle_script_event(&mut *context.server.state_mut(), GameEvent::FameChanged(FameChanged { category: FameCategory::Taekwon, ranked_creators: vec![id] }), 100).unwrap();
     {
         let mut state = context.server.state_mut();
         let character = state.characters_mut().get_mut(&id).unwrap();
@@ -164,11 +164,13 @@ fn live_rank_events_preserve_resources_on_promotion_and_atomically_cap_demotion(
         character.status.hp = character.status.max_hp;
         character.status.sp = character.status.max_sp;
     }
-    context.server.handle_script_event(context.server.state_mut().as_mut(), GameEvent::FameChanged(FameChanged { category: FameCategory::Taekwon, ranked_creators: vec![] }), 101).unwrap();
-    let character = context.server.state().characters().get(&id).unwrap();
+    context.server.handle_script_event(&mut *context.server.state_mut(), GameEvent::FameChanged(FameChanged { category: FameCategory::Taekwon, ranked_creators: vec![] }), 101).unwrap();
+    let guard_168 = context.server.state();
+    let character = guard_168.characters().get(&id).unwrap();
     assert!(!character.status.taekwon_ranked);
     assert_eq!((character.status.hp, character.status.sp), normal_pools);
     assert_eq!((character.status.max_hp, character.status.max_sp), normal_pools);
+    drop(guard_168);
     let saved: CharacterRecord = database::required(&repository.database.characters, &id.to_be_bytes()).unwrap();
     assert_eq!((saved.hp as u32, saved.sp as u32, saved.max_hp as u32, saved.max_sp as u32), (normal_pools.0, normal_pools.1, normal_pools.0, normal_pools.1));
 }
@@ -195,7 +197,7 @@ fn npc_fixture() -> (Arc<Server>, Arc<Session>, NpcContact) {
 #[test]
 fn npc_contact_starts_a_compiled_dialog_and_returns_mutations_to_the_main_loop() {
     let (server, session, contact) = npc_fixture();
-    server.handle_script_event(server.state_mut().as_mut(), GameEvent::NpcContact(contact), 100).unwrap();
+    server.handle_script_event(&mut *server.state_mut(), GameEvent::NpcContact(contact), 100).unwrap();
     let input = session.script_handler_channel_sender.lock().unwrap().clone().unwrap();
     server.runtime().block_on(input.send(PlayerInput::Next)).unwrap();
     let deadline = Instant::now() + Duration::from_secs(3);
@@ -205,7 +207,7 @@ fn npc_contact_starts_a_compiled_dialog_and_returns_mutations_to_the_main_loop()
             for event in events {
                 if let GameEvent::ScriptRequest(request) = event {
                     mutation_requests += 1;
-                    server.script_service().handle_request(&server, server.state_mut().as_mut(), request);
+                    server.script_service().handle_request(&server, &mut *server.state_mut(), request);
                 } else { panic!("Unexpected NPC mutation: {event:?}"); }
             }
         }
@@ -220,12 +222,12 @@ fn npc_contact_starts_a_compiled_dialog_and_returns_mutations_to_the_main_loop()
 fn unavailable_or_remote_npc_contacts_do_not_start_a_conversation() {
     let (server, session, contact) = npc_fixture();
     server.state_mut().characters_mut().get_mut(&contact.char_id).unwrap().x = 1;
-    assert!(server.handle_script_event(server.state_mut().as_mut(), GameEvent::NpcContact(contact.clone()), 100).is_err());
+    assert!(server.handle_script_event(&mut *server.state_mut(), GameEvent::NpcContact(contact.clone()), 100).is_err());
     server.state_mut().characters_mut().get_mut(&contact.char_id).unwrap().x = 50;
     let mut invalid = contact.clone(); invalid.account_id += 1;
-    assert!(server.handle_script_event(server.state_mut().as_mut(), GameEvent::NpcContact(invalid), 100).is_err());
+    assert!(server.handle_script_event(&mut *server.state_mut(), GameEvent::NpcContact(invalid), 100).is_err());
     server.state_mut().characters_mut().get_mut(&contact.char_id).unwrap().status.hp = 0;
-    assert!(server.handle_script_event(server.state_mut().as_mut(), GameEvent::NpcContact(contact), 100).is_err());
+    assert!(server.handle_script_event(&mut *server.state_mut(), GameEvent::NpcContact(contact), 100).is_err());
     assert!(session.script_handler_channel_sender.lock().unwrap().is_none());
     assert!(server.pop_task().is_none());
 }
@@ -252,7 +254,7 @@ fn elemental_absorption_heals_atomically_without_consuming_shields_or_interrupti
     context.server.state_mut().insert_character(character);
     let mut damage = incoming_damage(id, id + 1, BattleFlag::Magic.as_flag() | BattleFlag::Skill.as_flag(), SkillEnum::MgFirebolt);
     damage.set_signed_damage(-i32::MAX);
-    context.server.admit_character_damage(context.server.state_mut().as_mut(), damage, 101).unwrap();
+    context.server.admit_character_damage(&mut *context.server.state_mut(), damage, 101).unwrap();
     let state = context.server.state();
     let live = state.get_character(id).unwrap();
     assert_eq!((live.status.hp, live.status.sp), (cap, 17));
@@ -276,12 +278,12 @@ fn stale_absorption_owner_preserves_live_and_persistent_hp_and_dead_targets_stay
     }).unwrap();
     let mut damage = incoming_damage(id, id + 1, BattleFlag::Weapon.as_flag(), SkillEnum::SmBash);
     damage.set_signed_damage(-100);
-    assert!(context.server.admit_character_damage(context.server.state_mut().as_mut(), damage, 101).is_err());
+    assert!(context.server.admit_character_damage(&mut *context.server.state_mut(), damage, 101).is_err());
     assert_eq!(context.server.state().get_character(id).unwrap().status.hp, 1);
     let saved: CharacterRecord = database::required(&repository.database.characters, &id.to_be_bytes()).unwrap();
     assert_eq!(saved.hp, 1000);
     context.server.state_mut().characters_mut().get_mut(&id).unwrap().status.hp = 0;
-    context.server.admit_character_damage(context.server.state_mut().as_mut(), damage, 102).unwrap();
+    context.server.admit_character_damage(&mut *context.server.state_mut(), damage, 102).unwrap();
     assert_eq!(context.server.state().get_character(id).unwrap().status.hp, 0);
 }
 
@@ -304,7 +306,7 @@ fn devotion_redirects_hp_without_interrupting_either_actor_or_reapplying_defense
         protector.script_skill_state.casting_skill_id = SkillEnum::MgFirebolt.id();
     }
     let flags = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag() | BattleFlag::Normal.as_flag();
-    context.server.admit_character_damage(context.server.state_mut().as_mut(), incoming_damage(protected, 9999, flags, SkillEnum::NvBasic), 101).unwrap();
+    context.server.admit_character_damage(&mut *context.server.state_mut(), incoming_damage(protected, 9999, flags, SkillEnum::NvBasic), 101).unwrap();
     let state = context.server.state();
     let target = state.characters().get(&protected).unwrap();
     let source = state.characters().get(&protector).unwrap();
@@ -328,7 +330,7 @@ fn expired_remote_or_zero_hp_protectors_cannot_receive_devotion_damage() {
         if failure == 2 { context.server.state_mut().characters_mut().get_mut(&protector).unwrap().status.hp = 0; }
         let tick = if failure == 0 { 1100 } else { 101 };
         let flags = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag() | BattleFlag::Normal.as_flag();
-        context.server.admit_character_damage(context.server.state_mut().as_mut(), incoming_damage(protected, 9999, flags, SkillEnum::NvBasic), tick).unwrap();
+        context.server.admit_character_damage(&mut *context.server.state_mut(), incoming_damage(protected, 9999, flags, SkillEnum::NvBasic), tick).unwrap();
         let state = context.server.state();
         let target = state.characters().get(&protected).unwrap();
         assert_eq!(target.status.hp, 900);
@@ -343,7 +345,7 @@ fn grand_cross_self_damage_emits_only_the_physical_hit_counter_callback() {
     let id = character.char_id;
     context.server.state_mut().insert_character(character);
     let flags = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
-    context.server.admit_character_damage(context.server.state_mut().as_mut(), incoming_damage(id, id, flags, SkillEnum::CrGrandcross), 100).unwrap();
+    context.server.admit_character_damage(&mut *context.server.state_mut(), incoming_damage(id, id, flags, SkillEnum::CrGrandcross), 100).unwrap();
     assert_eq!(context.server.state().characters().get(&id).unwrap().status.hp, 900);
     let requests: Vec<_> = context.server.pop_task().unwrap().into_iter().filter_map(|event| {
         if let GameEvent::ScriptCombat(request) = event { Some(request) } else { None }
@@ -363,10 +365,12 @@ fn magic_rod_absorbs_a_direct_spell_before_damage_interruptions_and_combat_callb
     StatusEffectService::apply_status(&mut character.status, StatusChangeRequest::guaranteed(StatusChangeKind::MagicRod, 1000, 5), 100, 0).unwrap();
     context.server.state_mut().insert_character(character);
     let flags = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
-    context.server.admit_character_damage(context.server.state_mut().as_mut(), incoming_damage(id, id + 1, flags, SkillEnum::MgFirebolt), 101).unwrap();
-    let target = context.server.state().characters().get(&id).unwrap();
+    context.server.admit_character_damage(&mut *context.server.state_mut(), incoming_damage(id, id + 1, flags, SkillEnum::MgFirebolt), 101).unwrap();
+    let guard_367 = context.server.state();
+    let target = guard_367.characters().get(&id).unwrap();
     assert_eq!((target.status.hp, target.status.sp), (1000, 12));
     assert_eq!(target.script_skill_state.casting_until, 10_000);
     assert_eq!(target.timing.get_canmove_tick(), 0);
+    drop(guard_367);
     assert!(context.server.pop_task().is_none());
 }

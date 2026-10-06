@@ -7,6 +7,7 @@ use models::enums::EnumWithMaskValueU16;
 use models::enums::cell::CellType;
 
 use crate::server::Server;
+use crate::server::state::server::ServerState;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::map_item::{MapItem, MapItemType};
 use crate::util::coordinate;
@@ -33,6 +34,7 @@ impl MapInstanceView {
         map_instance: &Arc<MapInstance>,
         map_items: HashMap<u32, MapItem, NoopHasherU32>,
         selected_map_item: &Option<MapItem>,
+        server_state: &ServerState,
     ) {
         Frame::dark_canvas(ui.style()).show(ui, |ui| {
             let (_id, response) = ui.allocate_exact_size(ui.available_size_before_wrap(), Sense::click_and_drag());
@@ -173,7 +175,7 @@ impl MapInstanceView {
             for (_, map_item) in map_items.iter() {
                 let map_name = map_instance.name().to_string();
                 let map_instance_id = map_instance.id();
-                if let Some(position) = self.server.state().map_item_x_y(map_item, &map_name, map_instance_id) {
+                if let Some(position) = server_state.map_item_x_y(map_item, &map_name, map_instance_id) {
                     if position.x() < start_j || position.y() < start_i {
                         continue;
                     }

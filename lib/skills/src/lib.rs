@@ -211,7 +211,7 @@ pub trait SkillBase {
     }
 }
 
-pub trait Skill: SkillBase {
+pub trait Skill: SkillBase + Send + Sync {
     fn as_base(&self) -> &dyn SkillBase
     where
         Self: Sized,

@@ -19,8 +19,8 @@ use crate::server::Server;
 const ITEM_DIALOG_NPC: u32 = 4_000_000_000;
 
 impl ItemService {
-    pub(crate) fn start_item_dialog(&self, server: &Server, character: &Character, action: CharacterUseItem, item: &InventoryItemModel, host: ItemScriptHost) -> Result<(), String> {
-        let session = server.state().find_session(character.account_id).ok_or("Item session is unavailable")?;
+    pub(crate) fn start_item_dialog(&self, server: &Server, state: &ServerState, character: &Character, action: CharacterUseItem, item: &InventoryItemModel, host: ItemScriptHost) -> Result<(), String> {
+        let session = state.find_session(character.account_id).ok_or("Item session is unavailable")?;
         if session.script_handler_channel_sender.lock().unwrap().is_some() { return Err("Another conversation is already active".into()); }
         let server = server.shared().ok_or("Item runtime is not bound")?;
         let (sender, receiver) = mpsc::channel(4);

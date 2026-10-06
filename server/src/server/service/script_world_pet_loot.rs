@@ -64,7 +64,7 @@ fn floor_record(item: &DroppedItem) -> Result<InventoryRecord, String> {
 }
 
 impl ScriptWorldService {
-    pub(crate) fn call_pet_loot(&self, server: &Server, character: &mut Character, args: &[Value], now: u64) -> Result<Value, String> {
+    pub(crate) fn call_pet_loot(&self, server: &Server, state: &ServerState, character: &mut Character, args: &[Value], now: u64) -> Result<Value, String> {
         let plan = plan_persistent_effects(character, &[(Function::PetLoot, args.to_vec())], now)?;
         let change = ScriptInventoryTransaction { char_id: character.char_id, account_id: character.account_id,
             consumption: None, exact_removals: vec![], removals: vec![], identifications: vec![], grants: plan.additional_grants.clone(),
@@ -74,7 +74,7 @@ impl ScriptWorldService {
         if !change.grants.is_empty() {
             server.item_service().install_inventory(server, character, committed.inventory, None);
         }
-        self.apply_committed_effects(server, character, &plan, committed.world.ok_or("Committed pet cargo result is missing")?, now)?;
+        self.apply_committed_effects(server, state, character, &plan, committed.world.ok_or("Committed pet cargo result is missing")?, now)?;
         Ok(Value::default())
     }
 

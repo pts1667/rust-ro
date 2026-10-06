@@ -124,7 +124,7 @@ impl ScriptWorldService {
             ScriptWorldRequest::Battleground(request) => self.battleground_request(server, state, character, request),
             ScriptWorldRequest::Booking(request) => self.booking_request(state, character, request),
             ScriptWorldRequest::Family(request) => self.family_request(server, state, character, request),
-            ScriptWorldRequest::Homunculus(request) => self.homunculus_request(server, character, request, now),
+            ScriptWorldRequest::Homunculus(request) => self.homunculus_request(server, state, character, request, now),
             ScriptWorldRequest::Companion(request) => self.companion_request(server, state, character, request, now),
             ScriptWorldRequest::Pet(request) => self.pet_request(server, state, character, request, now),
             ScriptWorldRequest::Store(request) => self.store_request(server, state, character, request, now),

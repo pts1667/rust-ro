@@ -185,9 +185,9 @@ impl VisualDebugger {
         if self.selected_map.is_some() {
             selected_text = self.selected_map.as_ref().unwrap();
         }
+        let server_state = self.server.state();
         ComboBox::from_id_salt("Select map").selected_text(selected_text).show_ui(ui, |ui| {
-            self.server
-                .state()
+            server_state
                 .map_instances()
                 .iter()
                 .map(|(map_name, _map)| map_name)
@@ -202,10 +202,11 @@ impl VisualDebugger {
         if let Some((_, selected_char)) = &self.selected_char {
             selected_text = selected_char.as_str();
         }
+        let server_state = self.server.state();
         ComboBox::from_id_salt("Select char")
             .selected_text(selected_text)
             .show_ui(ui, |ui| {
-                self.server.state().characters().iter().map(|(_id, char)| char).for_each(|char| {
+                server_state.characters().iter().map(|(_id, char)| char).for_each(|char| {
                     ui.selectable_value(
                         &mut self.selected_char,
                         Some((char.char_id, char.name.clone())),
@@ -219,13 +220,14 @@ impl VisualDebugger {
         if self.selected_map.is_none() {
             return;
         }
-        let instances = self.server.state().map_instances();
+        let server_state = self.server.state();
+        let instances = server_state.map_instances();
         let map_instances = instances.get(self.selected_map.as_ref().unwrap()).unwrap();
         let map_instance = map_instances.first().unwrap();
         let map_name = map_instance.name().to_string();
         let map_instance_id = map_instance.id();
         let map_items_clone = map_instance.state().map_items().clone();
-        let server_characters = self.server.state().characters();
+        let server_characters = server_state.characters();
         let characters = map_items_clone
             .iter()
             .filter(|(_, item)| *item.object_type() == MapItemType::Character)
@@ -274,7 +276,7 @@ impl VisualDebugger {
                             let map_item = map_items_clone
                                 .iter()
                                 .find(|(_, map_item)| {
-                                    let position = self.server.state().map_item_x_y(map_item, &map_name, map_instance_id).unwrap();
+                                    let position = server_state.map_item_x_y(map_item, &map_name, map_instance_id).unwrap();
                                     position.x() == i && position.y() == j
                                 })
                                 .map(|(_, map_item)| map_item);
@@ -284,7 +286,7 @@ impl VisualDebugger {
 
                             if let Some(map_item) = map_item {
                                 // map_items_mut_clone.remove(&*map_item.clone());
-                                let item_name = self.server.state().map_item_name(map_item, &map_name, map_instance_id).unwrap();
+                                let item_name = server_state.map_item_name(map_item, &map_name, map_instance_id).unwrap();
                                 ui.label(format!("{}: {}", map_item.object_type(), item_name));
                                 if *map_item.object_type() == MapItemType::Mob {
                                     let state = map_instance.state();
@@ -292,8 +294,8 @@ impl VisualDebugger {
                                     let mob = mob_ref;
                                     ui.label("Items in Field of view");
                                     mob.map_view.iter().for_each(|item| {
-                                        let item_name = self.server.state().map_item_name(item, &map_name, map_instance_id).unwrap();
-                                        let position = self.server.state().map_item_x_y(item, &map_name, map_instance_id).unwrap();
+                                        let item_name = server_state.map_item_name(item, &map_name, map_instance_id).unwrap();
+                                        let position = server_state.map_item_x_y(item, &map_name, map_instance_id).unwrap();
                                         ui.label(format!(
                                             "{}: {} {},{}",
                                             item.object_type(),
@@ -303,14 +305,14 @@ impl VisualDebugger {
                                         ));
                                     });
                                 } else if *map_item.object_type() == MapItemType::Character {
-                                    let character = self.server.state().map_item_character(map_item).unwrap();
+                                    let character = server_state.map_item_character(map_item).unwrap();
                                     ui.label("Items in Field of view");
                                     let mut character_map_view: Vec<MapItem> =
                                         character.map_view.clone().into_iter().collect::<Vec<MapItem>>();
                                     character_map_view.sort_by_key(|a| a.id());
                                     character_map_view.iter().for_each(|item| {
-                                        let item_name = self.server.state().map_item_name(item, &map_name, map_instance_id).unwrap();
-                                        let position = self.server.state().map_item_x_y(item, &map_name, map_instance_id).unwrap();
+                                        let item_name = server_state.map_item_name(item, &map_name, map_instance_id).unwrap();
+                                        let position = server_state.map_item_x_y(item, &map_name, map_instance_id).unwrap();
                                         ui.label(format!(
                                             "{}: {} {},{}",
                                             item.object_type(),
@@ -327,7 +329,7 @@ impl VisualDebugger {
             });
         egui::CentralPanel::default().show(ui.ctx(), |ui| {
             self.map_instance_view
-                .draw_map_instance_view(ui, map_instance, map_items_clone, &self.selected_map_item);
+                .draw_map_instance_view(ui, map_instance, map_items_clone, &self.selected_map_item, &server_state);
         });
     }
 

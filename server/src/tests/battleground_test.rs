@@ -17,7 +17,7 @@ fn fixture() -> super::ServerServiceTestContext {
 }
 
 fn call(context: &super::ServerServiceTestContext, attached: u32, function: Function, arguments: Vec<Value>) -> Value {
-    context.server.battleground_call(context.server.state_mut().as_mut(), attached, function, &arguments).unwrap()
+    context.server.battleground_call(&mut *context.server.state_mut(), attached, function, &arguments).unwrap()
 }
 
 fn create_team(context: &super::ServerServiceTestContext, x: i32) -> i32 {
@@ -54,7 +54,7 @@ fn joining_requires_a_battleground_map_and_one_team_per_player() {
     assert_eq!(join(&context, second, 150_000), 0);
     context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     let rejected = context.server.battleground_call(
-        context.server.state_mut().as_mut(),
+        &mut *context.server.state_mut(),
         0,
         Function::BgJoin,
         &[second.into(), "".into(), 0.into(), 0.into(), 150_001.into()],
@@ -85,8 +85,10 @@ fn destroying_a_team_releases_every_member_and_leaving_resets_tracking() {
     assert!(context.server.state().get_character(150_000).unwrap().bg_tracking.last_hp == u32::MAX);
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().bg_tracking.last_hp = 10;
     call(&context, 150_000, Function::BgLeave, vec![]);
-    let leader = context.server.state().get_character(150_000).unwrap().clone();
+    let guard_88 = context.server.state();
+    let leader = guard_88.get_character(150_000).unwrap().clone();
     assert_eq!((leader.bg_id, leader.bg_tracking.last_hp), (0, u32::MAX));
+    drop(guard_88);
     call(&context, 0, Function::BgDestroy, vec![second.into()]);
     assert_eq!(context.server.state().get_character(150_001).unwrap().bg_id, 0);
     assert!(context.server.battlegrounds().team(second as u32).is_none());
@@ -114,7 +116,7 @@ fn add_players(context: &super::ServerServiceTestContext, count: u32) -> Vec<u32
 }
 
 fn queue_command(context: &super::ServerServiceTestContext, char_id: u32, action: BattlegroundQueueAction) {
-    context.server.handle_battleground_queue_command(context.server.state_mut().as_mut(), BattlegroundQueueCommand { char_id, action });
+    context.server.handle_battleground_queue_command(&mut *context.server.state_mut(), BattlegroundQueueCommand { char_id, action });
 }
 
 #[test]
@@ -135,7 +137,7 @@ fn a_full_queue_asks_for_acceptance_then_builds_two_teams_and_publishes_their_id
     for id in &ids {
         queue_command(&context, *id, BattlegroundQueueAction::Reply { accept: true });
     }
-    context.server.tick_battleground_queues(context.server.state_mut().as_mut(), crate::util::tick::get_tick() + 1);
+    context.server.tick_battleground_queues(&mut *context.server.state_mut(), crate::util::tick::get_tick() + 1);
     let state = context.server.state();
     let first = context.server.script_service().server_temporary("$@FlaviusBG1_id1").unwrap().number_value().unwrap() as u32;
     let second = context.server.script_service().server_temporary("$@FlaviusBG1_id2").unwrap().number_value().unwrap() as u32;
@@ -153,7 +155,7 @@ fn an_unanswered_admission_window_dissolves_the_queue_and_frees_the_arena() {
     for id in &ids {
         queue_command(&context, *id, BattlegroundQueueAction::Apply { kind: 1, name: "Flavius".into() });
     }
-    context.server.tick_battleground_queues(context.server.state_mut().as_mut(), crate::util::tick::get_tick() + ADMISSION_WINDOW_MS as u128 + 1);
+    context.server.tick_battleground_queues(&mut *context.server.state_mut(), crate::util::tick::get_tick() + ADMISSION_WINDOW_MS as u128 + 1);
     assert!(context.server.battlegrounds().with_queues(|queues| queues.reserved_maps.is_empty()));
     assert!(ids.iter().all(|id| context.server.battlegrounds().with_queues(|queues| queues.queue_of(*id)).is_none()));
 }
@@ -182,7 +184,7 @@ fn applications_are_rejected_for_restricted_jobs_low_levels_and_duplicates() {
 #[test]
 fn bg_info_reads_the_catalog_and_leaving_a_team_as_a_deserter_blocks_new_applications() {
     let context = fixture();
-    let info = |kind: i32| context.server.battleground_queue_script_call(context.server.state_mut().as_mut(), Function::BgInfo, &["Flavius".into(), kind.into()]).unwrap();
+    let info = |kind: i32| context.server.battleground_queue_script_call(&mut *context.server.state_mut(), Function::BgInfo, &["Flavius".into(), kind.into()]).unwrap();
     assert_eq!((info(0), info(1), info(2), info(3)), (Value::Number(2), Value::Number(6), Value::Number(15), Value::Number(80)));
     let team = create_team(&context, 10);
     join(&context, team, 150_000);
@@ -219,13 +221,13 @@ fn battleground_monsters_are_protected_from_their_own_team_and_honor_damage_immu
     reserved_id: None,
     };
     let service = map_instance_service(&context);
-    let ids = service.script_spawn(instance.state_mut().as_mut(), request).unwrap();
+    let ids = service.script_spawn(&mut *instance.state_mut(), request).unwrap();
     let state = context.server.state();
     assert!(!context.server.player_combat_target_allowed(&state, state.get_character(150_000).unwrap(), ids[0]));
     assert!(context.server.player_combat_target_allowed(&state, state.get_character(150_001).unwrap(), ids[0]));
     assert_eq!(instance.state().get_mob(ids[0]).unwrap().bg_id, team as u32);
     drop(state);
-    service.script_mob_command(instance.state_mut().as_mut(), ScriptMobCommand::Kill { event_entry: None });
+    service.script_mob_command(&mut *instance.state_mut(), ScriptMobCommand::Kill { event_entry: None });
     assert!(instance.state().get_mob(ids[0]).is_none());
 }
 

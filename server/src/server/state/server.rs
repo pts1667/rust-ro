@@ -113,8 +113,23 @@ mod tests {
     }
 }
 
-unsafe impl Sync for ServerState {}
-unsafe impl Send for ServerState {}
+pub fn find_map_instance(
+    map_instances: &HashMap<String, Vec<Arc<MapInstance>>>,
+    map_name: &String,
+    map_instance_id: u8,
+) -> Option<Arc<MapInstance>> {
+    let map_name = if map_name.ends_with(MAP_EXT) {
+        &map_name[..(map_name.len() - 4)]
+    } else {
+        map_name.as_str()
+    };
+
+    map_instances
+        .get(map_name)?
+        .iter()
+        .find(|map_instance| map_instance_id == map_instance.key().map_instance())
+        .cloned()
+}
 
 impl ServerState {
     pub(crate) fn ground_units(&self) -> &crate::server::model::ground_unit::GroundUnitSnapshots {
@@ -177,6 +192,14 @@ impl ServerState {
             self.map_items.insert(character.char_id, character.to_map_item());
         }
         self.characters.insert(character.char_id, character);
+    }
+
+    /// Runs `operation` with the character taken out of `characters`, so it can use the rest of the state without aliasing it.
+    pub fn with_character_taken<R>(&mut self, char_id: u32, operation: impl FnOnce(&mut ServerState, &mut Character) -> R) -> Option<R> {
+        let mut character = self.characters.remove(&char_id)?;
+        let result = operation(self, &mut character);
+        self.insert_character(character);
+        Some(result)
     }
 
     pub(crate) fn retire_character_items(&mut self, char_id: u32, account_id: u32) {
@@ -251,20 +274,14 @@ impl ServerState {
 
     #[inline]
     pub fn get_map_instance(&self, map_name: &String, map_instance_id: u8) -> Option<Arc<MapInstance>> {
-        let map_name = if map_name.ends_with(MAP_EXT) {
-            &map_name[..(map_name.len() - 4)]
-        } else {
-            map_name.as_str()
-        };
+        find_map_instance(self.map_instances(), map_name, map_instance_id)
+    }
 
-        if let Some(instances) = self.map_instances().get(map_name) {
-            for map_instance in instances {
-                if map_instance_id == map_instance.key().map_instance() {
-                    return Some(map_instance.clone());
-                }
-            }
-        }
-        None
+    /// Disjoint borrows for loops that mutate characters while looking up the map they stand on.
+    pub fn characters_mut_with_map_instances(
+        &mut self,
+    ) -> (&mut HashMap<u32, Character, NoopHasherU32>, &HashMap<String, Vec<Arc<MapInstance>>>) {
+        (&mut self.characters, &self.map_instances)
     }
 
     pub fn companion_owner(&self, actor_id: u32, map_name: &String, map_instance_id: u8) -> Option<&Character> {

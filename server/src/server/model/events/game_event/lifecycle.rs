@@ -234,8 +234,7 @@ impl GameEventHandler for CharacterChangeMap {
         if let Err(error) = server.cancel_player_trade(state, event.char_id) {
             warn!("Trade cancellation failed: {error}");
         }
-        let map_instance = server
-            .state()
+        let map_instance = state
             .get_map_instance(&event.new_map_name, event.new_instance_id)
             .unwrap_or_else(|| {
                 server.server_service.create_map_instance(
@@ -285,10 +284,7 @@ impl GameEventHandler for CharacterRemoveFromMap {
         }
         let character = state.characters_mut().get_mut(&character_remove_from_map.char_id).unwrap();
         character.movements = vec![];
-        if let Some(instance) = server
-            .state()
-            .get_map_instance(&character_remove_from_map.map_name, character_remove_from_map.instance_id)
-        {
+        if let Some(instance) = state.get_map_instance(&character_remove_from_map.map_name, character_remove_from_map.instance_id) {
             instance.add_to_next_tick(MapEvent::RemoveCharFromMap(RemoveCharFromMap { char_id: character_remove_from_map.char_id }));
         }
         Ok(())

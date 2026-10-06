@@ -69,7 +69,7 @@ pub enum GuildRequest {
 
 
 impl ScriptWorldService {
-    pub fn initialize_guild(&self, server: &Server, character: &Character) -> Result<(), String> {
+    pub fn initialize_guild(&self, state: &ServerState, character: &Character) -> Result<(), String> {
         if character.game_systems.guild_id == 0 {
             return Ok(());
         }
@@ -83,7 +83,7 @@ impl ScriptWorldService {
             self.send(character.char_id, guild_notice_packet(&guild))?;
         }
         self.send(character.char_id, self.guild_relations_packet(&guild)?)?;
-        self.send(character.char_id, self.guild_summary_packet(server, character, &guild)?)
+        self.send(character.char_id, self.guild_summary_packet(state, character, &guild)?)
     }
 
     fn guild_relations_packet(&self, guild: &GuildRecord) -> Result<Vec<u8>, String> {
@@ -154,7 +154,7 @@ impl ScriptWorldService {
                     .reload_inventory(server.runtime(), character.char_id, character);
                 self.send(character.char_id, vec![0x67, 0x01, 0])?;
                 self.send(character.char_id, belong_packet(character, Some(&guild)))?;
-                self.send(character.char_id, self.guild_summary_packet(server, character, &guild)?)?;
+                self.send(character.char_id, self.guild_summary_packet(state, character, &guild)?)?;
                 self.area(character, guild_actor_packet(character.char_id, guild.id))
             }
             GuildRequest::InviteGuild(target_id) => {
@@ -222,7 +222,7 @@ impl ScriptWorldService {
                 character.guild_name = guild.name.clone();
                 self.send(invitation.inviter_id, vec![0x69, 0x01, 2])?;
                 self.send(character.char_id, belong_packet(character, Some(&guild)))?;
-                self.broadcast_guild_summary(server, character, &guild)?;
+                self.broadcast_guild_summary(state, character, &guild)?;
                 self.area(character, guild_actor_packet(character.char_id, guild.id))
             }
             GuildRequest::GuildMenu => {
@@ -248,11 +248,11 @@ impl ScriptWorldService {
                     .map_err(|error| error.to_string())?
                     .ok_or("Character does not belong to a guild")?;
                 match kind {
-                    0 => self.send(character.char_id, self.guild_summary_packet(server, character, &guild)?),
+                    0 => self.send(character.char_id, self.guild_summary_packet(state, character, &guild)?),
                     3 => self.send(character.char_id, guild_skills_packet(&guild)),
                     1 => {
                         self.send(character.char_id, guild_positions(false, &guild))?;
-                        self.send(character.char_id, self.guild_members_packet(server, character, &guild)?)
+                        self.send(character.char_id, self.guild_members_packet(state, character, &guild)?)
                     }
                     2 => {
                         self.send(character.char_id, guild_positions(false, &guild))?;
@@ -343,7 +343,7 @@ impl ScriptWorldService {
                 }
                 let guild = latest.ok_or("Empty guild position change")?;
                 for member in &guild.members {
-                    self.send(*member, self.guild_members_packet(server, character, &guild)?)?;
+                    self.send(*member, self.guild_members_packet(state, character, &guild)?)?;
                 }
                 Ok(())
             }
@@ -403,7 +403,7 @@ impl ScriptWorldService {
                 ack.push(1);
                 self.send(character.char_id, ack)?;
                 self.broadcast_guild_packet(&guild, guild_skills_packet(&guild))?;
-                self.broadcast_guild_summary(server, character, &guild)
+                self.broadcast_guild_summary(state, character, &guild)
             }
             GuildRequest::GuildAllianceRequest(target_id) => {
                 let guild = self.guild_master_of(character)?;
@@ -531,7 +531,7 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    fn guild_roster(&self, server: &Server, character: &Character, guild: &GuildRecord) -> Result<Vec<(CharacterRecord, bool)>, String> {
+    fn guild_roster(&self, state: &ServerState, character: &Character, guild: &GuildRecord) -> Result<Vec<(CharacterRecord, bool)>, String> {
         Ok(self
             .repository
             .guild_member_records(guild.id)
@@ -541,7 +541,7 @@ impl ScriptWorldService {
                 let online = if record.char_id as u32 == character.char_id {
                     Some(character)
                 } else {
-                    server.state().characters().get(&(record.char_id as u32))
+                    state.characters().get(&(record.char_id as u32))
                 };
                 if let Some(member) = online {
                     record.name = member.name.clone();
@@ -565,8 +565,8 @@ impl ScriptWorldService {
             .count()
     }
 
-    pub(crate) fn guild_summary_packet(&self, server: &Server, character: &Character, guild: &GuildRecord) -> Result<Vec<u8>, String> {
-        let roster = self.guild_roster(server, character, guild)?;
+    pub(crate) fn guild_summary_packet(&self, state: &ServerState, character: &Character, guild: &GuildRecord) -> Result<Vec<u8>, String> {
+        let roster = self.guild_roster(state, character, guild)?;
         let mut packet = protocol::guild_basic(
             &guild.name,
             guild.id,
@@ -592,18 +592,18 @@ impl ScriptWorldService {
         Ok(packet)
     }
 
-    pub(crate) fn broadcast_guild_summary(&self, server: &Server, character: &Character, guild: &GuildRecord) -> Result<(), String> {
-        let packet = self.guild_summary_packet(server, character, guild)?;
+    pub(crate) fn broadcast_guild_summary(&self, state: &ServerState, character: &Character, guild: &GuildRecord) -> Result<(), String> {
+        let packet = self.guild_summary_packet(state, character, guild)?;
         for member in &guild.members {
             self.send(*member, packet.clone())?;
         }
         Ok(())
     }
 
-    fn guild_members_packet(&self, server: &Server, character: &Character, guild: &GuildRecord) -> Result<Vec<u8>, String> {
+    fn guild_members_packet(&self, state: &ServerState, character: &Character, guild: &GuildRecord) -> Result<Vec<u8>, String> {
         let mut packet = protocol::header(0x0154);
         packet.extend_from_slice(&0u16.to_le_bytes());
-        for (record, online) in self.guild_roster(server, character, guild)? {
+        for (record, online) in self.guild_roster(state, character, guild)? {
             packet.extend_from_slice(&(record.char_id as u32).to_le_bytes());
             packet.extend_from_slice(&(record.char_id as u32).to_le_bytes());
             for value in [
@@ -673,7 +673,7 @@ impl ScriptWorldService {
             self.send(member, belong_packet(other, None))?;
             self.area(other, guild_actor_packet(member, 0))?;
         }
-        self.broadcast_guild_summary(server, character, &guild)
+        self.broadcast_guild_summary(state, character, &guild)
     }
 }
 

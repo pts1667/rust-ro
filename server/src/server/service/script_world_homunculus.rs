@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use crate::server::state::server::ServerState;
 
 use models::enums::element::Element;
 use models::enums::mob::MobRace;
@@ -168,6 +169,7 @@ impl ScriptWorldService {
     pub(crate) fn homunculus_request(
         &self,
         server: &Server,
+        state: &ServerState,
         character: &mut Character,
         request: HomunculusRequest,
         now: u64,
@@ -281,8 +283,7 @@ impl ScriptWorldService {
             }
             HomunculusRequest::CompanionMove { id, x, y } => {
                 validate_companion(character, id)?;
-                let map = server
-                    .state()
+                let map = state
                     .get_map_instance_from_character(character)
                     .ok_or("Companion map is unavailable")?;
                 let map_state = map.state();
@@ -308,8 +309,7 @@ impl ScriptWorldService {
             }
             HomunculusRequest::CompanionAttack { id, target, repeat } => {
                 validate_companion(character, id)?;
-                let map = server
-                    .state()
+                let map = state
                     .get_map_instance_from_character(character)
                     .ok_or("Companion map is unavailable")?;
                 let map_state = map.state();
@@ -317,7 +317,7 @@ impl ScriptWorldService {
                 if mob.hp() == 0
                     || mob.summon_ai != 0
                     || character.x.abs_diff(mob.x).max(character.y.abs_diff(mob.y)) > 15
-                    || server.state().contains_locked_map_item(target)
+                    || state.contains_locked_map_item(target)
                     || !super::companion_can_target(
                         &super::companion_status_snapshot(character, id).ok_or("Companion is unavailable")?,
                         &mob.status,
@@ -337,7 +337,7 @@ impl ScriptWorldService {
         if character.game_systems.homunculus.is_some() {
             self.send_homunculus(character)?;
         }
-        self.render_companions(server, character, now)
+        self.render_companions(server, state, character, now)
     }
 
     fn feed_homunculus(&self, server: &Server, character: &mut Character) -> Result<(), String> {

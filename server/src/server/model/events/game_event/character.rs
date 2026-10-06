@@ -264,7 +264,7 @@ impl GameEventHandler for CharacterInitInventory {
 
     fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let CharacterInitInventory { char_id } = self;
-        let character = state.characters_mut().get_mut(&char_id).unwrap();
+        state.with_character_taken(char_id, |state, character| {
         server
             .inventory_service()
             .reload_inventory(server.runtime.as_ref(), char_id, character);
@@ -276,13 +276,14 @@ impl GameEventHandler for CharacterInitInventory {
         if let Err(error) = server.script_world_service().initialize_cart(character) {
             warn!("Cart initialization failed: {error}");
         }
-        if let Err(error) = server.script_world_service().initialize_guild(server, character) {
+        if let Err(error) = server.script_world_service().initialize_guild(state, character) {
             warn!("Guild initialization failed: {error}");
         }
-        if let Err(error) = server.script_world_service().initialize_party(server, character) {
+        if let Err(error) = server.script_world_service().initialize_party(server, state, character) {
             warn!("Party initialization failed: {error}");
         }
         character.refresh_script_context();
+        }).unwrap();
         Ok(())
     }
 }
@@ -327,7 +328,7 @@ impl GameEventHandler for CharacterUseItem {
         if let Some(mut character) = state.characters_mut().remove(&character_use_item.char_id) {
             server
                 .item_service()
-                .use_item_in_state(server, &*state, server.runtime.as_ref(), character_use_item, &mut character);
+                .use_item_in_state(server, state, server.runtime.as_ref(), character_use_item, &mut character);
             state.insert_character(character);
         }
         Ok(())

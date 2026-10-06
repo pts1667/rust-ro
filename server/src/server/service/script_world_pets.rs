@@ -183,10 +183,6 @@ impl ScriptWorldService {
         Ok(true)
     }
 
-    pub fn cancel_pet_capture(&self, server: &Server, character: &mut Character) {
-        self.cancel_pet_capture_in_state(server, server.state(), character);
-    }
-
     pub fn cancel_pet_capture_in_state(&self, _server: &Server, state: &ServerState, character: &mut Character) {
         if let Some(pending) = character.game_systems.pending_pet_capture.take() {
             if let Some(map) = state.get_map_instance(pending.map_key.map_name(), pending.map_key.map_instance()) {
@@ -226,7 +222,7 @@ impl ScriptWorldService {
                     .inventory_service()
                     .reload_inventory(server.runtime(), character.char_id, character);
                 self.send_pet(character)?;
-                self.render_companions(server, character, now)
+                self.render_companions(server, state, character, now)
             }
             PetRequest::PetMenu(menu) => match menu {
                 0 => self.send_pet(character),
@@ -254,7 +250,7 @@ impl ScriptWorldService {
                     server
                         .inventory_service()
                         .reload_inventory(server.runtime(), character.char_id, character);
-                    self.render_companions(server, character, now)
+                    self.render_companions(server, state, character, now)
                 }
                 4 => {
                     let saved = self

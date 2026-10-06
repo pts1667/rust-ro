@@ -155,11 +155,13 @@ fn apply_effect(
     match effect {
         CombatEffect::Splash { radius } => apply_splash(server, state, request, radius, tick),
         CombatEffect::RunBonus(bonus) => {
-            let character = state
+            let mut character = state
                 .characters_mut()
-                .get_mut(&request.source_id)
+                .remove(&request.source_id)
                 .ok_or("Automatic bonus owner is unavailable")?;
-            run_auto_bonus(server, character, bonus, tick)
+            let result = run_auto_bonus(server, state, &mut character, bonus, tick);
+            state.insert_character(character);
+            result
         }
         CombatEffect::CastSkill { skill_id, level, target } => {
             let automatic_self = GlobalConfigService::instance()
@@ -517,7 +519,7 @@ pub fn skill_flags(skill_id: u32) -> u32 {
     kind.as_flag() | range.as_flag() | BattleFlag::Skill.as_flag()
 }
 
-fn run_auto_bonus(server: &Server, character: &mut Character, definition: AutoBonus, tick: u128) -> Result<(), String> {
+fn run_auto_bonus(server: &Server, state: &mut ServerState, character: &mut Character, definition: AutoBonus, tick: u128) -> Result<(), String> {
     if !auto_bonus_source_is_present(character, &definition) {
         return Ok(());
     }
@@ -540,7 +542,7 @@ fn run_auto_bonus(server: &Server, character: &mut Character, definition: AutoBo
         effects.extend(visual.effects);
     }
     server.item_service().validate_effects(&effects)?;
-    server.item_service().apply_effects(server, server.runtime(), character, effects)?;
+    server.item_service().apply_effects(server, state, server.runtime(), character, effects)?;
     if !auto_bonus_source_is_present(character, &definition) {
         return Ok(());
     }

@@ -123,16 +123,15 @@ pub async fn character_join_game() -> u32 {
         vec![],
     );
     character.loaded_from_client_side = true;
-    let _state_loops_guard = server.lock_state_loops();
-    server.state_mut().insert_character(character);
-    let character = server.state().get_character_unsafe(char_id);
-    server.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id: character.char_id }));
-    server.server_service().schedule_warp_to_walkable_cell(
-        server.state_mut().as_mut(),
-        &Map::name_without_ext(character.current_map_name()),
-        character.x(),
-        character.y(),
-        char_id,
-    );
+    let mut state = server.state_mut();
+    state.insert_character(character);
+    let (map_name, x, y) = {
+        let character = state.get_character_unsafe(char_id);
+        (Map::name_without_ext(character.current_map_name()), character.x(), character.y())
+    };
+    server.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id }));
+    server
+        .server_service()
+        .schedule_warp_to_walkable_cell(&mut state, &map_name, x, y, char_id);
     char_id
 }

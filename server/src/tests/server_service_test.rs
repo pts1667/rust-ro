@@ -569,23 +569,27 @@ mod tests {
         let char_id = character.char_id;
         character.status.known_skills = vec![KnownSkill { value: SkillEnum::AlBlessing, level: 10 }, KnownSkill { value: SkillEnum::AlIncagi, level: 10 }];
         context.server.state_mut().insert_character(character);
-        context.server.handle_character_skill(context.server.state_mut().as_mut(), CharacterUseSkill { char_id, target_id: char_id, skill_id: SkillEnum::AlBlessing.id(), skill_level: 10 }, 0).unwrap();
+        context.server.handle_character_skill(&mut *context.server.state_mut(), CharacterUseSkill { char_id, target_id: char_id, skill_id: SkillEnum::AlBlessing.id(), skill_level: 10 }, 0).unwrap();
         for tick in (40..=1000).step_by(40) { Server::game_loop_iteration(&context.server, tick); }
-        context.server.handle_character_skill(context.server.state_mut().as_mut(), CharacterUseSkill { char_id, target_id: char_id, skill_id: SkillEnum::AlIncagi.id(), skill_level: 10 }, 1000).unwrap();
+        context.server.handle_character_skill(&mut *context.server.state_mut(), CharacterUseSkill { char_id, target_id: char_id, skill_id: SkillEnum::AlIncagi.id(), skill_level: 10 }, 1000).unwrap();
         for tick in (1040..=2200).step_by(40) { Server::game_loop_iteration(&context.server, tick); }
-        let character = context.server.state().get_character(char_id).unwrap();
+        let guard_576 = context.server.state();
+        let character = guard_576.get_character(char_id).unwrap();
         assert!(character.status.has_status_change(models::status_change::StatusChangeKind::Blessing));
         assert!(character.status.has_status_change(models::status_change::StatusChangeKind::IncreaseAgi));
         let snapshot = context.status_service.to_snapshot(&character.status);
+        drop(guard_576);
         assert_eq!((snapshot.str(), snapshot.int(), snapshot.dex(), snapshot.agi(), snapshot.speed()), (11, 11, 11, 13, 112));
         let stored: database::model::CharacterRecord = database::required(&repository.database.characters, &char_id.to_be_bytes()).unwrap();
         assert_eq!((stored.hp, stored.sp), (985, 891));
         context.test_context.clear_sent_packet();
         Server::game_loop_iteration(&context.server, 243000);
-        let character = context.server.state().get_character(char_id).unwrap();
+        let guard_585 = context.server.state();
+        let character = guard_585.get_character(char_id).unwrap();
         assert!(!character.status.has_status_change(models::status_change::StatusChangeKind::Blessing));
         assert!(!character.status.has_status_change(models::status_change::StatusChangeKind::IncreaseAgi));
         let snapshot = context.status_service.to_snapshot(&character.status);
+        drop(guard_585);
         assert_eq!((snapshot.str(), snapshot.int(), snapshot.dex(), snapshot.agi(), snapshot.speed()), (1, 1, 1, 1, 150));
     }
 }

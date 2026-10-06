@@ -135,7 +135,7 @@ fn start(context: &ServerServiceTestContext, character: &mut Character, skill: S
     let target_id = character.char_id + 1;
     context.server.server_service().character_start_use_skill(
         &context.server,
-        context.server.state(),
+        &context.server.state(),
         character,
         CharacterUseSkill {
             char_id: character.char_id,
@@ -171,7 +171,7 @@ fn water_ball_consumes_wet_cells_and_hits_sequentially_without_repaying_cost() {
     let cells = context
         .server
         .script_skill_service()
-        .water_ball_cells(context.server.state(), &character, 3, 0, false)
+        .water_ball_cells(&context.server.state(), &character, 3, 0, false)
         .unwrap();
     assert_eq!(cells.len(), 9);
     let target = character.char_id + 1;
@@ -192,8 +192,10 @@ fn water_ball_consumes_wet_cells_and_hits_sequentially_without_repaying_cost() {
         crate::server::Server::game_loop_iteration(&context.server, tick);
     }
     assert!(context.server.state().get_character(target).unwrap().status.hp < first_hp);
-    let character = context.server.state().get_character(char_id).unwrap();
+    let guard_195 = context.server.state();
+    let character = guard_195.get_character(char_id).unwrap();
     assert_eq!(stored_sp(&repository, character), 980);
+    drop(guard_195);
 }
 
 #[test]
@@ -223,7 +225,7 @@ fn earthquake_uses_attack_and_hits_three_split_waves() {
         .script_skill_service()
         .place_ground_skill_depth(
             &context.server,
-            context.server.state(),
+            &context.server.state(),
             &mut character,
             SkillEnum::NpcEarthquake.id(),
             1,
@@ -240,7 +242,7 @@ fn earthquake_uses_attack_and_hits_three_split_waves() {
         context
             .server
             .script_skill_service()
-            .tick_ground_skills(&context.server, context.server.state(), tick);
+            .tick_ground_skills(&context.server, &context.server.state(), tick);
         let events = instance.task_queue().pop().unwrap_or_default();
         let damage = events
             .into_iter()
@@ -280,7 +282,7 @@ fn grand_cross_produces_three_live_self_damage_pulses() {
         .script_skill_service()
         .place_ground_skill_depth(
             &context.server,
-            context.server.state(),
+            &context.server.state(),
             &mut character,
             SkillEnum::CrGrandcross.id(),
             1,
@@ -311,17 +313,17 @@ fn native_skill_payment_occurs_once_at_cast_completion() {
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), finish - 1, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), finish - 1, &mut character);
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (1000, 1000));
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), finish, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), finish, &mut character);
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (980, 980));
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), finish + 1, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), finish + 1, &mut character);
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (980, 980));
 }
 
@@ -350,7 +352,7 @@ fn area_and_utility_skills_pay_once_when_the_queued_effect_completes() {
         context
             .server
             .handle_character_skill(
-                context.server.state_mut().as_mut(),
+                &mut *context.server.state_mut(),
                 CharacterUseSkill {
                     char_id: id,
                     target_id: target,
@@ -366,12 +368,14 @@ fn area_and_utility_skills_pay_once_when_the_queued_effect_completes() {
             "{skill:?} charged before completion"
         );
         crate::server::Server::game_loop_iteration(&context.server, 40);
-        let character = context.server.state().get_character(id).unwrap();
+        let guard_369 = context.server.state();
+        let character = guard_369.get_character(id).unwrap();
         assert_eq!(
             (character.status.sp, stored_sp(&repository, character)),
             (1000 - cost as u32, 1000 - cost),
             "{skill:?} did not commit its cost"
         );
+        drop(guard_369);
         crate::server::Server::game_loop_iteration(&context.server, 80);
         assert_eq!(
             stored_sp(&repository, context.server.state().get_character(id).unwrap()),
@@ -390,7 +394,7 @@ fn interrupted_or_dead_target_casts_leave_resources_unchanged() {
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), 10000, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), 10000, &mut character);
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (1000, 1000));
     start(&context, &mut character, SkillEnum::MgFirebolt, 5, 10000);
     context
@@ -404,7 +408,7 @@ fn interrupted_or_dead_target_casts_leave_resources_unchanged() {
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), 20000, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), 20000, &mut character);
     assert!(!character.is_using_skill());
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (1000, 1000));
 }
@@ -474,10 +478,12 @@ fn final_strike_leaves_one_hp_removes_nen_and_slides_past_the_target() {
     assert_eq!(stored_sp(&repository, &character), 945);
     context.server.state_mut().insert_character(character);
     crate::server::Server::game_loop_iteration(&context.server, 40);
-    let character = context.server.state().get_character(id).unwrap();
+    let guard_477 = context.server.state();
+    let character = guard_477.get_character(id).unwrap();
     assert_eq!(character.status.hp, 1);
     assert!(!character.status.has_status_change(StatusChangeKind::Nen));
     assert_eq!((character.x, character.y), (53, 50));
+    drop(guard_477);
 }
 
 #[test]
@@ -561,19 +567,23 @@ fn intimidate_warps_after_eight_hundred_milliseconds_and_only_brings_a_nearby_vi
         instance.state_mut().cells_mut()[10 * 100 + 10] |= CellType::Walkable.as_flag();
         for tick in (120..=880).step_by(40) {
             crate::server::Server::game_loop_iteration(&context.server, tick);
-            let caster = context.server.state().get_character(id).unwrap();
+            let guard_564 = context.server.state();
+            let caster = guard_564.get_character(id).unwrap();
             assert_eq!((caster.x, caster.y), (50, 50));
+            drop(guard_564);
         }
         for tick in (920..=1040).step_by(40) {
             crate::server::Server::game_loop_iteration(&context.server, tick);
         }
-        let caster = context.server.state().get_character(id).unwrap();
-        let victim = context.server.state().get_character(target_id).unwrap();
+        let guard_570 = context.server.state();
+        let caster = guard_570.get_character(id).unwrap();
+        let victim = guard_570.get_character(target_id).unwrap();
         assert_eq!((caster.x, caster.y), (10, 10));
         assert_eq!((victim.x, victim.y), if victim_stays_nearby { (10, 10) } else { (80, 50) });
         assert_eq!(caster.current_map_instance(), instance_id);
         assert_eq!(victim.current_map_instance(), instance_id);
         assert_eq!(stored_sp(&repository, caster), 975);
+        drop(guard_570);
     }
 }
 
@@ -586,7 +596,7 @@ fn expired_sphere_rolls_back_native_skill_payment() {
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), 10000, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), 10000, &mut character);
     assert!(!character.is_using_skill());
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (1000, 1000));
 }
@@ -622,7 +632,7 @@ fn wide_soul_drain_applies_current_sp_loss_inside_its_radius_and_spares_friendly
         .script_skill_service()
         .cast_skill(
             &context.server,
-            context.server.state(),
+            &context.server.state(),
             &mut character,
             680,
             6,
@@ -640,7 +650,7 @@ fn wide_soul_drain_applies_current_sp_loss_inside_its_radius_and_spares_friendly
         }) = event
         {
             service.script_mob_combat(
-                instance.state_mut().as_mut(),
+                &mut *instance.state_mut(),
                 source_id,
                 target_id,
                 effect,
@@ -702,7 +712,7 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
                 .script_skill_service()
                 .place_ground_skill_depth(
                     &context.server,
-                    context.server.state(),
+                    &context.server.state(),
                     &mut character,
                     skill.id(),
                     1,
@@ -717,14 +727,14 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
             context
                 .server
                 .script_skill_service()
-                .tick_ground_skills(&context.server, context.server.state(), 100);
+                .tick_ground_skills(&context.server, &context.server.state(), 100);
         } else {
             context
                 .server
                 .script_skill_service()
                 .cast_skill(
                     &context.server,
-                    context.server.state(),
+                    &context.server.state(),
                     &mut character,
                     skill.id(),
                     1,
@@ -757,7 +767,7 @@ fn direct_area_and_ground_spells_preserve_elemental_absorption_through_mob_admis
             MobService::new(context.client_notification_sender.clone(), GlobalConfigService::instance()),
             context.server_task_queue.clone(),
         );
-        service.mob_being_attacked(instance.state_mut().as_mut(), damage, instance.task_queue(), 100);
+        service.mob_being_attacked(&mut *instance.state_mut(), damage, instance.task_queue(), 100);
         let state = instance.state();
         let target = state.get_mob(111).unwrap();
         assert_eq!(target.hp(), 200_u32.saturating_add(damage.healing).min(maximum));
@@ -803,7 +813,7 @@ fn dragon_fear_tries_the_next_ailment_after_an_existing_status_rejects_the_first
         context.server_task_queue.clone(),
     );
     service.start_mob_status_alternatives(
-        instance.state_mut().as_mut(),
+        &mut *instance.state_mut(),
         MobStatusAlternatives { mob_id: 111, requests },
         40,
     );
@@ -836,7 +846,7 @@ fn missing_ammunition_rolls_back_native_skill_payment() {
     context
         .server
         .server_service()
-        .character_use_skill(&context.server, context.server.state(), 10000, &mut character);
+        .character_use_skill(&context.server, &context.server.state(), 10000, &mut character);
     assert!(!character.is_using_skill());
     assert_eq!((character.status.sp, stored_sp(&repository, &character)), (1000, 1000));
     let records: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
@@ -856,7 +866,7 @@ fn support_lex_divina_pays_once_then_delays_silence_and_cures_existing_silence()
         target.status.luk = 0;
     }
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut character, SkillEnum::PrLexdivina.id(), 1, target_id, true, 0, false,
+        &context.server, &context.server.state(), &mut character, SkillEnum::PrLexdivina.id(), 1, target_id, true, 0, false,
     ).unwrap();
     let completed_at = character.script_skill_state.casting_until;
     assert_eq!(stored_sp(&repository, &character), 1000);
@@ -877,7 +887,7 @@ fn support_lex_divina_pays_once_then_delays_silence_and_cures_existing_silence()
     assert_eq!(stored_sp(&repository, context.server.state().get_character(source_id).unwrap()), paid_sp);
     let mut source = context.server.state_mut().characters_mut().remove(&source_id).unwrap();
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut source, SkillEnum::PrLexdivina.id(), 1, target_id, false, completed_at + 1000, true,
+        &context.server, &context.server.state(), &mut source, SkillEnum::PrLexdivina.id(), 1, target_id, false, completed_at + 1000, true,
     ).unwrap();
     context.server.state_mut().insert_character(source);
     crate::server::Server::game_loop_iteration(&context.server, completed_at + 1040);
@@ -891,14 +901,14 @@ fn support_endows_reject_unarmed_targets_and_failed_replacement_unequips_without
     let (context, _, mut character) = fixture(true, true);
     let target_id = character.char_id + 1;
     assert!(context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut character, SkillEnum::SaFlamelauncher.id(), 1, target_id, false, 0, true,
+        &context.server, &context.server.state(), &mut character, SkillEnum::SaFlamelauncher.id(), 1, target_id, false, 0, true,
     ).is_err());
     StatusEffectService::start(&context.server, &mut character,
         StatusChangeRequest::guaranteed(StatusChangeKind::FireWeapon, 60000, 5), 0, &context.client_notification_sender,
     ).unwrap();
     let source_id = character.char_id;
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut character, SkillEnum::SaFlamelauncher.id(), 1, source_id, false, 0, true,
+        &context.server, &context.server.state(), &mut character, SkillEnum::SaFlamelauncher.id(), 1, source_id, false, 0, true,
     ).unwrap();
     assert!(character.status.right_hand_weapon().is_none());
     let weapon = character.get_item_from_inventory(0).unwrap();
@@ -928,7 +938,7 @@ fn support_provoke_interrupts_cancelable_casts_and_respects_cast_protection() {
             action: crate::server::script::skill::ScriptSkillAction::Cast,
             deferred_requirements: None, prepared_outcome: None, source_index: None, source_item: None,
         };
-        context.server.script_skill_service().apply_target_effect(&context.server, context.server.state(), &mut target, &effect, 100).unwrap();
+        context.server.script_skill_service().apply_target_effect(&context.server, &context.server.state(), &mut target, &effect, 100).unwrap();
         assert!(target.status.has_status_change(StatusChangeKind::Provoke));
         assert_eq!(target.script_skill_state.casting_until, if protected { 10000 } else { 0 });
     }
@@ -974,7 +984,7 @@ fn support_party_buffs_reach_only_living_same_map_members_in_range_and_pay_once(
         }
     }
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut source, SkillEnum::AlAngelus.id(), 10, source_id, true, 0, false,
+        &context.server, &context.server.state(), &mut source, SkillEnum::AlAngelus.id(), 10, source_id, true, 0, false,
     ).unwrap();
     let completed_at = source.script_skill_state.casting_until;
     context.server.state_mut().insert_character(source);
@@ -985,8 +995,10 @@ fn support_party_buffs_reach_only_living_same_map_members_in_range_and_pay_once(
     for offset in [2, 3, 4, 5] {
         assert!(!context.server.state().get_character(source_id + offset).unwrap().status.has_status_change(StatusChangeKind::Angelus));
     }
-    let source = context.server.state().get_character(source_id).unwrap();
+    let guard_988 = context.server.state();
+    let source = guard_988.get_character(source_id).unwrap();
     assert_eq!(stored_sp(&repository, source), 950);
+    drop(guard_988);
 }
 
 #[test]
@@ -1003,10 +1015,10 @@ fn support_map_rules_block_learned_skills_and_fly_wings_but_allow_butterfly_wing
     assert_eq!(stored_sp(&repository, &source), 1000);
     let source_id = source.char_id;
     assert!(context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut source, SkillEnum::AlTeleport.id(), 1, source_id, false, 0, true,
+        &context.server, &context.server.state(), &mut source, SkillEnum::AlTeleport.id(), 1, source_id, false, 0, true,
     ).is_err());
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut source, SkillEnum::AlTeleport.id(), 3, source_id, false, 0, true,
+        &context.server, &context.server.state(), &mut source, SkillEnum::AlTeleport.id(), 3, source_id, false, 0, true,
     ).unwrap();
     assert!(context.server_task_queue.pop().unwrap_or_default().into_iter().any(|event| matches!(event, crate::server::model::events::game_event::GameEvent::ScriptWarp(_))));
 }
@@ -1022,11 +1034,13 @@ fn autocast_charges_hp_without_sp_or_reagents_and_delays_only_attack_and_hit_tri
     for (trigger, expected_hp, expected_delay) in [(CombatTrigger::Attack, 985, 500), (CombatTrigger::Hit, 970, 500), (CombatTrigger::Skill, 955, 0)] {
         context.server.state_mut().characters_mut().get_mut(&source_id).unwrap().timing.set_canact_tick(0);
         context.server.script_skill_service().cast_equipment_proc(
-            &context.server, context.server.state_mut().as_mut(), source_id, source_id, SkillEnum::AlIncagi.id(), 1, 0, 1, trigger,
+            &context.server, &mut *context.server.state_mut(), source_id, source_id, SkillEnum::AlIncagi.id(), 1, 0, 1, trigger,
         ).unwrap();
-        let source = context.server.state().get_character(source_id).unwrap();
+        let guard_1027 = context.server.state();
+        let source = guard_1027.get_character(source_id).unwrap();
         assert_eq!((source.status.hp, source.status.sp), (expected_hp, 1000));
         assert_eq!(source.timing.get_canact_tick(), expected_delay);
+        drop(guard_1027);
         let stored: CharacterRecord = database::required(&repository.database.characters, &source_id.to_be_bytes()).unwrap();
         assert_eq!((stored.hp, stored.sp), (expected_hp as i32, 1000));
     }
@@ -1041,12 +1055,14 @@ fn autocast_hp_cost_can_kill_before_a_support_effect_and_still_commits_atomicall
     let source_id = source.char_id;
     context.server.state_mut().insert_character(source);
     assert!(context.server.script_skill_service().cast_equipment_proc(
-        &context.server, context.server.state_mut().as_mut(), source_id, source_id, SkillEnum::AlIncagi.id(), 1, 0, 1, CombatTrigger::Attack,
+        &context.server, &mut *context.server.state_mut(), source_id, source_id, SkillEnum::AlIncagi.id(), 1, 0, 1, CombatTrigger::Attack,
     ).is_err());
-    let source = context.server.state().get_character(source_id).unwrap();
+    let guard_1046 = context.server.state();
+    let source = guard_1046.get_character(source_id).unwrap();
     assert_eq!(source.status.hp, 0);
     assert!(source.is_dead());
     assert!(!source.status.has_status_change(StatusChangeKind::IncreaseAgi));
+    drop(guard_1046);
     let stored: CharacterRecord = database::required(&repository.database.characters, &source_id.to_be_bytes()).unwrap();
     assert_eq!((stored.hp, stored.sp), (0, 1000));
 }
@@ -1069,7 +1085,7 @@ fn final_strike_keeps_damage_and_hp_penalty_in_gvg_without_sliding_the_caster() 
     target.y = 50;
     instance.state_mut().mobs_mut().insert(111, target);
     context.server.script_skill_service().cast_skill(
-        &context.server, context.server.state(), &mut source, SkillEnum::NjIssen.id(), 1, 111, false, 0, true,
+        &context.server, &context.server.state(), &mut source, SkillEnum::NjIssen.id(), 1, 111, false, 0, true,
     ).unwrap();
     let damage = instance.task_queue().pop().unwrap_or_default().into_iter().find_map(|event| {
         if let MapEvent::MobDamage(MobDamage { damage }) = event { Some(damage) } else { None }
@@ -1078,8 +1094,10 @@ fn final_strike_keeps_damage_and_hp_penalty_in_gvg_without_sliding_the_caster() 
     let source_id = source.char_id;
     context.server.state_mut().insert_character(source);
     crate::server::Server::game_loop_iteration(&context.server, 40);
-    let source = context.server.state().get_character(source_id).unwrap();
+    let guard_1081 = context.server.state();
+    let source = guard_1081.get_character(source_id).unwrap();
     assert_eq!((source.x, source.y, source.status.hp), (50, 50, 1));
+    drop(guard_1081);
 }
 
 #[test]
@@ -1102,12 +1120,14 @@ fn autocast_tarot_charges_raw_sp_only_for_the_prepared_successful_draw() {
         }).unwrap();
         fastrand::seed(seed);
         let result = context.server.script_skill_service().cast_equipment_proc(
-            &context.server, context.server.state_mut().as_mut(), source_id, 111, SkillEnum::CgTarotcard.id(), 5, 0, 1, CombatTrigger::Skill,
+            &context.server, &mut *context.server.state_mut(), source_id, 111, SkillEnum::CgTarotcard.id(), 5, 0, 1, CombatTrigger::Skill,
         );
         assert_eq!(result.is_ok(), succeeded);
-        let source = context.server.state().get_character(source_id).unwrap();
+        let guard_1108 = context.server.state();
+        let source = guard_1108.get_character(source_id).unwrap();
         assert_eq!(stored_sp(&repository, source), if succeeded { 960 } else { 1000 });
         assert_eq!(source.timing.get_canact_tick(), 0);
+        drop(guard_1108);
     }
 }
 
@@ -1121,24 +1141,28 @@ fn teleport_pays_at_menu_opening_and_cancel_does_not_refund_or_repay() {
         character.status.known_skills.push(KnownSkill { value: SkillEnum::AlTeleport, level });
         character.save_map = "empty.gat".into();
         context.server.state_mut().insert_character(character);
-        context.server.handle_character_skill(context.server.state_mut().as_mut(), CharacterUseSkill {
+        context.server.handle_character_skill(&mut *context.server.state_mut(), CharacterUseSkill {
             char_id, target_id: char_id, skill_id: SkillEnum::AlTeleport.id(), skill_level: level,
         }, 0).unwrap();
-        let source = context.server.state().get_character(char_id).unwrap();
+        let guard_1127 = context.server.state();
+        let source = guard_1127.get_character(char_id).unwrap();
         assert_eq!(stored_sp(&repository, source), 1000);
         assert!(source.script_skill_state.pending_teleport.is_none());
+        drop(guard_1127);
         crate::server::Server::game_loop_iteration(&context.server, 40);
-        let source = context.server.state().get_character(char_id).unwrap();
+        let guard_1131 = context.server.state();
+        let source = guard_1131.get_character(char_id).unwrap();
         assert_eq!(stored_sp(&repository, source), remaining_sp);
         assert_eq!(source.script_skill_state.pending_teleport.as_ref().unwrap().level, level);
+        drop(guard_1131);
         let mut source = context.server.state_mut().characters_mut().remove(&char_id).unwrap();
         let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: "cancel".into(), session: None };
         let selection_tick = if level == 1 { 80 } else { 120040 };
-        context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, selection_tick).unwrap();
+        context.server.script_skill_service().finish_teleport_menu(&context.server, &context.server.state(), &mut source, &selection, selection_tick).unwrap();
         assert!(source.script_skill_state.pending_teleport.is_none());
         assert_eq!((source.x, source.y), (50, 50));
         assert_eq!(stored_sp(&repository, &source), remaining_sp);
-        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, 120).is_err());
+        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, &context.server.state(), &mut source, &selection, 120).is_err());
         assert_eq!(stored_sp(&repository, &source), remaining_sp);
     }
 }
@@ -1164,7 +1188,7 @@ fn teleport_selection_warps_once_without_repayment_and_preserves_random_instance
         character.save_x = 10;
         character.save_y = 10;
         let char_id = character.char_id;
-        context.server.script_skill_service().start_native_teleport_menu(&context.server, context.server.state(), &mut character, level, 0).unwrap();
+        context.server.script_skill_service().start_native_teleport_menu(&context.server, &context.server.state(), &mut character, level, 0).unwrap();
         context.server.state_mut().insert_character(character);
         crate::server::Server::game_loop_iteration(&context.server, 40);
         let mut source = context.server.state_mut().characters_mut().remove(&char_id).unwrap();
@@ -1172,14 +1196,16 @@ fn teleport_selection_warps_once_without_repayment_and_preserves_random_instance
         instance.state_mut().cells_mut().fill(CellType::Shootable.as_flag());
         instance.state_mut().cells_mut()[10 * 100 + 10] |= CellType::Walkable.as_flag();
         let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: destination.into(), session: None };
-        context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, 80).unwrap();
+        context.server.script_skill_service().finish_teleport_menu(&context.server, &context.server.state(), &mut source, &selection, 80).unwrap();
         assert!(source.script_skill_state.pending_teleport.is_none());
-        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, 80).is_err());
+        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, &context.server.state(), &mut source, &selection, 80).is_err());
         context.server.state_mut().insert_character(source);
         for tick in (80..=240).step_by(40) { crate::server::Server::game_loop_iteration(&context.server, tick); }
-        let source = context.server.state().get_character(char_id).unwrap();
+        let guard_1180 = context.server.state();
+        let source = guard_1180.get_character(char_id).unwrap();
         assert_eq!((source.x, source.y, source.current_map_instance()), (10, 10, instance_id));
         assert_eq!(stored_sp(&repository, source), expected_sp);
+        drop(guard_1180);
     }
 }
 
@@ -1190,7 +1216,7 @@ fn teleport_rejects_cleared_dead_changed_map_and_unoffered_selections_without_re
     for rejection in ["cleared", "dead", "changed-map", "unoffered", "no-teleport"] {
         let (context, repository, mut character) = fixture(false, false);
         let char_id = character.char_id;
-        context.server.script_skill_service().start_native_teleport_menu(&context.server, context.server.state(), &mut character, 1, 0).unwrap();
+        context.server.script_skill_service().start_native_teleport_menu(&context.server, &context.server.state(), &mut character, 1, 0).unwrap();
         context.server.state_mut().insert_character(character);
         crate::server::Server::game_loop_iteration(&context.server, 40);
         let mut source = context.server.state_mut().characters_mut().remove(&char_id).unwrap();
@@ -1204,7 +1230,7 @@ fn teleport_rejects_cleared_dead_changed_map_and_unoffered_selections_without_re
             context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
         }
         let selection = ScriptTeleportSelection { char_id, skill_id: SkillEnum::AlTeleport.id(), map: if rejection == "unoffered" { "prontera" } else { "Random" }.into(), session: None };
-        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, context.server.state(), &mut source, &selection, tick).is_err(), "{rejection}");
+        assert!(context.server.script_skill_service().finish_teleport_menu(&context.server, &context.server.state(), &mut source, &selection, tick).is_err(), "{rejection}");
         assert!(source.script_skill_state.pending_teleport.is_none());
         assert_eq!(stored_sp(&repository, &source), 990);
         assert_eq!((source.x, source.y), (50, 50));
@@ -1218,7 +1244,7 @@ fn teleport_interrupted_or_blocked_before_menu_opening_does_not_charge() {
     for rejection in ["interrupt", "dead", "no-teleport", "no-skill"] {
         let (context, repository, mut character) = fixture(false, false);
         let char_id = character.char_id;
-        context.server.script_skill_service().start_native_teleport_menu(&context.server, context.server.state(), &mut character, 1, 0).unwrap();
+        context.server.script_skill_service().start_native_teleport_menu(&context.server, &context.server.state(), &mut character, 1, 0).unwrap();
         if rejection == "interrupt" { context.server.script_skill_service().cancel_queued_cast(&mut character); }
         if rejection == "dead" { character.status.hp = 0; }
         if matches!(rejection, "no-teleport" | "no-skill") {
@@ -1228,9 +1254,11 @@ fn teleport_interrupted_or_blocked_before_menu_opening_does_not_charge() {
         }
         context.server.state_mut().insert_character(character);
         crate::server::Server::game_loop_iteration(&context.server, 40);
-        let source = context.server.state().get_character(char_id).unwrap();
+        let guard_1231 = context.server.state();
+        let source = guard_1231.get_character(char_id).unwrap();
         assert!(source.script_skill_state.pending_teleport.is_none());
         assert_eq!(stored_sp(&repository, source), 1000);
+        drop(guard_1231);
     }
 }
 
@@ -1273,11 +1301,13 @@ fn stone_fling_pays_one_stone_and_sp_once_and_kyrie_suppresses_damage_and_second
     assert_eq!(items[0].amount, 1);
     context.server.state_mut().insert_character(source);
     for tick in (40..=120).step_by(40) { crate::server::Server::game_loop_iteration(&context.server, tick); }
-    let target = context.server.state().get_character(target_id).unwrap();
+    let guard_1276 = context.server.state();
+    let target = guard_1276.get_character(target_id).unwrap();
     assert_eq!(target.status.hp, 1000);
     assert_eq!(target.status.status_change(StatusChangeKind::Kyrie).unwrap().values[1..3], [250, 9]);
     assert!(!target.status.has_status_change(StatusChangeKind::Stun));
     assert!(!target.status.has_status_change(StatusChangeKind::Blind));
+    drop(guard_1276);
     assert_eq!(stored_sp(&repository, context.server.state().get_character(source_id).unwrap()), 998);
 }
 
@@ -1298,9 +1328,11 @@ fn pressure_native_cast_deals_fixed_damage_and_drains_sp_once_without_consuming_
     assert_eq!(stored_sp(&repository, &source), (1000 - plan.sp) as i32);
     context.server.state_mut().insert_character(source);
     for tick in (40..=120).step_by(40) { crate::server::Server::game_loop_iteration(&context.server, tick); }
-    let target = context.server.state().get_character(target_id).unwrap();
+    let guard_1301 = context.server.state();
+    let target = guard_1301.get_character(target_id).unwrap();
     assert_eq!((target.status.hp, target.status.sp), (200, 800));
     assert!(target.status.has_status_change(StatusChangeKind::LexAeterna));
+    drop(guard_1301);
     assert_eq!(stored_sp(&repository, context.server.state().get_character(source_id).unwrap()), (1000 - plan.sp) as i32);
 }
 

@@ -5,7 +5,7 @@
 
 use std::any::Any;
 
-pub trait Packet {
+pub trait Packet: Send + Sync {
     fn id(&self, packetver: u32) -> &str;
     fn name(&self) -> &str;
     fn base_len(&self, packetver: u32) -> usize;

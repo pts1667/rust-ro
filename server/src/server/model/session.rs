@@ -188,9 +188,6 @@ pub struct SessionRecordEntry {
     packet: Option<Box<dyn Packet>>,
 }
 
-unsafe impl Send for SessionRecordEntry {}
-unsafe impl Sync for SessionRecordEntry {}
-
 impl Clone for SessionRecordEntry {
     fn clone(&self) -> Self {
         Self {

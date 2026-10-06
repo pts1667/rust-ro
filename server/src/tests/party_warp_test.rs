@@ -49,14 +49,14 @@ fn random_party_warp_uses_one_center_and_scatter_within_the_existing_instance() 
     let (context, _, party_id) = fixture();
     let mut request = event(party_id, "RandomAll");
     request.range_x = 3; request.range_y = 3; request.source_map = Some("empty".into());
-    let warps = context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap();
+    let warps = context.server.plan_party_warp(&mut *context.server.state_mut(), &request).unwrap();
     assert_eq!(warps.len(), 2);
     let leader = warps.iter().find(|warp| warp.char_id == 150_000).unwrap();
     let member = warps.iter().find(|warp| warp.char_id == 150_001).unwrap();
     assert!(leader.x.abs_diff(member.x) <= 3 && leader.y.abs_diff(member.y) <= 3);
     assert!(warps.iter().all(|warp| warp.map == "empty" && warp.destination_instance == Some(0)));
     request.range_x = 0; request.range_y = 0;
-    let warps = context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap();
+    let warps = context.server.plan_party_warp(&mut *context.server.state_mut(), &request).unwrap();
     assert_eq!((warps[0].x, warps[0].y), (warps[1].x, warps[1].y));
 }
 
@@ -66,19 +66,19 @@ fn party_warp_respects_origin_rules_dead_members_and_source_instance_filters() {
     let mut flags = MapFlags::default(); flags.set(MapFlag::NoReturn, true, &[]).unwrap();
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
     let mut request = event(party_id, "RandomAll");
-    assert_eq!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap().iter().map(|warp| warp.char_id).collect::<Vec<_>>(), vec![150_000]);
-    assert!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "empty")).unwrap().is_empty());
+    assert_eq!(context.server.plan_party_warp(&mut *context.server.state_mut(), &request).unwrap().iter().map(|warp| warp.char_id).collect::<Vec<_>>(), vec![150_000]);
+    assert!(context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "empty")).unwrap().is_empty());
     let mut flags = MapFlags::default(); flags.set(MapFlag::NoWarp, true, &[]).unwrap();
     context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
-    assert!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).is_err());
+    assert!(context.server.plan_party_warp(&mut *context.server.state_mut(), &request).is_err());
     context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
     request.source_map = Some("empty".into());
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().map_instance_key = MapInstanceKey::new("empty".into(), 7);
-    assert_eq!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &request).unwrap().len(), 1);
+    assert_eq!(context.server.plan_party_warp(&mut *context.server.state_mut(), &request).unwrap().len(), 1);
     let mut state = context.server.state_mut();
     let member = state.characters_mut().get_mut(&150_001).unwrap();
     member.map_instance_key = MapInstanceKey::new("empty".into(), 0); member.status.hp = 0;
-    assert_eq!(context.server.plan_party_warp(state.as_mut(), &request).unwrap().len(), 1);
+    assert_eq!(context.server.plan_party_warp(&mut state, &request).unwrap().len(), 1);
 }
 
 #[test]
@@ -89,16 +89,16 @@ fn party_warp_supports_leader_individual_save_points_and_each_members_random_map
         let member = state.characters_mut().get_mut(&id).unwrap();
         member.save_map = "empty.gat".into(); member.save_x = if id == 150_000 { 15 } else { 25 }; member.save_y = 20;
     }
-    let leader = context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "Leader")).unwrap();
+    let leader = context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "Leader")).unwrap();
     assert_eq!(leader.len(), 1); assert_eq!(leader[0].char_id, 150_001); assert_eq!((leader[0].x, leader[0].y), (50, 50));
-    let saved = context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "SavePoint")).unwrap();
+    let saved = context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "SavePoint")).unwrap();
     assert!(saved.iter().all(|warp| (warp.x, warp.y) == (15, 20)));
-    let individual = context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "SavePointAll")).unwrap();
+    let individual = context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "SavePointAll")).unwrap();
     assert_eq!(individual.iter().find(|warp| warp.char_id == 150_001).map(|warp| (warp.x, warp.y)), Some((25, 20)));
-    assert_eq!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "Random")).unwrap().len(), 2);
+    assert_eq!(context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "Random")).unwrap().len(), 2);
     let map = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     map.state_mut().cells_mut().fill(0);
-    assert!(context.server.plan_party_warp(context.server.state_mut().as_mut(), &event(party_id, "RandomAll")).is_err());
+    assert!(context.server.plan_party_warp(&mut *context.server.state_mut(), &event(party_id, "RandomAll")).is_err());
 }
 
 #[test]
@@ -117,7 +117,7 @@ fn compiled_giant_fly_wing_commits_source_then_routes_filtered_party_warps() {
     outcome.unwrap();
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
     let source = character.get_item_from_inventory(0).unwrap().clone();
-    context.server.item_service().finish_item_effects_in_state(&context.server, context.server.state(), context.runtime(), &mut character, &action, &source, host.effects).unwrap();
+    context.server.item_service().finish_item_effects_in_state(&context.server, &mut context.server.state(), context.runtime(), &mut character, &action, &source, host.effects).unwrap();
     let saved: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
     assert_eq!((saved[0].amount, saved[0].unique_id), (1, 9001));
     context.server.state_mut().insert_character(character);
@@ -125,7 +125,7 @@ fn compiled_giant_fly_wing_commits_source_then_routes_filtered_party_warps() {
     let request = requests.into_iter().find_map(|event| if let GameEvent::ScriptPartyWarp(request) = event { Some(request) } else { None }).unwrap();
     assert_eq!(request.party_id, party_id); assert_eq!(request.source_map.as_deref(), Some("empty"));
     assert_eq!((request.range_x, request.range_y), (3, 3));
-    context.server.handle_script_event(context.server.state_mut().as_mut(), GameEvent::ScriptPartyWarp(request), 100).unwrap();
+    context.server.handle_script_event(&mut *context.server.state_mut(), GameEvent::ScriptPartyWarp(request), 100).unwrap();
     let warps = context.server.pop_task().unwrap();
     assert_eq!(warps.iter().filter(|event| matches!(event, GameEvent::ScriptWarp(_))).count(), 2);
 }
@@ -143,11 +143,11 @@ fn giant_fly_wing_rejects_missing_party_or_missing_local_living_peer_before_cons
     character.add_items(context.runtime().block_on(repository.character_inventory_fetch(character.char_id as i32)).unwrap());
     context.server.state_mut().characters_mut().get_mut(&150_001).unwrap().status.hp = 0;
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action.clone(), &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action.clone(), &mut character);
     assert!(context.server.pop_task().is_none());
     assert_eq!(character.get_item_from_inventory(0).unwrap().amount, 2);
     character.game_systems.party_id = 0;
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action, &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action, &mut character);
     let saved: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
     assert_eq!(saved[0].amount, 2); assert!(context.server.pop_task().is_none());
 }
@@ -155,14 +155,16 @@ fn giant_fly_wing_rejects_missing_party_or_missing_local_living_peer_before_cons
 #[test]
 fn npc_character_identifier_queries_use_named_live_characters_and_zero_for_unknown_names() {
     let (context, _, party_id) = fixture();
-    let character = context.server.state().get_character(150_000).unwrap();
+    let guard_158 = context.server.state();
+    let character = guard_158.get_character(150_000).unwrap();
     let account = character.account_id;
+    drop(guard_158);
     let mut session = Session::create_empty(account, 0, 0, context.server.packetver()); session.char_id = Some(150_000);
     context.server.state().add_session(account, Arc::new(session));
     for (kind, name, expected) in [(0, None, 150_000), (1, Some("Party Member"), party_id), (3, Some("Party Member"), 2_000_001), (0, Some("Absent"), 0)] {
         let (sender, receiver) = tokio::sync::oneshot::channel();
         let mut arguments = vec![Value::Number(kind)]; arguments.extend(name.map(Value::from));
-        context.server.script_service().handle_request(&context.server, context.server.state_mut().as_mut(), crate::server::script::ScriptRequest {
+        context.server.script_service().handle_request(&context.server, &mut *context.server.state_mut(), crate::server::script::ScriptRequest {
             char_id: 150_000, account_id: account, npc_id: 77, npc_entry: 77, npc_scope_instance: 0, map_instance: 0, generation: 0, background: false, event_depth: 0, timer_context: None, logout_token: None,
             request: Request::Call { function: Function::GetCharacterId, arguments }, response: Arc::new(Mutex::new(Some(sender))),
         });

@@ -50,7 +50,7 @@ fn forbidden_consumables_preserve_the_exact_source_and_all_resources() {
         set_flag(&context, flag);
         let before: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
         let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
-        context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action, &mut character);
+        context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action, &mut character);
         let after: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
         assert_eq!(after, before, "{item_id} on {flag:?}");
         assert_eq!((character.status.hp, character.status.sp, character.status.zeny), (1, 1000, 0));
@@ -65,9 +65,9 @@ fn ordinary_healing_commits_once_after_item_use_is_reenabled() {
     let (context, repository, mut character) = item_fixture(501);
     set_flag(&context, MapFlag::NoItemConsumption);
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action.clone(), &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action.clone(), &mut character);
     context.server.map_flag_overrides().insert(("empty".into(), 0), MapFlags::default());
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action, &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action, &mut character);
     let stored: CharacterRecord = database::required(&repository.database.characters, &character.char_id.to_be_bytes()).unwrap();
     let inventory: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
     assert!(character.status.hp > 1);
@@ -100,7 +100,7 @@ fn map_change_after_magnifier_targeting_keeps_source_and_target_unchanged() {
     let before: Vec<InventoryRecord> = database::required(&repository.database.inventories, &char_id.to_be_bytes()).unwrap();
     set_flag(&context, MapFlag::NoItemConsumption);
     context.server.state_mut().insert_character(character);
-    assert!(context.server.handle_script_event(context.server.state_mut().as_mut(), GameEvent::ScriptIdentify(ScriptIdentify { char_id, index: selected }), 101).is_err());
+    assert!(context.server.handle_script_event(&mut *context.server.state_mut(), GameEvent::ScriptIdentify(ScriptIdentify { char_id, index: selected }), 101).is_err());
     let after: Vec<InventoryRecord> = database::required(&repository.database.inventories, &char_id.to_be_bytes()).unwrap();
     assert_eq!(after, before);
     assert!(!after[selected].is_identified);
@@ -113,7 +113,7 @@ fn map_change_before_delayed_item_payment_preserves_costs_and_source() {
     let before: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
     set_flag(&context, MapFlag::NoItemConsumption);
     let cost = crate::server::script::skill::requirements::SkillRequirementPlan { minimum_hp: 1, hp: 1, sp: 7, ..Default::default() };
-    assert!(context.server.item_service().pay_requirement_plan_in_state(&context.server, context.server.state(), &mut character, &cost, Some(0), 101).is_err());
+    assert!(context.server.item_service().pay_requirement_plan_in_state(&context.server, &context.server.state(), &mut character, &cost, Some(0), 101).is_err());
     let after: Vec<InventoryRecord> = database::required(&repository.database.inventories, &character.char_id.to_be_bytes()).unwrap();
     assert_eq!(after, before);
     assert_eq!((character.status.hp, character.status.sp), (1000, 1000));
@@ -131,21 +131,21 @@ fn accepted_trade_guards_preserve_items_and_resources_and_requested_trade_allows
     character.game_systems.trade = Some(PlayerTrade { session_id: 10, partner_id: char_id + 1, requested_by: char_id,
         phase: PlayerTradePhase::Accepted, items: vec![], zeny: 0, requested_at: 0 });
     let action = CharacterUseItem { char_id, target_char_id: char_id, index: 0 };
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action.clone(), &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action.clone(), &mut character);
     let cost = crate::server::script::skill::requirements::SkillRequirementPlan { minimum_hp: 1, sp: 7, ..Default::default() };
     assert!(context.server.item_service().pay_requirement_plan(&context.server, &mut character, &cost, None, 101).is_err());
     assert_eq!((character.status.hp, character.status.sp), (1, 1000));
     context.server.state_mut().insert_character(character);
-    assert!(!context.server.server_service().character_drop_item(&context.server, context.server.state_mut().as_mut(),
+    assert!(!context.server.server_service().character_drop_item(&context.server, &mut *context.server.state_mut(),
         CharacterRemoveItem { char_id, index: 0, amount: 1, price: 0 }).unwrap());
-    let error = context.server.start_npc_conversation(context.server.state(), NpcContact { char_id, account_id, npc_id: 0 }).unwrap_err();
+    let error = context.server.start_npc_conversation(&context.server.state(), NpcContact { char_id, account_id, npc_id: 0 }).unwrap_err();
     assert_eq!(error, "NPC visitor is unavailable");
     let saved: Vec<InventoryRecord> = database::required(&repository.database.inventories, &char_id.to_be_bytes()).unwrap();
     assert_eq!((saved[0].amount, saved[0].unique_id), (2, 8181));
     assert!(context.server.pop_task().is_none());
     let mut character = context.server.state_mut().characters_mut().remove(&char_id).unwrap();
     character.game_systems.trade.as_mut().unwrap().phase = PlayerTradePhase::Requested;
-    context.server.item_service().use_item_in_state(&context.server, context.server.state(), context.runtime(), action, &mut character);
+    context.server.item_service().use_item_in_state(&context.server, &mut context.server.state(), context.runtime(), action, &mut character);
     let saved: Vec<InventoryRecord> = database::required(&repository.database.inventories, &char_id.to_be_bytes()).unwrap();
     assert_eq!(saved[0].amount, 1);
     assert!(character.status.hp > 1);
