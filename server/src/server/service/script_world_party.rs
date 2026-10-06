@@ -4,6 +4,7 @@ use models::enums::skill::UseSkillFailure;
 use super::{ScriptWorldService, install_state, protocol};
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, ScriptWorld};
+use crate::server::model::map_flags::MapFlag;
 use crate::server::model::game_systems::{PartyChange, PartyInvitation, PartyRecord, ScriptWorldRequest};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -111,6 +112,18 @@ pub fn party_loot_candidates(state: &ServerState, picker: &Character) -> Vec<u32
         eligible.push(picker.char_id);
     }
     eligible
+}
+
+fn changes_membership(request: &PartyRequest) -> bool {
+    matches!(
+        request,
+        PartyRequest::CreateParty { .. }
+            | PartyRequest::InviteParty(_)
+            | PartyRequest::InvitePartyByName(_)
+            | PartyRequest::AnswerPartyInvite { accept: true, .. }
+            | PartyRequest::LeaveParty
+            | PartyRequest::ExpelParty { .. }
+    )
 }
 
 fn options_packet(party: &PartyRecord, denied: bool) -> Vec<u8> {
@@ -324,6 +337,9 @@ impl ScriptWorldService {
         character: &mut Character,
         request: PartyRequest,
     ) -> Result<(), String> {
+        if changes_membership(&request) && state.map_flags(&character.map_instance_key).enabled(MapFlag::PartyLock) {
+            return Err("Party membership is locked on this map".into());
+        }
         match request {
             PartyRequest::CreateParty {
                 name,

@@ -18,6 +18,7 @@ const SANCTUARY_MAX_LEVEL_HEAL: u32 = 777;
 const SANCTUARY_MAX_LEVEL_THRESHOLD: u8 = 6;
 const SANCTUARY_EXTRA_TARGETS: u8 = 3;
 const VENOM_DUST_DEFAULT_POISON_MS: i32 = 60_000;
+const EVIL_LAND_DEFAULT_BLIND_MS: i32 = 30_000;
 pub(super) const GANBANTEIN_SUCCESS_PERCENT: u8 = 80;
 const GANBANTEIN_RADIUS: u16 = 1;
 const SPIDER_WEB_DEFAULT_MS: i32 = 8000;
@@ -189,6 +190,34 @@ impl ScriptSkillService {
             .map(|target| target.char_id)
             .collect::<Vec<_>>();
         for char_id in poisoned {
+            server.add_to_next_tick(GameEvent::CharacterStatusChange(
+                crate::server::model::events::game_event::CharacterStatusChange { char_id, request: request.clone() },
+            ));
+        }
+    }
+
+    pub(super) fn tick_evil_land(&self, server: &Server, state: &ServerState, ground: &mut GroundSkill, tick: u128) {
+        if ground.expires_at <= tick || tick < ground.next_hit_at {
+            return;
+        }
+        ground.next_hit_at = ground.next_hit_at.saturating_add(ground.interval);
+        let duration = SkillMetadata::find(ground.skill_id)
+            .and_then(|metadata| metadata.duration(ground.level, true))
+            .unwrap_or(EVIL_LAND_DEFAULT_BLIND_MS);
+        let request = StatusChangeRequest::guaranteed(StatusChangeKind::Blind, duration, i32::from(ground.level));
+        let blinded = state
+            .characters()
+            .values()
+            .filter(|target| {
+                target.status.hp > 0
+                    && target.current_map_name() == &ground.map
+                    && target.current_map_instance() == ground.instance
+                    && ground.covers(target.x, target.y)
+                    && !target.status.has_status_change(StatusChangeKind::Blind)
+            })
+            .map(|target| target.char_id)
+            .collect::<Vec<_>>();
+        for char_id in blinded {
             server.add_to_next_tick(GameEvent::CharacterStatusChange(
                 crate::server::model::events::game_event::CharacterStatusChange { char_id, request: request.clone() },
             ));

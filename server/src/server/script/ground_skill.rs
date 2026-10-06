@@ -59,6 +59,7 @@ pub enum GroundKind {
     Sanctuary,
     VenomDust,
     SpiderWeb,
+    EvilLand,
 }
 
 impl GroundKind {
@@ -71,6 +72,7 @@ impl GroundKind {
             "PR_SANCTUARY" => Self::Sanctuary,
             "AS_VENOMDUST" => Self::VenomDust,
             "PF_SPIDERWEB" => Self::SpiderWeb,
+            "NPC_EVILLAND" => Self::EvilLand,
             "WZ_QUAGMIRE" => Self::Quagmire,
             "SA_DELUGE" => Self::Deluge,
             "SA_LANDPROTECTOR" => Self::LandProtector,
@@ -147,11 +149,17 @@ impl GroundKind {
                 | Self::Sanctuary
                 | Self::VenomDust
                 | Self::SpiderWeb
+                | Self::EvilLand
                 | Self::Quagmire
                 | Self::Deluge
                 | Self::LandProtector
                 | Self::SkidTrap
+                | Self::AnkleSnare
                 | Self::LandMine
+                | Self::BlastMine
+                | Self::ClaymoreTrap
+                | Self::Shockwave
+                | Self::Flasher
                 | Self::Sandman
                 | Self::FreezingTrap
                 | Self::ArrowShower
@@ -176,6 +184,7 @@ impl GroundKind {
                 | Self::Sanctuary
                 | Self::VenomDust
                 | Self::SpiderWeb
+                | Self::EvilLand
                 | Self::GrandDarkness
                 | Self::Quagmire
                 | Self::Deluge
@@ -1024,6 +1033,10 @@ impl ScriptSkillService {
             }
             if ground.kind == GroundKind::SpiderWeb {
                 self.tick_spider_web(server, state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::EvilLand {
+                self.tick_evil_land(server, state, ground, tick);
                 continue;
             }
             if ground.actor_source.is_some() {
