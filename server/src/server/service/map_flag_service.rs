@@ -1,4 +1,3 @@
-use std::sync::mpsc::TrySendError;
 
 use configuration::configuration::GameConfig;
 use models::enums::map::MapPropertyFlags;

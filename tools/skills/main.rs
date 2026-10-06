@@ -443,6 +443,7 @@ fn generate_struct(job_skills_file: &mut File, skill_config: &SkillConfig) {
     job_skills_file.write_all(b"}\n").unwrap();
 }
 
+#[allow(dead_code)]
 fn generate_new(job_skills_file: &mut File, skill_config: &SkillConfig) {
     job_skills_file
         .write_all(b"    fn new(level: u8) -> Option<Self> where Self : Sized {\n")
@@ -1493,6 +1494,7 @@ fn generate_skills_enum_to_object(
 
 macro_rules! generate_return_per_level {
     ($function:ident, $type:ty, $is_option:expr) => {
+        #[allow(dead_code)]
         fn $function(job_skills_file: &mut File, value: &Option<$type>, value_per_level: &Option<Vec<$type>>) {
             if let Some(value) = value {
                 if $is_option {

@@ -210,7 +210,7 @@ impl MobService {
         &self,
         mob: &mut Mob,
         characters: &[MapItemSnapshot],
-        tick: u128,
+        _tick: u128,
     ) -> Option<MobAIAction> {
         // Check if passive mob was attacked while moving
         if let Some(target_id) = mob.target_id {

@@ -114,7 +114,7 @@ lazy_static! {
     static ref CONDITION_REGEX: Regex = Regex::new(r"#V\s([A-Z]{2,5})\s(\d{8})(?:\s(\d{8}))?").unwrap();
 }
 
-pub fn parse(packet_db_path: &Path) -> (Vec<PacketStructDefinition>, Vec<StructDefinition>) {
+pub fn parse(packet_db_path: &Path) -> (Vec<PacketStructDefinition<'_>>, Vec<StructDefinition<'_>>) {
     let file = File::open(packet_db_path).unwrap();
     let reader = io::BufReader::new(file);
     let mut packets: Vec<PacketStructDefinition> = Vec::new();

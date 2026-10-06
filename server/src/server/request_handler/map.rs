@@ -7,7 +7,6 @@ use crate::server::model::events::game_event::{CharacterLoadedFromClientSide, Ch
 use crate::server::model::request::Request;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::util::packet::chain_packets;
-use crate::util::string::StringUtil;
 
 pub fn handle_map_item_name(server: &Server, context: Request) {
     let gid = if context.packet().as_any().downcast_ref::<PacketCzReqnameall2>().is_some() {

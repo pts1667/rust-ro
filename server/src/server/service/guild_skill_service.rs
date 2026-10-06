@@ -114,7 +114,7 @@ impl Server {
             3 => 20,
             _ => return Err("Invalid Emergency Call level".into()),
         };
-        let mut caster = state.characters_mut().remove(&char_id).ok_or("Emergency Call source disconnected")?;
+        let caster = state.characters_mut().remove(&char_id).ok_or("Emergency Call source disconnected")?;
         let guild_id = caster.game_systems.guild_id;
         let result = if guild_id == 0 {
             Err("Emergency Call requires a guild".to_string())

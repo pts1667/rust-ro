@@ -235,6 +235,7 @@ pub fn random_group_entry(group: &ItemGroup, subgroup_id: i32, rng: &mut fastran
     }
 }
 
+#[cfg(test)]
 pub fn random_group_item(group_id: u32, rng: &mut fastrand::Rng) -> Option<(i32, i16)> {
     let group = group(&(group_id as i32).into())?;
     let entry = random_group_entry(group, 1, rng)?;
@@ -244,11 +245,6 @@ pub fn random_group_item(group_id: u32, rng: &mut fastrand::Rng) -> Option<(i32,
 pub fn random_summon(group_name: &str, rng: &mut fastrand::Rng) -> Option<u32> {
     let group = data().summons.iter().find(|group| group.name.eq_ignore_ascii_case(group_name))?;
     Some(weighted_index(group.entries.iter().map(|entry| entry.rate), rng).map_or(group.default, |index| group.entries[index].mob_id))
-}
-
-pub fn random_summon_id(group_id: i32, rng: &mut fastrand::Rng) -> Option<u32> {
-    let group = data().summons.iter().find(|group| group.id == group_id)?;
-    random_summon(&group.name, rng)
 }
 
 fn weighted_index(rates: impl Iterator<Item = u32> + Clone, rng: &mut fastrand::Rng) -> Option<usize> {

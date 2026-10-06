@@ -3,7 +3,7 @@ use models::enums::EnumWithMaskValueU32;
 use script_sdk::{Function, Value};
 
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
-use crate::server::model::events::game_event::{GameEvent, ScriptBroadcast, ScriptPartyWarp};
+use crate::server::model::events::game_event::{GameEvent, ScriptBroadcast};
 use crate::server::service::item_service::ItemService;
 use crate::server::state::character::Character;
 use crate::server::Server;

@@ -1,4 +1,3 @@
-use models::enums::EnumWithNumberValue;
 use models::enums::skill_enums::SkillEnum;
 use models::status::StatusSnapshot;
 use script_sdk::Value;

@@ -77,12 +77,14 @@ impl CastleFlags {
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct Castle {
+    #[allow(dead_code)]
     pub id: u32,
     pub map: String,
     pub name: String,
     pub emperium: [u16; 2],
     pub spawns: CastleSpawns,
     pub guardians: Vec<GuardianSlot>,
+    #[allow(dead_code)]
     pub master_room: [u16; 2],
     pub treasure: CastleTreasure,
     #[serde(default)]

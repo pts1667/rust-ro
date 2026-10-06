@@ -1,6 +1,5 @@
-use std::collections::HashSet;
 use std::net::Shutdown::Both;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use byteorder::{LittleEndian, WriteBytesExt};
 use models::status::KnownSkill;
@@ -18,10 +17,8 @@ use crate::repository::model::char_model::{CharInsertModel, CharSelectModel, Cha
 use crate::server::Server;
 use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::hotkey::Hotkey;
-use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::request::Request;
 use crate::server::model::status::StatusFromDb;
-use crate::server::script::ScriptGlobalVariableStore;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::Character;
 use crate::util::packet::chain_packets;

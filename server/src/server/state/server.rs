@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet};
-use std::net::TcpStream;
 use std::sync::atomic::AtomicI8;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use models::status::StatusSnapshot;
 use movement::position::Position;

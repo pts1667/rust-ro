@@ -4,7 +4,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use async_trait::async_trait;
 use database::{abort, character_slot_key, read, required, tx_read, tx_required, tx_write};
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
+use models::enums::EnumWithMaskValueU64;
 use models::status::{KnownSkill, Status, StatusSnapshot};
 use models::status_bonus::{
     BonusExpiry, StatusBonusFlag, StatusBonusSource, StructuredBonus, TemporaryStatusBonus, TemporaryStatusBonuses,

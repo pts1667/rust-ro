@@ -213,7 +213,7 @@ impl Mob {
     ) -> Result<crate::server::service::status_effect_service::StatusChangeOutcome, String> {
         use models::enums::EnumWithMaskValueU32;
         use models::enums::element::Element;
-        use models::enums::mob::{MobMode, MobRace};
+        
         use models::status_change::StatusChangeKind;
         let immune = self.resists_status(&request);
         if immune {
@@ -336,9 +336,9 @@ impl Mob {
     }
 
     pub fn resists_status(&self, request: &models::status_change::StatusChangeRequest) -> bool {
-        use models::enums::EnumWithMaskValueU32;
+        
         use models::enums::element::Element;
-        use models::enums::mob::{MobMode, MobRace};
+        use models::enums::mob::MobRace;
         use models::status_change::{StatusChangeKind, StatusStartFlag};
         (!request.has_flag(StatusStartFlag::NoAvoid)
             && self.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune)

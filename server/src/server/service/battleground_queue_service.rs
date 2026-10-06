@@ -283,7 +283,7 @@ impl Server {
     }
 
     /// Reserves a free arena and asks every queued player to accept.
-    fn queue_on_ready(&self, state: &mut ServerState, queue_id: u32) {
+    fn queue_on_ready(&self, _state: &mut ServerState, queue_id: u32) {
         let Some(index) = self.battlegrounds.with_queues(|queues| queues.find(queue_id)) else { return };
         let (bg_id, side_sizes) = self
             .battlegrounds

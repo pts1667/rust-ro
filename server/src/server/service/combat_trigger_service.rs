@@ -1,6 +1,6 @@
 use models::enums::bonus::BonusType;
 use models::enums::element::Element;
-use models::enums::mob::{MobClass, MobGroup, MobMode, MobRace};
+use models::enums::mob::{MobClass, MobGroup, MobRace};
 use models::enums::skill::SkillTargetType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::status::StatusEffect;

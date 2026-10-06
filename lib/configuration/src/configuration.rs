@@ -436,9 +436,9 @@ pub struct SkillConfig {
     after_cast_act_delay: Option<u32>,
     #[serde(rename = "afterCastActDelayPerLevel", deserialize_with = "deserialize_tuples_u32", default)]
     after_cast_act_delay_per_level: Option<Vec<u32>>,
-    #[serde(rename = "afterCastActDelay", default)]
+    #[serde(rename = "afterCastWalkDelay", default)]
     after_cast_walk_delay: Option<u32>,
-    #[serde(rename = "afterCastActDelayPerLevel", deserialize_with = "deserialize_tuples_u32", default)]
+    #[serde(rename = "afterCastWalkDelayPerLevel", deserialize_with = "deserialize_tuples_u32", default)]
     after_cast_walk_delay_per_level: Option<Vec<u32>>,
     #[serde(rename = "duration1", default)]
     duration1: Option<u32>,
@@ -577,7 +577,7 @@ pub struct SkillConfig {
     plant_move_per_level: Option<Vec<i32>>,
     #[serde(rename = "delaypartyInSecPerLevel", deserialize_with = "deserialize_tuples_f32", default)]
     delayparty_in_sec_per_level: Option<Vec<f32>>,
-    #[serde(rename = "delaypartyInSecPerLevel", deserialize_with = "deserialize_tuples_f32", default)]
+    #[serde(rename = "delayuserInSecPerLevel", deserialize_with = "deserialize_tuples_f32", default)]
     delayuser_in_sec_per_level: Option<Vec<f32>>,
     #[serde(rename = "guardLvPerLevel", deserialize_with = "deserialize_tuples_i32", default)]
     guard_lv_per_level: Option<Vec<i32>>,
@@ -734,7 +734,8 @@ macro_rules! deserialize_tuples {
             D: Deserializer<'de>,
         {
             let s: Vec<HashMap<String, $type>> = Deserialize::deserialize(deserializer)?;
-            let mut res: Vec<$type> = vec![$max; s.len() + 1];
+            let highest_level = s.iter().map(|x| *x.get("level").unwrap() as usize).max().unwrap_or(0);
+            let mut res: Vec<$type> = vec![$max; s.len().max(highest_level) + 1];
             for x in s.iter() {
                 let (_, value) = x.iter().find(|(k, _)| k.as_str() != "level").unwrap();
                 if *x.get("level").unwrap() as usize >= res.len() {

@@ -615,7 +615,7 @@ impl Server {
                     .unwrap();
                 // Start a thread sending response packet to client request
 
-                let server_ref_clone = server_ref.clone();
+                let _server_ref_clone = server_ref.clone();
                 thread::Builder::new()
                     .name("client_response_thread".to_string())
                     .spawn_scoped(server_thread_scope, move || {

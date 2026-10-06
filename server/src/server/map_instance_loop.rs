@@ -133,6 +133,7 @@ impl MapInstanceLoop {
                             }
                         }
                     }
+                    drop(map_instance_state);
                     let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
                     let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
                     if sleep_duration < 5 {

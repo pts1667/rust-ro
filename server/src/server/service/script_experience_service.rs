@@ -7,6 +7,7 @@ use crate::server::state::server::ServerState;
 const ADDITIONAL_ATTACKER_BONUS: u64 = 25;
 const MAX_BONUS_ATTACKERS: usize = 12;
 
+#[cfg(test)]
 pub fn monster_experience_awards(state: &ServerState, kill: &CharacterKillMonster, party_bonus: u16) -> BTreeMap<u32, (u32, u32)> {
     monster_experience_awards_with_pets(state, kill, party_bonus, false, 100)
 }
@@ -104,6 +105,7 @@ pub fn monster_experience_awards_with_pets(
     awards
 }
 
+#[cfg(test)]
 pub fn actor_experience_share(kill: &CharacterKillMonster, actor_id: u32) -> (u32, u32) {
     actor_experience_share_with_map(kill, actor_id, &MapFlags::default())
 }
@@ -168,10 +170,12 @@ fn actor_experience_share_scaled(kill: &CharacterKillMonster, actor_id: u32, fla
     )
 }
 
+#[cfg(test)]
 pub fn owner_experience_share(kill: &CharacterKillMonster, owner_id: u32) -> (u32, u32) {
     owner_experience_share_with_map(kill, owner_id, &MapFlags::default())
 }
 
+#[cfg(test)]
 pub fn owner_experience_share_with_map(kill: &CharacterKillMonster, owner_id: u32, flags: &MapFlags) -> (u32, u32) {
     owner_experience_share_with_map_and_pets(kill, owner_id, flags, true, 100)
 }

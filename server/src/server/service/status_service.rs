@@ -31,7 +31,7 @@ impl StatusService {
     }
 
     pub fn instance() -> &'static StatusService {
-        unsafe { SERVICE_INSTANCE.as_ref().unwrap() }
+        unsafe { (*&raw const SERVICE_INSTANCE).as_ref().unwrap() }
     }
 
     pub fn init(configuration_service: &'static GlobalConfigService, item_script_vm: Arc<WasmRuntime>) {
@@ -41,7 +41,7 @@ impl StatusService {
     }
 
     #[inline(always)]
-    pub fn to_snapshot_cached(&self, status: &Status, tick: u128) -> StatusSnapshot {
+    pub fn to_snapshot_cached(&self, status: &Status, _tick: u128) -> StatusSnapshot {
         self.to_snapshot(status)
     }
 
@@ -696,7 +696,7 @@ impl StatusService {
         // SPR = Math.floor( SPR * (1 + SPR_MOD * 0.01) );
         let mut sp_regen =
             1 + (status_snapshot.max_sp() as f32 / 100.0).floor() as u32 + (status_snapshot.int() as f32 / 6.0).floor() as u32;
-        if (status_snapshot.int() >= 120) {
+        if status_snapshot.int() >= 120  {
             sp_regen += ((status_snapshot.int() as f32 / 2.0) - 56.0).floor() as u32;
         }
         if status_snapshot

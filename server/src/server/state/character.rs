@@ -782,7 +782,7 @@ impl Character {
         self.inventory_iter().filter(|(_, item)| !item.item_type().is_equipment()).collect()
     }
 
-    pub(crate) fn inventory_iter(&self) -> InventoryIter {
+    pub(crate) fn inventory_iter(&self) -> InventoryIter<'_> {
         Box::new(
             self.inventory
                 .iter()

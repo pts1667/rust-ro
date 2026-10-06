@@ -455,13 +455,13 @@ impl StatusEffectService {
         }
     }
 
-    pub fn apply_incoming_damage(status: &mut Status, mut damage: u32, physical: bool) -> u32 {
+    pub fn apply_incoming_damage(status: &mut Status, damage: u32, physical: bool) -> u32 {
         use models::status_bonus::BattleFlag;
         let flags = if physical { BattleFlag::Weapon.as_flag() } else { BattleFlag::Magic.as_flag() };
         Self::apply_incoming_damage_flags(status, damage, flags, false)
     }
 
-    pub fn apply_incoming_damage_flags(status: &mut Status, mut damage: u32, flags: u32, pvp: bool) -> u32 {
+    pub fn apply_incoming_damage_flags(status: &mut Status, damage: u32, flags: u32, pvp: bool) -> u32 {
         Self::apply_incoming_skill_damage_flags(status, damage, flags, pvp, 0)
     }
 
@@ -469,7 +469,7 @@ impl StatusEffectService {
         Self::apply_incoming_skill_damage_with_roll(status, damage, flags, pvp, skill_id, fastrand::u8(0..100))
     }
 
-    pub fn apply_incoming_damage_with_roll(status: &mut Status, mut damage: u32, flags: u32, pvp: bool, guard_roll: u8) -> u32 {
+    pub fn apply_incoming_damage_with_roll(status: &mut Status, damage: u32, flags: u32, pvp: bool, guard_roll: u8) -> u32 {
         Self::apply_incoming_skill_damage_with_roll(status, damage, flags, pvp, 0, guard_roll)
     }
 

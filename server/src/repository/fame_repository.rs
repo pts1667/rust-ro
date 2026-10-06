@@ -486,7 +486,7 @@ pub fn commit_crafting_fame_tx(
         rank: 0,
         rankings: vec![],
     };
-    let Some(category) = category else {
+    let Some(_category) = category else {
         return Ok(outcome);
     };
     let updated = update_fame_tx(character, game_systems, gained as i32)?;

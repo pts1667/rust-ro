@@ -11,7 +11,7 @@ use super::item_script_handler::{ItemScriptHost, status_variable};
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::Server;
 use crate::server::model::events::game_event::{
-    CharacterAddItems, CharacterChangeJob, CharacterChangeLevel, CharacterLook, CharacterRemoveItem, CharacterRemoveItems, GameEvent,
+    CharacterAddItems, CharacterChangeJob, CharacterLook, CharacterRemoveItem, CharacterRemoveItems, GameEvent,
 };
 use crate::server::service::script_service::ScriptService;
 use crate::server::state::server::ServerState;

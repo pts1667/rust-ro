@@ -35,6 +35,7 @@ use crate::util::packet::{chain_packets, chain_packets_raws_by_value};
 
 pub struct InventoryService {
     client_notification_sender: SyncSender<Notification>,
+    #[allow(dead_code)]
     persistence_event_sender: SyncSender<PersistenceEvent>,
     repository: Arc<dyn InventoryRepository + Sync>,
     configuration_service: &'static GlobalConfigService,

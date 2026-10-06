@@ -1,7 +1,7 @@
 use models::enums::cell::CellType;
 use models::enums::bonus::BonusType;
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue};
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
 use models::status::Status;
 use models::status_change::{CloakingFlag, StatusChangeKind};
 

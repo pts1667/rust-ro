@@ -4,7 +4,6 @@ use std::io::Write;
 use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
 
-use futures::task::Spawn;
 use models::enums::EnumWithNumberValue;
 use models::enums::action::ActionType;
 use models::enums::class::{JOB_BASE_MASK, JobName};

@@ -1,6 +1,6 @@
 use models::enums::mob::MobMode;
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
+use models::enums::EnumWithMaskValueU32;
 use models::status::{Status, StatusSnapshot};
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFlag};

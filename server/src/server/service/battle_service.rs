@@ -11,7 +11,7 @@ use models::enums::size::Size;
 use models::enums::skill::SkillState;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::weapon::WeaponType;
-use models::enums::{EnumStackable, EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
+use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::{BattleFlag, StatusBonus};
 use skills::OffensiveSkill;
@@ -29,6 +29,7 @@ static mut SERVICE_INSTANCE: Option<BattleService> = None;
 static SERVICE_INSTANCE_INIT: Once = Once::new();
 
 pub struct BattleService {
+    #[allow(dead_code)]
     client_notification_sender: SyncSender<Notification>,
     status_service: &'static StatusService,
     configuration_service: &'static GlobalConfigService,
@@ -2624,26 +2625,6 @@ impl BattleService {
     ///   ElementalModifier) + Enhancements) * DamageBonusModifiers *
     ///   DamageReductionModifiers] * NumberOfMultiHits) - KyrieEleisonEffect) /
     ///   NumberOfMultiHits
-    fn physical_damage_character_attack_monster(
-        &self,
-        source_status: &StatusSnapshot,
-        target_status: &StatusSnapshot,
-        skill_modifier: f32,
-        is_ranged: bool,
-        element: &Element,
-        skill_id: u32,
-    ) -> i32 {
-        self.physical_damage(
-            source_status,
-            target_status,
-            skill_modifier,
-            is_ranged,
-            element,
-            false,
-            skill_id,
-        )
-    }
-
     fn physical_damage(
         &self,
         source_status: &StatusSnapshot,

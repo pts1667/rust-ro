@@ -642,7 +642,7 @@ impl ScriptWorldService {
 
     fn guild_remove_member(
         &self,
-        server: &Server,
+        _server: &Server,
         state: &mut ServerState,
         character: &mut Character,
         guild_id: u32,

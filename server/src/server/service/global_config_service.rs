@@ -28,11 +28,11 @@ pub struct GlobalConfigService {
 
 impl GlobalConfigService {
     pub fn instance() -> &'static GlobalConfigService {
-        unsafe { SERVICE_INSTANCE.as_ref().unwrap() }
+        unsafe { (*&raw const SERVICE_INSTANCE).as_ref().unwrap() }
     }
 
     pub unsafe fn instance_mut() -> &'static mut GlobalConfigService {
-        SERVICE_INSTANCE.as_mut().unwrap()
+        (*&raw mut SERVICE_INSTANCE).as_mut().unwrap()
     }
 
     pub fn init(

@@ -1,5 +1,4 @@
 use configuration::configuration::PetSupportConfig;
-use models::enums::EnumWithStringValue;
 use models::enums::element::Element;
 use models::enums::mob::MobRace;
 use models::status::StatusSnapshot;

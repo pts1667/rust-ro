@@ -55,16 +55,14 @@ use crate::server::model::script::Script;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
 
-pub static mut CONFIGS: Option<Config> = None;
+pub static CONFIGS: std::sync::OnceLock<Config> = std::sync::OnceLock::new();
 pub static mut MAPS: Option<HashMap<String, &Map>> = None;
 pub static mut MOB_ROOT_PATH: &str = "./config/npc";
 pub static mut MAP_DIR: &str = "./config/maps/pre-re";
 #[tokio::main]
 pub async fn main() {
     let _start = Instant::now();
-    unsafe {
-        CONFIGS = Some(Config::load("").unwrap());
-    }
+    CONFIGS.set(Config::load("").unwrap()).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
 
     setup_logger(configs());
     let runtime = Arc::new(Runtime::new().unwrap());
@@ -91,10 +89,10 @@ pub async fn main() {
     let job_skills_tree = Config::load_jobs_skill_tree(".").unwrap();
     // Loading map-cache and warps
     let start = Instant::now();
-    let warps = unsafe { WarpLoader::load_warps(CONFIGS.as_ref().unwrap()).await };
+    let warps = WarpLoader::load_warps(configs()).await;
     let mobs_map = mobs.clone().into_iter().map(|mob| (mob.id as u32, mob)).collect();
     let mob_spawns = unsafe {
-        MobSpawnLoader::load_mob_spawns(CONFIGS.as_ref().unwrap(), mobs_map, MOB_ROOT_PATH, runtime.clone())
+        MobSpawnLoader::load_mob_spawns(configs(), mobs_map, MOB_ROOT_PATH, runtime.clone())
             .join()
             .unwrap()
     };
@@ -117,17 +115,15 @@ pub async fn main() {
     );
 
     // Creating global config instance, used by all services
-    unsafe {
-        GlobalConfigService::init(
-            CONFIGS.clone().unwrap(),
-            items,
-            mobs,
-            job_configs,
-            job_skills_tree,
-            skills_config,
-            maps,
-        );
-    }
+    GlobalConfigService::init(
+        configs().clone(),
+        items,
+        mobs,
+        job_configs,
+        job_skills_tree,
+        skills_config,
+        maps,
+    );
     // Init channel for inter-thread communication
     let (client_notification_sender, single_client_notification_receiver) = std::sync::mpsc::sync_channel::<Notification>(2048);
     let (persistence_event_sender, persistence_event_receiver) = std::sync::mpsc::sync_channel::<PersistenceEvent>(2048);
@@ -183,7 +179,7 @@ pub async fn main() {
     }
 }
 
-fn update_item_and_mob_static_db(items: &mut Vec<ItemModel>, mobs: &Vec<MobModel>) {
+fn update_item_and_mob_static_db(_items: &mut Vec<ItemModel>, _mobs: &Vec<MobModel>) {
     #[cfg(feature = "static_db_update")]
     {
         // items.json is used in tests
@@ -223,7 +219,7 @@ pub fn load_scripts() -> HashMap<String, Vec<Script>> {
 }
 
 pub fn configs() -> &'static Config {
-    unsafe { CONFIGS.as_ref().unwrap() }
+    CONFIGS.get().expect("configuration is loaded in main")
 }
 
 pub fn create_script_vm() -> Arc<script_runtime::WasmRuntime> {

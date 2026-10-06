@@ -177,14 +177,6 @@ impl ItemService {
         ScriptItemConsumption { inventory_id: item.id, item_id: item.item_id, unique_id: item.unique_id, amount }
     }
 
-    pub(crate) fn consume_pending_item(&self, server: &Server, state: &mut ServerState, character: &mut Character, index: usize) -> Result<(), String> {
-        let item = character.get_item_from_inventory(index).cloned().ok_or("Delayed consumable is no longer in inventory")?;
-        if !item.item_type().is_consumable() { return Err("Delayed item is not consumable".into()); }
-        self.commit_effects(server, state, server.runtime(), character, vec![], Some(&Self::consumption(&item, 1)))?;
-        self.notify_use(character, &CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index }, item.amount - 1, true);
-        Ok(())
-    }
-
     pub(crate) fn pay_skill_requirements(&self, server: &Server, character: &mut Character, skill_id: u32, level: u8, tick: u128, check_requirements: bool, source_index: Option<usize>) -> Result<(), String> {
         let plan = if check_requirements { server.script_skill_service().requirements_plan(character, skill_id, level, tick)? } else { Default::default() };
         self.pay_requirement_plan(server, character, &plan, source_index, tick)
@@ -435,7 +427,6 @@ impl ItemService {
                     }
                     if persistent_world_operation(*function) { world_calls.push((*function, arguments.clone())); }
                 }
-                _ => {},
             }
         }
         let mut world = (!world_calls.is_empty() || !guild_storage_receipts.is_empty()).then(|| plan_persistent_effects(character, &world_calls, tick as u64)).transpose()?;

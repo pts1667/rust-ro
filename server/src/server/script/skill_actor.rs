@@ -2,12 +2,9 @@ use std::collections::HashMap;
 use std::sync::mpsc::SyncSender;
 
 use models::enums::cell::CellType;
-use models::enums::actor::CombatActorKind;
 use models::enums::element::Element;
-use models::enums::mob::{MobMode, MobRace};
 use models::enums::mob::MobCapability;
-use models::enums::size::Size;
-use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue};
+use models::enums::{EnumWithMaskValueU16, EnumWithNumberValue};
 use models::status::{Status, StatusSnapshot};
 use models::status_change::StatusChangeKind;
 
@@ -16,9 +13,7 @@ use super::requirements::DeferredSkillPayment;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::ScriptSkillCast;
 use crate::server::model::map_item::{MapItemSnapshot, MapItemType};
-use crate::server::model::script::Script;
 use crate::server::service::global_config_service::GlobalConfigService;
-use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::visibility_service::{StealthState, TargetingMode, VisibilityObserver, can_target};
 use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::mob::Mob;
@@ -132,7 +127,7 @@ pub fn map_actor(state: &MapInstanceState, actor_id: u32) -> Option<ScriptSkillA
                 .script_skill_state
                 .npcs
                 .get(&actor_id)
-                .filter(|npc| {
+                .filter(|_npc| {
                     state
                         .get_map_item(actor_id)
                         .is_some_and(|item| *item.object_type() == MapItemType::Npc)
@@ -156,7 +151,7 @@ pub fn actor_skill_range(source: &ScriptSkillActor, metadata: &SkillMetadata, le
     if source.object_type == MapItemType::Npc && ground {
         return 15;
     }
-    let mut range = metadata.range(level).unwrap_or(0).unsigned_abs().min(14) as u16;
+    let range = metadata.range(level).unwrap_or(0).unsigned_abs().min(14) as u16;
     if range == 0 { 9 } else { range }
 }
 

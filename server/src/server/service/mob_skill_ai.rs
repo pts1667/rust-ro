@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 
 use models::status_bonus::BattleFlag;
 use models::status_change::StatusChangeKind;
-use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
+use models::enums::EnumWithMaskValueU32;
 use serde::Deserialize;
 
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};

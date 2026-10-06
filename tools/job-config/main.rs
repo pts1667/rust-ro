@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
@@ -79,7 +78,7 @@ fn main() {
     let max_base_level = 99;
     let path = Path::new("./").join("config/job.json");
     if !path.exists() {
-        return panic!(
+        panic!(
             "config/job.json file does not exists at {}",
             env::current_dir().unwrap().join(path).to_str().unwrap()
         );
@@ -100,9 +99,9 @@ fn generate_base_hp(internal_configs: &mut InternalJobsConfig, max_base_level: u
         }
         let mut results: Vec<u32> = Vec::with_capacity(max_base_level as usize);
         for i in 1..=max_base_level {
-            let mut base_hp: f32 = (35.0 + (i as f32 * (*HP_JOB_FACTOR.get(job.to_lowercase().as_str()).unwrap_or(&5_f32))));
+            let mut base_hp: f32 = 35.0 + (i as f32 * (*HP_JOB_FACTOR.get(job.to_lowercase().as_str()).unwrap_or(&5_f32))) ;
 
-            if (i >= 10 && (job == "ninja" || job == "gunslinger")) {
+            if i >= 10 && (job == "ninja" || job == "gunslinger")  {
                 base_hp += 90.0;
             }
             for j in 2..=i {
@@ -113,31 +112,31 @@ fn generate_base_hp(internal_configs: &mut InternalJobsConfig, max_base_level: u
                         * j as f32)
                         .round();
             }
-            if (job.to_lowercase().as_str() == "soul_linker") {
-                if (i >= 70) {
-                    if (i <= 79) {
+            if job.to_lowercase().as_str() == "soul_linker"  {
+                if i >= 70  {
+                    if i <= 79  {
                         base_hp -= (i as f32 - 70.0) * 40.0;
-                    } else if (i <= 84) {
+                    } else if i <= 84  {
                         base_hp -= (i as f32 - 80.0) * 50.0;
-                    } else if (i <= 89) {
+                    } else if i <= 89  {
                         base_hp -= (i as f32 - 80.0) * 50.0 - 10.0;
-                    } else if (i <= 92) {
+                    } else if i <= 92  {
                         base_hp -= (i as f32 - 90.0) * 50.0;
-                    } else if (i <= 97) {
+                    } else if i <= 97  {
                         base_hp -= (i as f32 - 90.0) * 50.0 - 10.0;
-                    } else if (i == 98) {
+                    } else if i == 98  {
                         base_hp -= 375.0;
                     } else {
                         base_hp -= 4.0;
                     }
                 }
             }
-            if (job.to_lowercase().as_str() == "taekwon") {
-                if (i <= 79) {
+            if job.to_lowercase().as_str() == "taekwon"  {
+                if i <= 79  {
                     base_hp = 2127.0 + 10.0 * (i as f32 - 70.0)
-                } else if (i <= 89) {
+                } else if i <= 89  {
                     base_hp = 2200.0 + 50.0 * (i as f32 - 80.0)
-                } else if (i <= max_base_level) {
+                } else if i <= max_base_level  {
                     base_hp = 2700.0 + 50.0 * (i as f32 - 90.0)
                 }
             }
@@ -188,15 +187,15 @@ fn generate_base_sp(internal_configs: &mut InternalJobsConfig, max_base_level: u
                 } else {
                     base_sp = 330.0 + (i as f32 - 78.0) * 6.0;
                 }
-            } else if (job.to_lowercase().as_str() == "taekwon" || job.to_lowercase().as_str() == "soul_linker") {
-                if (i >= 70) {
-                    if (i < 80) {
+            } else if job.to_lowercase().as_str() == "taekwon" || job.to_lowercase().as_str() == "soul_linker"  {
+                if i >= 70  {
+                    if i < 80  {
                         base_sp -= (i as f32 - 70.0) * 4.0 + 5.0;
-                    } else if (i < 90) {
+                    } else if i < 90  {
                         base_sp -= (i as f32 - 80.0) * 4.0;
-                    } else if (i < 93) {
+                    } else if i < 93  {
                         base_sp -= (i as f32 - 90.0) * 4.0;
-                    } else if (i < max_base_level) {
+                    } else if i < max_base_level  {
                         base_sp -= (i as f32 - 90.0) * 4.0 - 10.0;
                     } else {
                         base_sp -= 1.0;
