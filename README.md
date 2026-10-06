@@ -81,6 +81,8 @@ cp config.template.json config.json
 
 The server accepts raw TCP clients and WebSocket clients (for example roBrowser) on the same `server.port`. A connection that opens with an HTTP upgrade request is switched to WebSocket, and every other connection is treated as raw TCP. Each outgoing write is sent as one binary message, and incoming binary messages are read as the same byte stream a TCP client sends. Text frames and extensions are rejected. TLS (`wss://`) is not handled by the server, terminate it in a reverse proxy. Set `server.enable_websocket` to `false` to accept raw TCP only.
 
+Start the server with `--debug-log` (release builds included) to log script failures that are normally silent: NPC conversations and events that start, finish or fail (with the NPC, entry, character and error), NPC menu or dialogue input that is dropped because no conversation is active, script host calls that fail, and warps skipped because the character is offline or the map is not loaded. These lines use the `script_debug` log target at debug level, for example `cargo run --release --package server --bin server -- --debug-log`.
+
 Inside this JSON, you will find **database related variables**, **game related variables** (exp_rate, drop_rate etc) as well.
 
 

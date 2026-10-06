@@ -10,6 +10,13 @@ macro_rules! write_lock {
         $rw_lock.write().unwrap()
     };
 }
+/// Script failure diagnostics, only emitted when the server runs with `--debug-log`.
+#[macro_export]
+macro_rules! script_debug {
+    ($($argument:tt)+) => {
+        tracing::debug!(target: "script_debug", $($argument)+)
+    };
+}
 #[macro_export]
 macro_rules! mutex_lock {
     ($mutex:expr) => {

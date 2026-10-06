@@ -210,12 +210,18 @@ impl ServerService {
     }
 
     pub fn schedule_warp_to_walkable_cell_in_instance(&self, server_state: &mut ServerState, destination_map: &str, x: u16, y: u16, char_id: u32, instance_id: u8) {
-        let Some(character) = server_state.characters().get(&char_id) else { return; };
+        let Some(character) = server_state.characters().get(&char_id) else {
+            script_debug!("Warp to {destination_map} skipped: char {char_id} is not online");
+            return;
+        };
         let origin = character.map_instance_key.clone();
         let map_name = Map::name_without_ext(destination_map);
         let map_instance = if let Some(instance) = server_state.get_map_instance(&map_name, instance_id) { instance }
             else if let Some(map) = self.configuration_service.find_map(&map_name) { self.create_map_instance(server_state, map, instance_id) }
-            else { return; };
+            else {
+                script_debug!("Warp of char {char_id} to {map_name} ({x},{y}) skipped: map is not loaded");
+                return;
+            };
         self.server_task_queue.add_to_first_index(GameEvent::CharacterClearFov(CharacterClearFov { char_id }));
         self.server_task_queue.add_to_index(
             GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
@@ -227,6 +233,7 @@ impl ServerService {
         );
 
         debug!("Char enter on map {}", map_name);
+        script_debug!("Warp scheduled: char {char_id} from {} to {map_name} ({x},{y}) instance {}", origin.map_name(), map_instance.id());
         let (x, y) = if x == RANDOM_CELL.0 && y == RANDOM_CELL.1 {
             let walkable_cell = Map::find_random_walkable_cell(map_instance.state().cells(), map_instance.x_size());
             (walkable_cell.0, walkable_cell.1)

@@ -63,13 +63,14 @@ pub static mut MAP_DIR: &str = "./config/maps/pre-re";
 pub async fn main() {
     let _start = Instant::now();
     let mut config = Config::load("").unwrap();
-    if let Some(host) = host_argument(std::env::args().skip(1)).unwrap_or_else(|error| exit_with_usage(&error)) {
+    let options = parse_arguments(std::env::args().skip(1)).unwrap_or_else(|error| exit_with_usage(&error));
+    if let Some(host) = options.host {
         config.server.set_host(host);
         config.server.validate_host().unwrap_or_else(|error| exit_with_usage(&error));
     }
     CONFIGS.set(config).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
 
-    setup_logger(configs());
+    setup_logger(configs(), options.debug_log);
     let runtime = Arc::new(Runtime::new().unwrap());
     let repository = SledRepository::open(&configs().database).expect("Failed to open sled database and seed assets");
     let repository_arc = Arc::new(repository);
@@ -202,10 +203,18 @@ fn update_item_and_mob_static_db(_items: &mut Vec<ItemModel>, _mobs: &Vec<MobMod
     }
 }
 
-fn setup_logger(config: &'static Config) {
-    let filter = EnvFilter::builder()
-        .with_default_directive(config.server.log_level.as_ref().unwrap().to_lowercase().parse().unwrap())
-        .parse_lossy(config.server.log_level_module_override.join(",").trim());
+fn log_filter(level: &str, module_overrides: &[String], debug_log: bool) -> EnvFilter {
+    let mut directives = module_overrides.to_vec();
+    if debug_log {
+        directives.push("script_debug=debug".to_string());
+    }
+    EnvFilter::builder()
+        .with_default_directive(level.to_lowercase().parse().unwrap())
+        .parse_lossy(directives.join(",").trim())
+}
+
+fn setup_logger(config: &'static Config, debug_log: bool) {
+    let filter = log_filter(config.server.log_level.as_ref().unwrap(), &config.server.log_level_module_override, debug_log);
     tracing_subscriber::fmt()
         .with_env_filter(filter)
         .with_writer(std::io::stdout)
@@ -219,23 +228,31 @@ fn setup_logger(config: &'static Config) {
         .init();
 }
 
-fn host_argument(mut args: impl Iterator<Item = String>) -> Result<Option<String>, String> {
-    let mut host = None;
+#[derive(Debug, Default, PartialEq, Eq)]
+struct CliOptions {
+    host: Option<String>,
+    debug_log: bool,
+}
+
+fn parse_arguments(mut args: impl Iterator<Item = String>) -> Result<CliOptions, String> {
+    let mut options = CliOptions::default();
     while let Some(argument) = args.next() {
         if argument == "--host" {
-            host = Some(args.next().ok_or("--host requires an IP address")?);
+            options.host = Some(args.next().ok_or("--host requires an IP address")?);
         } else if let Some(value) = argument.strip_prefix("--host=") {
-            host = Some(value.to_string());
+            options.host = Some(value.to_string());
+        } else if argument == "--debug-log" {
+            options.debug_log = true;
         } else {
             return Err(format!("unknown argument \"{argument}\""));
         }
     }
-    Ok(host)
+    Ok(options)
 }
 
 fn exit_with_usage(error: &str) -> ! {
     eprintln!("{error}
-Usage: server [--host <ip>]");
+Usage: server [--host <ip>] [--debug-log]");
     std::process::exit(2)
 }
 
@@ -253,22 +270,75 @@ pub fn create_script_vm() -> Arc<script_runtime::WasmRuntime> {
 
 #[cfg(test)]
 mod host_argument_tests {
-    use super::host_argument;
+    use super::{CliOptions, parse_arguments};
 
-    fn parse(arguments: &[&str]) -> Result<Option<String>, String> {
-        host_argument(arguments.iter().map(|argument| argument.to_string()))
+    fn parse(arguments: &[&str]) -> Result<CliOptions, String> {
+        parse_arguments(arguments.iter().map(|argument| argument.to_string()))
+    }
+
+    fn host(arguments: &[&str]) -> Option<String> {
+        parse(arguments).unwrap().host
     }
 
     #[test]
     fn host_is_read_from_either_form() {
-        assert_eq!(parse(&[]), Ok(None));
-        assert_eq!(parse(&["--host", "127.0.0.1"]), Ok(Some("127.0.0.1".to_string())));
-        assert_eq!(parse(&["--host=::1"]), Ok(Some("::1".to_string())));
+        assert_eq!(parse(&[]), Ok(CliOptions::default()));
+        assert_eq!(host(&["--host", "127.0.0.1"]), Some("127.0.0.1".to_string()));
+        assert_eq!(host(&["--host=::1"]), Some("::1".to_string()));
+    }
+
+    #[test]
+    fn debug_log_flag_combines_with_host() {
+        assert!(!parse(&[]).unwrap().debug_log);
+        let options = parse(&["--debug-log", "--host", "127.0.0.1"]).unwrap();
+        assert!(options.debug_log);
+        assert_eq!(options.host, Some("127.0.0.1".to_string()));
     }
 
     #[test]
     fn missing_value_and_unknown_arguments_are_errors() {
         assert!(parse(&["--host"]).is_err());
         assert!(parse(&["--port", "1"]).is_err());
+    }
+
+    #[derive(Clone, Default)]
+    struct Captured(std::sync::Arc<std::sync::Mutex<Vec<u8>>>);
+
+    impl std::io::Write for Captured {
+        fn write(&mut self, buffer: &[u8]) -> std::io::Result<usize> {
+            self.0.lock().unwrap().extend_from_slice(buffer);
+            Ok(buffer.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    fn logged(debug_log: bool) -> String {
+        let captured = Captured::default();
+        let writer = captured.clone();
+        let subscriber = tracing_subscriber::fmt()
+            .with_env_filter(super::log_filter("info", &["info".to_string()], debug_log))
+            .with_writer(move || writer.clone())
+            .finish();
+        tracing::subscriber::with_default(subscriber, || {
+            script_debug!("npc conversation failed");
+            tracing::debug!("unrelated debug line");
+            tracing::info!("regular line");
+        });
+        let bytes = captured.0.lock().unwrap().clone();
+        String::from_utf8(bytes).unwrap()
+    }
+
+    #[test]
+    fn script_diagnostics_are_only_logged_with_the_debug_log_flag() {
+        let without = logged(false);
+        assert!(!without.contains("npc conversation failed"), "{without}");
+        assert!(without.contains("regular line"));
+
+        let with = logged(true);
+        assert!(with.contains("npc conversation failed"), "{with}");
+        assert!(!with.contains("unrelated debug line"), "{with}");
     }
 }

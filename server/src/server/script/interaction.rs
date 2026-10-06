@@ -70,7 +70,7 @@ impl NpcScriptHost {
                 self.send_packet(&mut packet).await?;
                 match self.receive().await? {
                     PlayerInput::Selection(option) if option > 0 && (option as usize) <= count => return Ok(Value::Number(option as i32)),
-                    _ => return Err("Menu cancelled or invalid selection".into()),
+                    other => return Err(format!("Menu cancelled or invalid selection: {other:?} with {count} options")),
                 }
             }
             Function::InputNumber => {

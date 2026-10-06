@@ -206,6 +206,8 @@ impl GameEventHandler for ScriptWarp {
                 warp.char_id,
                 warp.destination_instance.unwrap_or(0),
             );
+        } else {
+            script_debug!("Warp to {} ({},{}) skipped: char {} is not online", warp.map, warp.x, warp.y, warp.char_id);
         }
         Ok(())
     }

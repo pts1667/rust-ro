@@ -19,8 +19,13 @@ pub fn handle_contact_npc(server: Arc<Server>, context: Request) {
 fn send(context: Request, input: PlayerInput) {
     let session = context.session();
     let sender = session.script_handler_channel_sender.lock().unwrap().clone();
-    if let Some(sender) = sender {
-        let _ = sender.try_send(input);
+    let Some(sender) = sender else {
+        script_debug!("NPC input {input:?} ignored for char {}: no active conversation", session.char_id());
+        return;
+    };
+    script_debug!("NPC input {input:?} from char {}", session.char_id());
+    if let Err(error) = sender.try_send(input) {
+        script_debug!("NPC input dropped for char {}: {error}", session.char_id());
     }
 }
 

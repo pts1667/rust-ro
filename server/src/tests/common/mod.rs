@@ -160,7 +160,7 @@ pub fn before_all() {
             config.game.mob_spawn_refresh_frequency = 0.2;
             config.game.mob_action_refresh_frequency = 0.2;
             CONFIGS = Some(config);
-            setup_logger(CONFIGS.as_ref().unwrap());
+            setup_logger(CONFIGS.as_ref().unwrap(), false);
         }
         let skills_config = Config::load_skills_config("..").unwrap();
 

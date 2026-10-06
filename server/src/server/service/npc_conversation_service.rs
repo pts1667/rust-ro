@@ -33,13 +33,21 @@ impl Server {
         let npc_id = script.id;
         let packetver = self.packetver();
         let timeout = std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1));
+        let npc_name = script.name.clone();
+        let char_id = session.char_id();
+        let started = std::time::Instant::now();
+        script_debug!("NPC conversation started: npc={npc_id} ({npc_name}) entry={entry} char={char_id}");
         self.runtime().spawn(async move {
             let error = match tokio::time::timeout(timeout, vm.execute(host, "run_npc", entry)).await {
                 Ok((host, result)) => result.err().map(|error| host.error.unwrap_or(error)),
                 Err(_) => Some("NPC conversation timed out".into()),
             };
-            if let Some(error) = error {
-                debug!("NPC conversation ended: {error}");
+            let elapsed_ms = started.elapsed().as_millis();
+            match &error {
+                Some(error) => script_debug!("NPC conversation failed: npc={npc_id} ({npc_name}) entry={entry} char={char_id} after {elapsed_ms}ms: {error}"),
+                None => script_debug!("NPC conversation finished: npc={npc_id} ({npc_name}) entry={entry} char={char_id} after {elapsed_ms}ms"),
+            }
+            if error.is_some() {
                 if session.script_generation.load(Ordering::Acquire) == generation {
                     let mut packet = PacketZcCloseDialog::new(packetver); packet.naid = npc_id; packet.fill_raw();
                     let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));

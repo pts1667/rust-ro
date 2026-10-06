@@ -309,7 +309,7 @@ impl Server {
                 Err(_) => Some("NPC event timed out".into()),
             };
             if let Some(error) = error {
-                debug!("NPC {} event ended: {}", event.npc_id, error);
+                script_debug!("NPC event failed: npc={} entry={} char={}: {error}", event.npc_id, event.entry_id, session.char_id());
                 if !background && session.script_generation.load(std::sync::atomic::Ordering::Acquire) == generation {
                     let mut packet = PacketZcCloseDialog::new(packetver);
                     packet.naid = event.npc_id;

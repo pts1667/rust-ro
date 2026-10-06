@@ -126,6 +126,7 @@ impl ScriptService {
             return;
         };
         if response.is_closed() {
+            script_debug!("Script request dropped, the script already ended: npc={} char={} {}", context.npc_id, context.char_id, request_summary(&context.request));
             return;
         }
         let valid = if context.logout_token.is_some() {
@@ -142,6 +143,9 @@ impl ScriptService {
         } else {
             Err("Conversation is no longer active".into())
         };
+        if let Err(error) = &reply {
+            script_debug!("Script request failed: npc={} char={} {}: {error}", context.npc_id, context.char_id, request_summary(&context.request));
+        }
         let _ = response.send(reply);
     }
 
@@ -565,4 +569,14 @@ impl ScriptService {
             _ => Err("Unsupported game request".into()),
         }
     }
+}
+
+fn request_summary(request: &Request) -> String {
+    let text = format!("{request:?}");
+    if text.chars().count() > 160 {
+        let mut shortened: String = text.chars().take(160).collect();
+        shortened.push('~');
+        return shortened;
+    }
+    text
 }

@@ -461,7 +461,7 @@ impl ScriptSkillService {
         }
         match self.execute_actor_skill(server, state, &source, request, tick) {
             Err(error) if actor::is_expected_rejection(&error) => {
-                debug!("Unit skill {} from {} was not performed: {}", request.skill_id, source.id, error);
+                script_debug!("Unit skill {} from {} was not performed: {}", request.skill_id, source.id, error);
                 self.notify_actor_support(&source, request, false);
                 Ok(())
             }
