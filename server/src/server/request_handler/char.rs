@@ -2,253 +2,288 @@ use std::net::Shutdown::Both;
 use std::sync::Arc;
 
 use byteorder::{LittleEndian, WriteBytesExt};
+use configuration::account_config::MAX_CHARS;
+use database::model::CharLogRecord;
 use models::status::KnownSkill;
 use movement::position::Position;
 use packets::packets::{
-    CharacterInfoNeoUnion, Packet, PacketChDeleteChar4Reserved, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3,
-    PacketChSelectChar, PacketChSendMapInfo, PacketCzEnter2, PacketCzRestart, PacketHcAcceptEnterNeoUnion,
-    PacketHcAcceptEnterNeoUnionHeader, PacketHcAcceptMakecharNeoUnion, PacketHcBlockCharacter, PacketHcDeleteChar4Reserved,
-    PacketHcNotifyZonesvr, PacketHcRefuseEnter, PacketMapConnection, PacketPincodeLoginstate, PacketZcAcceptEnter2,
+    CharacterInfoNeoUnion, Packet, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3, PacketChSelectChar,
+    PacketChSendMapInfo, PacketCzEnter2, PacketCzRestart, PacketHcAcceptEnterNeoUnion, PacketHcAcceptEnterNeoUnionHeader,
+    PacketHcAcceptMakecharNeoUnion, PacketHcNotifyZonesvr, PacketHcRefuseEnter, PacketMapConnection, PacketZcAcceptEnter2,
     PacketZcInventoryExpansionInfo, PacketZcLoadConfirm, PacketZcOverweightPercent, PacketZcReqDisconnectAck2, PacketZcRestartAck,
     ZserverAddr,
 };
 
-use crate::repository::model::char_model::{CharInsertModel, CharSelectModel, CharacterInfoNeoUnionWrapped};
+use crate::repository::model::char_model::{CharSelectModel, CharacterInfoNeoUnionWrapped};
 use crate::server::Server;
 use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::hotkey::Hotkey;
 use crate::server::model::request::Request;
+use crate::server::model::session::Session;
 use crate::server::model::status::StatusFromDb;
+use crate::server::request_handler::char_requests::{require_pin, send_pin_state};
+use crate::server::service::char_server_service::{
+    self, AccountContext, CREATE_DENIED, CREATE_NAME_TAKEN, CREATE_SLOT_NOT_ELIGIBLE, CreateRequest,
+};
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::service::pincode;
 use crate::server::state::character::Character;
-use crate::util::packet::chain_packets;
 use crate::util::string::StringUtil;
 use crate::util::tick::get_tick_client;
 
+const DEFAULT_WALK_SPEED: u16 = 150;
+
 pub fn handle_char_enter(server: &Server, context: Request) {
     let packet_char_enter = cast!(context.packet(), PacketChEnter);
-    if let Some(session) = server.sessions().find(packet_char_enter.aid) {
-        if session.auth_code == packet_char_enter.auth_code && session.user_level == packet_char_enter.user_level {
-            let session = Arc::new(session.recreate_with_char_socket(context.socket()));
-            server.sessions().add(packet_char_enter.aid, session.clone());
-            let packet_hc_accept_enter_neo_union: Box<dyn Packet> = server.runtime().block_on(async {
-                let mut hc_accept_enter_neo_union = load_chars_info(session.account_id, server).await;
-                if GlobalConfigService::instance().packetver() >= 20130000 {
-                    let mut accept_enter_neo_union_header =
-                        PacketHcAcceptEnterNeoUnionHeader::new(GlobalConfigService::instance().packetver());
-                    accept_enter_neo_union_header.set_char_info(hc_accept_enter_neo_union);
-                    accept_enter_neo_union_header.set_char_slot(12);
-                    accept_enter_neo_union_header.set_premium_slot_end(12);
-                    accept_enter_neo_union_header.set_premium_slot_start(12);
-                    accept_enter_neo_union_header.set_packet_len(29);
-                    accept_enter_neo_union_header.fill_raw_with_packetver(Some(server.packetver()));
-                    let x: Box<dyn Packet> = Box::new(accept_enter_neo_union_header);
-                    x
-                } else {
-                    hc_accept_enter_neo_union.fill_raw_with_packetver(Some(server.packetver()));
-                    let x: Box<dyn Packet> = Box::new(hc_accept_enter_neo_union);
-                    x
-                }
-            });
-            let mut pincode_loginstate = PacketPincodeLoginstate::new(GlobalConfigService::instance().packetver());
-            pincode_loginstate.set_aid(session.account_id);
-            pincode_loginstate.set_pincode_seed(session.auth_code);
-            pincode_loginstate.fill_raw();
-            let mut packet_hc_block_character = PacketHcBlockCharacter::new(GlobalConfigService::instance().packetver());
-            packet_hc_block_character
-                .set_packet_length(PacketHcBlockCharacter::base_len(GlobalConfigService::instance().packetver()) as i16);
-            packet_hc_block_character.fill_raw();
-            // The pincode packet should be appended to PacketHcAcceptEnterNeoUnionHeader
-            // packet
-            let final_response_packet: Vec<u8> = chain_packets(vec![packet_hc_accept_enter_neo_union.as_ref(), &packet_hc_block_character]);
-            let mut wtr = vec![];
-            // A "account id packet" should be sent just before char info packet
-            wtr.write_u32::<LittleEndian>(session.account_id)
-                .expect("Unable to write Little endian u32 from session account id");
-            socket_send_raw!(context, wtr);
-            socket_send_raw!(context, final_response_packet);
-            return;
+    let refuse = |context: &Request| {
+        let mut res = PacketHcRefuseEnter::new(server.packetver());
+        res.set_error_code(0);
+        res.fill_raw();
+        socket_send!(context, res);
+    };
+    let Some(session) = server.sessions().find(packet_char_enter.aid) else {
+        return refuse(&context);
+    };
+    let credentials_match = session.auth_code == packet_char_enter.auth_code
+        && session.user_level == packet_char_enter.user_level
+        && session.account.sex == packet_char_enter.sex;
+    if !credentials_match {
+        return refuse(&context);
+    }
+    let config = &server.configuration.char_server;
+    let over_capacity = config.max_connect_user == 0
+        || config.char_maintenance == 1
+        || (config.max_connect_user > 0 && server.directory().len() >= config.max_connect_user as usize);
+    if over_capacity && i64::from(session.account.group_id) < i64::from(config.gm_allow_group) {
+        return refuse(&context);
+    }
+    let session = Arc::new(session.recreate_with_char_socket(context.socket()));
+    server.sessions().add(packet_char_enter.aid, session.clone());
+    // A "account id packet" should be sent just before char info packet
+    let mut account_id = vec![];
+    account_id
+        .write_u32::<LittleEndian>(session.account_id)
+        .expect("Unable to write Little endian u32 from session account id");
+    socket_send_raw!(context, account_id);
+    send_character_list(server, &context, &session);
+    send_pin_start(server, &context, &session);
+}
+
+fn send_pin_start(server: &Server, context: &Request, session: &Session) {
+    let Ok(Some(account)) = server.repository.account_by_id(session.account_id) else {
+        return;
+    };
+    let verified = session.account.char_server().pin_verified;
+    let state = pincode::start_state(
+        &server.configuration.char_server.pincode,
+        &account.pincode,
+        account.pincode_change,
+        chrono::Utc::now().timestamp(),
+        verified,
+        server.packetver(),
+    );
+    send_pin_state(server, context, session, state);
+}
+
+/// Options of the character list that depend on the char server configuration.
+#[derive(Debug, Clone, Copy)]
+pub struct CharacterListOptions {
+    pub move_enabled: bool,
+    pub moves_unlimited: bool,
+}
+
+fn character_info(character: &CharSelectModel, options: CharacterListOptions) -> CharacterInfoNeoUnion {
+    let mut info = CharacterInfoNeoUnionWrapped::from(character).data;
+    info.set_speed(DEFAULT_WALK_SPEED);
+    let can_rename = character.rename > 0;
+    info.set_b_is_changed_char_name(u16::from(!can_rename));
+    info.set_rename_addon(u32::from(can_rename) as _);
+    let slot_moves = if !options.move_enabled {
+        0
+    } else if options.moves_unlimited {
+        1
+    } else {
+        character.moves
+    };
+    info.set_slot_addon(slot_moves as _);
+    for (field, setter) in [
+        (info.head_bottom, CharacterInfoNeoUnion::set_head_bottom as fn(&mut CharacterInfoNeoUnion, u16)),
+        (info.head_top, CharacterInfoNeoUnion::set_head_top),
+        (info.head_mid, CharacterInfoNeoUnion::set_head_mid),
+    ] {
+        if field > 0 {
+            let view = GlobalConfigService::instance().get_item(field as i32).view.unwrap_or(0) as u16;
+            setter(&mut info, view);
         }
     }
-    let mut res = PacketHcRefuseEnter::new(GlobalConfigService::instance().packetver());
-    res.set_error_code(0);
-    res.fill_raw();
-    socket_send!(context, res);
+    info.fill_raw();
+    info
+}
+
+pub fn block_character_packet(characters: &[CharSelectModel], now: i64, date_format: &str) -> Vec<u8> {
+    use chrono::TimeZone;
+    let blocked: Vec<(&CharSelectModel, String)> = characters
+        .iter()
+        .filter(|character| character.unban_time > now)
+        .filter_map(|character| {
+            let when = chrono::Local.timestamp_opt(character.unban_time, 0).single()?;
+            Some((character, when.format(date_format).to_string()))
+        })
+        .collect();
+    let mut packet = vec![0x0d, 0x02];
+    packet.extend(((4 + 24 * blocked.len()) as u16).to_le_bytes());
+    for (character, date) in blocked {
+        packet.extend((character.char_id as u32).to_le_bytes());
+        let mut text = [0u8; 20];
+        for (slot, byte) in text.iter_mut().zip(date.bytes().take(19)) {
+            *slot = byte;
+        }
+        packet.extend(text);
+    }
+    packet
+}
+
+pub fn send_character_list(server: &Server, context: &Request, session: &Session) {
+    let characters = match server.repository.char_account_characters(session.account_id) {
+        Ok(characters) => characters,
+        Err(error) => {
+            error!("Failed to load the characters of account {}: {error}", session.account_id);
+            return;
+        }
+    };
+    let config = &server.configuration.char_server;
+    let options = CharacterListOptions { move_enabled: config.char_move_enabled, moves_unlimited: config.char_moves_unlimited };
+    let infos: Vec<CharacterInfoNeoUnion> = characters.iter().map(|character| character_info(character, options)).collect();
+    let packetver = server.packetver();
+    let mut char_list = PacketHcAcceptEnterNeoUnion::new(packetver);
+    char_list.set_packet_length((27 + infos.len() * CharacterInfoNeoUnion::base_len(packetver)) as i16);
+    char_list.set_char_info(infos);
+    char_list.set_premium_start_slot(MAX_CHARS);
+    char_list.set_premium_end_slot(MAX_CHARS);
+    char_list.set_total_slot_num(MAX_CHARS);
+    let list: Box<dyn Packet> = if packetver >= 20130000 {
+        let mut header = PacketHcAcceptEnterNeoUnionHeader::new(packetver);
+        header.set_char_info(char_list);
+        header.set_char_slot(MAX_CHARS as i8);
+        header.set_premium_slot_end(MAX_CHARS as i8);
+        header.set_premium_slot_start(MAX_CHARS as i8);
+        header.set_packet_len(29);
+        header.fill_raw_with_packetver(Some(packetver));
+        Box::new(header)
+    } else {
+        char_list.fill_raw_with_packetver(Some(packetver));
+        Box::new(char_list)
+    };
+    let mut bytes = list.raw().to_vec();
+    if packetver >= 20060819 {
+        bytes.extend(block_character_packet(&characters, chrono::Utc::now().timestamp(), "%Y-%m-%d %H:%M:%S"));
+    }
+    socket_send_raw!(context, bytes);
+}
+
+fn refuse_make_char(context: &Request, code: i32) {
+    let error = match code {
+        CREATE_NAME_TAKEN => 0x00,
+        CREATE_DENIED => 0xFF,
+        -3 => 0x01,
+        CREATE_SLOT_NOT_ELIGIBLE => 0x03,
+        _ => 0xFF,
+    };
+    socket_send_raw!(context, vec![0x6e, 0x00, error]);
 }
 
 pub fn handle_make_char(server: &Server, context: Request) {
-    let mut char_model: Option<CharInsertModel> = None;
-    if context.packet().as_any().downcast_ref::<PacketChMakeChar3>().is_some() {
-        let vit = 1;
-        let max_hp = 40 * (100 + vit as i32) / 100;
-        let int = 1;
-        let max_sp = 40 * (100 + int as i32) / 100;
-        let packet_make_char = cast!(context.packet(), PacketChMakeChar3);
-        let name = packet_make_char.name.iter().filter(|c| **c != '\0').collect();
-        char_model = Some(CharInsertModel {
-            account_id: context.session().account_id as i32,
-            char_num: packet_make_char.char_num as i16,
-            name,
-            class: 0,
-            zeny: 10000, // make this configurable
-            status_point: 48,
-            str: 1,
-            agi: 1,
-            vit,
-            int,
-            dex: 1,
-            luk: 1,
-            max_hp,
-            hp: max_hp,
-            max_sp,
-            sp: max_sp,
-            hair: packet_make_char.head,
-            hair_color: packet_make_char.head_pal as i32,
-            last_map: "new_1-1".to_string(), // make this configurable
-            last_x: 53,
-            last_y: 111,
-            save_map: "new_1-1".to_string(), // make this configurable
-            save_x: 53,
-            save_y: 111,
-            sex: if packet_make_char.sex == 1 {
-                "M".to_string()
-            } else {
-                "F".to_string()
-            },
-            inventory_slots: context.configuration().game.max_inventory as i32,
-        });
-    } else if context.packet().as_any().downcast_ref::<PacketChMakeChar2>().is_some() {
-        let packet_make_char = cast!(context.packet(), PacketChMakeChar2);
-        let vit = 5_i16;
-        let max_hp = 40 * (100 + vit as i32) / 100;
-        let int = 5;
-        let max_sp = 40 * (100 + int as i32) / 100;
-        let name = packet_make_char.name.iter().filter(|c| **c != '\0').collect();
-        char_model = Some(CharInsertModel {
-            account_id: context.session().account_id as i32,
-            char_num: packet_make_char.char_num as i16,
-            name,
-            class: 0,
-            zeny: 10000, // make this configurable
-            status_point: 48,
-            str: 5_i16,
-            agi: 5_i16,
-            vit,
-            int,
-            dex: 5_i16,
-            luk: 5_i16,
-            max_hp,
-            hp: max_hp,
-            max_sp,
-            sp: max_sp,
-            hair: packet_make_char.head,
-            hair_color: packet_make_char.head_pal as i32,
-            last_map: "new_1-1".to_string(), // make this configurable
-            last_x: 53,
-            last_y: 111,
-            save_map: "new_1-1".to_string(), // make this configurable
-            save_x: 53,
-            save_y: 111,
-            sex: "M".to_string(), // TODO use account sex
-            inventory_slots: context.configuration().game.max_inventory as i32,
-        });
-    } else if context.packet().as_any().downcast_ref::<PacketChMakeChar>().is_some() {
-        let packet_make_char = cast!(context.packet(), PacketChMakeChar);
-        let vit = packet_make_char.vit as i16;
-        let max_hp = 40 * (100 + vit as i32) / 100;
-        let int = packet_make_char.int as i16;
-        let max_sp = 40 * (100 + int as i32) / 100;
-        let name = packet_make_char.name.iter().filter(|c| **c != '\0').collect();
-        char_model = Some(CharInsertModel {
-            account_id: context.session().account_id as i32,
-            char_num: packet_make_char.char_num as i16,
-            name,
-            class: 0,
-            zeny: 10000, // make this configurable
-            status_point: 48,
-            str: packet_make_char.str as i16,
-            agi: packet_make_char.agi as i16,
-            vit,
-            int,
-            dex: packet_make_char.dex as i16,
-            luk: packet_make_char.luk as i16,
-            max_hp,
-            hp: max_hp,
-            max_sp,
-            sp: max_sp,
-            hair: packet_make_char.head,
-            hair_color: packet_make_char.head_pal as i32,
-            last_map: "new_1-1".to_string(), // make this configurable
-            last_x: 53,
-            last_y: 111,
-            save_map: "new_1-1".to_string(), // make this configurable
-            save_x: 53,
-            save_y: 111,
-            sex: "M".to_string(), // TODO use account sex
-            inventory_slots: context.configuration().game.max_inventory as i32,
-        });
-    }
-    if char_model.is_none() {
-        error!("Char model is not initialized, probably packet was not recognized");
+    let session = context.session();
+    if !require_pin(server, &context, &session) {
         return;
     }
-
-    let created_char = server.runtime().block_on(async {
-        let char_model = char_model.unwrap();
-        let name = char_model.name.as_str();
-        server.repository.character_insert(&char_model).await.unwrap();
-        // TODO add default stuff
-        let created_char: CharacterInfoNeoUnionWrapped = server.repository.character_info(char_model.account_id, name).await.unwrap();
-        created_char.data
-    });
-    let mut packet_hc_accept_makechar_neo_union = PacketHcAcceptMakecharNeoUnion::new(GlobalConfigService::instance().packetver());
-    packet_hc_accept_makechar_neo_union.set_charinfo(created_char);
-    packet_hc_accept_makechar_neo_union.fill_raw_with_packetver(Some(server.packetver()));
-    socket_send!(context, packet_hc_accept_makechar_neo_union);
-}
-
-pub fn handle_delete_reserved_char(server: &Server, context: Request) {
-    let packet_delete_reserved_char = cast!(context.packet(), PacketChDeleteChar4Reserved);
-    server.runtime().block_on(async {
-        server
-            .repository
-            .character_delete_reserved(context.session().account_id, packet_delete_reserved_char.gid)
-            .await
-            .unwrap();
-    });
-    let mut packet_hc_delete_char4reserved = PacketHcDeleteChar4Reserved::new(GlobalConfigService::instance().packetver());
-    packet_hc_delete_char4reserved.set_gid(packet_delete_reserved_char.gid);
-    packet_hc_delete_char4reserved.set_delete_reserved_date(24 * 60 * 60);
-    packet_hc_delete_char4reserved.set_result(1);
-    packet_hc_delete_char4reserved.fill_raw();
-    socket_send!(context, packet_hc_delete_char4reserved);
+    let name_of = |name: &[char]| name.iter().take_while(|c| **c != '\0').collect::<String>();
+    let request = if let Some(packet) = context.packet().as_any().downcast_ref::<PacketChMakeChar3>() {
+        CreateRequest {
+            name: name_of(&packet.name),
+            slot: i32::from(packet.char_num),
+            hair_style: i32::from(packet.head),
+            hair_color: i32::from(packet.head_pal),
+            stats: None,
+        }
+    } else if let Some(packet) = context.packet().as_any().downcast_ref::<PacketChMakeChar2>() {
+        CreateRequest {
+            name: name_of(&packet.name),
+            slot: i32::from(packet.char_num),
+            hair_style: i32::from(packet.head),
+            hair_color: i32::from(packet.head_pal),
+            stats: None,
+        }
+    } else if let Some(packet) = context.packet().as_any().downcast_ref::<PacketChMakeChar>() {
+        CreateRequest {
+            name: name_of(&packet.name),
+            slot: i32::from(packet.char_num),
+            hair_style: i32::from(packet.head),
+            hair_color: i32::from(packet.head_pal),
+            stats: Some([packet.str, packet.agi, packet.vit, packet.int, packet.dex, packet.luk].map(i32::from)),
+        }
+    } else {
+        error!("Char creation packet was not recognized");
+        return;
+    };
+    let account = AccountContext {
+        account_id: session.account_id,
+        sex: if session.account.sex == 0 { "F" } else { "M" },
+        char_slots: session.account.char_slots,
+    };
+    match char_server_service::create_character(
+        server.repository.as_ref(),
+        &server.configuration.char_server,
+        server.configuration.game.max_inventory,
+        &account,
+        server.packetver(),
+        &request,
+        chrono::Utc::now().timestamp(),
+    ) {
+        Ok(created) => {
+            let options = CharacterListOptions {
+                move_enabled: server.configuration.char_server.char_move_enabled,
+                moves_unlimited: server.configuration.char_server.char_moves_unlimited,
+            };
+            let mut packet = PacketHcAcceptMakecharNeoUnion::new(server.packetver());
+            packet.set_charinfo(character_info(&created, options));
+            packet.fill_raw_with_packetver(Some(server.packetver()));
+            socket_send!(context, packet);
+        }
+        Err(code) => refuse_make_char(&context, code),
+    }
 }
 
 pub fn handle_select_char(server: &Server, context: Request) {
     let packet_select_char = cast!(context.packet(), PacketChSelectChar);
+    if !require_pin(server, &context, &context.session()) {
+        return;
+    }
+    let reject = |context: &Request| {
+        let mut packet = PacketHcRefuseEnter::new(server.packetver());
+        packet.set_error_code(0);
+        packet.fill_raw();
+        socket_send!(context, packet);
+    };
     let selected_session = match server.await_character_selection(context.session()) {
         Ok(session) => session,
         Err(error) => {
             warn!("Character selection rejected: {error}");
-            let mut packet = PacketHcRefuseEnter::new(server.packetver());
-            packet.set_error_code(0);
-            packet.fill_raw();
-            socket_send!(context, packet);
-            return;
+            return reject(&context);
         }
     };
     let session_id = selected_session.account_id;
-    let char_model: CharSelectModel = server.runtime().block_on(async {
-        if let Some(char_id) = selected_session.char_id {
-            server.repository.character_with_id_fetch(char_id).await.unwrap()
-        } else {
-            server
-                .repository
-                .character_fetch(session_id, packet_select_char.char_num)
-                .await
-                .unwrap()
-        }
-    });
+    let now = chrono::Utc::now().timestamp();
+    let selectable = server
+        .repository
+        .char_account_characters(session_id)
+        .ok()
+        .and_then(|characters| characters.into_iter().find(|character| character.char_num == i16::from(packet_select_char.char_num)))
+        .filter(|character| character.delete_date == 0 && character.unban_time <= now);
+    let Some(char_model) = selectable else {
+        warn!("Account {session_id} selected a missing, banned or deleted character");
+        return reject(&context);
+    };
     let skills: Vec<KnownSkill> = server
         .runtime()
         .block_on(async { server.repository.character_skills(char_model.char_id as u32).await.unwrap() });
@@ -257,11 +292,23 @@ pub fn handle_select_char(server: &Server, context: Request) {
         .block_on(async { server.repository.load_hotkeys(char_model.char_id as u32).await.unwrap() });
 
     let char_id: u32 = char_model.char_id as u32;
-    let last_x: u16 = char_model.last_x as u16;
-    let last_y: u16 = char_model.last_y as u16;
-    let mut last_map: String = char_model.last_map.clone();
-    if last_map.is_empty() {
-        last_map = "prontera".to_string();
+    let config = &server.configuration.char_server;
+    let (last_map, last_x, last_y) = if char_model.last_map.is_empty() {
+        (config.default_map.clone(), config.default_map_x, config.default_map_y)
+    } else {
+        (char_model.last_map.clone(), char_model.last_x as u16, char_model.last_y as u16)
+    };
+    if config.log_char {
+        let record = CharLogRecord {
+            time: now,
+            account_id: session_id,
+            char_slot: char_model.char_num,
+            name: char_model.name.clone(),
+            message: "select char".into(),
+        };
+        if let Err(error) = server.repository.char_log(record) {
+            warn!("Failed to write the character log: {error}");
+        }
     }
 
     let mut character = Character::new(
@@ -273,7 +320,7 @@ pub fn handle_select_char(server: &Server, context: Request) {
         last_y,
         0,
         last_map,
-        if char_model.sex == "M" { 1 } else { 0 },
+        selected_session.account.sex,
         hotkeys,
     );
     character.save_map = char_model.save_map.clone();
@@ -473,41 +520,4 @@ pub fn handle_blocking_play_cancel(context: Request) {
     let mut packet_zc_load_confirm = PacketZcLoadConfirm::new(packetver);
     packet_zc_load_confirm.fill_raw();
     socket_send!(context, packet_zc_load_confirm);
-}
-
-async fn load_chars_info(account_id: u32, server: &Server) -> PacketHcAcceptEnterNeoUnion {
-    let row_results = server.repository.characters_info(account_id).await;
-    let mut accept_enter_neo_union = PacketHcAcceptEnterNeoUnion::new(GlobalConfigService::instance().packetver());
-    accept_enter_neo_union.set_packet_length((27 + row_results.len() * CharacterInfoNeoUnion::base_len(server.packetver())) as i16);
-    accept_enter_neo_union.set_char_info(
-        row_results
-            .iter()
-            .map(|wrapped| {
-                let mut character_info = wrapped.data.clone();
-                if character_info.head_bottom > 0 {
-                    character_info.head_bottom = GlobalConfigService::instance()
-                        .get_item(character_info.head_bottom as i32)
-                        .view
-                        .unwrap_or(0) as u16;
-                }
-                if character_info.head_top > 0 {
-                    character_info.head_top = GlobalConfigService::instance()
-                        .get_item(character_info.head_top as i32)
-                        .view
-                        .unwrap_or(0) as u16;
-                }
-                if character_info.head_mid > 0 {
-                    character_info.head_mid = GlobalConfigService::instance()
-                        .get_item(character_info.head_mid as i32)
-                        .view
-                        .unwrap_or(0) as u16;
-                }
-                character_info
-            })
-            .collect::<Vec<CharacterInfoNeoUnion>>(),
-    );
-    accept_enter_neo_union.set_premium_start_slot(12);
-    accept_enter_neo_union.set_premium_end_slot(12);
-    accept_enter_neo_union.set_total_slot_num(12);
-    accept_enter_neo_union
 }

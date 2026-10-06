@@ -11,6 +11,7 @@ use crate::repository::game_system_repository::{PlayerTradeCommit, PlayerTradeSi
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction, CharacterUpdateClientSideStats, CharacterUpdateWeight};
+use crate::server::model::permission_groups::Permission;
 use crate::server::model::game_systems::{PlayerTrade, PlayerTradeItem, PlayerTradePhase, PlayerTradeRequest};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -227,6 +228,9 @@ impl Server {
 
     fn request_player_trade(&self, state: &mut ServerState, char_id: u32, account_id: u32, now: u64) -> Result<(), String> {
         let actor = state.characters().get(&char_id).ok_or("Trade actor is unavailable")?;
+        if !state.has_permission(actor.account_id, Permission::Trade) {
+            return self.trade_response(state, char_id, TradeResponse::Failed, None);
+        }
         if actor.game_systems.is_trading()
             || !available(state, actor, now)
             || !super::status_service::StatusService::instance()
@@ -253,6 +257,7 @@ impl Server {
         let actor = state.characters().get(&char_id).unwrap();
         let target = state.characters().get(&target_id).unwrap();
         if target.game_systems.trade.is_some()
+            || !state.has_permission(target.account_id, Permission::Trade)
             || !available(state, target, now)
             || target.game_systems.guild_invitation.is_some()
             || target.game_systems.party_invitation.is_some()

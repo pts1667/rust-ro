@@ -3,7 +3,7 @@ use std::{env, fs};
 
 use configuration::configuration::Config;
 use database::Database;
-use database::model::{AccountRecord, CharacterInventory, CharacterRecord, CharacterSkills, InventoryRecord, SeedData};
+use database::model::{AccountRecord, CharacterInventory, IpBanRecord, CharacterRecord, CharacterSkills, InventoryRecord, SeedData};
 use models::enums::class::JobName;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithNumberValue, EnumWithStringValue};
@@ -74,10 +74,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
         }
         "create" => {
-            let username = args.get(1).ok_or("Usage: account-setup create USERNAME (set ACCOUNT_PASSWORD)")?;
+            let username = args.get(1).ok_or("Usage: account-setup create USERNAME [--sex M|F] [--group ID] (set ACCOUNT_PASSWORD)")?;
             let password = env::var("ACCOUNT_PASSWORD").map_err(|_| "Set ACCOUNT_PASSWORD to the new account password")?;
-            let id = database.create_account((*username).clone(), password)?;
-            println!("Created account {id}; add this ID to server.accounts in config.json");
+            let sex = option_value(&args, "--sex").unwrap_or("M").to_uppercase();
+            if !matches!(sex.as_str(), "M" | "F") {
+                return Err("--sex must be M or F".into());
+            }
+            let group_id = option_value(&args, "--group").map(str::parse).transpose()?.unwrap_or(0);
+            let account = AccountRecord { sex, group_id, ..AccountRecord::new(0, (*username).clone(), password) };
+            let id = database.create_account_record(account)?;
+            println!("Created account {id}");
+        }
+        "group" => {
+            let (username, group) = (args.get(1).ok_or(GROUP_USAGE)?, args.get(2).ok_or(GROUP_USAGE)?);
+            let group_id: u32 = group.parse()?;
+            update_account(&database, username, |account| account.group_id = group_id)?;
+            println!("Account {username} is now in group {group_id}");
+        }
+        "ban" => {
+            let (username, until) = (args.get(1).ok_or(BAN_USAGE)?, args.get(2).ok_or(BAN_USAGE)?);
+            let unban_time: i64 = until.parse()?;
+            update_account(&database, username, |account| account.unban_time = unban_time)?;
+            println!("Account {username} is banned until {unban_time} (0 lifts the ban)");
+        }
+        "ipban" => {
+            let (pattern, minutes) = (args.get(1).ok_or(IPBAN_USAGE)?, args.get(2).ok_or(IPBAN_USAGE)?);
+            let minutes: i64 = minutes.parse()?;
+            let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_secs() as i64;
+            let ban = IpBanRecord { list: (*pattern).clone(), begin: now, release: now + minutes * 60, reason: "account-setup".into() };
+            database.ip_bans.insert(pattern.as_bytes(), serde_json::to_vec(&ban)?)?;
+            println!("IP {pattern} is banned for {minutes} minutes");
+        }
+        "unipban" => {
+            let pattern = args.get(1).ok_or("Usage: account-setup unipban PATTERN")?;
+            database.ip_bans.remove(pattern.as_bytes())?;
+            println!("IP ban {pattern} removed");
         }
         "characters" => {
             let path = args.get(1).map(|arg| arg.as_str()).unwrap_or("tools/account-setup/characters.json");
@@ -90,6 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     account_id,
                     username: "test".into(),
                     password: env::var("ACCOUNT_PASSWORD").unwrap_or_else(|_| "qwertz".into()),
+                    ..AccountRecord::default()
                 }],
                 ..SeedData::default()
             };
@@ -165,8 +197,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             database.seed(&seed, replace)?;
             println!("Seeded {} preset characters for account {account_id}", seed.characters.len());
         }
-        _ => return Err("Usage: account-setup [seed [FILE] | create USERNAME | characters [FILE]] [--replace]".into()),
+        _ => {
+            return Err(
+                "Usage: account-setup [seed [FILE] | create USERNAME | group USERNAME ID | ban USERNAME UNIX_TIME | ipban PATTERN MINUTES | unipban PATTERN | characters [FILE]] [--replace]"
+                    .into(),
+            );
+        }
     }
+    Ok(())
+}
+
+const GROUP_USAGE: &str = "Usage: account-setup group USERNAME GROUP_ID";
+const BAN_USAGE: &str = "Usage: account-setup ban USERNAME UNIX_TIME";
+const IPBAN_USAGE: &str = "Usage: account-setup ipban PATTERN MINUTES (PATTERN like 1.2.3.4 or 1.2.3.*)";
+
+fn option_value<'a>(args: &'a [&String], name: &str) -> Option<&'a str> {
+    args.iter().position(|arg| arg.as_str() == name).and_then(|index| args.get(index + 1)).map(|value| value.as_str())
+}
+
+fn update_account(database: &Database, username: &str, update: impl FnOnce(&mut AccountRecord)) -> Result<(), Box<dyn std::error::Error>> {
+    let id: u32 = database::read(&database.account_names, username.as_bytes())?.ok_or("No such account")?;
+    let mut account: AccountRecord = database::required(&database.accounts, &id.to_be_bytes())?;
+    update(&mut account);
+    database.accounts.insert(id.to_be_bytes(), serde_json::to_vec(&account)?)?;
     Ok(())
 }
 

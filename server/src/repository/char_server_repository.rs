@@ -37,6 +37,25 @@ impl CharServerRepository for SledRepository {
         read(&self.database.characters, &char_id.to_be_bytes())
     }
 
+    fn char_find_by_name(&self, name: &str) -> Result<Option<CharacterRecord>, Error> {
+        let exact = read::<i32>(&self.database.character_names, name.as_bytes())?;
+        let id = match exact {
+            Some(id) => Some(id),
+            None => {
+                let mut found = None;
+                for entry in self.database.character_names.iter() {
+                    let (candidate, id) = entry?;
+                    if candidate.eq_ignore_ascii_case(name.as_bytes()) {
+                        found = Some(serde_json::from_slice(&id)?);
+                        break;
+                    }
+                }
+                found
+            }
+        };
+        id.map_or(Ok(None), |id| read(&self.database.characters, &id.to_be_bytes()))
+    }
+
     fn char_update(&self, char_id: u32, update: &dyn Fn(&mut CharacterRecord)) -> Result<CharacterRecord, Error> {
         Ok(self.database.characters.transaction(|characters| {
             let mut character: CharacterRecord = tx_required(characters, &char_id.to_be_bytes())?;
@@ -231,6 +250,14 @@ mod tests {
         let (repository, hero) = repository_with_character();
         assert!(repository.char_purge(hero.account_id as u32 + 1, hero.char_id as u32).is_err());
         assert!(repository.char_find(hero.char_id as u32).unwrap().is_some());
+    }
+
+    #[test]
+    fn characters_are_found_by_name_ignoring_case_as_a_fallback() {
+        let (repository, hero) = repository_with_character();
+        assert_eq!(repository.char_find_by_name("Hero").unwrap().unwrap().char_id, hero.char_id);
+        assert_eq!(repository.char_find_by_name("hERO").unwrap().unwrap().char_id, hero.char_id);
+        assert!(repository.char_find_by_name("Nobody").unwrap().is_none());
     }
 
     #[test]

@@ -126,6 +126,9 @@ pub trait CharServerRepository: Send + Sync {
     fn char_find(&self, _char_id: u32) -> Result<Option<CharacterRecord>, Error> {
         Err(Error::InvalidInput("Character storage is unavailable".into()))
     }
+    fn char_find_by_name(&self, _name: &str) -> Result<Option<CharacterRecord>, Error> {
+        Err(Error::InvalidInput("Character storage is unavailable".into()))
+    }
     fn char_update(&self, _char_id: u32, _update: &dyn Fn(&mut CharacterRecord)) -> Result<CharacterRecord, Error> {
         Err(Error::InvalidInput("Character storage is unavailable".into()))
     }

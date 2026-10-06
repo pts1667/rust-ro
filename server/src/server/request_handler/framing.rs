@@ -39,7 +39,6 @@ impl ClientFrames {
         }
         fixed!(
             PacketCaLogin,
-            PacketChDeleteChar4Reserved,
             PacketChEnter,
             PacketChMakeChar,
             PacketChMakeChar2,
@@ -100,6 +99,7 @@ impl ClientFrames {
                 .map(|layout| FrameLength::Fixed(layout.length))
                 .or_else(|| crate::server::service::script_world_service::world_frame_length(id, self.packetver))
                 .or_else(|| crate::server::service::player_trade_service::frame_length(id))
+                .or_else(|| super::char_requests::frame_length(id, self.packetver))
                 .or_else(|| super::script_operations::frame_length(id, self.packetver))
                 .or_else(|| crate::server::service::script_world_service::client_frame_length(id, self.packetver))
                 .or_else(|| self.lengths.get(&id).copied())

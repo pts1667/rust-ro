@@ -76,6 +76,10 @@ pub struct ServerConfig {
     #[serde(default = "default_enable_websocket")]
     pub enable_websocket: bool,
     pub packetver: u32,
+    #[serde(default = "default_groups_path")]
+    pub groups_path: String,
+    #[serde(default = "default_motd_path")]
+    pub motd_path: String,
 }
 
 impl ServerConfig {
@@ -115,6 +119,14 @@ fn default_host() -> String {
 
 fn default_guild_max_alliances() -> u8 {
     3
+}
+
+fn default_groups_path() -> String {
+    "config/groups.json".to_string()
+}
+
+fn default_motd_path() -> String {
+    "config/motd.txt".to_string()
 }
 
 fn default_enable_websocket() -> bool {

@@ -7,6 +7,7 @@ use super::{ScriptWorldService, protocol};
 use crate::server::Server;
 use crate::server::model::game_systems::{BuyingOffer, BuyingSale, BuyingStore, ItemContainer, PlayerOption, StoreSearchResult, VendingOffer, VendingStore};
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::permission_groups::Permission;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -361,6 +362,9 @@ impl ScriptWorldService {
         title: String,
         offers: Vec<(u16, u16, u32)>,
     ) -> Result<(), String> {
+        if !state.has_permission(character.account_id, Permission::Trade) {
+            return Err("Your group is not allowed to sell items".into());
+        }
         if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoVending)
             || state.cell_has(&character.map_instance_key, character.x(), character.y(), CellType::NoVending)
         {
@@ -571,6 +575,9 @@ impl ScriptWorldService {
                 items,
             } => self.purchase_vending(server, state, character, account_id, store_id, items),
             StoreRequest::CreateBuyingStore { title, zeny_limit, offers } => {
+                if !state.has_permission(character.account_id, Permission::Trade) {
+                    return Err("Your group is not allowed to buy items from players".into());
+                }
                 if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoBuyingStore)
                     || state.cell_has(&character.map_instance_key, character.x(), character.y(), CellType::NoVending)
                 {

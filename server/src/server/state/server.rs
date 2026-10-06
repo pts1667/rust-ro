@@ -32,6 +32,7 @@ pub struct ServerState {
     pub(crate) script_timers: crate::server::model::script_timer::ScriptTimers,
     pub(crate) character_logins: HashMap<u32, crate::server::model::script_timer::ScriptTimerOwner>,
     pub(crate) pending_character_logouts: HashMap<u32, crate::server::model::character_lifecycle::PendingCharacterLogout>,
+    permission_groups: Arc<crate::server::model::permission_groups::PermissionGroups>,
 }
 
 #[cfg(test)]
@@ -154,7 +155,25 @@ impl ServerState {
             script_timers: Default::default(),
             character_logins: Default::default(),
             pending_character_logouts: Default::default(),
+            permission_groups: Default::default(),
         }
+    }
+
+    pub fn set_permission_groups(&mut self, groups: crate::server::model::permission_groups::PermissionGroups) {
+        self.permission_groups = Arc::new(groups);
+    }
+
+    pub fn permission_groups(&self) -> &crate::server::model::permission_groups::PermissionGroups {
+        &self.permission_groups
+    }
+
+    /// Group of the account's current session; accounts without one are in the default group.
+    pub fn group_id_of(&self, account_id: u32) -> u32 {
+        self.sessions.find(account_id).map_or(crate::server::model::permission_groups::DEFAULT_GROUP_ID, |session| session.account.group_id)
+    }
+
+    pub fn has_permission(&self, account_id: u32, permission: crate::server::model::permission_groups::Permission) -> bool {
+        self.permission_groups.has_permission(self.group_id_of(account_id), permission)
     }
 
     pub fn remove_session(&self, session_id: u32) {

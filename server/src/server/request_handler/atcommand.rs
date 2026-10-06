@@ -14,6 +14,7 @@ use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChan
 use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::permission_groups::CommandKind;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::state::server::ServerState;
 use crate::server::script::Value;
@@ -48,14 +49,26 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             .collect();
     }
     let mut packet_zc_notify_playerchat = PacketZcNotifyPlayerchat::new(GlobalConfigService::instance().packetver());
-    // let mut packets = vec![];
-    match command {
+    let groups = state.permission_groups();
+    let account_id = state.get_character(char_id).map_or(0, |character| character.account_id);
+    let group_id = state.group_id_of(account_id);
+    let kind = if symbol == "#" { CommandKind::Char } else { CommandKind::At };
+    let canonical = groups.canonical_command(command);
+    if !groups.group(group_id).can_use_command(&canonical, kind) {
+        packet_zc_notify_playerchat.set_msg(format!("{symbol}{command} is an Unknown Command."));
+        send_chat_reply(server, char_id, packet_zc_notify_playerchat);
+        return;
+    }
+    if groups.group(group_id).log_commands {
+        info!(target: "atcommand_log", "account {account_id} char {char_id} (group {group_id}): {symbol}{command} {}", args.join(" ").trim());
+    }
+    match canonical.as_str() {
         "go" => {
             debug!("{:?}", args);
             let result = handle_go(server, state, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "warp" | "rura" | "warpto" => {
+        "mapmove" | "jumpto" => {
             let result = handle_warp(server, state, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
@@ -67,7 +80,7 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             let result = handle_inspect(server, state, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "blvl" | "lvup" | "blevel" | "baselvl" | "baselvup" | "baselevel" | "baselvlup" => {
+        "baselevelup" => {
             let result = handle_base_level(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
@@ -75,7 +88,7 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             let result = handle_set_base_level(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "jlvl" | "jlvup" | "jlevel" | "joblvl" | "joblvup" | "joblevel" | "joblvlup" => {
+        "joblevelup" | "jlvup" => {
             let result = handle_job_level(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
@@ -83,11 +96,11 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             let result = handle_set_job_level(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "job" | "jobchange" => {
+        "jobchange" => {
             let result = handle_set_job(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "rate" | "rates" => {
+        "rates" | "rate" => {
             let result = handle_rates(server);
             packet_zc_notify_playerchat.set_msg(result);
         }
@@ -104,11 +117,11 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             });
             return;
         }
-        "resetskills" => {
+        "resetskill" | "resetskills" => {
             let result = handle_reset_skills(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
-        "resetstats" => {
+        "resetstat" | "resetstats" => {
             let result = handle_reset_stats(server, char_id, args);
             packet_zc_notify_playerchat.set_msg(result);
         }
@@ -117,7 +130,7 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             packet_zc_notify_playerchat.set_msg(result);
         }
         "duel" | "invite" | "accept" | "reject" | "leave" | "killer" | "pk" => {
-            let action = match command {
+            let action = match canonical.as_str() {
                 "duel" => DuelAction::Create,
                 "invite" => DuelAction::Invite,
                 "accept" => DuelAction::Accept,
@@ -131,6 +144,10 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
                 argument: args.join(" ").trim().to_string(),
             }));
             return;
+        }
+        "reloadmotd" => {
+            server.motd().reload(&server.configuration.server.motd_path);
+            packet_zc_notify_playerchat.set_msg("Reloaded the Message of the Day.".to_string());
         }
         "heal" => {
             let result = handle_heal(server, char_id, args);

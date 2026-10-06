@@ -358,7 +358,8 @@ impl ServerService {
         let result=(|| {
             let flags=state.map_flags(&character.map_instance_key);
             let Some(item)=character.get_item_from_inventory(drop.index) else {return Err("Drop item is unavailable".into());};
-            if character.status.hp==0||character.is_dead()||drop.amount<=0||item.equip!=0||item.amount<drop.amount
+            if !state.has_permission(character.account_id,crate::server::model::permission_groups::Permission::Trade)
+                ||character.status.hp==0||character.is_dead()||drop.amount<=0||item.equip!=0||item.amount<drop.amount
                 ||flags.enabled(crate::server::model::map_flags::MapFlag::NoDrop)
                 ||character.game_systems.is_trading()||character.timing.skill_menu_blocked()||character.game_systems.buying_store.is_some()||character.game_systems.vending_store.is_some()
                 ||self.configuration_service.get_item(item.item_id).trade_flags as u64&ItemTradeFlag::NoDrop.as_flag()!=0 {
