@@ -67,7 +67,7 @@ impl Server {
     pub(crate) fn admit_character_map_entry(
         &self,
         session: Arc<Session>,
-        socket: Arc<std::sync::RwLock<std::net::TcpStream>>,
+        socket: Arc<std::sync::RwLock<crate::server::model::client_socket::ClientSocket>>,
     ) -> Result<crate::server::model::character_lifecycle::CharacterMapEntryData, String> {
         let (sender, receiver) = oneshot::channel();
         self.add_to_next_tick(GameEvent::CharacterMapEntry(

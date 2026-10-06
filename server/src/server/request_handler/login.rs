@@ -11,6 +11,7 @@ use packets::packets_parser::parse;
 use rand::Rng;
 
 use crate::server::Server;
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::request::Request;
 use crate::server::model::session::Session;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -136,7 +137,7 @@ pub async fn authenticate(server: &Server, packet: &PacketCaLogin) -> Box<dyn Pa
     refuse_login_packet
 }
 
-fn proxy_login(server: Arc<Server>, packet: &dyn Packet, tcp_stream: Arc<RwLock<TcpStream>>) {
+fn proxy_login(server: Arc<Server>, packet: &dyn Packet, tcp_stream: Arc<RwLock<ClientSocket>>) {
     let target = format!(
         "{}:{}",
         server.configuration.proxy.remote_login_server_ip, server.configuration.proxy.remote_login_server_port

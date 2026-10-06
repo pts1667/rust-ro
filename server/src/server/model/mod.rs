@@ -1,6 +1,7 @@
 pub mod action;
 pub mod battleground;
 pub mod battleground_queue;
+pub mod client_socket;
 pub mod damage_notification;
 pub mod duel;
 pub mod guild_alliance_requests;

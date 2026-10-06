@@ -1,10 +1,10 @@
 use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter};
-use std::net::TcpStream;
 use std::sync::{Arc, Mutex, RwLock};
 
 use tokio::sync::oneshot;
 
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::script_timer::{NpcTimerKey, ScriptTimerOwner};
 use crate::server::model::session::Session;
 use crate::server::state::character::Character;
@@ -61,7 +61,7 @@ pub struct CharacterMapEntryData {
 #[derive(Clone)]
 pub struct CharacterMapEntry {
     pub session: Arc<Session>,
-    pub socket: Arc<RwLock<TcpStream>>,
+    pub socket: Arc<RwLock<ClientSocket>>,
     pub response: LifecycleReply<CharacterMapEntryData>,
 }
 
@@ -246,7 +246,7 @@ impl PartialEq for CharacterLogout {
 
 #[derive(Clone)]
 pub struct ClientDisconnected {
-    pub socket: Arc<RwLock<TcpStream>>,
+    pub socket: Arc<RwLock<ClientSocket>>,
 }
 
 impl Debug for ClientDisconnected {

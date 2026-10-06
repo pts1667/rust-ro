@@ -72,6 +72,8 @@ pub struct ServerConfig {
     pub enable_visual_debugger: bool,
     #[serde(default = "default_enable_legacy_proxy")]
     pub enable_legacy_proxy: bool,
+    #[serde(default = "default_enable_websocket")]
+    pub enable_websocket: bool,
     pub packetver: u32,
 }
 
@@ -115,6 +117,10 @@ fn default_guild_max_alliances() -> u8 {
 }
 
 fn default_enable_legacy_proxy() -> bool {
+    true
+}
+
+fn default_enable_websocket() -> bool {
     true
 }
 

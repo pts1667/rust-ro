@@ -5,6 +5,7 @@
     ],
     "enable_visual_debugger": false,
     "enable_legacy_proxy": true,
+    "enable_websocket": true,
     "log_level_module_override": [],
     "log_level": "info",
     "trace_packet": false,

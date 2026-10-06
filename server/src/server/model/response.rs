@@ -1,17 +1,18 @@
-use std::net::TcpStream;
 use std::sync::{Arc, RwLock};
 
+use crate::server::model::client_socket::ClientSocket;
+
 pub struct Response {
-    socket: Arc<RwLock<TcpStream>>,
+    socket: Arc<RwLock<ClientSocket>>,
     packet: Vec<u8>,
 }
 
 impl Response {
-    pub fn new(socket: Arc<RwLock<TcpStream>>, packet: Vec<u8>) -> Self {
+    pub fn new(socket: Arc<RwLock<ClientSocket>>, packet: Vec<u8>) -> Self {
         Self { socket, packet }
     }
 
-    pub fn socket(&self) -> Arc<RwLock<TcpStream>> {
+    pub fn socket(&self) -> Arc<RwLock<ClientSocket>> {
         self.socket.clone()
     }
 

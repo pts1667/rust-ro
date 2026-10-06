@@ -37,6 +37,7 @@ use crate::server::service::character::skill_tree_service::SkillTreeService;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
 use crate::server::service::script_service::ScriptService;
+use crate::server::model::client_socket::{ClientConnection, ClientSocket};
 use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
@@ -55,6 +56,7 @@ pub mod request_handler;
 pub mod script;
 pub mod service;
 pub mod state;
+pub mod websocket;
 
 pub(crate) type StateGuard<'a> = parking_lot::MutexGuard<'a, ServerState>;
 
@@ -517,6 +519,10 @@ impl Server {
             let server_shared_ref = server_ref.clone();
             if enable_client_interfaces {
                 info!("Server listen on {}", server_ref.configuration.server.bind_address(port));
+                let websocket_enabled = server_ref.configuration.server.enable_websocket;
+                if websocket_enabled {
+                    info!("WebSocket clients are accepted on the same port");
+                }
                 thread::Builder::new()
                     .name("client_connection_thread".to_string())
                     .spawn_scoped(server_thread_scope, move || {
@@ -529,25 +535,33 @@ impl Server {
                             debug!("Received new connection");
                             let response_sender_clone = response_sender.clone();
                             let client_notification_sender_clone = client_notification_sender_clone.clone();
-                            let mut tcp_stream = tcp_stream.unwrap();
+                            let tcp_stream = tcp_stream.unwrap();
                             thread::Builder::new()
                                 .name(format!("client_{}_thread", tcp_stream.peer_addr().unwrap()))
                                 .spawn_scoped(server_thread_scope, move || {
                                     PACKETVER.with(|ver| *ver.borrow_mut() = server_shared_ref.packetver());
 
-                                    let tcp_stream_arc = Arc::new(RwLock::new(tcp_stream.try_clone().unwrap())); // todo remove this clone
+                                    let connection = match ClientConnection::accept(tcp_stream, websocket_enabled) {
+                                        Ok(connection) => connection,
+                                        Err(error) => {
+                                            warn!("Client connection rejected: {}", error);
+                                            return;
+                                        }
+                                    };
+                                    let mut reader = connection.reader;
+                                    let tcp_stream_arc = connection.socket;
                                     let mut buffer = [0; 2048];
                                     let mut frames = request_handler::framing::ClientFrames::new(server_shared_ref.packetver());
                                     'connection: loop {
                                         if !server_shared_ref.is_alive() {
-                                            let _ = tcp_stream.shutdown(Shutdown::Both);
+                                            let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
                                             break;
                                         }
-                                        match tcp_stream.read(&mut buffer) {
+                                        match reader.read(&mut buffer) {
                                             Ok(bytes_read) => {
                                                 if bytes_read == 0 {
                                                     info!("shutdown thread client");
-                                                    tcp_stream.shutdown(Shutdown::Both).expect(
+                                                    tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both).expect(
                                                         "Unable to shutdown incoming socket. Shutdown was done because remote socket \
                                                          seems closed.",
                                                     );
@@ -557,7 +571,7 @@ impl Server {
                                                     Ok(incoming) => incoming,
                                                     Err(error) => {
                                                         warn!("Invalid client packet stream: {}", error);
-                                                        let _ = tcp_stream.shutdown(Shutdown::Both);
+                                                        let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
                                                         break 'connection;
                                                     }
                                                 };
@@ -599,7 +613,7 @@ impl Server {
                                             }
                                             Err(err) => {
                                                 error!("{}", err);
-                                                let _ = tcp_stream.shutdown(Shutdown::Both);
+                                                let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
                                                 break;
                                             }
                                         }
@@ -809,7 +823,7 @@ impl Server {
         }
     }
 
-    pub fn ensure_session_exists(&self, tcp_stream: &Arc<RwLock<TcpStream>>) -> Option<u32> {
+    pub fn ensure_session_exists(&self, tcp_stream: &Arc<RwLock<ClientSocket>>) -> Option<u32> {
         let stream_guard = read_lock!(tcp_stream);
         let session_option = self.sessions.find_by_stream(&stream_guard);
         if session_option.is_none() {

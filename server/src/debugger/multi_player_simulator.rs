@@ -11,6 +11,7 @@ use packets::packets::{Packet, PacketChSelectChar, PacketCzEnter2, PacketCzPlaye
 use rand::{RngCore, thread_rng};
 
 use crate::server::Server;
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::session::{Session, SessionRecord};
 use crate::server::request_handler::chat::handle_chat;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -81,7 +82,7 @@ impl MultiPlayerSimulator {
             account_id,
             char_id,
             GlobalConfigService::instance().packetver(),
-            Arc::new(RwLock::new(client_socket)),
+            Arc::new(RwLock::new(ClientSocket::tcp(client_socket))),
         );
         let session = Arc::new(session);
         self.sessions.push(session.clone());

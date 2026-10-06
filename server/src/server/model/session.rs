@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::Write;
-use std::net::{Shutdown, TcpStream};
+use std::net::Shutdown;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock, Weak};
 
@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio::sync::mpsc::Sender;
 
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::script::PlayerInput;
 use crate::server::state::character_directory::CharacterPresence;
 
@@ -37,8 +38,8 @@ impl PartialEq for SessionBinding {
 }
 
 pub struct Session {
-    pub char_server_socket: Option<Arc<RwLock<TcpStream>>>,
-    pub map_server_socket: Option<Arc<RwLock<TcpStream>>>,
+    pub char_server_socket: Option<Arc<RwLock<ClientSocket>>>,
+    pub map_server_socket: Option<Arc<RwLock<ClientSocket>>>,
     pub account_id: u32,
     // random value, known as login_id1 in hercules
     pub auth_code: i32,
@@ -249,7 +250,7 @@ impl SessionRegistry {
         self.0.iter().find(|entry| entry.char_id == Some(char_id)).map(|entry| entry.value().clone())
     }
 
-    pub fn find_by_map_socket(&self, socket: &Arc<RwLock<TcpStream>>) -> Option<Arc<Session>> {
+    pub fn find_by_map_socket(&self, socket: &Arc<RwLock<ClientSocket>>) -> Option<Arc<Session>> {
         self.0
             .iter()
             .find(|entry| entry.map_server_socket.as_ref().is_some_and(|map_socket| Arc::ptr_eq(map_socket, socket)))
@@ -261,7 +262,7 @@ impl SessionRegistry {
         sessions.iter().for_each(&mut action);
     }
 
-    pub fn find_by_stream(&self, tcp_stream: &TcpStream) -> Option<u32> {
+    pub fn find_by_stream(&self, tcp_stream: &ClientSocket) -> Option<u32> {
         let found = self.0.iter().find(|entry| {
             let session = entry.value();
             if session.map_server_socket.is_some() {
@@ -304,7 +305,7 @@ impl Session {
         }
     }
 
-    pub fn recreate_with_char_socket(&self, char_socket: Arc<RwLock<TcpStream>>) -> Session {
+    pub fn recreate_with_char_socket(&self, char_socket: Arc<RwLock<ClientSocket>>) -> Session {
         Session {
             char_server_socket: Some(char_socket),
             map_server_socket: self.map_server_socket.clone(),
@@ -319,7 +320,7 @@ impl Session {
         }
     }
 
-    pub fn recreate_with_map_socket(&self, map_socket: Arc<RwLock<TcpStream>>) -> Session {
+    pub fn recreate_with_map_socket(&self, map_socket: Arc<RwLock<ClientSocket>>) -> Session {
         Session {
             char_server_socket: self.char_server_socket.clone(),
             map_server_socket: Some(map_socket),
@@ -338,7 +339,7 @@ impl Session {
         account_id: u32,
         char_id: u32,
         packetver: u32,
-        map_socket: Arc<RwLock<TcpStream>>,
+        map_socket: Arc<RwLock<ClientSocket>>,
     ) -> Session {
         Session {
             char_server_socket: None,

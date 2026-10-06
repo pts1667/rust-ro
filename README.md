@@ -79,6 +79,8 @@ cp config.template.json config.json
 ```
 `server.host` is the IP address the server and the legacy proxy listen on (default `0.0.0.0`, all interfaces). Use `127.0.0.1` to accept local connections only. It can be overridden at startup with `--host <ip>`, for example `cargo run --package server --bin server -- --host 127.0.0.1`.
 
+The server accepts raw TCP clients and WebSocket clients (for example roBrowser) on the same `server.port`. A connection that opens with an HTTP upgrade request is switched to WebSocket, and every other connection is treated as raw TCP. Each outgoing write is sent as one binary message, and incoming binary messages are read as the same byte stream a TCP client sends. Text frames and extensions are rejected. TLS (`wss://`) is not handled by the server, terminate it in a reverse proxy. Set `server.enable_websocket` to `false` to accept raw TCP only.
+
 Inside this JSON, you will find **database related variables**, **game related variables** (exp_rate, drop_rate etc) as well.
 
 

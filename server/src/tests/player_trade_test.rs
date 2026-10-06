@@ -12,6 +12,7 @@ use sled::transaction::Transactional;
 
 use super::ServerServiceTestContext;
 use crate::repository::{InventoryRepository, SledRepository};
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction};
 use crate::server::model::game_systems::{ItemContainer, PlayerTradePhase, PlayerTradeRequest, ScriptWorldRequest, StoreRequest, ContainerRequest};
@@ -123,7 +124,7 @@ fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>) {
             level: 7,
         });
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let socket = Arc::new(RwLock::new(TcpStream::connect(listener.local_addr().unwrap()).unwrap()));
+        let socket = Arc::new(RwLock::new(ClientSocket::tcp(TcpStream::connect(listener.local_addr().unwrap()).unwrap())));
         let _peer = listener.accept().unwrap();
         let mut session = Session::create_empty(character.account_id, id as i32, 0, context.server.packetver());
         session.char_id = Some(id);

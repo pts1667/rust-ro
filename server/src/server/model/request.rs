@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-use std::net::TcpStream;
 use std::sync::mpsc::SyncSender;
 use std::sync::{Arc, RwLock};
 
 use configuration::configuration::Config;
 use packets::packets::Packet;
 
+use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::response::Response;
 use crate::server::model::session::Session;
@@ -16,7 +16,7 @@ pub struct Request<'server: 'request, 'request> {
     packet_ver: u32,
     configuration: &'server Config,
     packet: &'request dyn Packet,
-    socket: Arc<RwLock<TcpStream>>,
+    socket: Arc<RwLock<ClientSocket>>,
     session: Option<Arc<Session>>,
     response_channel: SyncSender<Response>,
     client_notification_channel: SyncSender<Notification>,
@@ -27,7 +27,7 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
         configuration: &'server Config,
         session_id: Option<u32>,
         packet_ver: u32,
-        socket: Arc<RwLock<TcpStream>>,
+        socket: Arc<RwLock<ClientSocket>>,
         packet: &'request dyn Packet,
         response_sender: SyncSender<Response>,
         client_notification_channel: SyncSender<Notification>,
@@ -56,7 +56,7 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
         self.packet_ver
     }
 
-    pub fn socket(&self) -> Arc<RwLock<TcpStream>> {
+    pub fn socket(&self) -> Arc<RwLock<ClientSocket>> {
         self.socket.clone()
     }
 
