@@ -24,7 +24,7 @@ impl ClientFrames {
                 let packet = $kind::new(packetver);
                 let id = packet.id(packetver);
                 if let Ok(id) = u16::from_str_radix(id.trim_start_matches("0x"), 16) {
-                    lengths.insert(id, FrameLength::Fixed($kind::base_len(packetver)));
+                    lengths.insert(id.swap_bytes(), FrameLength::Fixed($kind::base_len(packetver)));
                 }
             )+ };
         }
@@ -33,7 +33,7 @@ impl ClientFrames {
                 let packet = $kind::new(packetver);
                 let id = packet.id(packetver);
                 if let Ok(id) = u16::from_str_radix(id.trim_start_matches("0x"), 16) {
-                    lengths.insert(id, FrameLength::Variable { minimum: $kind::base_len(packetver).max(4) });
+                    lengths.insert(id.swap_bytes(), FrameLength::Variable { minimum: $kind::base_len(packetver).max(4) });
                 }
             )+ };
         }
@@ -101,8 +101,8 @@ impl ClientFrames {
                 .or_else(|| crate::server::service::script_world_service::world_frame_length(id, self.packetver))
                 .or_else(|| crate::server::service::player_trade_service::frame_length(id))
                 .or_else(|| super::script_operations::frame_length(id, self.packetver))
-                .or_else(|| self.lengths.get(&id).copied())
                 .or_else(|| crate::server::service::script_world_service::client_frame_length(id, self.packetver))
+                .or_else(|| self.lengths.get(&id).copied())
                 .ok_or_else(|| format!("Unknown client packet header {id:#06x}"))?;
             let required = match length {
                 FrameLength::Fixed(length) => length,
@@ -177,6 +177,39 @@ mod tests {
             let ping = [0x87, 0x01, 1, 2, 3, 4];
             assert_eq!(frames.push(&ping).unwrap(), vec![ping.to_vec()], "packetver {version}");
         }
+    }
+
+    #[test]
+    fn npc_interaction_packets_are_framed_at_every_supported_version() {
+        for version in SUPPORTED_VERSIONS {
+            let mut frames = ClientFrames::new(version);
+            let click = [0x90, 0x00, 1, 2, 3, 4, 1];
+            let next = [0xB9, 0x00, 1, 2, 3, 4];
+            let stream = [click.as_slice(), next.as_slice()].concat();
+            assert_eq!(frames.push(&stream).unwrap(), vec![click.to_vec(), next.to_vec()], "packetver {version}");
+        }
+    }
+
+    #[test]
+    fn struct_lengths_agree_with_the_packet_table_except_the_legacy_walk_header() {
+        const LEGACY_WALK: u16 = 0x035F;
+        for version in SUPPORTED_VERSIONS {
+            let frames = ClientFrames::new(version);
+            for (id, length) in frames.lengths.iter().filter(|(id, _)| **id != LEGACY_WALK) {
+                if let Some(table) = crate::server::service::script_world_service::client_frame_length(*id, version) {
+                    assert_eq!(*length, table, "packetver {version} header {id:#06x}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn requests_missing_from_the_packet_table_are_framed_from_their_struct() {
+        let mut frames = ClientFrames::new(20120307);
+        let equip = [0xA9, 0x00, 1, 0, 2, 0];
+        let amount = [0x43, 0x01, 1, 2, 3, 4, 5, 6, 7, 8];
+        let stream = [equip.as_slice(), amount.as_slice()].concat();
+        assert_eq!(frames.push(&stream).unwrap(), vec![equip.to_vec(), amount.to_vec()]);
     }
 
     #[test]
