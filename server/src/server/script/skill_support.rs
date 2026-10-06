@@ -38,7 +38,7 @@ impl ScriptSkillService {
             return Err("Skills cannot be used on this map".into());
         }
         if metadata.name == "AL_TELEPORT" && flags.enabled(MapFlag::NoTeleport) {
-            return Err("Teleport is disabled on this map".into());
+            return Err(crate::server::script::skill::actor::TELEPORT_DISABLED.into());
         }
         if metadata.name == "AL_WARP" && flags.enabled(MapFlag::NoWarp) {
             return Err("Warp Portal is disabled on this map".into());

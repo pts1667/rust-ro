@@ -50,6 +50,15 @@ pub struct ScriptActorSkillCompletion {
     pub payment: Option<DeferredSkillPayment>,
 }
 
+/// Rule rejections that are an ordinary outcome for mobs and NPCs, which cast without checking the rules first.
+pub const TELEPORT_DISABLED: &str = "Teleport is disabled on this map";
+pub const PLACEMENT_OCCUPIED: &str = "A living actor occupies the placement area";
+pub const PLACEMENT_OVERLAPS_UNIT: &str = "An existing trap or skill unit overlaps the placement area";
+
+pub fn is_expected_rejection(error: &str) -> bool {
+    matches!(error, TELEPORT_DISABLED | PLACEMENT_OCCUPIED | PLACEMENT_OVERLAPS_UNIT)
+}
+
 #[path = "skill_npc_state.rs"]
 mod npc;
 pub use npc::NpcSkillState;

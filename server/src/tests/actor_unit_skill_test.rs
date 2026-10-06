@@ -12,6 +12,7 @@ use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast, Chara
 use crate::server::model::events::map_event::{MapEvent, MobStatusChange};
 use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstance;
+use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::model::map_item::{MapItems, ToMapItem, ToMapItemSnapshot};
 use crate::server::model::script::Script;
 use crate::server::model::tasks_queue::TasksQueue;
@@ -529,6 +530,43 @@ fn drain_events(context: &ServerServiceTestContext) -> Vec<GameEvent> {
         drained.extend(events);
     }
     drained
+}
+
+#[test]
+fn only_rule_rejections_are_treated_as_handled_outcomes() {
+    for message in [actor::TELEPORT_DISABLED, actor::PLACEMENT_OCCUPIED, actor::PLACEMENT_OVERLAPS_UNIT] {
+        assert!(actor::is_expected_rejection(message), "{message}");
+    }
+    assert!(!actor::is_expected_rejection("Unit skill caster left the map"));
+}
+
+#[test]
+fn teleport_on_a_no_teleport_map_completes_as_a_handled_rejection() {
+    let (context, instance, service, _) = fixture();
+    let mut flags = MapFlags::default();
+    flags.set(MapFlag::NoTeleport, true, &[]).unwrap();
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
+    let mut cast = request(MOB_ID, MOB_ID, SkillEnum::AlTeleport);
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1000).unwrap();
+    assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1);
+    assert!(instance.task_queue().pop().is_none(), "the mob must not be warped");
+}
+
+#[test]
+fn trap_placement_blocked_by_a_living_mob_completes_as_a_handled_rejection() {
+    let (context, instance, service, _) = fixture();
+    let mut cast = request(MOB_ID, 0, SkillEnum::HtAnklesnare);
+    cast.ground = Some((51, 50));
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1000).unwrap();
+    {
+        let mut blocker = crate::tests::common::mob_helper::create_mob(MOB_ID + 1, "PORING");
+        blocker.x = 51;
+        blocker.y = 50;
+        instance.state_mut().insert_mob(blocker);
+    }
+    assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1);
 }
 
 #[test]

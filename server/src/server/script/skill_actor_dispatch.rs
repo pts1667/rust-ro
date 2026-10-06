@@ -459,7 +459,14 @@ impl ScriptSkillService {
         if instance.state().script_skill_state.generations.get(&source.id).copied() != Some(completion.generation) {
             return Err("Unit skill completion no longer belongs to this caster".into());
         }
-        self.execute_actor_skill(server, state, &source, request, tick)
+        match self.execute_actor_skill(server, state, &source, request, tick) {
+            Err(error) if actor::is_expected_rejection(&error) => {
+                debug!("Unit skill {} from {} was not performed: {}", request.skill_id, source.id, error);
+                self.notify_actor_support(&source, request, false);
+                Ok(())
+            }
+            result => result,
+        }
     }
 
     pub(crate) fn validate_script_actor_operation(metadata: &SkillMetadata, source: &ScriptSkillActor, level: u8) -> Result<(), String> {

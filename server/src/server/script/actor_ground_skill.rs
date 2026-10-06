@@ -126,7 +126,7 @@ impl ScriptSkillService {
                         .iter()
                         .any(|cell| cell.remaining_hits > 0 && cell.x.abs_diff(x).max(cell.y.abs_diff(y)) <= range)
             }) {
-                return Err("An existing trap or skill unit overlaps the placement area".into());
+                return Err(crate::server::script::skill::actor::PLACEMENT_OVERLAPS_UNIT.into());
             }
         }
         if !metadata.unit_flag("NoFootSet") {
@@ -156,7 +156,7 @@ impl ScriptSkillService {
                     .flat_map(crate::server::service::script_world_service::companion_snapshots)
                     .any(|actor| nearby(actor.x(), actor.y())))
         {
-            return Err("A living actor occupies the placement area".into());
+            return Err(crate::server::script::skill::actor::PLACEMENT_OCCUPIED.into());
         }
         Ok(())
     }

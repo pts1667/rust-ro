@@ -402,7 +402,7 @@ impl ScriptSkillService {
                     .map_flags_for(&source.map, source.instance)
                     .enabled(crate::server::model::map_flags::MapFlag::NoTeleport)
                 {
-                    return Err("Teleport is disabled on this map".into());
+                    return Err(actor::TELEPORT_DISABLED.into());
                 }
                 if source.object_type == MapItemType::Mob {
                     instance.add_to_next_tick(MapEvent::MobRandomWarp(MobRandomWarp { mob_id: source.id }));
