@@ -157,6 +157,7 @@ pub struct Mob {
     pub friendly_guilds: Vec<u32>,
     pub castle_owner: u32,
     pub trickcasting_until: u128,
+    pub trickcasting_speed_lost: u16,
     pub bg_id: u32,
     pub damage_immune: bool,
 }
@@ -366,7 +367,25 @@ impl Mob {
         removed
     }
 
+    pub fn speed_up_trickcasting(&mut self, step: u16, min_speed: u16) {
+        let speed = self.status.speed().saturating_sub(step).max(min_speed);
+        let lost = self.status.speed().saturating_sub(speed);
+        self.status.set_speed(speed);
+        self.base_status.set_speed(self.base_status.speed().saturating_sub(lost));
+        self.trickcasting_speed_lost = self.trickcasting_speed_lost.saturating_add(lost);
+    }
+
+    pub fn end_trickcasting(&mut self) {
+        let lost = std::mem::take(&mut self.trickcasting_speed_lost);
+        self.status.set_speed(self.status.speed().saturating_add(lost));
+        self.base_status.set_speed(self.base_status.speed().saturating_add(lost));
+        self.trickcasting_until = 0;
+    }
+
     pub fn tick_statuses(&mut self, tick: u128) -> Vec<models::status_change::StatusChangeKind> {
+        if self.trickcasting_until != 0 && tick >= self.trickcasting_until {
+            self.end_trickcasting();
+        }
         self.status_effects.hp = self.status.hp();
         let damage = crate::server::service::status_effect_service::StatusEffectService::periodic_damage_for_target(
             &mut self.status_effects,
@@ -620,6 +639,7 @@ impl Mob {
             friendly_guilds: Vec::new(),
             castle_owner: 0,
             trickcasting_until: 0,
+            trickcasting_speed_lost: 0,
             bg_id: 0,
             damage_immune: false,
         }

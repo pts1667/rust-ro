@@ -497,11 +497,9 @@ impl MapInstanceService {
                 let Some(mob) = state.mobs_mut().get_mut(&id) else { return };
                 let remaining = mob.trickcasting_until.saturating_sub(tick);
                 if remaining >= TRICKCASTING_STOP_MS {
-                    let speed = mob.status.speed().saturating_sub(TRICKCASTING_SPEED_STEP).max(MIN_WALK_SPEED);
-                    mob.status.set_speed(speed);
-                    mob.base_status.set_speed(speed);
+                    mob.speed_up_trickcasting(TRICKCASTING_SPEED_STEP, MIN_WALK_SPEED);
                 } else {
-                    mob.trickcasting_until = 0;
+                    mob.end_trickcasting();
                 }
             }
             SpecialMobSkill::Revenge => {
@@ -766,5 +764,29 @@ mod tests {
         assert!(!met(&mob, &random_move) && met(&mob, &speed_up));
         assert!(MapInstanceService::special_action(&mob, &random_move, SkillMetadata::find(random_move.skill_id).unwrap()).is_some());
         assert!(MapInstanceService::special_action(&mob, &speed_up, SkillMetadata::find(speed_up.skill_id).unwrap()).is_some());
+    }
+
+    #[test]
+    fn ending_trickcasting_restores_the_walking_speed() {
+        let mut mob = marine_sphere();
+        let original = mob.status.speed();
+        mob.trickcasting_until = 3000;
+        mob.speed_up_trickcasting(TRICKCASTING_SPEED_STEP, MIN_WALK_SPEED);
+        mob.speed_up_trickcasting(TRICKCASTING_SPEED_STEP, MIN_WALK_SPEED);
+        assert!(mob.status.speed() < original && mob.base_status.speed() < original);
+        mob.end_trickcasting();
+        assert_eq!((mob.status.speed(), mob.base_status.speed(), mob.trickcasting_until), (original, original, 0));
+    }
+
+    #[test]
+    fn trickcasting_expiry_restores_the_speed_without_a_speed_up_entry() {
+        let mut mob = marine_sphere();
+        let original = mob.status.speed();
+        mob.trickcasting_until = 3000;
+        mob.speed_up_trickcasting(TRICKCASTING_SPEED_STEP, MIN_WALK_SPEED);
+        mob.tick_statuses(2999);
+        assert!(mob.status.speed() < original);
+        mob.tick_statuses(3000);
+        assert_eq!((mob.status.speed(), mob.base_status.speed()), (original, original));
     }
 }
