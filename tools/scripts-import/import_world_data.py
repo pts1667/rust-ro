@@ -12,6 +12,9 @@ def body(path):
     return yaml.safe_load(path.read_text(encoding="utf-8")).get("Body", [])
 
 
+CLIENT_FRAME_VERSIONS = (20120229, 20120307)
+
+
 def client_frames(reference, packetver):
     definitions = {"PACKETVER": packetver, "PACKETVER_MAIN_NUM": packetver, "PACKETVER_RE_NUM": 0,
                    "PACKETVER_ZERO_NUM": 0, "PACKETVER_SAK_NUM": 0}
@@ -136,7 +139,7 @@ def import_data(repository, reference, pet_overrides=None):
     guild_exp = [row["Exp"] for row in sorted(body(reference / "db/pre-re/exp_guild.yml"), key=lambda row: row["Level"])]
     hom_exp = [row["Exp"] for row in sorted(body(reference / "db/pre-re/exp_homun.yml"), key=lambda row: row["Level"])]
     return {"pets": pets, "mercenaries": mercenaries, "homunculi": homunculi, "guild_experience": guild_exp,
-            "homunculus_experience": hom_exp, "client_frames": client_frames(reference, 20120229)}
+            "homunculus_experience": hom_exp, "client_frames": {str(version): client_frames(reference, version) for version in CLIENT_FRAME_VERSIONS}}
 
 
 def compile_pet_scripts(repository, sources, mobs):

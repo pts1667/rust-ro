@@ -217,10 +217,7 @@ pub fn world_frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
 }
 
 pub fn client_frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
-    if packetver != 20120229 {
-        return None;
-    }
-    let length = *super::world_data().client_frames.get(&id)?;
+    let length = *super::world_data().client_frames.get(&packetver)?.get(&id)?;
     if length == -1 {
         Some(FrameLength::Variable { minimum: 4 })
     } else if length >= 2 {

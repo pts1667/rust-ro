@@ -135,6 +135,50 @@ impl ClientFrames {
 mod tests {
     use super::*;
 
+    const SUPPORTED_VERSIONS: [u32; 2] = [20120229, 20120307];
+
+    fn wire_id(id: &str) -> u16 {
+        u16::from_str_radix(id.trim_start_matches("0x"), 16).unwrap().swap_bytes()
+    }
+
+    #[test]
+    fn frames_login_char_and_map_entry_packets_at_every_supported_version() {
+        for version in SUPPORTED_VERSIONS {
+            let packets = [
+                (wire_id(PacketCaLogin::new(version).id(version)), PacketCaLogin::base_len(version)),
+                (wire_id(PacketChEnter::new(version).id(version)), PacketChEnter::base_len(version)),
+                (wire_id(PacketChSelectChar::new(version).id(version)), PacketChSelectChar::base_len(version)),
+                (wire_id(PacketCzEnter2::new(version).id(version)), PacketCzEnter2::base_len(version)),
+                (wire_id(PacketCzRequestMove::new(version).id(version)), PacketCzRequestMove::base_len(version)),
+                (wire_id(PacketCzRequestTime::new(version).id(version)), PacketCzRequestTime::base_len(version)),
+            ];
+            let mut frames = ClientFrames::new(version);
+            let mut stream = Vec::new();
+            for (id, length) in packets {
+                let mut packet = id.to_le_bytes().to_vec();
+                packet.resize(length, 0);
+                stream.extend(packet);
+            }
+            let framed = frames.push(&stream).unwrap_or_else(|error| panic!("packetver {version}: {error}"));
+            assert_eq!(
+                framed.iter().map(|frame| (u16::from_le_bytes([frame[0], frame[1]]), frame.len())).collect::<Vec<_>>(),
+                packets,
+                "packetver {version}"
+            );
+        }
+        assert_eq!(wire_id(PacketCaLogin::new(20120307).id(20120307)), 0x0064);
+        assert_eq!(wire_id(PacketCzEnter2::new(20120307).id(20120307)), 0x086A);
+    }
+
+    #[test]
+    fn keeps_alive_and_other_table_only_packets_are_framed_at_every_supported_version() {
+        for version in SUPPORTED_VERSIONS {
+            let mut frames = ClientFrames::new(version);
+            let ping = [0x87, 0x01, 1, 2, 3, 4];
+            assert_eq!(frames.push(&ping).unwrap(), vec![ping.to_vec()], "packetver {version}");
+        }
+    }
+
     #[test]
     fn keeps_fragmented_world_packets_and_separates_coalesced_packets() {
         let mut frames = ClientFrames::new(20120229);

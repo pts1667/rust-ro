@@ -83,7 +83,7 @@ pub struct ScriptWorldData {
     pub homunculi: Vec<HomunculusDefinition>,
     pub guild_experience: Vec<u64>,
     pub homunculus_experience: Vec<u64>,
-    pub client_frames: BTreeMap<u16, i32>,
+    pub client_frames: BTreeMap<u32, BTreeMap<u16, i32>>,
 }
 
 #[derive(Deserialize)]
