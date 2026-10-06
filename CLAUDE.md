@@ -156,3 +156,8 @@ let mode = MobMode::CanMove.as_flag() | MobMode::CanAttack.as_flag();
 // Bad - never do this
 let mode = 0x81;
 ```
+
+## Reference Implementation
+
+Relevant pre-renewal documentation and source files are available under `../rathena/doc` and `../rathena`.
+Consider `rathena` a full, complete reference implmentation.
