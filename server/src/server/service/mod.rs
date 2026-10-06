@@ -1,4 +1,5 @@
 pub mod battle_service;
+pub mod char_server_service;
 pub(crate) mod battleground_service;
 pub(crate) mod cell_status_service;
 pub(crate) mod battleground_queue_service;
@@ -21,6 +22,7 @@ pub mod character;
 pub mod global_config_service;
 pub mod item_service;
 pub mod login_service;
+pub mod pincode;
 pub mod map_instance_service;
 pub(crate) use map_instance_service::npc_effect as map_npc_effect;
 pub mod mob_service;

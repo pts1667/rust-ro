@@ -207,3 +207,91 @@ fn unknown_schema_version_is_rejected() {
         .unwrap();
     assert!(Database::from_db(database._db.clone()).is_err());
 }
+
+fn creation(name: &str, slot: i16) -> CharacterCreation {
+    CharacterCreation {
+        character: character(0, name, slot),
+        items: vec![InventoryRecord { item_id: 1201, amount: 1, equip: 2, is_identified: true, ..Default::default() }],
+        slot_limit: 3,
+        case_sensitive_names: false,
+    }
+}
+
+#[test]
+fn created_character_gets_ids_indexes_and_starting_items_together() {
+    let database = seeded_database();
+    let created = database.create_character(&creation("Hero", 0)).unwrap();
+    assert!(created.char_id > 149_999);
+    assert_eq!(read::<i32>(&database.character_names, b"Hero").unwrap(), Some(created.char_id));
+    let items: Vec<InventoryRecord> = required(&database.inventories, &created.char_id.to_be_bytes()).unwrap();
+    assert_eq!((items.len(), items[0].item_id, items[0].equip), (1, 1201, 2));
+    assert_eq!(read::<i32>(&database.inventory_owners, &items[0].id.to_be_bytes()).unwrap(), Some(created.char_id));
+}
+
+#[test]
+fn creation_checks_name_slot_and_capacity_in_rathena_order() {
+    let database = seeded_database();
+    database.create_character(&creation("Hero", 0)).unwrap();
+    let refusal = |result: Result<CharacterRecord, CreateCharacterError>| match result {
+        Err(CreateCharacterError::Refused(refusal)) => refusal,
+        other => panic!("expected a refusal, got {other:?}"),
+    };
+    assert_eq!(refusal(database.create_character(&creation("Hero", 1))), CreationRefusal::NameTaken);
+    assert_eq!(refusal(database.create_character(&creation("hero", 1))), CreationRefusal::NameTaken, "case-insensitive by default");
+    let sensitive = CharacterCreation { case_sensitive_names: true, ..creation("hero", 1) };
+    database.create_character(&sensitive).unwrap();
+    assert_eq!(refusal(database.create_character(&creation("Other", 3))), CreationRefusal::SlotNotAllowed);
+    assert_eq!(refusal(database.create_character(&creation("Other", 0))), CreationRefusal::SlotInUse, "slot 0 is taken");
+}
+
+#[test]
+fn account_capacity_counts_every_character_of_the_account() {
+    let database = seeded_database();
+    for (index, name) in ["Aaaa", "Bbbb", "Cccc"].into_iter().enumerate() {
+        database.create_character(&creation(name, index as i16)).unwrap();
+    }
+    assert!(matches!(
+        database.create_character(&creation("Dddd", 2)),
+        Err(CreateCharacterError::Refused(CreationRefusal::AccountFull))
+    ));
+}
+
+#[test]
+fn renaming_swaps_the_name_index_and_spends_a_rename() {
+    let database = seeded_database();
+    let hero = database.create_character(&CharacterCreation { character: CharacterRecord { rename: 1, ..character(0, "Hero", 0) }, ..creation("x", 0) }).unwrap();
+    database.create_character(&creation("Taken", 1)).unwrap();
+    assert!(matches!(database.rename_character(hero.char_id, "taken", false), Err(RenameCharacterError::NameTaken)));
+    assert_eq!(database.rename_character(hero.char_id, "Legend", false).unwrap(), "Hero");
+    assert!(database.character_names.get(b"Hero").unwrap().is_none());
+    assert_eq!(read::<i32>(&database.character_names, b"Legend").unwrap(), Some(hero.char_id));
+    let stored: CharacterRecord = required(&database.characters, &hero.char_id.to_be_bytes()).unwrap();
+    assert_eq!((stored.name.as_str(), stored.rename), ("Legend", 0));
+}
+
+#[test]
+fn slot_moves_relocate_or_exchange_characters() {
+    let database = seeded_database();
+    let first = database.create_character(&creation("Aaaa", 0)).unwrap();
+    let second = database.create_character(&creation("Bbbb", 1)).unwrap();
+    let slot_of = |id: i32| required::<CharacterRecord>(&database.characters, &id.to_be_bytes()).unwrap().char_num;
+    assert!(database.move_character_slot(2_000_000, 0, 2, false).unwrap());
+    assert_eq!(slot_of(first.char_id), 2);
+    assert!(!database.move_character_slot(2_000_000, 2, 1, false).unwrap(), "occupied target without swapping");
+    assert!(database.move_character_slot(2_000_000, 2, 1, true).unwrap());
+    assert_eq!((slot_of(first.char_id), slot_of(second.char_id)), (1, 2));
+    assert_eq!(read::<i32>(&database.character_slots, &character_slot_key(2_000_000, 1)).unwrap(), Some(first.char_id));
+    assert!(!database.move_character_slot(2_000_000, 0, 1, true).unwrap(), "nothing in the source slot");
+}
+
+#[test]
+fn char_log_entries_are_appended_in_time_order() {
+    let database = seeded_database();
+    for time in [20, 10] {
+        database
+            .append_char_log(&CharLogRecord { time, account_id: 2_000_000, char_slot: 0, name: "Hero".into(), message: "make new char".into() })
+            .unwrap();
+    }
+    let times: Vec<i64> = database.char_log.iter().map(|entry| serde_json::from_slice::<CharLogRecord>(&entry.unwrap().1).unwrap().time).collect();
+    assert_eq!(times, vec![10, 20]);
+}

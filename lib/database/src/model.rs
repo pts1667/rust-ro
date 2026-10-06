@@ -73,6 +73,15 @@ pub struct IpBanRecord {
     pub reason: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CharLogRecord {
+    pub time: i64,
+    pub account_id: u32,
+    pub char_slot: i16,
+    pub name: String,
+    pub message: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct LoginLogRecord {
     pub time: i64,
@@ -131,6 +140,10 @@ pub struct CharacterRecord {
     pub manner: i32,
     pub rename: i16,
     pub delete_date: u32,
+    /// Unix time until which the character cannot be selected, `0` when not banned.
+    pub unban_time: i64,
+    /// Remaining slot moves granted to the character.
+    pub moves: u32,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]

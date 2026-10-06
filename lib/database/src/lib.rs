@@ -3,14 +3,72 @@ pub mod model;
 
 use std::collections::HashSet;
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 pub use error::DatabaseError;
-use model::{AccountRecord, CharacterRecord, InventoryRecord, SeedData};
+use model::{AccountRecord, CharLogRecord, CharacterRecord, InventoryRecord, SeedData};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use sled::transaction::{ConflictableTransactionError, ConflictableTransactionResult, Transactional, TransactionalTree};
 
 pub const SCHEMA_VERSION: u32 = 1;
+
+#[derive(Debug, Clone)]
+pub struct CharacterCreation {
+    pub character: CharacterRecord,
+    pub items: Vec<InventoryRecord>,
+    /// Number of slots the account may use.
+    pub slot_limit: u8,
+    pub case_sensitive_names: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CreationRefusal {
+    NameTaken,
+    SlotNotAllowed,
+    AccountFull,
+    SlotInUse,
+}
+
+#[derive(Debug)]
+pub enum CreateCharacterError {
+    Refused(CreationRefusal),
+    Database(DatabaseError),
+}
+
+impl From<CreationRefusal> for CreateCharacterError {
+    fn from(refusal: CreationRefusal) -> Self {
+        Self::Refused(refusal)
+    }
+}
+
+impl From<DatabaseError> for CreateCharacterError {
+    fn from(error: DatabaseError) -> Self {
+        Self::Database(error)
+    }
+}
+
+#[derive(Debug)]
+pub enum RenameCharacterError {
+    NameTaken,
+    Database(DatabaseError),
+}
+
+impl From<DatabaseError> for RenameCharacterError {
+    fn from(error: DatabaseError) -> Self {
+        Self::Database(error)
+    }
+}
+
+impl<T: Into<DatabaseError>> From<sled::transaction::TransactionError<T>> for RenameCharacterError {
+    fn from(error: sled::transaction::TransactionError<T>) -> Self {
+        Self::Database(match error {
+            sled::transaction::TransactionError::Abort(error) => error.into(),
+            sled::transaction::TransactionError::Storage(error) => DatabaseError::Storage(error),
+        })
+    }
+}
+
 
 #[derive(Clone)]
 pub struct Database {
@@ -33,6 +91,8 @@ pub struct Database {
     pub game_systems: sled::Tree,
     pub ip_bans: sled::Tree,
     pub login_log: sled::Tree,
+    pub char_log: sled::Tree,
+    name_lock: Arc<Mutex<()>>,
     _db: sled::Db,
 }
 
@@ -77,6 +137,8 @@ impl Database {
             game_systems: db.open_tree("game_systems")?,
             ip_bans: db.open_tree("ip_bans")?,
             login_log: db.open_tree("login_log")?,
+            char_log: db.open_tree("char_log")?,
+            name_lock: Arc::new(Mutex::new(())),
             _db: db,
         })
     }
@@ -136,6 +198,138 @@ impl Database {
                 tx_write(slots, &slot, &character.char_id)?;
                 Ok(character.char_id)
             })?)
+    }
+
+    fn lock_names(&self) -> std::sync::MutexGuard<'_, ()> {
+        self.name_lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// `case_sensitive` is rathena's `name_ignoring_case`: when false, `Test` and `test` are the same name.
+    pub fn character_name_taken(&self, name: &str, case_sensitive: bool) -> Result<bool, DatabaseError> {
+        if case_sensitive {
+            return Ok(self.character_names.contains_key(name.as_bytes())?);
+        }
+        for entry in self.character_names.iter() {
+            let (existing, _) = entry?;
+            if existing.eq_ignore_ascii_case(name.as_bytes()) {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+
+    /// Creates a character after the slot, account capacity and name checks, together with its starting items.
+    pub fn create_character(&self, creation: &CharacterCreation) -> Result<CharacterRecord, CreateCharacterError> {
+        validate_character(&creation.character)?;
+        let _names = self.lock_names();
+        let character = &creation.character;
+        if self.character_name_taken(&character.name, creation.case_sensitive_names)? {
+            return Err(CreationRefusal::NameTaken.into());
+        }
+        if character.char_num < 0 || character.char_num >= i16::from(creation.slot_limit) {
+            return Err(CreationRefusal::SlotNotAllowed.into());
+        }
+        let existing = self.character_slots.scan_prefix((character.account_id as u32).to_be_bytes()).count();
+        if existing >= usize::from(creation.slot_limit) {
+            return Err(CreationRefusal::AccountFull.into());
+        }
+        let created = (
+            &self.characters,
+            &self.character_names,
+            &self.character_slots,
+            &self.accounts,
+            &self.inventories,
+            &self.inventory_owners,
+            &self.metadata,
+        )
+            .transaction(|(characters, names, slots, accounts, inventories, owners, metadata)| {
+                tx_required::<AccountRecord>(accounts, &(character.account_id as u32).to_be_bytes())?;
+                let slot = character_slot_key(character.account_id, character.char_num);
+                if slots.get(&slot)?.is_some() {
+                    return conflict("Account slot already exists");
+                }
+                let mut created = character.clone();
+                created.char_id = next_id(metadata, b"char_id", 149_999)?;
+                tx_write(characters, &created.char_id.to_be_bytes(), &created)?;
+                tx_write(names, created.name.as_bytes(), &created.char_id)?;
+                tx_write(slots, &slot, &created.char_id)?;
+                let mut items = creation.items.clone();
+                for item in &mut items {
+                    item.id = next_id(metadata, b"inventory_id", 0)?;
+                    tx_write(owners, &item.id.to_be_bytes(), &created.char_id)?;
+                }
+                if !items.is_empty() {
+                    tx_write(inventories, &created.char_id.to_be_bytes(), &items)?;
+                }
+                Ok(created)
+            });
+        match created {
+            Ok(created) => Ok(created),
+            Err(sled::transaction::TransactionError::Abort(DatabaseError::Conflict(_))) => Err(CreationRefusal::SlotInUse.into()),
+            Err(error) => Err(DatabaseError::from(error).into()),
+        }
+    }
+
+    /// Renames a character, keeping the name index unique. Returns the previous name.
+    pub fn rename_character(&self, char_id: i32, new_name: &str, case_sensitive: bool) -> Result<String, RenameCharacterError> {
+        let _names = self.lock_names();
+        let current: CharacterRecord = required(&self.characters, &char_id.to_be_bytes())?;
+        if self.character_name_taken(new_name, case_sensitive)? {
+            return Err(RenameCharacterError::NameTaken);
+        }
+        let old_name = current.name.clone();
+        (&self.characters, &self.character_names).transaction(|(characters, names)| {
+            let mut character: CharacterRecord = tx_required(characters, &char_id.to_be_bytes())?;
+            names.remove(character.name.as_bytes())?;
+            character.name = new_name.to_string();
+            character.rename = character.rename.saturating_sub(1);
+            tx_write(names, new_name.as_bytes(), &char_id)?;
+            tx_write(characters, &char_id.to_be_bytes(), &character)
+        })?;
+        Ok(old_name)
+    }
+
+    /// Moves a character to another slot of its account, exchanging with the character already there when `allow_swap`.
+    pub fn move_character_slot(&self, account_id: u32, from: i16, to: i16, allow_swap: bool) -> Result<bool, DatabaseError> {
+        let account = account_id as i32;
+        let moved = (&self.characters, &self.character_slots).transaction(|(characters, slots)| {
+            let from_key = character_slot_key(account, from);
+            let to_key = character_slot_key(account, to);
+            let Some(moving) = tx_read::<i32>(slots, &from_key)? else {
+                return Ok(false);
+            };
+            let other = tx_read::<i32>(slots, &to_key)?;
+            if other.is_some() && !allow_swap {
+                return Ok(false);
+            }
+            let mut moving_record: CharacterRecord = tx_required(characters, &moving.to_be_bytes())?;
+            if moving_record.account_id != account {
+                return abort("Character belongs to another account");
+            }
+            moving_record.char_num = to;
+            slots.remove(&from_key)?;
+            tx_write(slots, &to_key, &moving)?;
+            tx_write(characters, &moving.to_be_bytes(), &moving_record)?;
+            if let Some(other) = other {
+                let mut other_record: CharacterRecord = tx_required(characters, &other.to_be_bytes())?;
+                other_record.char_num = from;
+                tx_write(slots, &from_key, &other)?;
+                tx_write(characters, &other.to_be_bytes(), &other_record)?;
+            }
+            Ok(true)
+        })?;
+        Ok(moved)
+    }
+
+    pub fn append_char_log(&self, record: &CharLogRecord) -> Result<(), DatabaseError> {
+        (&self.char_log, &self.metadata).transaction(|(log, metadata)| {
+            let sequence = next_id(metadata, b"char_log_id", 0)?;
+            let mut key = [0; 12];
+            key[..8].copy_from_slice(&record.time.max(0).to_be_bytes());
+            key[8..].copy_from_slice(&sequence.to_be_bytes());
+            tx_write(log, &key, record)
+        })?;
+        Ok(())
     }
 
     pub fn seed(&self, seed: &SeedData, replace: bool) -> Result<(), DatabaseError> {

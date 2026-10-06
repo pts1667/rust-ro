@@ -289,6 +289,9 @@ pub trait GameSystemRepository: Send + Sync {
     fn leave_guild(&self, _member: u32, _guild_id: u32, _expeller: Option<u32>) -> Result<GuildRecord, Error> {
         Err(Error::new("Guild departure persistence is unavailable".into()))
     }
+    fn break_guild(&self, _guild_id: u32) -> Result<GuildRecord, Error> {
+        Err(Error::new("Guild persistence is unavailable".into()))
+    }
     fn disband_guild(&self, _master: u32, _name: &str) -> Result<GuildRecord, Error> {
         Err(Error::new("Guild dissolution persistence is unavailable".into()))
     }
@@ -904,6 +907,23 @@ impl GameSystemRepository for SledRepository {
             guild.member_positions.remove(&member);
             write_state(systems, member, &mut member_state)?;
             tx_write(systems, &key(b"guild/", guild_id), &guild)?;
+            Ok(guild)
+        })?)
+    }
+
+    fn break_guild(&self, guild_id: u32) -> Result<GuildRecord, Error> {
+        Ok(self.database.game_systems.transaction(|systems| {
+            let guild: GuildRecord = tx_required(systems, &key(b"guild/", guild_id))?;
+            for member in &guild.members {
+                let mut state: CharacterGameSystems = tx_required(systems, &character_key(*member))?;
+                state.guild_id = 0;
+                guild_storage::release_member_lock(systems, *member, guild.id)?;
+                write_state(systems, *member, &mut state)?;
+            }
+            guild_management::clear_relations(systems, &guild)?;
+            systems.remove(key(b"guild/", guild.id))?;
+            systems.remove(key(b"guild_storage/", guild.id))?;
+            systems.remove([b"guild_name/".as_slice(), guild.name.as_bytes()].concat())?;
             Ok(guild)
         })?)
     }

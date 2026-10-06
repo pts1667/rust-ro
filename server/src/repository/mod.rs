@@ -1,3 +1,4 @@
+pub mod char_server_repository;
 pub mod character_repository;
 pub mod game_system_repository;
 pub use game_system_repository::GameSystemRepository;
@@ -19,7 +20,8 @@ mod tests;
 
 use async_trait::async_trait;
 use configuration::configuration::DatabaseConfig;
-use database::model::{AccountRecord, IpBanRecord, LoginLogRecord};
+use database::model::{AccountRecord, CharLogRecord, CharacterRecord, IpBanRecord, LoginLogRecord};
+use database::{CharacterCreation, CreateCharacterError, RenameCharacterError};
 use database::Database;
 pub use database::DatabaseError as Error;
 use models::status::{KnownSkill, Status, StatusSnapshot};
@@ -64,6 +66,7 @@ pub trait Repository:
     + MobRepository
     + ScriptVariableRepository
     + LoginRepository
+    + CharServerRepository
     + HotKeyRepository
     + GameSystemRepository
     + ScriptInventoryRepository
@@ -110,6 +113,39 @@ pub trait LoginRepository {
     }
     fn login_log_entries(&self) -> Result<Vec<LoginLogRecord>, Error> {
         Ok(Vec::new())
+    }
+}
+
+pub trait CharServerRepository: Send + Sync {
+    fn char_create(&self, _creation: &CharacterCreation) -> Result<CharacterRecord, CreateCharacterError> {
+        Err(Error::InvalidInput("Character creation is unavailable".into()).into())
+    }
+    fn char_account_characters(&self, _account_id: u32) -> Result<Vec<CharacterRecord>, Error> {
+        Err(Error::InvalidInput("Character storage is unavailable".into()))
+    }
+    fn char_find(&self, _char_id: u32) -> Result<Option<CharacterRecord>, Error> {
+        Err(Error::InvalidInput("Character storage is unavailable".into()))
+    }
+    fn char_update(&self, _char_id: u32, _update: &dyn Fn(&mut CharacterRecord)) -> Result<CharacterRecord, Error> {
+        Err(Error::InvalidInput("Character storage is unavailable".into()))
+    }
+    fn char_rename(&self, _char_id: u32, _new_name: &str, _case_sensitive: bool) -> Result<String, RenameCharacterError> {
+        Err(Error::InvalidInput("Character renaming is unavailable".into()).into())
+    }
+    fn char_move_slot(&self, _account_id: u32, _from: i16, _to: i16, _allow_swap: bool) -> Result<bool, Error> {
+        Err(Error::InvalidInput("Character slot moves are unavailable".into()))
+    }
+    fn char_name_taken(&self, _name: &str, _case_sensitive: bool) -> Result<bool, Error> {
+        Err(Error::InvalidInput("Character storage is unavailable".into()))
+    }
+    fn char_remove_items(&self, _char_id: u32, _item_ids: &[i32]) -> Result<usize, Error> {
+        Err(Error::InvalidInput("Character inventory is unavailable".into()))
+    }
+    fn char_log(&self, _record: CharLogRecord) -> Result<(), Error> {
+        Ok(())
+    }
+    fn char_purge(&self, _account_id: u32, _char_id: u32) -> Result<(), Error> {
+        Err(Error::InvalidInput("Character deletion is unavailable".into()))
     }
 }
 

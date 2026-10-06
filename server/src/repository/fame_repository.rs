@@ -368,6 +368,36 @@ fn top_ten(board: &FameBoard) -> Vec<FameEntry> {
     entries
 }
 
+pub(crate) fn forget_character_fame_tx(systems: &TransactionalTree, char_id: u32) -> ConflictableTransactionResult<(), Error> {
+    for category in [FameCategory::Blacksmith, FameCategory::Alchemist, FameCategory::Taekwon] {
+        let mut board: FameBoard = tx_read(systems, &category.key(b"fame_board/"))?.unwrap_or_default();
+        if board.entries.remove(&char_id).is_some() {
+            tx_write(systems, &category.key(b"fame_board/"), &board)?;
+            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board))?;
+        }
+        systems.remove([category.key(b"fame/"), char_id.to_be_bytes().to_vec()].concat())?;
+    }
+    systems.remove(score_key(char_id))?;
+    systems.remove(mission_key(char_id))?;
+    Ok(())
+}
+
+pub(crate) fn rename_character_fame_tx(systems: &TransactionalTree, char_id: u32, name: &str) -> ConflictableTransactionResult<(), Error> {
+    for category in [FameCategory::Blacksmith, FameCategory::Alchemist, FameCategory::Taekwon] {
+        let mut board: FameBoard = tx_read(systems, &category.key(b"fame_board/"))?.unwrap_or_default();
+        if let Some(entry) = board.entries.get_mut(&char_id) {
+            entry.name = name.to_string();
+            tx_write(systems, &category.key(b"fame_board/"), &board)?;
+            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board))?;
+        }
+    }
+    if let Some(mut score) = tx_read::<CharacterFame>(systems, &score_key(char_id))? {
+        score.entry.name = name.to_string();
+        tx_write(systems, &score_key(char_id), &score)?;
+    }
+    Ok(())
+}
+
 pub fn update_fame_tx(
     character: &CharacterRecord,
     systems: &TransactionalTree,
