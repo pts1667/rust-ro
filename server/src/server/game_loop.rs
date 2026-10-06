@@ -16,6 +16,7 @@ use crate::server::model::movement::{Movable, Movement};
 use crate::server::model::path::path_search_client_side_algorithm;
 use crate::server::state::server::{ServerState, find_map_instance};
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::service::npc_event_service::touched_npc_events;
 
 const MOVEMENT_TICK_RATE: u128 = 20;
 pub const GAME_TICK_RATE: u128 = 40;
@@ -371,6 +372,7 @@ impl Server {
             // teleport back -> server movement slower than client movement
             let mut character_finished_to_move = vec![];
             let mut warps_to_schedule = vec![];
+            let mut npc_touches = vec![];
             let (characters, map_instances) = server_state_mut.characters_mut_with_map_instances();
             for (_, character) in characters
                 .iter_mut()
@@ -402,6 +404,7 @@ impl Server {
                             );
                         }
                         character.set_last_moved_at(tick);
+                        let previous_position = (character.x, character.y);
                         character.update_position(movement.position().x, movement.position().y);
                         let map_ref = find_map_instance(map_instances, character.current_map_name(), character.current_map_instance());
                         if let Some(map_ref) = map_ref {
@@ -410,6 +413,17 @@ impl Server {
                                 warps_to_schedule.push((character.char_id, warp));
                                 character.clear_movement();
                                 continue;
+                            }
+                            if character.status.hp > 0 {
+                                npc_touches.extend(
+                                    touched_npc_events(
+                                        &map_ref.state(),
+                                        previous_position,
+                                        (movement.position().x, movement.position().y),
+                                    )
+                                    .into_iter()
+                                    .map(|touch| (character.char_id, touch)),
+                                );
                             }
                         }
                         #[cfg(feature = "debug_movement")]
@@ -461,6 +475,9 @@ impl Server {
             for character in character_finished_to_move {
                 character.transition_to_idle();
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
+            }
+            for (char_id, (npc_id, scope_instance, entry_id)) in npc_touches {
+                server_ref.queue_player_npc_event(char_id, npc_id, scope_instance, entry_id);
             }
             for (char_id, warp) in warps_to_schedule {
                 server_ref

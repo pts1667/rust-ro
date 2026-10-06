@@ -1,5 +1,6 @@
 use models::enums::bonus::BonusType;
 use models::enums::item::EquipmentLocation;
+use models::enums::weapon::WeaponType;
 use models::enums::skill::{SkillDamageFlags, SkillTargetType};
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use models::status::{Status, StatusSnapshot};
@@ -717,6 +718,24 @@ impl BreakSlot {
     }
 }
 
+fn weapon_type_breakable(weapon: &WeaponType) -> bool {
+    !matches!(
+        weapon,
+        WeaponType::Fist
+            | WeaponType::Axe1H
+            | WeaponType::Axe2H
+            | WeaponType::Mace
+            | WeaponType::Mace2H
+            | WeaponType::Staff
+            | WeaponType::Staff2H
+            | WeaponType::Book
+            | WeaponType::Huuma
+            | WeaponType::DoubleAa
+            | WeaponType::DoubleDa
+            | WeaponType::DoubleSa
+    )
+}
+
 pub(crate) fn break_equipment(server: &Server, state: &mut ServerState, target_id: u32, slot: BreakSlot) -> Result<(), String> {
     let Some(character) = state.characters_mut().get_mut(&target_id) else {
         return Ok(());
@@ -727,6 +746,9 @@ pub(crate) fn break_equipment(server: &Server, state: &mut ServerState, target_i
     let snapshot = StatusService::instance().to_snapshot(&character.status);
     let unbreakable = slot.unbreakable();
     if snapshot.bonuses().iter().any(|bonus| *bonus.bonus() == unbreakable) {
+        return Ok(());
+    }
+    if slot == BreakSlot::Weapon && !weapon_type_breakable(snapshot.right_hand_weapon_type()) {
         return Ok(());
     }
     let location = slot.location().as_flag();

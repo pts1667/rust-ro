@@ -19,6 +19,10 @@ struct NpcDefinition {
     dir: u16,
     entry_id: u32,
     #[serde(default)]
+    x_size: u16,
+    #[serde(default)]
+    y_size: u16,
+    #[serde(default)]
     constructor_args: Vec<Value>,
 }
 
@@ -93,8 +97,8 @@ impl ScriptLoader {
                 x: definition.x,
                 y: definition.y,
                 dir: definition.dir,
-                x_size: 0,
-                y_size: 0,
+                x_size: definition.x_size,
+                y_size: definition.y_size,
                 entry_id: definition.entry_id,
                 constructor_args: definition.constructor_args,
             });

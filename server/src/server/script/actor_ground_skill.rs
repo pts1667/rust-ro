@@ -63,7 +63,7 @@ impl ScriptSkillService {
                     || kind.trap()
                     || matches!(
                         kind,
-                        GroundKind::ArrowShower | GroundKind::HeavenDrive | GroundKind::Thunderstorm
+                        GroundKind::ArrowShower | GroundKind::HeavenDrive | GroundKind::Thunderstorm | GroundKind::FirePillar | GroundKind::Demonstration
                     )
             })
             .ok_or("Actor ground skill has no implemented classic unit effect")?;
@@ -87,7 +87,7 @@ impl ScriptSkillService {
         {
             return Err("Ground target is outside usable terrain".into());
         }
-        if kind.trap() || kind == GroundKind::Graffiti {
+        if kind.classic_unit() {
             self.validate_classic_unit_placement(state, source, metadata, level, x, y, tick)?;
         }
         if kind == GroundKind::Graffiti {
@@ -374,7 +374,7 @@ impl ScriptSkillService {
         }
         .ok_or("Ground cast no longer has an active placement")?;
         Self::validate_skill_map(state, character, skill_id, placement.1, true)?;
-        if placement.0.trap() || placement.0 == GroundKind::Graffiti {
+        if placement.0.classic_unit() {
             self.validate_actor_ground_with_options(
                 state,
                 &GroundSkillSource {
@@ -440,6 +440,11 @@ impl ScriptSkillService {
         let Some(source) = ground.actor_source.as_ref().map(|source| self.trap_source(state, source)) else {
             return;
         };
+        match ground.kind {
+            GroundKind::FirePillar => return self.tick_fire_pillar(server, state, ground, &source, tick),
+            GroundKind::Demonstration => return self.tick_demonstration(server, state, ground, &source, tick),
+            _ => {}
+        }
         if !ground.kind.trap() && ground.kind != GroundKind::ArrowShower {
             self.tick_actor_magic_ground(server, state, ground, &source, tick);
             return;

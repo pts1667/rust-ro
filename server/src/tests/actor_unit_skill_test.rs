@@ -523,6 +523,119 @@ fn npc_evil_land_blinds_the_players_inside_it() {
     assert!(blinded.contains(&target), "the player inside Evil Land was not blinded: {blinded:?}");
 }
 
+fn drain_events(context: &ServerServiceTestContext) -> Vec<GameEvent> {
+    let mut drained = vec![];
+    while let Some(events) = context.server_task_queue.pop() {
+        drained.extend(events);
+    }
+    drained
+}
+
+#[test]
+fn npc_fire_pillar_waits_for_an_enemy_then_erupts_once_and_stops_it() {
+    let (context, instance, service, target) = fixture();
+    instance.state_mut().mobs_mut().clear();
+    let (x, y) = {
+        let state = context.server.state();
+        let character = state.get_character(target).expect("fire pillar target is in game");
+        (character.x(), character.y())
+    };
+    let mut cast = request(NPC_ID, 0, SkillEnum::WzFirepillar);
+    cast.level = 5;
+    cast.ground = Some((x.saturating_add(8), y));
+    cast.ignore_range = true;
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1000).unwrap();
+    assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1);
+    context
+        .server
+        .script_skill_service()
+        .tick_ground_skills(&context.server, &context.server.state(), 1040);
+    assert!(
+        drain_events(&context)
+            .iter()
+            .all(|event| !matches!(event, GameEvent::ScriptMapDamage(_))),
+        "the pillar erupted with nobody near it"
+    );
+    let mut cast = request(NPC_ID, 0, SkillEnum::WzFirepillar);
+    cast.level = 5;
+    cast.ground = Some((x, y));
+    cast.ignore_range = true;
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1100).unwrap();
+    assert_eq!(complete(&context, &instance, &service, 1100).unwrap(), 1);
+    let mut damages = vec![];
+    let mut stops = vec![];
+    for tick in [1100, 1140, 1180] {
+        context
+            .server
+            .script_skill_service()
+            .tick_ground_skills(&context.server, &context.server.state(), tick);
+        for event in drain_events(&context) {
+            match event {
+                GameEvent::ScriptMapDamage(request) => damages.push(request.damage),
+                GameEvent::GroundTrapEffect(effect) => stops.push(effect),
+                _ => {}
+            }
+        }
+    }
+    let own: Vec<_> = damages.iter().filter(|damage| damage.target_id == target).collect();
+    assert_eq!(own.len(), 1, "the pillar must erupt exactly once on the player: {}", own.len());
+    let damage = own[0];
+    assert_eq!((damage.target_id, damage.attacker_id), (target, NPC_ID));
+    assert!(damage.damage > 0 && damage.magic_context.is_some_and(|context| context.hits == 7));
+    assert!(stops.iter().any(|effect| {
+        effect.target_id == target
+            && effect.kind == crate::server::script::skill::trap::GroundTrapEffectKind::WalkDelay { milliseconds: 1400 }
+    }));
+}
+
+#[test]
+fn fire_pillar_damage_is_spread_for_players_and_multiplied_for_other_sources() {
+    let (context, _instance, _service, target) = fixture();
+    let status = {
+        let state = context.server.state();
+        crate::server::service::status_service::StatusService::instance().to_snapshot(&state.get_character(target).unwrap().status)
+    };
+    let battle = context.server.battle_service();
+    let (single, single_context) = battle.fire_pillar_damage_signed(&status, &status, SkillEnum::WzFirepillar.id(), 5, 7, true);
+    let (multiple, multiple_context) = battle.fire_pillar_damage_signed(&status, &status, SkillEnum::WzFirepillar.id(), 5, 7, false);
+    assert_eq!((single_context.hits, multiple_context.hits), (1, 7));
+    assert!(single > 0 && multiple >= single * 6, "single {single}, multiple {multiple}");
+}
+
+#[test]
+fn npc_demonstration_hits_every_second_and_never_the_emperium() {
+    let (context, instance, service, target) = fixture();
+    instance.state_mut().mobs_mut().clear();
+    let (x, y) = {
+        let state = context.server.state();
+        let character = state.get_character(target).expect("demonstration target is in game");
+        (character.x(), character.y())
+    };
+    let mut cast = request(NPC_ID, 0, SkillEnum::AmDemonstration);
+    cast.level = 3;
+    cast.ground = Some((x, y));
+    cast.ignore_range = true;
+    cast.cast_time_adjust_ms = -10000;
+    start(&context, &instance, &service, cast, 1000).unwrap();
+    assert_eq!(complete(&context, &instance, &service, 1000).unwrap(), 1);
+    let mut hit_ticks = vec![];
+    for tick in [1000, 1040, 1500, 2000, 2040, 3040] {
+        context
+            .server
+            .script_skill_service()
+            .tick_ground_skills(&context.server, &context.server.state(), tick);
+        if drain_events(&context)
+            .iter()
+            .any(|event| matches!(event, GameEvent::ScriptMapDamage(request) if request.damage.target_id == target))
+        {
+            hit_ticks.push(tick);
+        }
+    }
+    assert_eq!(hit_ticks, vec![1000, 2000, 3040], "one hit per interval, then the bomb keeps ticking");
+}
+
 #[test]
 fn scripted_player_costs_are_atomic_at_completion_and_interrupted_casts_do_not_pay() {
     let (context, instance, service, target) = fixture();

@@ -60,6 +60,8 @@ pub enum GroundKind {
     VenomDust,
     SpiderWeb,
     EvilLand,
+    FirePillar,
+    Demonstration,
 }
 
 impl GroundKind {
@@ -73,6 +75,8 @@ impl GroundKind {
             "AS_VENOMDUST" => Self::VenomDust,
             "PF_SPIDERWEB" => Self::SpiderWeb,
             "NPC_EVILLAND" => Self::EvilLand,
+            "WZ_FIREPILLAR" => Self::FirePillar,
+            "AM_DEMONSTRATION" => Self::Demonstration,
             "WZ_QUAGMIRE" => Self::Quagmire,
             "SA_DELUGE" => Self::Deluge,
             "SA_LANDPROTECTOR" => Self::LandProtector,
@@ -124,6 +128,8 @@ impl GroundKind {
             Self::TalkieBox => 153,
             Self::Graffiti => 176,
             Self::Earthquake => 198,
+            Self::FirePillar => 135,
+            Self::Demonstration => 177,
             _ => 134,
         }
     }
@@ -150,6 +156,8 @@ impl GroundKind {
                 | Self::VenomDust
                 | Self::SpiderWeb
                 | Self::EvilLand
+                | Self::FirePillar
+                | Self::Demonstration
                 | Self::Quagmire
                 | Self::Deluge
                 | Self::LandProtector
@@ -198,6 +206,16 @@ impl GroundKind {
             Self::Sanctuary | Self::VenomDust | Self::SpiderWeb => 0,
             _ => configured,
         }
+    }
+
+    /// Units that follow the trap placement rules and run through the trap-style tick.
+    pub(super) fn classic_unit(self) -> bool {
+        self.trap() || matches!(self, Self::Graffiti | Self::FirePillar | Self::Demonstration)
+    }
+
+    /// Units that stay on the map after the actor that placed them is gone.
+    pub(super) fn outlives_source(self) -> bool {
+        matches!(self, Self::AnkleSnare | Self::FirePillar | Self::Demonstration)
     }
 
     pub(super) fn trap(self) -> bool {
@@ -399,7 +417,7 @@ impl ScriptSkillService {
         {
             return Err("Ground skill target is outside usable terrain".into());
         }
-        if GroundKind::from_name(&metadata.name).is_some_and(|kind| kind.trap() || kind == GroundKind::Graffiti) {
+        if GroundKind::from_name(&metadata.name).is_some_and(GroundKind::classic_unit) {
             self.validate_actor_ground_with_options(
                 state,
                 &GroundSkillSource {
@@ -726,7 +744,7 @@ impl ScriptSkillService {
                 cast_verified: instant,
                 cells,
                 affected: HashSet::new(),
-                actor_source: (kind.trap() || kind == GroundKind::Graffiti).then(|| GroundSkillSource {
+                actor_source: kind.classic_unit().then(|| GroundSkillSource {
                     actor_id: character.char_id,
                     owner_id: character.char_id,
                     map: character.current_map_name().clone(),
@@ -805,18 +823,18 @@ impl ScriptSkillService {
                 let map_actor = state.get_map_instance(&source.map, source.instance).is_some_and(|instance| {
                     let map = instance.state();
                     map.get_mob(source.actor_id)
-                        .is_some_and(|actor| actor.hp() > 0 || ground.kind == GroundKind::AnkleSnare)
+                        .is_some_and(|actor| actor.hp() > 0 || ground.kind.outlives_source())
                         || map
                             .script_skill_state
                             .npcs
                             .get(&source.actor_id)
-                            .is_some_and(|actor| actor.hp > 0 || ground.kind == GroundKind::AnkleSnare)
+                            .is_some_and(|actor| actor.hp > 0 || ground.kind.outlives_source())
                 });
                 if !map_actor
                     && !state.get_character(source.owner_id).is_some_and(|owner| {
                         owner.current_map_name() == &ground.map
                             && owner.current_map_instance() == ground.instance
-                            && (owner.char_id == source.actor_id && (owner.status.hp > 0 || ground.kind == GroundKind::AnkleSnare)
+                            && (owner.char_id == source.actor_id && (owner.status.hp > 0 || ground.kind.outlives_source())
                                 || crate::server::service::script_world_service::companion_snapshots(owner)
                                     .iter()
                                     .any(|actor| actor.map_item().id() == ground.source_id))

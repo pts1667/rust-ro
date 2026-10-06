@@ -35,7 +35,7 @@ pub mod status_effect_service;
 pub(crate) mod item_effect_service;
 mod item_dialog_service;
 mod npc_conversation_service;
-mod npc_event_service;
+pub(crate) mod npc_event_service;
 pub(crate) mod character_lifecycle_service;
 pub(crate) mod npc_timer_service;
 pub(crate) mod script_presentation_service;

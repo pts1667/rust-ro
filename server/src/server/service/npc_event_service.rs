@@ -11,12 +11,14 @@ use crate::server::model::events::client_notification::{CharNotification, Notifi
 use crate::server::model::events::game_event::{GameEvent, ScriptNpcEvent};
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::map::Map;
+use crate::server::model::map_flags::MapFlag;
 use crate::server::model::script::Script;
 use crate::server::model::session::Session;
-use crate::server::script::skill::actor::ScriptSkillActor;
+use crate::server::script::skill::actor::{NpcSkillState, ScriptSkillActor};
 use crate::server::script::{NpcScriptHost, ScriptRequest};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::script_service::ScriptService;
+use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::server::ServerState;
 use crate::util::tick::get_tick;
 
@@ -75,6 +77,26 @@ pub(crate) fn named_npc(state: &ServerState, context: &ScriptRequest, name: &str
         return Err("NPC name is ambiguous in this instance".into());
     }
     Ok(candidates.pop())
+}
+
+/// True when a step from `from` to `to` enters the trigger area centred on the NPC.
+pub(crate) fn touch_area_entered(npc: (u16, u16), area: (u16, u16), from: (u16, u16), to: (u16, u16)) -> bool {
+    let inside = |(x, y): (u16, u16)| x.abs_diff(npc.0) <= area.0 && y.abs_diff(npc.1) <= area.1;
+    (area.0 > 0 || area.1 > 0) && inside(to) && !inside(from)
+}
+
+/// `(npc id, scope instance, entry id)` of the compiled `OnTouch` callbacks whose area the step enters.
+pub(crate) fn touched_npc_events(map: &MapInstanceState, from: (u16, u16), to: (u16, u16)) -> Vec<(u32, u8, u32)> {
+    map.script_skill_state
+        .npcs
+        .values()
+        .filter(|npc: &&NpcSkillState| {
+            !npc.hidden && touch_area_entered((npc.x, npc.y), (npc.script.x_size, npc.script.y_size), from, to)
+        })
+        .filter_map(|npc| {
+            ScriptService::event_entry(&format!("{}::OnTouch", npc.script.name)).map(|entry| (npc.id, npc.script.scope_instance, entry))
+        })
+        .collect()
 }
 
 impl Server {
@@ -172,6 +194,32 @@ impl Server {
             timer_guard: None,
         }));
         true
+    }
+
+    pub(crate) fn queue_player_npc_event(&self, char_id: u32, npc_id: u32, scope_instance: u8, entry_id: u32) {
+        self.add_to_next_tick(GameEvent::ScriptNpcEvent(ScriptNpcEvent {
+            npc_id,
+            scope_instance,
+            entry_id,
+            char_id: Some(char_id),
+            depth: 1,
+            queued_until: get_tick() + u128::from(self.configuration.scripting.conversation_timeout_secs.max(1)) * 2000,
+            args: None,
+            timer_guard: None,
+        }));
+    }
+
+    /// Runs every compiled `OnPCLoadMapEvent` for a player entering a map that has the `loadevent` flag.
+    pub(crate) fn trigger_map_load_events(&self, state: &ServerState, char_id: u32) {
+        let Some(character) = state.get_character(char_id) else { return };
+        if !state.map_flags(&character.map_instance_key).enabled(MapFlag::LoadEvent) {
+            return;
+        }
+        for (actor, script) in npcs(state) {
+            if let Some(entry_id) = ScriptService::event_entry(&format!("{}::OnPCLoadMapEvent", script.name)) {
+                self.queue_player_npc_event(char_id, actor.id, script.scope_instance, entry_id);
+            }
+        }
     }
 
     /// Queues `NpcName::OnLabel` with the character attached; false when no compiled NPC owns the label.
@@ -351,5 +399,22 @@ impl Server {
         );
         self.drain_map_notifications();
         Ok(Value::default())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::touch_area_entered;
+
+    #[test]
+    fn touch_fires_only_when_a_step_enters_the_area() {
+        let npc = (50, 50);
+        let area = (2, 1);
+        assert!(touch_area_entered(npc, area, (47, 50), (48, 50)));
+        assert!(touch_area_entered(npc, area, (48, 52), (48, 51)));
+        assert!(!touch_area_entered(npc, area, (48, 50), (49, 50)), "stepping inside the area is not an entry");
+        assert!(!touch_area_entered(npc, area, (49, 50), (47, 50)), "leaving the area never fires");
+        assert!(!touch_area_entered(npc, area, (40, 40), (41, 40)));
+        assert!(!touch_area_entered(npc, (0, 0), (49, 50), (50, 50)), "an NPC without an area never fires");
     }
 }

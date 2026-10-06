@@ -168,3 +168,8 @@ Repository skills live in `.agents/skills/`:
 - `$ragnarok-pre-renewal-research <question>`: research pre-renewal mechanics using local rAthena references and the approved web sources. Instructions: [.agents/skills/ragnarok-pre-renewal-research/SKILL.md](.agents/skills/ragnarok-pre-renewal-research/SKILL.md).
 
 These skills replace the Claude `/feature` command and game mechanics research skill for Codex. The Rust comment rule is included above. Keep Claude's configuration in `.claude/` for Claude Code.
+
+## Reference Implementation
+
+Relevant pre-renewal documentation and source files are available under `../rathena/doc` and `../rathena`.
+Consider `rathena` a full, complete reference implmentation.

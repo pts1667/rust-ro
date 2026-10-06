@@ -79,6 +79,8 @@ pub enum GroundTrapEffectKind {
     Status(StatusChangeRequest),
     DrainSp { percent: u16 },
     Knockback { source_x: u16, source_y: u16, cells: u16 },
+    WalkDelay { milliseconds: u32 },
+    BreakWeapon,
 }
 
 pub(super) struct GroundTrapTarget {

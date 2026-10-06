@@ -237,6 +237,8 @@ def tierra_events():
         30: "Guillaume Vintenar#a01_a::OnInit", 31: "Croix Vintenar#a01_b::OnInit",
         32: "Guillaume Blacksmith#a01::OnInit", 33: "Croix Blacksmith#bat_a01::OnInit",
         50: f"#{m}_timer::OnTimer1000",
+        60: f"barri_warp_up#{m}_a::OnTouch", 61: f"barri_warp_down#{m}a::OnTouch",
+        62: f"barri_warp_up#{m}_b::OnTouch", 63: f"barri_warp_down#{m}b::OnTouch",
     }
     for kind, delay in enumerate(TIERRA_COUNTDOWN_TIMERS, 40):
         names[kind] = f"countdown#{m}::OnTimer{delay}"
@@ -247,9 +249,12 @@ def tierra_npcs():
     number = lambda value: {"Number": value}
     npcs = []
     m = TIERRA_MAP
-    place = lambda map_name, x, y, name, sprite, role=0, direction=3: npcs.append(dict(
-        map_name=map_name, x=x, y=y, dir=direction, name=name, sprite=str(sprite), entry_id=17,
-        constructor_args=[number(0), number(role)]))
+    def place(map_name, x, y, name, sprite, role=0, direction=3, touch=None):
+        npc = dict(map_name=map_name, x=x, y=y, dir=direction, name=name, sprite=str(sprite), entry_id=17,
+                   constructor_args=[number(0), number(role)])
+        if touch:
+            npc["x_size"], npc["y_size"] = touch
+        npcs.append(npc)
     for offset, name in enumerate([f"start#{m}", f"OBJ#{m}_a", f"OBJ#{m}_b", f"barricade#{m}_a", f"barricade#{m}_b", f"OBJ#{m}_n"]):
         place(m, 15, 15 + offset, name, 844)
     place(m, 1, 5, f"countdown#{m}", 844)
@@ -261,6 +266,9 @@ def tierra_npcs():
     place(m, 45, 19, "Croix Vintenar#a01_b", 415, 4)
     place(m, 185, 270, "Guillaume Blacksmith#a01", 851, 5, 1)
     place(m, 170, 121, "Croix Blacksmith#bat_a01", 851, 6, 5)
+    for x, y, name in [(194, 267, f"barri_warp_up#{m}_a"), (194, 265, f"barri_warp_down#{m}a"),
+                       (177, 130, f"barri_warp_up#{m}_b"), (177, 128, f"barri_warp_down#{m}b")]:
+        place(m, x, y, name, 111, touch=(7, 0))
     for team, sprite, points in TIERRA_FLAGS:
         for index, (x, y) in enumerate(points, 1):
             place(m, x, y, f"{team}#flag{index}", sprite)

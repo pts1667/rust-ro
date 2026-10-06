@@ -15029,6 +15029,82 @@
   },
   {
     "map_name": "bat_a01",
+    "x": 194,
+    "y": 267,
+    "dir": 3,
+    "name": "barri_warp_up#bat_a01_a",
+    "sprite": "111",
+    "entry_id": 17,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 0
+      }
+    ],
+    "x_size": 7,
+    "y_size": 0
+  },
+  {
+    "map_name": "bat_a01",
+    "x": 194,
+    "y": 265,
+    "dir": 3,
+    "name": "barri_warp_down#bat_a01a",
+    "sprite": "111",
+    "entry_id": 17,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 0
+      }
+    ],
+    "x_size": 7,
+    "y_size": 0
+  },
+  {
+    "map_name": "bat_a01",
+    "x": 177,
+    "y": 130,
+    "dir": 3,
+    "name": "barri_warp_up#bat_a01_b",
+    "sprite": "111",
+    "entry_id": 17,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 0
+      }
+    ],
+    "x_size": 7,
+    "y_size": 0
+  },
+  {
+    "map_name": "bat_a01",
+    "x": 177,
+    "y": 128,
+    "dir": 3,
+    "name": "barri_warp_down#bat_a01b",
+    "sprite": "111",
+    "entry_id": 17,
+    "constructor_args": [
+      {
+        "Number": 0
+      },
+      {
+        "Number": 0
+      }
+    ],
+    "x_size": 7,
+    "y_size": 0
+  },
+  {
+    "map_name": "bat_a01",
     "x": 171,
     "y": 309,
     "dir": 3,

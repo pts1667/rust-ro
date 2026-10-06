@@ -50,6 +50,8 @@ pub mod companion;
 mod delayed;
 #[path = "skill_devotion.rs"]
 mod devotion;
+#[path = "ground_pillar.rs"]
+mod ground_pillar;
 #[path = "ground_skill.rs"]
 mod ground;
 #[path = "ground_unit_effects.rs"]

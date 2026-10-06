@@ -18,6 +18,7 @@ use crate::server::model::events::client_notification::{AreaNotification, AreaNo
 use crate::server::model::events::map_event::MapEvent;
 use crate::server::model::game_systems::CompanionPosition;
 use crate::server::script::skill::trap::{GroundTrapCapture, GroundTrapEffect, GroundTrapEffectKind, GroundTrapRelease, linked_ankle};
+use crate::server::service::script_combat_service::{BreakSlot, break_equipment};
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
@@ -34,6 +35,9 @@ pub(crate) fn trap_fix_position(id: u32, x: u16, y: u16) -> Vec<u8> {
 
 impl Server {
     pub(crate) fn apply_ground_trap_effect(&self, state: &mut ServerState, request: GroundTrapEffect, tick: u128) -> Result<(), String> {
+        if request.kind == GroundTrapEffectKind::BreakWeapon {
+            return break_equipment(self, state, request.target_id, BreakSlot::Weapon);
+        }
         if state
             .ground_unit(request.target_id, request.map.map_name(), request.map.map_instance())
             .is_some()
@@ -70,6 +74,14 @@ impl Server {
                         self.character_service()
                             .defer_position_update_with_flags(&character, &state.map_flags(&request.map));
                     }
+                    GroundTrapEffectKind::WalkDelay { milliseconds } => {
+                        character.movements.clear();
+                        let until = tick + u128::from(milliseconds);
+                        character
+                            .timing
+                            .set_canmove_tick(character.timing.get_canmove_tick().max(until));
+                    }
+                    GroundTrapEffectKind::BreakWeapon => {}
                 }
                 Ok(())
             })();

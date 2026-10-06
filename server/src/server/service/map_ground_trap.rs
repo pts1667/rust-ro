@@ -56,6 +56,13 @@ impl MapInstanceService {
                         mob.lose_target();
                     }
                 }
+                GroundTrapEffectKind::WalkDelay { milliseconds } => {
+                    let mob = state.mobs_mut().get_mut(&request.target_id).unwrap();
+                    mob.movements.clear();
+                    mob.timing
+                        .set_canmove_tick(mob.timing.get_canmove_tick().max(tick + u128::from(milliseconds)));
+                }
+                GroundTrapEffectKind::BreakWeapon => {}
             }
         } else if let Some(npc) = state.script_skill_state.npcs.get(&request.target_id).filter(|npc| npc.hp > 0) {
             let effect = match request.kind {
@@ -68,6 +75,7 @@ impl MapInstanceService {
                         .min(u64::from(u32::MAX)) as u32,
                 },
                 GroundTrapEffectKind::Knockback { source_x, source_y, cells } => NpcEffect::Knockback { source_x, source_y, cells },
+                GroundTrapEffectKind::WalkDelay { .. } | GroundTrapEffectKind::BreakWeapon => return,
             };
             self.apply_npc_effect(
                 state,

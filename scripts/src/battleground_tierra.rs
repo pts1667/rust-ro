@@ -24,6 +24,9 @@ const ANNOUNCE_COLOR: &str = "0xFFCE00";
 const GUILLAUME: usize = 0;
 const CROIX: usize = 1;
 
+/// Invisible touch areas across the valley barricades: `(owning camp, exit cell)`.
+const GATES: [(usize, (i32, i32)); 4] = [(GUILLAUME, (194, 261)), (GUILLAUME, (194, 270)), (CROIX, (178, 125)), (CROIX, (178, 134))];
+
 const ROLE_DECORATION: i32 = 0;
 const ROLE_THERAPIST: i32 = 1;
 const ROLE_GHOST: i32 = 2;
@@ -355,8 +358,18 @@ pub fn event(ctx: &Context, arena: usize, kind: u32) -> Result<(), String> {
         32 | 33 => set_enabled(ctx, CAMPS[(kind - 32) as usize].blacksmith, false),
         40..=47 => countdown_event(ctx, kind),
         50 => cleanup_poll(ctx),
+        60..=63 => barricade_gate(ctx, (kind - 60) as usize),
         _ => Err(format!("Unknown battleground arena event {kind}")),
     }
+}
+
+fn barricade_gate(ctx: &Context, gate: usize) -> Result<(), String> {
+    let (camp, (x, y)) = GATES[gate];
+    let own_team = read(ctx, &team_variable(camp))?;
+    if own_team != 0 && number(ctx, Function::GetCharacterId, vec![4.into()])? == own_team {
+        ctx.call(Function::Warp, vec![MAP.into(), x.into(), y.into()])?;
+    }
+    Ok(())
 }
 
 fn vintenar(ctx: &Context, camp: usize) -> Result<(), String> {

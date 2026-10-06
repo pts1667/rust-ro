@@ -201,6 +201,9 @@ pub fn handle_go(server: &Server, state: &mut ServerState, char_id: u32, args: V
         _ => (),
     }
 
+    if state.map_flags(&state.get_character_unsafe(char_id).map_instance_key).enabled(MapFlag::NoGo) {
+        return "You cannot use @go on this map.".into();
+    }
     if let Some(refusal) = admin_travel_blocked(state, char_id, &city.name) {
         return refusal;
     }

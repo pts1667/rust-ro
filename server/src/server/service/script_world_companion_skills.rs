@@ -129,7 +129,7 @@ impl ScriptWorldService {
                     })
                     .unwrap()?;
             }
-            GroundTrapEffectKind::Status(_) => {}
+            GroundTrapEffectKind::Status(_) | GroundTrapEffectKind::WalkDelay { .. } | GroundTrapEffectKind::BreakWeapon => {}
         }
         Ok(())
     }

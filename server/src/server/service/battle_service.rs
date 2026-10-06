@@ -3299,6 +3299,28 @@ impl BattleService {
         }
     }
 
+    /// Fire Pillar hit: `(40 + 20 * level)%` MATK plus a flat `100 + 50 * level`, Fire, ignoring MDEF.
+    /// A player's cast deals one hit's damage spread over the displayed hits, other sources multiply it.
+    pub fn fire_pillar_damage_signed(
+        &self,
+        source: &StatusSnapshot,
+        target: &StatusSnapshot,
+        skill_id: u32,
+        level: u8,
+        hits: u16,
+        player_source: bool,
+    ) -> (i32, MagicAttackContext) {
+        let level = u32::from(level);
+        let ratio = (40 + 20 * level) as f32 / 100.0;
+        let flat = (100 + 50 * level) as f32;
+        let mut context = self.magic_attack_context(source, ratio, Element::Fire);
+        context.matk = context.matk.max(1);
+        context.modifier = ratio + flat / f32::from(context.matk);
+        context.hits = if player_source { 1 } else { hits.max(1) };
+        context.skill_id = skill_id;
+        (self.magic_damage_from_context(source, target, context), context)
+    }
+
     pub fn grand_cross_damage_with_context(
         &self,
         source: &StatusSnapshot,
