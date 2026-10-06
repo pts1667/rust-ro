@@ -247,6 +247,19 @@ mod tests {
     }
 
     #[test]
+    fn ground_skill_header_follows_the_packet_version() {
+        let ground_skill = |id: [u8; 2], packetver| {
+            let mut frames = ClientFrames::new(packetver);
+            let mut bytes = vec![id[0], id[1], 1, 0, 11, 0, 150, 0, 150, 0];
+            bytes.extend_from_slice(&[0x30, 0x01, 1, 2, 3, 4]);
+            frames.push(&bytes).unwrap().iter().map(Vec::len).collect::<Vec<_>>()
+        };
+        assert_eq!(ground_skill([0x69, 0x03], 20120229), vec![10, 6]);
+        assert_eq!(ground_skill([0x38, 0x04], 20120307), vec![10, 6]);
+        assert!(super::super::script_operations::frame_length(0x0438, 20120229).is_none());
+    }
+
+    #[test]
     fn preserves_variable_length_frames_until_the_declared_body_is_complete() {
         let mut frames = ClientFrames::new(20120229);
         let packet = vec![0xAB, 0x08, 15, 0, 1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0];

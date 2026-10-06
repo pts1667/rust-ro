@@ -19,6 +19,7 @@ pub fn frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
         0x025B => Some(FrameLength::Fixed(6)),
         0x0178 => Some(FrameLength::Fixed(4)),
         0x0369 if (20111102..20120307).contains(&packetver) => Some(FrameLength::Fixed(10)),
+        0x0438 if packetver >= 20120307 => Some(FrameLength::Fixed(10)),
         0x0116 if packetver < 20040705 => Some(FrameLength::Fixed(10)),
         _ => None,
     }
