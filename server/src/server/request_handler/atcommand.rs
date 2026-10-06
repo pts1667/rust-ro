@@ -145,6 +145,14 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             }));
             return;
         }
+        "ban" | "unban" | "char_ban" | "char_unban" | "char_block" | "char_unblock" | "kick" => {
+            for reply in super::atcommand_admin::handle(server, state, char_id, canonical.as_str(), &args.join(" ")) {
+                let mut packet = PacketZcNotifyPlayerchat::new(GlobalConfigService::instance().packetver());
+                packet.set_msg(reply);
+                send_chat_reply(server, char_id, packet);
+            }
+            return;
+        }
         "reloadmotd" => {
             server.motd().reload(&server.configuration.server.motd_path);
             packet_zc_notify_playerchat.set_msg("Reloaded the Message of the Day.".to_string());

@@ -57,6 +57,11 @@ pub fn normalize_name(name: &str) -> String {
     name.trim_matches(|c| TRIMMED_NAME_CHARS.contains(&c)).to_string()
 }
 
+/// `guild_exp_rate`: percentage of a member's taxed experience that reaches the guild.
+pub fn guild_exp_gain(taxed: u64, rate_percent: u32) -> u64 {
+    taxed.saturating_mul(u64::from(rate_percent)) / 100
+}
+
 pub fn max_hp(vit: i32) -> i32 {
     40 * (100 + vit) / 100
 }
@@ -463,6 +468,15 @@ mod tests {
 
     fn create(repository: &SledRepository, account: &AccountContext, name: &str, slot: i32) -> CharacterRecord {
         create_character(repository, &CharServerConfig::default(), 100, account, 20120307, &request(name, slot), 1000).unwrap()
+    }
+
+    #[test]
+    fn guild_exp_rate_scales_the_taxed_experience() {
+        assert_eq!(guild_exp_gain(50, 100), 50);
+        assert_eq!(guild_exp_gain(50, 200), 100);
+        assert_eq!(guild_exp_gain(50, 50), 25);
+        assert_eq!(guild_exp_gain(1, 50), 0);
+        assert_eq!(guild_exp_gain(50, 0), 0);
     }
 
     #[test]

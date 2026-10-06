@@ -308,6 +308,44 @@ mod tests {
     }
 
     #[test]
+    fn ban_commands_update_the_account_and_report_to_the_game_master() {
+        // Given
+        use crate::repository::{CharServerRepository, LoginRepository};
+        let (context, repository, character) = super::native_payment_tests::fixture(false, false);
+        let (char_id, account_id, name) = (character.char_id, character.account_id, character.name.clone());
+        context.server.state_mut().insert_character(character);
+        join_group(&context, account_id, 99);
+        let victim_account = repository.account_create(database::model::AccountRecord::new(0, "victim", "secret")).unwrap();
+        repository
+            .char_create(&database::CharacterCreation {
+                character: database::model::CharacterRecord {
+                    account_id: victim_account as i32,
+                    name: "Victim".into(),
+                    inventory_slots: 100,
+                    ..Default::default()
+                },
+                items: vec![],
+                slot_limit: 12,
+                case_sensitive_names: false,
+            })
+            .unwrap();
+        // When
+        say(&context, char_id, &name, "@ban 1h Victim");
+        let banned = repository.account_by_id(victim_account).unwrap().unwrap().unban_time;
+        say(&context, char_id, &name, "@unban Victim");
+        say(&context, char_id, &name, "@ban 1h Nobody");
+        say(&context, char_id, &name, "@ban soon");
+        // Then
+        let replies = chat_replies(&context);
+        assert_eq!(replies[0], "Login-server has been asked to ban the player 'Victim'.");
+        assert!(banned > chrono::Utc::now().timestamp(), "the account is banned for the next hour");
+        assert_eq!(replies[1], "Login-server has been asked to unban the player 'Victim'.");
+        assert_eq!(replies[2], "The player 'Nobody' doesn't exist.");
+        assert!(replies[3].starts_with("Please enter ban time and a player name"));
+        assert_eq!(repository.account_by_id(victim_account).unwrap().unwrap().unban_time, 0, "unbanned again");
+    }
+
+    #[test]
     fn removed_map_item_notification_releases_its_lock_without_a_matching_character() {
         // Given
         let context = before_each();

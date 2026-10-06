@@ -338,7 +338,7 @@ impl Server {
             shared: OnceLock::new(),
             script_world_service,
             login_service: LoginService::new(),
-            motd: Motd::load(&configuration.server.motd_path),
+            motd: Motd::default(),
             runtime,
         }
     }

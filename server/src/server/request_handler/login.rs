@@ -19,6 +19,7 @@ use crate::server::service::login_service::{LoginOutcome, LoginRequest, LoginSer
 /// `SC_NOTIFY_BAN` results sent to a client that is turned away after a successful authentication.
 pub const NOTIFY_SERVER_CLOSED: u8 = 1;
 pub const NOTIFY_ALREADY_ONLINE: u8 = 8;
+pub const NOTIFY_DISCONNECTED: u8 = 15;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ListedServer {

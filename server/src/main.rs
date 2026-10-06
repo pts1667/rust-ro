@@ -67,6 +67,12 @@ pub async fn main() {
     CONFIGS.set(config).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
 
     setup_logger(configs(), options.debug_log);
+    let char_server = &configs().char_server;
+    repository::fame_repository::configure_list_sizes(
+        usize::from(char_server.fame_list_blacksmith),
+        usize::from(char_server.fame_list_alchemist),
+        usize::from(char_server.fame_list_taekwon),
+    );
     let runtime = Arc::new(Runtime::new().unwrap());
     let repository = SledRepository::open(&configs().database).expect("Failed to open sled database and seed assets");
     let repository_arc = Arc::new(repository);

@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use database::model::CharacterRecord;
 use database::{abort, read, tx_read, tx_required, tx_write};
@@ -20,7 +21,28 @@ pub enum FameCategory {
     Taekwon,
 }
 
+/// The client's ranking packets hold ten entries.
+pub const MAX_FAME_LIST: usize = 10;
+
+static LIST_SIZES: [AtomicUsize; 3] = [AtomicUsize::new(10), AtomicUsize::new(10), AtomicUsize::new(10)];
+
+/// Applies `fame_list_blacksmith`, `fame_list_alchemist` and `fame_list_taekwon`.
+pub fn configure_list_sizes(blacksmith: usize, alchemist: usize, taekwon: usize) {
+    for (slot, size) in LIST_SIZES.iter().zip([blacksmith, alchemist, taekwon]) {
+        slot.store(size.min(MAX_FAME_LIST), Ordering::Relaxed);
+    }
+}
+
 impl FameCategory {
+    fn list_size(self) -> usize {
+        let index = match self {
+            Self::Blacksmith => 0,
+            Self::Alchemist => 1,
+            Self::Taekwon => 2,
+        };
+        LIST_SIZES[index].load(Ordering::Relaxed)
+    }
+
     fn key(self, prefix: &[u8]) -> Vec<u8> {
         let category = match self {
             Self::Blacksmith => 0,
@@ -226,7 +248,7 @@ impl FameRepository for SledRepository {
                         let mut board: FameBoard = tx_read(systems, &old_category.key(b"fame_board/"))?.unwrap_or_default();
                         board.entries.remove(&char_id);
                         tx_write(systems, &old_category.key(b"fame_board/"), &board)?;
-                        tx_write(systems, &old_category.key(b"rankings/"), &top_ten(&board))?;
+                        tx_write(systems, &old_category.key(b"rankings/"), &top_ten(&board, old_category))?;
                     }
                     score.category = None;
                     tx_write(systems, &score_key(char_id), score)?;
@@ -356,7 +378,11 @@ impl FameRepository for SledRepository {
     }
 }
 
-fn top_ten(board: &FameBoard) -> Vec<FameEntry> {
+fn top_ten(board: &FameBoard, category: FameCategory) -> Vec<FameEntry> {
+    ranked(board, category.list_size())
+}
+
+fn ranked(board: &FameBoard, size: usize) -> Vec<FameEntry> {
     let mut entries: Vec<_> = board.entries.values().filter(|entry| entry.points > 0).cloned().collect();
     entries.sort_by(|a, b| {
         b.points
@@ -364,7 +390,7 @@ fn top_ten(board: &FameBoard) -> Vec<FameEntry> {
             .then_with(|| b.updated_order.cmp(&a.updated_order))
             .then_with(|| a.char_id.cmp(&b.char_id))
     });
-    entries.truncate(10);
+    entries.truncate(size);
     entries
 }
 
@@ -373,7 +399,7 @@ pub(crate) fn forget_character_fame_tx(systems: &TransactionalTree, char_id: u32
         let mut board: FameBoard = tx_read(systems, &category.key(b"fame_board/"))?.unwrap_or_default();
         if board.entries.remove(&char_id).is_some() {
             tx_write(systems, &category.key(b"fame_board/"), &board)?;
-            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board))?;
+            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board, category))?;
         }
         systems.remove([category.key(b"fame/"), char_id.to_be_bytes().to_vec()].concat())?;
     }
@@ -388,7 +414,7 @@ pub(crate) fn rename_character_fame_tx(systems: &TransactionalTree, char_id: u32
         if let Some(entry) = board.entries.get_mut(&char_id) {
             entry.name = name.to_string();
             tx_write(systems, &category.key(b"fame_board/"), &board)?;
-            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board))?;
+            tx_write(systems, &category.key(b"rankings/"), &top_ten(&board, category))?;
         }
     }
     if let Some(mut score) = tx_read::<CharacterFame>(systems, &score_key(char_id))? {
@@ -414,7 +440,7 @@ pub fn update_fame_tx(
             let mut old: FameBoard = tx_read(systems, &old_category.key(b"fame_board/"))?.unwrap_or_default();
             old.entries.remove(&id);
             tx_write(systems, &old_category.key(b"fame_board/"), &old)?;
-            tx_write(systems, &old_category.key(b"rankings/"), &top_ten(&old))?;
+            tx_write(systems, &old_category.key(b"rankings/"), &top_ten(&old, old_category))?;
         }
         board.entries.insert(id, previous.entry.clone());
     }
@@ -435,7 +461,7 @@ pub fn update_fame_tx(
         let key = [category.key(b"fame/"), id.to_be_bytes().to_vec()].concat();
         tx_write(systems, &key, entry)?;
     }
-    let rankings = top_ten(&board);
+    let rankings = top_ten(&board, category);
     let entry = board.entries.get(&id).cloned().unwrap_or(FameEntry {
         char_id: id,
         name: character.name.clone(),
@@ -541,6 +567,16 @@ mod tests {
     use sled::transaction::Transactional;
 
     use super::*;
+
+    #[test]
+    fn rankings_keep_the_best_entries_up_to_the_configured_size() {
+        let entry = |char_id: u32, points: u32| (char_id, FameEntry { char_id, name: format!("c{char_id}"), points, updated_order: u64::from(char_id) });
+        let board = FameBoard { generation: 0, entries: [entry(1, 50), entry(2, 90), entry(3, 70), entry(4, 0)].into() };
+        let top = |size| ranked(&board, size).iter().map(|entry| entry.char_id).collect::<Vec<_>>();
+        assert_eq!(top(10), vec![2, 3, 1], "zero points never rank");
+        assert_eq!(top(2), vec![2, 3]);
+        assert_eq!(top(0), Vec::<u32>::new());
+    }
 
     fn setup() -> SledRepository {
         let repository = SledRepository::temporary().unwrap();
