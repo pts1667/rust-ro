@@ -1,5 +1,5 @@
 use movement::position::Position;
-use packets::packets::{Packet, PacketZcAckReqnameall2};
+use packets::packets::{Packet, PacketZcAckReqnameall, PacketZcAckReqnameall2};
 
 use super::*;
 use crate::server::Server;
@@ -8,6 +8,9 @@ use crate::server::request_handler::atcommand::handle_atcommand;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::server::ServerState;
 use crate::util::string::StringUtil;
+
+/// First client version where `ZC_ACK_REQNAMEALL` became `0x0a30` and gained a title id.
+const REQNAMEALL2_PACKETVER: u32 = 20150225;
 
 /// Planned and executed by the movement thread, which owns movement state access.
 #[derive(Debug, PartialEq, Clone)]
@@ -47,11 +50,10 @@ impl GameEventHandler for CharacterRequestName {
     fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let CharacterRequestName { char_id, gid } = self;
         let character = state.get_character(char_id).ok_or("Character is not in game")?;
+        let lookup_id = if gid == character.account_id { char_id } else { gid };
         let map_item = state
-            .map_item(gid, character.current_map_name(), character.current_map_instance())
+            .map_item(lookup_id, character.current_map_name(), character.current_map_instance())
             .ok_or_else(|| format!("Can't find map item with id: {gid}"))?;
-        let mut packet = PacketZcAckReqnameall2::new(GlobalConfigService::instance().packetver());
-        packet.set_gid(gid);
         let mut name: [char; 24] = [0 as char; 24];
         #[cfg(feature = "debug_mob_movement")]
         {
@@ -64,23 +66,37 @@ impl GameEventHandler for CharacterRequestName {
                 .unwrap_or_else(|| "unknown".to_string());
             map_item_name.fill_char_array(name.as_mut());
         }
-        packet.set_name(name);
+        let mut guild_field: [char; 24] = [0 as char; 24];
+        let mut position_field: [char; 24] = [0 as char; 24];
         if let Some((guild_name, castle_name)) =
-            server.guardian_label(state, character.current_map_name(), character.current_map_instance(), gid)
+            server.guardian_label(state, character.current_map_name(), character.current_map_instance(), lookup_id)
         {
-            let mut field: [char; 24] = [0 as char; 24];
-            guild_name.fill_char_array(field.as_mut());
-            packet.set_guild_name(field);
-            let mut field: [char; 24] = [0 as char; 24];
-            castle_name.fill_char_array(field.as_mut());
-            packet.set_position_name(field);
+            guild_name.fill_char_array(guild_field.as_mut());
+            castle_name.fill_char_array(position_field.as_mut());
         }
-        packet.fill_raw();
+        let packetver = GlobalConfigService::instance().packetver();
+        let raw = if packetver >= REQNAMEALL2_PACKETVER {
+            let mut packet = PacketZcAckReqnameall2::new(packetver);
+            packet.set_gid(gid);
+            packet.set_name(name);
+            packet.set_guild_name(guild_field);
+            packet.set_position_name(position_field);
+            packet.fill_raw();
+            std::mem::take(packet.raw_mut())
+        } else {
+            let mut packet = PacketZcAckReqnameall::new(packetver);
+            packet.set_aid(gid);
+            packet.set_cname(name);
+            packet.set_gname(guild_field);
+            packet.set_rname(position_field);
+            packet.fill_raw();
+            std::mem::take(packet.raw_mut())
+        };
         server
             .server_service()
             .notification_sender()
-            .send(Notification::Char(CharNotification::new(char_id, std::mem::take(packet.raw_mut()))))
-            .map_err(|_| "Failed to send notification packet_zc_ack_reqnameall2 to client".to_string())
+            .send(Notification::Char(CharNotification::new(char_id, raw)))
+            .map_err(|_| "Failed to send name reply to client".to_string())
     }
 }
 

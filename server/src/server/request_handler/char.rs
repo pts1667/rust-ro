@@ -203,7 +203,7 @@ pub fn handle_make_char(server: &Server, context: Request) {
     });
     let mut packet_hc_accept_makechar_neo_union = PacketHcAcceptMakecharNeoUnion::new(GlobalConfigService::instance().packetver());
     packet_hc_accept_makechar_neo_union.set_charinfo(created_char);
-    packet_hc_accept_makechar_neo_union.fill_raw();
+    packet_hc_accept_makechar_neo_union.fill_raw_with_packetver(Some(server.packetver()));
     socket_send!(context, packet_hc_accept_makechar_neo_union);
 }
 
@@ -462,8 +462,15 @@ pub fn handle_disconnect(server: &Server, context: Request) {
     socket_send!(context, disconnect_ack);
 }
 
+/// First client version with `ZC_NOTIFY_ACTORINIT` (`0x0b1b`); earlier clients get no reply.
+const LOAD_CONFIRM_PACKETVER: u32 = 20190403;
+
 pub fn handle_blocking_play_cancel(context: Request) {
-    let mut packet_zc_load_confirm = PacketZcLoadConfirm::new(GlobalConfigService::instance().packetver());
+    let packetver = GlobalConfigService::instance().packetver();
+    if packetver < LOAD_CONFIRM_PACKETVER {
+        return;
+    }
+    let mut packet_zc_load_confirm = PacketZcLoadConfirm::new(packetver);
     packet_zc_load_confirm.fill_raw();
     socket_send!(context, packet_zc_load_confirm);
 }
