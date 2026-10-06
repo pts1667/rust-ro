@@ -3,9 +3,21 @@ use models::enums::EnumWithMaskValueU32;
 
 use super::{ScriptWorldService, install_state, protocol, world_data};
 use crate::server::Server;
+use crate::server::model::map_flags::MapFlag;
 use crate::server::model::game_systems::{GuildInvitation, GuildMenu, GuildPermission, GuildPosition, GuildRecord};
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
+
+fn changes_membership(request: &GuildRequest) -> bool {
+    matches!(
+        request,
+        GuildRequest::CreateGuild(_)
+            | GuildRequest::InviteGuild(_)
+            | GuildRequest::AnswerGuildInvite { accept: true, .. }
+            | GuildRequest::LeaveGuild { .. }
+            | GuildRequest::ExpelGuild { .. }
+    )
+}
 
 pub fn guild_actor_packet(actor_id: u32, guild_id: u32) -> Vec<u8> {
     let mut packet = protocol::header(0x01B4);
@@ -127,6 +139,9 @@ impl ScriptWorldService {
         character: &mut Character,
         request: GuildRequest,
     ) -> Result<(), String> {
+        if changes_membership(&request) && state.map_flags(&character.map_instance_key).enabled(MapFlag::GuildLock) {
+            return Err("Guild membership is locked on this map".into());
+        }
         match request {
             GuildRequest::CreateGuild(name) => {
                 if character.game_systems.guild_id != 0 {

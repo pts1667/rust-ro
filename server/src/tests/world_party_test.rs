@@ -184,6 +184,26 @@ fn party_world_requests_require_pending_invitations_and_keep_the_live_and_saved_
 }
 
 #[test]
+fn partylock_blocks_party_creation_until_the_flag_is_removed() {
+    let (context, repository) = fixture();
+    let mut flags = crate::server::model::map_flags::MapFlags::default();
+    flags.set(crate::server::model::map_flags::MapFlag::PartyLock, true, &[]).unwrap();
+    context.server.map_flag_overrides().insert(("empty".into(), 0), flags);
+    let create = || {
+        request(&context, 150_000, ScriptWorldRequest::Party(PartyRequest::CreateParty {
+            name: "Locked Party".into(),
+            item_pickup: false,
+            item_share: false,
+        }))
+    };
+    assert!(create().is_err());
+    assert_eq!(repository.character_game_systems(150_000).unwrap().party_id, 0);
+    context.server.map_flag_overrides().insert(("empty".into(), 0), crate::server::model::map_flags::MapFlags::default());
+    create().unwrap();
+    assert_ne!(repository.character_game_systems(150_000).unwrap().party_id, 0);
+}
+
+#[test]
 fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notification_delivery_fails() {
     let (context, repository) = fixture();
     context
