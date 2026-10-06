@@ -31,6 +31,14 @@ pub struct CharacterGameSystems {
     pub mounting: bool,
     pub party_name: String,
     pub party_invite_disabled: bool,
+    /// `CZ_CONFIG` equipment window: other players may inspect this character's equipment.
+    pub show_equip: bool,
+    /// `CZ_CONFIG` call permission: the character refuses to be summoned.
+    pub disable_call: bool,
+    #[serde(skip)]
+    pub less_effect: bool,
+    #[serde(skip)]
+    pub last_emotion_secs: i64,
     pub pet: Option<PetRecord>,
     pub pet_loot: Option<PetLootCargo>,
     pub last_pet_loot_drop: Option<PetLootDropReceipt>,

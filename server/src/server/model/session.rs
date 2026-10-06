@@ -470,6 +470,16 @@ impl Session {
         }
     }
 
+    /// Ends the NPC conversation waiting for client input, if any. Returns whether one was active.
+    pub fn close_dialog(&self) -> bool {
+        let mut channel = self.script_handler_channel_sender.lock().unwrap();
+        if channel.take().is_none() {
+            return false;
+        }
+        self.script_generation.fetch_add(1, Ordering::AcqRel);
+        true
+    }
+
     pub fn cancel_script(&self) {
         let mut channel = self.script_handler_channel_sender.lock().unwrap();
         self.script_generation.fetch_add(1, Ordering::AcqRel);

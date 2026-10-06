@@ -121,6 +121,10 @@ fn default_guild_max_alliances() -> u8 {
     3
 }
 
+fn default_basic_skill_check() -> bool {
+    true
+}
+
 fn default_groups_path() -> String {
     "config/groups.json".to_string()
 }
@@ -176,6 +180,9 @@ pub struct GameConfig {
     pub job_exp_rate: f32,
     #[serde(default)]
     pub pvp_exp: bool,
+    /// Players need Basic Skill level 2 to use emotes.
+    #[serde(default = "default_basic_skill_check")]
+    pub basic_skill_check: bool,
     #[serde(default)]
     pub restart_hp_rate: u8,
     #[serde(default)]

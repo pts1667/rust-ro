@@ -1,6 +1,10 @@
 use std::collections::BTreeMap;
 
-use packets::packets::Packet;
+use packets::packets::{
+    Packet, PacketCzAckStorePassword, PacketCzCancelLockon, PacketCzChangeDirection, PacketCzChopokgi, PacketCzClientVersion, PacketCzCloseDialog, PacketCzDoridori,
+    PacketCzCloseStore, PacketCzConfig, PacketCzEquipwinMicroscope, PacketCzLesseffect, PacketCzMovetoMap, PacketCzProgress,
+    PacketCzReqEmotion, PacketCzReqPvppoint, PacketCzReqUserCount, PacketCzReqnameBygid, PacketCzReset, PacketCzStandingResurrection,
+};
 
 use super::*;
 
@@ -61,6 +65,26 @@ impl ClientFrames {
             PacketCzReqWearEquip,
             PacketCzReqname,
             PacketCzReqnameall2,
+            PacketCzCloseDialog,
+            PacketCzCancelLockon,
+            PacketCzChangeDirection,
+            PacketCzReqEmotion,
+            PacketCzReqnameBygid,
+            PacketCzReqPvppoint,
+            PacketCzEquipwinMicroscope,
+            PacketCzConfig,
+            PacketCzLesseffect,
+            PacketCzReqUserCount,
+            PacketCzClientVersion,
+            PacketCzProgress,
+            PacketCzStandingResurrection,
+            PacketCzChopokgi,
+            PacketCzCloseStore,
+            PacketCzMovetoMap,
+            PacketCzReset,
+            PacketCzDoridori,
+            PacketCzAckStorePassword,
+            PacketCzReqDisconnect,
             PacketCzRequestAct,
             PacketCzRequestMove,
             PacketCzRequestMove2,

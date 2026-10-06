@@ -40,6 +40,7 @@
     "base_exp_rate": 1.0,
     "job_exp_rate": 1.0,
     "pvp_exp": false,
+    "basic_skill_check": true,
     "party_even_share_bonus": 0,
     "gvg_damage_rates": {
       "weapon_skill": 60,

@@ -17,7 +17,7 @@ Everything below is an unchecked task (`- [ ]`) unless stated otherwise. Tasks a
 
 | Area | Reference (rathena, pre-re @ 20120307) | Fork |
 |---|---|---|
-| Client packet handlers | 190 distinct `clif_parse_*` | 113 handled, 77 not (see App. A) |
+| Client packet handlers | 190 distinct `clif_parse_*` | 133 handled, 57 not (see App. A) |
 | Stock NPC definitions | 4,422 `script` + 186 `shop` + 96 shared `function`s | about 550 placements, almost all battleground, castle and custom NPCs |
 | Quests (`db/pre-re/quest_db.yml`) | 2,879 | 0 (no quest log) |
 | Atcommands (`conf/atcommands.yml`) | 314 | about 21 (plus aliases) |
@@ -95,7 +95,8 @@ Evidence: `server/src/server/request_handler/login.rs`, `char.rs`, `char_request
   | `feel`/`hate` (Star Gladiator) | Not implemented ([Section 7](#7-skills)) |
   | Friends | Not implemented ([Section 3](#3-social-and-communication)) |
   | Bound items | No bound flag on items ([Section 6](#6-items-crafting-and-economy)) |
-  | `show_equip`, `disable_call`, `ignore` list | Not implemented; `show_equip` and `disable_call` come with `CZ_CONFIG` ([Section 2.1](#21-gameplay-critical)), `ignore` with whisper ([Section 3](#3-social-and-communication)) |
+  | `show_equip`, `disable_call` | Persisted on the character (`CZ_CONFIG`, [Section 2.1](#21-gameplay-critical)) |
+  | `ignore` list | Not implemented; comes with whisper ([Section 3](#3-social-and-communication)) |
 
 - [x] **Multiple map servers / inter-server messages** are not needed: login, char and map run in one process on one port by design. This is an intentional deviation, do not report it again.
 
@@ -105,27 +106,27 @@ Full table with ids and rathena handler names: [Appendix A](#appendix-a-client-p
 
 ### 2.1 Gameplay-critical
 
-- [ ] `CZ_CLOSE_DIALOG` (0x0146, `clif_parse_NpcCloseClicked`): the dialog close button is never handled, so the conversation stays open until `conversation_timeout_secs`. Wire it to the conversation service.
-- [ ] `CZ_CANCEL_LOCKON` (0x0118, `clif_parse_StopAttack`): stop auto attack. Verify how the fork stops attacks today.
-- [ ] `CZ_CHANGE_DIRECTION` (0x0085/0x0361 family, `clif_parse_ChangeDir`): head and body direction broadcast (`ZC_CHANGE_DIRECTION` to the area).
-- [ ] `CZ_REQ_EMOTION` (0x00BF, `clif_parse_Emotion`): player emotes. The existing `emotion` code is for NPCs and mobs, and 0x01A9 (decoded) is the pet performance packet, not this one. Rules from rathena: ignore ids ≥ `ET_MAX`, require Basic Skill level 2 when `basic_skill_check` is on, refuse the mute emote, at most one per second, then broadcast `ZC_EMOTION` (0x00C0) to the area.
-- [ ] `CZ_REQNAME_BYGID` (0x0368, `clif_parse_SolveCharName`): name lookup by id (used by party/guild/search windows).
-- [ ] `CZ_REQ_DISCONNECT` (0x018A) and `CZ_CLOSE_STORE` (0x0193, `clif_parse_CloseKafra`): **verify**. The fork decodes only the other close/disconnect ids; confirm what the 20120307 client sends when closing the Kafra window and when quitting from the Esc menu.
-- [ ] `CZ_REQ_MOVETO_MAP`/GM warp (0x0140, `clif_parse_MapMove`): used by GM commands.
-- [ ] `CZ_REQ_PVPPOINT` (0x020F, `clif_parse_PVPInfo`): PvP info window. The rank packet 0x019A is sent; the request is not answered.
-- [ ] `CZ_EQUIPWIN_MICROSCOPE` (0x02D6, `clif_parse_ViewPlayerEquip`): view another player's equipment (respects `show_equip`).
-- [ ] `CZ_CONFIG` (0x02D8, `clif_parse_configuration`): equipment window visibility, call-permission toggle, pet/homunculus auto-feed.
-- [ ] `CZ_LESSEFFECT` (0x021D, `clif_parse_LessEffect`): reduce-effects toggle (persisted flag).
-- [ ] `CZ_RESET` (0x0197, `clif_parse_ResetChar`): GM stat/skill reset packet.
-- [ ] `CZ_REQ_USER_COUNT` (0x00C1, `clif_parse_HowManyConnections`): `/who`.
-- [ ] `CZ_CLIENT_VERSION` (0x044A) and progress bar answer `CZ_PROGRESS` (0x02F1, `clif_parse_progressbar`).
-- [ ] `CZ_STANDING_RESURRECTION` (0x0292, `clif_parse_AutoRevive`): Token of Siegfried auto revive.
+- [x] `CZ_CLOSE_DIALOG` (0x0146, `clif_parse_NpcCloseClicked`): the dialog close button is never handled, so the conversation stays open until `conversation_timeout_secs`. Wire it to the conversation service. Closes the active conversation (`Session::close_dialog`), so the script ends instead of waiting for `conversation_timeout_secs`.
+- [x] `CZ_CANCEL_LOCKON` (0x0118, `clif_parse_StopAttack`): stop auto attack. Verify how the fork stops attacks today. Clears the attack target; the request was previously not even framed.
+- [x] `CZ_CHANGE_DIRECTION` (0x0085/0x0361 family, `clif_parse_ChangeDir`): head and body direction broadcast (`ZC_CHANGE_DIRECTION` to the area). Stores the direction and broadcasts `ZC_CHANGE_DIRECTION` (0x009C) to the area without the sender. The head direction is not stored (spawn packets send 0).
+- [x] `CZ_REQ_EMOTION` (0x00BF, `clif_parse_Emotion`): player emotes. The existing `emotion` code is for NPCs and mobs, and 0x01A9 (decoded) is the pet performance packet, not this one. Rules from rathena: ignore ids ≥ `ET_MAX`, require Basic Skill level 2 when `basic_skill_check` is on, refuse the mute emote, at most one per second, then broadcast `ZC_EMOTION` (0x00C0) to the area. Implemented with the rathena rules; `game.basic_skill_check` (default on) is the new configuration entry.
+- [x] `CZ_REQNAME_BYGID` (0x0368, `clif_parse_SolveCharName`): name lookup by id (used by party/guild/search windows). Online characters answer from state, offline ones from the character record, unknown ids answer `Unknown`.
+- [x] `CZ_REQ_DISCONNECT` (0x018A) and `CZ_CLOSE_STORE` (0x0193, `clif_parse_CloseKafra`): **verify**. The fork decodes only the other close/disconnect ids; confirm what the 20120307 client sends when closing the Kafra window and when quitting from the Esc menu. **Verified:** at 20120307 the client sends `0x018A` (decoded as `PacketCzReqDisconnect`, which the old handler missed, so Esc > Exit did nothing) and `0x0193` for the storage close. Both are handled now. Deviation: `prevent_logout` is not applied.
+- [x] `CZ_REQ_MOVETO_MAP`/GM warp (0x0140, `clif_parse_MapMove`): used by GM commands. Routed to `` (permission checked by the command).
+- [x] `CZ_REQ_PVPPOINT` (0x020F, `clif_parse_PVPInfo`): PvP info window. The rank packet 0x019A is sent; the request is not answered. Replies `ZC_ACK_PVPPOINT` (0x0210) from the character PvP counters.
+- [x] `CZ_EQUIPWIN_MICROSCOPE` (0x02D6, `clif_parse_ViewPlayerEquip`): view another player's equipment (respects `show_equip`). Replies `0x0859` with the worn equipment; refused with message 1357 unless the target enabled it or the viewer has `view_equipment`.
+- [x] `CZ_CONFIG` (0x02D8, `clif_parse_configuration`): equipment window visibility, call-permission toggle, pet/homunculus auto-feed. `show_equip` and `disable_call` are persisted on the character and restored on map entry (`0x02DA`, `0x02D9`). Pet and homunculus auto-feed types need packetver 20130000+ and are rejected.
+- [x] `CZ_LESSEFFECT` (0x021D, `clif_parse_LessEffect`): reduce-effects toggle (persisted flag). The flag is kept in memory only, as in rathena (nothing consumes it yet).
+- [x] `CZ_RESET` (0x0197, `clif_parse_ResetChar`): GM stat/skill reset packet. Routed to `` / ``.
+- [x] `CZ_REQ_USER_COUNT` (0x00C1, `clif_parse_HowManyConnections`): `/who`. Replies `ZC_USER_COUNT` (0x00C2) with the number of characters in game.
+- [x] `CZ_CLIENT_VERSION` (0x044A) and progress bar answer `CZ_PROGRESS` (0x02F1, `clif_parse_progressbar`). Accepted and ignored: the script SDK has no progress bar command yet.
+- [x] `CZ_STANDING_RESURRECTION` (0x0292, `clif_parse_AutoRevive`): Token of Siegfried auto revive. Consumes a Token of Siegfried (7621, 6293, 6316) and revives with full HP and SP. Missing: Light of Regeneration.
 - [ ] `CZ_SELECT_AUTOSPELL` (0x01CE, `clif_parse_AutoSpell`): Auto Spell menu (see [Section 7](#7-skills)).
 - [ ] `CZ_REQ_MAKINGARROW` (0x01AE, `clif_parse_SelectArrow`): arrow crafting menu.
 - [ ] `CZ_AGREE_STARPLACE` (0x0254, `clif_parse_FeelSaveOk`): Star Gladiator Sun/Moon/Star place confirmation.
-- [ ] `CZ_DORIDORI` (0x01E7) and `CZ_CHOPOKGI` (0x01ED): Novice "Doridori" and Spirit explosion actions.
+- [ ] `CZ_DORIDORI` (0x01E7) and `CZ_CHOPOKGI` (0x01ED): Novice "Doridori" and Spirit explosion actions. `CZ_CHOPOKGI` is done (Super Novice prayer at every 10% of the next level starts Explosion Spirits with the level 5 duration). `CZ_DORIDORI` is framed and ignored: its effect doubles the skill SP regeneration, which the fork does not have yet ([Section 8](#8-battle-system-and-server-configuration)).
 - [ ] `CZ_REQ_WEAPONREFINE` (0x0222, `clif_parse_WeaponRefine`): Whitesmith weapon refine selection (see [Section 6](#6-items-crafting-and-economy)).
-- [ ] `CZ_ACK_STORE_PASSWORD` (0x023B/0x0281, `clif_parse_StoragePassword`): storage password dialogs.
+- [x] `CZ_ACK_STORE_PASSWORD` (0x023B/0x0281, `clif_parse_StoragePassword`): storage password dialogs. Accepted and ignored, as rathena does (`@TODO` handler).
 - [ ] `CZ_REQ_ACCOUNTNAME`, `CZ_REQ_STATUS_GM` (0x0213, `clif_parse_Check`) and the other GM packets listed in [Section 14](#14-gm-and-administration).
 
 ### 2.2 Social and communication (details in [Section 3](#3-social-and-communication))
@@ -398,19 +399,15 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_Auction_register` | 0x024D | `PacketCzAuctionAdd` | 3 |
 | `clif_parse_Auction_search` | 0x0251 | `PacketCzAuctionItemSearch` | 3 |
 | `clif_parse_Auction_setitem` | 0x024C | `PacketCzAuctionAddItem` | 3 |
-| `clif_parse_AutoRevive` | 0x0292 | `PacketCzStandingResurrection` | 2.1 |
 | `clif_parse_AutoSpell` | 0x01CE | `PacketCzSelectautospell` | 7 |
 | `clif_parse_Broadcast` | 0x0099 | `PacketCzBroadcast` | 3 |
 | `clif_parse_CashShopReqTab` | 0x0846 |  | 6 |
 | `clif_parse_ChangeChatOwner` | 0x00E0 | `PacketCzReqRoleChange` | — |
-| `clif_parse_ChangeDir` | 0x0085, 0x0361, 0x0890 | `PacketCzChangeDirection` | 2.1 |
 | `clif_parse_ChatAddMember` | 0x00D9 | `PacketCzReqEnterRoom` | 3 |
 | `clif_parse_ChatLeave` | 0x00E3 | `PacketCzExitRoom` | 3 |
 | `clif_parse_ChatRoomStatusChange` | 0x00DE | `PacketCzChangeChatroom` | 3 |
 | `clif_parse_Check` | 0x0213 | `PacketCzReqStatusGm` | 14 |
-| `clif_parse_CloseKafra` | 0x0193 | `PacketCzCloseStore` | 2.1 |
 | `clif_parse_CreateChatRoom` | 0x00D5 | `PacketCzCreateChatroom` | — |
-| `clif_parse_Emotion` | 0x00BF | `PacketCzReqEmotion` | 2.1 |
 | `clif_parse_FeelSaveOk` | 0x0254 | `PacketCzAgreeStarplace` | 7 |
 | `clif_parse_FriendsListAdd` | 0x0202, 0x0436, 0x0369 | `PacketCzAddFriends` | 3 |
 | `clif_parse_FriendsListRemove` | 0x0203 | `PacketCzDeleteFriends` | 3 |
@@ -428,10 +425,8 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_GMReqNoChat` | 0x0149 | `PacketCzReqGiveMannerPoint` | 14 |
 | `clif_parse_GMShift` | 0x01BA, 0x01BB | `PacketCzRemoveAid` | 14 |
 | `clif_parse_GM_Item_Monster` | 0x013F | `PacketCzItemCreate` | 14 |
-| `clif_parse_HowManyConnections` | 0x00C1 | `PacketCzReqUserCount` | 2.1 |
 | `clif_parse_ItemListWindowSelected` | 0x07E4, 0x0870 | `PacketCzItemlistwinRes` | out of scope |
 | `clif_parse_KickFromChat` | 0x00E2 | `PacketCzReqExpelMember` | 3 |
-| `clif_parse_LessEffect` | 0x021D | `PacketCzLesseffect` | 2.1 |
 | `clif_parse_LocalBroadcast` | 0x019C |  | 3 |
 | `clif_parse_Mail_delete` | 0x0243 | `PacketCzMailDelete` | 3 |
 | `clif_parse_Mail_getattach` | 0x0244 | `PacketCzMailGetItem` | 3 |
@@ -441,30 +436,16 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_Mail_send` | 0x0248 | `PacketCzMailSend` | 3 |
 | `clif_parse_Mail_setattach` | 0x0247 | `PacketCzMailAddItem` | 3 |
 | `clif_parse_Mail_winopen` | 0x0246 | `PacketCzMailResetItem` | 3 |
-| `clif_parse_MapMove` | 0x0140 | `PacketCzMovetoMap` | 14 |
 | `clif_parse_MemorialDungeonCommand` | 0x02CF | `PacketCzMemorialdungeonCommand` | 5 |
-| `clif_parse_NoviceDoriDori` | 0x01E7 | `PacketCzDoridori` | 2.1 |
-| `clif_parse_NoviceExplosionSpirits` | 0x01ED | `PacketCzChopokgi` | 2.1 |
-| `clif_parse_NpcCloseClicked` | 0x0146 | `PacketCzCloseDialog` | 2.1 |
 | `clif_parse_PMIgnore` | 0x00CF | `PacketCzSettingWhisperPc` | 3 |
 | `clif_parse_PMIgnoreAll` | 0x00D0 | `PacketCzSettingWhisperState` | 3 |
 | `clif_parse_PMIgnoreList` | 0x00D3 | `PacketCzReqWhisperList` | 3 |
-| `clif_parse_PVPInfo` | 0x020F | `PacketCzReqPvppoint` | 2.1 |
-| `clif_parse_QuitGame` | 0x018A | `PacketCzReqDisconnect` | 2.1 |
 | `clif_parse_RepairItem` | n/a |  | 6 |
-| `clif_parse_ResetChar` | 0x0197 | `PacketCzReset` | 2.1 |
 | `clif_parse_SelectArrow` | 0x01AE | `PacketCzReqMakingarrow` | 6/7 |
 | `clif_parse_SkillSelectMenu` | 0x0443 | `PacketCzSkillSelectResponse` | out of scope |
-| `clif_parse_SolveCharName` | 0x00A2, 0x0368 | `PacketCzReqnameBygid` | 2.1 |
-| `clif_parse_StopAttack` | 0x0118 | `PacketCzCancelLockon` | 2.1 |
-| `clif_parse_StoragePassword` | 0x023B, 0x0281, 0x0861 | `PacketCzAckStorePassword` | 6 |
-| `clif_parse_ViewPlayerEquip` | 0x02D6 | `PacketCzEquipwinMicroscope` | 2.1 |
 | `clif_parse_WeaponRefine` | 0x0222 | `PacketCzReqWeaponrefine` | 6 |
 | `clif_parse_WisMessage` | 0x0096 | `PacketCzWhisper` | — |
-| `clif_parse_client_version` | 0x044A | `PacketCzClientVersion` | 2.1 |
-| `clif_parse_configuration` | 0x02D8 | `PacketCzConfig` | 2.1 |
 | `clif_parse_npccashshop_buy` | 0x0288 | `PacketCzPcBuyCashPointItem` | 6 |
-| `clif_parse_progressbar` | 0x02F1 | `PacketCzProgress` | 2.1 |
 | `clif_parse_questStateAck` | 0x02B6 | `PacketCzActiveQuest` | 4 |
 | `clif_parse_ranklist_killer` | 0x0237 |  | out of scope (not in 20120307 pre-re) |
 

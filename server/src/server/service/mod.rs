@@ -1,4 +1,5 @@
 pub mod account_admin_service;
+pub(crate) mod client_command_service;
 pub mod battle_service;
 pub mod char_server_service;
 pub(crate) mod battleground_service;

@@ -1,4 +1,5 @@
 mod character;
+mod client_command;
 mod lifecycle;
 mod request;
 mod script;
@@ -6,6 +7,7 @@ mod skill;
 mod world;
 
 pub use character::*;
+pub use client_command::*;
 pub use lifecycle::*;
 pub use request::*;
 pub use script::*;
@@ -168,4 +170,5 @@ game_events! {
     BattlegroundQueue(crate::server::model::battleground_queue::BattlegroundQueueCommand),
     CharacterRequestCardCompositionList(CharacterRequestCardCompositionList),
     CharacterSlotCard(CharacterSlotCard),
+    CharacterClientCommand(CharacterClientCommand),
 }

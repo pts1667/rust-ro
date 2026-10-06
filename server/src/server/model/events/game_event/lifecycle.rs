@@ -205,6 +205,7 @@ impl GameEventHandler for CharacterLoadedFromClientSide {
         let character = state.characters_mut().get_mut(&char_id).unwrap();
         character.loaded_from_client_side = true;
         character.clear_map_view();
+        server.send_character_config(character);
         server.notify_map_property(state, char_id);
         server.notify_weather(state, char_id);
         server.trigger_map_load_events(state, char_id);

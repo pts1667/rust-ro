@@ -4,7 +4,7 @@ use packets::packets::{
     PacketCaLogin, PacketChEnter, PacketChMakeChar, PacketChMakeChar2, PacketChMakeChar3, PacketChSelectChar,
     PacketCzAckSelectDealtype, PacketCzBlockingPlayCancel, PacketCzChooseMenu, PacketCzContactnpc, PacketCzEnter2, PacketCzInputEditdlg,
     PacketCzInputEditdlgstr, PacketCzItemPickup, PacketCzItemThrow, PacketCzNotifyActorinit, PacketCzPcPurchaseItemlist,
-    PacketCzPcSellItemlist, PacketCzPlayerChat, PacketCzReqDisconnect2, PacketCzReqItemcomposition, PacketCzReqItemcompositionList,
+    PacketCzPcSellItemlist, PacketCzPlayerChat, PacketCzReqDisconnect, PacketCzReqDisconnect2, PacketCzReqItemcomposition, PacketCzReqItemcompositionList,
     PacketCzReqNextScript, PacketCzReqTakeoffEquip, PacketCzReqWearEquip, PacketCzReqname, PacketCzReqnameall2, PacketCzRequestAct,
     PacketCzRequestMove, PacketCzRequestMove2, PacketCzRequestTime, PacketCzRestart, PacketCzShortcutKeyChange, PacketCzStatusChange,
     PacketCzUpgradeSkilllevel, PacketCzUseItem, PacketCzUseSkill, PacketUnknown, PacketZcNotifyTime,
@@ -44,6 +44,7 @@ pub mod atcommand_admin;
  */
 pub mod char;
 pub mod char_requests;
+pub mod client_command;
 pub mod chat;
 pub mod framing;
 pub mod login;
@@ -173,8 +174,10 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
         return handle_restart(server.as_ref(), context);
     }
     // Game menu "Exit to windows"
-    if context.packet().as_any().downcast_ref::<PacketCzReqDisconnect2>().is_some() {
-        debug!("PacketCzReqDisconnect2");
+    if context.packet().as_any().downcast_ref::<PacketCzReqDisconnect2>().is_some()
+        || context.packet().as_any().downcast_ref::<PacketCzReqDisconnect>().is_some()
+    {
+        debug!("PacketCzReqDisconnect");
         return handle_disconnect(server.as_ref(), context);
     }
     // Player click on map cell
@@ -311,6 +314,10 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
         packet_zc_notify_time.set_time(get_tick_client());
         packet_zc_notify_time.fill_raw();
         socket_send!(context, packet_zc_notify_time);
+        return;
+    }
+
+    if client_command::handle(server.as_ref(), &context) {
         return;
     }
 
