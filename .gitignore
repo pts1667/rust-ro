@@ -15,3 +15,5 @@ graph.png
 .vs
 .claude/settings.local.json
 *.cwasm
+# Secret of the bot API (server/src/server/bots), created on first boot when missing
+/config/bots_api_key.txt

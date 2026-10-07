@@ -81,6 +81,7 @@ game_events! {
     GroundTrapRelease(crate::server::script::skill::trap::GroundTrapRelease),
     GroundTrapEffect(crate::server::script::skill::trap::GroundTrapEffect),
     GroundTrapSpend(GroundTrapSpend),
+    BotCommand(crate::server::bots::BotCommand),
     ScriptRequest(crate::server::script::ScriptRequest),
     ScriptNpcTransfer(crate::server::script::unit_data::ScriptNpcTransfer),
     ScriptNpcEvent(ScriptNpcEvent),

@@ -31,6 +31,7 @@ sha1 = "0.10"
 fastmurmur3 = "0.2.0"
 regex-lite = "0.1.6"
 tokio = { version = "1.33.0", features = ["full", "tracing"] }
+axum = { version = "0.8", default-features = false, features = ["http1", "json", "query", "tokio", "ws"] }
 futures = "0.3"
 wasmtime = { version = "43.0.2", default-features = false, features = ["async", "cranelift", "runtime", "std", "wat", "anyhow"] }
 sled = "0.34.7"

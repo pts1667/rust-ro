@@ -257,6 +257,63 @@ pub fn handle_make_char(server: &Server, context: Request) {
     }
 }
 
+/// The in-game character of a stored one, with the skills, hotkeys and game systems the game needs. Blocks on the database.
+pub(crate) fn load_character(server: &Server, account_id: u32, sex: u8, char_model: &CharSelectModel) -> Result<Character, String> {
+    let char_id = char_model.char_id as u32;
+    let skills: Vec<KnownSkill> = server
+        .runtime()
+        .block_on(async { server.repository.character_skills(char_id).await.unwrap() });
+    let hotkeys: Vec<Hotkey> = server
+        .runtime()
+        .block_on(async { server.repository.load_hotkeys(char_id).await.unwrap() });
+    let config = &server.configuration.char_server;
+    let (last_map, last_x, last_y) = if char_model.last_map.is_empty() {
+        (config.default_map.clone(), config.default_map_x, config.default_map_y)
+    } else {
+        (char_model.last_map.clone(), char_model.last_x as u16, char_model.last_y as u16)
+    };
+    let mut character = Character::new(
+        char_model.name.clone(),
+        char_id,
+        account_id,
+        StatusFromDb::from_char_model(char_model, &server.configuration.game, skills),
+        last_x,
+        last_y,
+        0,
+        last_map,
+        sex,
+        hotkeys,
+    );
+    character.save_map = char_model.save_map.clone();
+    character.save_x = char_model.save_x.max(0) as u16;
+    character.save_y = char_model.save_y.max(0) as u16;
+    character
+        .position_revision
+        .store(char_model.position_revision, std::sync::atomic::Ordering::Relaxed);
+    character.set_options(char_model.option as u32 as u64);
+    character.karma = char_model.karma;
+    character.manner = char_model.manner;
+    character.game_systems = server
+        .repository
+        .character_game_systems(char_id)
+        .map_err(|error| format!("Failed to load character game systems: {error}"))?;
+    character.account_game_systems = server
+        .repository
+        .account_game_systems(account_id)
+        .map_err(|error| format!("Failed to load account game systems: {error}"))?;
+    if character.game_systems.guild_id != 0 {
+        if let Some(guild) = server
+            .repository
+            .guild(character.game_systems.guild_id)
+            .map_err(|error| format!("Failed to load guild: {error}"))?
+        {
+            character.guild_name = guild.name;
+        }
+    }
+    character.refresh_script_context();
+    Ok(character)
+}
+
 pub fn handle_select_char(server: &Server, context: Request) {
     let packet_select_char = cast!(context.packet(), PacketChSelectChar);
     if !require_pin(server, &context, &context.session()) {
@@ -287,20 +344,7 @@ pub fn handle_select_char(server: &Server, context: Request) {
         warn!("Account {session_id} selected a missing, banned or deleted character");
         return reject(&context);
     };
-    let skills: Vec<KnownSkill> = server
-        .runtime()
-        .block_on(async { server.repository.character_skills(char_model.char_id as u32).await.unwrap() });
-    let hotkeys: Vec<Hotkey> = server
-        .runtime()
-        .block_on(async { server.repository.load_hotkeys(char_model.char_id as u32).await.unwrap() });
-
-    let char_id: u32 = char_model.char_id as u32;
     let config = &server.configuration.char_server;
-    let (last_map, last_x, last_y) = if char_model.last_map.is_empty() {
-        (config.default_map.clone(), config.default_map_x, config.default_map_y)
-    } else {
-        (char_model.last_map.clone(), char_model.last_x as u16, char_model.last_y as u16)
-    };
     if config.log_char {
         let record = CharLogRecord {
             time: now,
@@ -314,52 +358,13 @@ pub fn handle_select_char(server: &Server, context: Request) {
         }
     }
 
-    let mut character = Character::new(
-        char_model.name.clone(),
-        char_id,
-        session_id,
-        StatusFromDb::from_char_model(&char_model, &server.configuration.game, skills),
-        last_x,
-        last_y,
-        0,
-        last_map,
-        selected_session.account.sex,
-        hotkeys,
-    );
-    character.save_map = char_model.save_map.clone();
-    character.save_x = char_model.save_x.max(0) as u16;
-    character.save_y = char_model.save_y.max(0) as u16;
-    character
-        .position_revision
-        .store(char_model.position_revision, std::sync::atomic::Ordering::Relaxed);
-    character.set_options(char_model.option as u32 as u64);
-    character.karma = char_model.karma;
-    character.manner = char_model.manner;
-    match server.repository.character_game_systems(char_id) {
-        Ok(systems) => character.game_systems = systems,
+    let character = match load_character(server, session_id, selected_session.account.sex, &char_model) {
+        Ok(character) => character,
         Err(error) => {
-            error!("Failed to load character game systems: {error}");
+            error!("{error}");
             return;
         }
-    }
-    match server.repository.account_game_systems(character.account_id) {
-        Ok(systems) => character.account_game_systems = systems,
-        Err(error) => {
-            error!("Failed to load account game systems: {error}");
-            return;
-        }
-    }
-    if character.game_systems.guild_id != 0 {
-        match server.repository.guild(character.game_systems.guild_id) {
-            Ok(Some(guild)) => character.guild_name = guild.name,
-            Ok(None) => {}
-            Err(error) => {
-                error!("Failed to load guild: {error}");
-                return;
-            }
-        }
-    }
-    character.refresh_script_context();
+    };
     let char_id = character.char_id;
     let map = match server.admit_selected_character(selected_session, character) {
         Ok(map) => map,

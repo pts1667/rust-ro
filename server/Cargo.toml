@@ -13,6 +13,7 @@ sha1 = {workspace = true}
 fastmurmur3 = {workspace = true}
 regex-lite = {workspace = true}
 tokio = {workspace = true}
+axum = {workspace = true}
 futures = {workspace = true}
 sled = {workspace = true}
 dashmap = {workspace = true}

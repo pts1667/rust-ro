@@ -291,5 +291,16 @@
     "fame_list_blacksmith": 10,
     "fame_list_taekwon": 10,
     "guild_exp_rate": 100
+  },
+  "bots": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 6902,
+    "api_key_path": "config/bots_api_key.txt",
+    "start_map": "prontera",
+    "start_x": 156,
+    "start_y": 191,
+    "max_bots": 20,
+    "action_timeout_secs": 30
   }
 }

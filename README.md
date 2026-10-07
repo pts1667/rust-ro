@@ -183,6 +183,10 @@ If everything goes right, you should receive something like this output:
 2024-02-11 13:45:55.389292 +01:00 [main] [INFO]: Server listen on 0.0.0.0:6901
 ```
 
+#### Bot API (external, LLM-controlled characters)
+
+The server also listens on `127.0.0.1:6902` for an HTTP and WebSocket API (`/bots/*`) that lets an external program play characters: it sees the whole map, walks, uses NPCs, items and warps in one call, and attacks monsters. Every request except `GET /bots/SKILL.md` needs the API key stored in `config/bots_api_key.txt` (gitignored, created at first start), sent as `Authorization: Bearer <key>` or `X-API-Key`. The `bots` section of `config.json` sets the address, key file, start position and limits (see `config.template.json`). `GET /bots/SKILL.md` (source: `server/src/server/bots/SKILL.md`) documents the endpoints for the agent that drives the bots.
+
 ### 5.4 [Dev] Running tools 
 
 So far, we have a few executables being compiled together with the project:

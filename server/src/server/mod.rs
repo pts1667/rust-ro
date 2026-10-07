@@ -19,6 +19,7 @@ use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
 
 use crate::repository::Repository;
+use crate::server::bots::BotRegistry;
 use crate::server::game_loop::GAME_TICK_RATE;
 use crate::server::model::map_item::MapItems;
 use crate::server::model::request::Request;
@@ -51,6 +52,7 @@ use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec
 use crate::util::tick::{delayed_tick, get_tick};
 
 pub mod boot;
+pub mod bots;
 mod game_loop;
 pub mod map_instance_loop;
 pub mod model;
@@ -103,6 +105,7 @@ pub struct Server {
     login_service: LoginService,
     motd: Motd,
     day_night: crate::server::model::day_night::DayNight,
+    bots: BotRegistry,
 }
 
 impl Server {
@@ -137,6 +140,10 @@ impl Server {
 
     pub fn day_night(&self) -> &crate::server::model::day_night::DayNight {
         &self.day_night
+    }
+
+    pub fn bots(&self) -> &BotRegistry {
+        &self.bots
     }
 
     pub fn motd(&self) -> &Motd {
@@ -307,6 +314,7 @@ impl Server {
             login_service: LoginService::new(),
             motd: Motd::load(&configuration.server.motd_path),
             day_night: Default::default(),
+            bots: Default::default(),
             runtime,
         }
     }
@@ -353,6 +361,7 @@ impl Server {
             login_service: LoginService::new(),
             motd: Motd::default(),
             day_night: Default::default(),
+            bots: Default::default(),
             runtime,
         }
     }
@@ -763,11 +772,16 @@ impl Server {
                             match single_client_notification_receiver.recv_timeout(Duration::from_millis(16)) {
                                 Ok(response) => match response {
                                     Notification::Char(char_notification) => {
-                                        Self::buffer_packets(
-                                            &mut packets_by_session,
-                                            char_notification.char_id(),
-                                            char_notification.serialized_packet().as_slice(),
-                                        );
+                                        // Bots have no socket, what is sent to them is read here instead
+                                        if server_ref.bots().is_bot(char_notification.char_id()) {
+                                            bots::receive_packet(&server_ref, char_notification.char_id(), char_notification.serialized_packet());
+                                        } else {
+                                            Self::buffer_packets(
+                                                &mut packets_by_session,
+                                                char_notification.char_id(),
+                                                char_notification.serialized_packet().as_slice(),
+                                            );
+                                        }
                                     }
                                     Notification::Area(area_notification) => match area_notification.range_type {
                                         AreaNotificationRangeType::Map => {}
@@ -777,6 +791,9 @@ impl Server {
                                                 .in_fov(&area_notification.map_name, area_notification.map_instance_id, x, y, PLAYER_FOV, exclude_id)
                                                 .into_iter()
                                                 .for_each(|char_id| {
+                                                    if server_ref.bots().is_bot(char_id) {
+                                                        return;
+                                                    }
                                                     if GlobalConfigService::instance().config().server.trace_packet {
                                                         debug_packets_from_vec(
                                                             None,
@@ -807,6 +824,16 @@ impl Server {
                     .unwrap();
             } else {
                 info!("Server does not listen client requests");
+            }
+            if enable_client_interfaces && server_ref.configuration.bots.enabled {
+                let server_ref_clone = server_ref.clone();
+                thread::Builder::new()
+                    .name("bots_api_thread".to_string())
+                    .spawn_scoped(server_thread_scope, move || {
+                        bots::serve(server_ref_clone);
+                        info!("Shutdown bots_api_thread");
+                    })
+                    .unwrap();
             }
             let server_ref_clone = server_ref.clone();
             thread::Builder::new()

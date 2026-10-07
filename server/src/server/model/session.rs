@@ -408,6 +408,23 @@ impl Session {
         }
     }
 
+    /// Session of a character driven by the bot API; it has no socket, the packets for it are read by `BotRegistry`.
+    pub fn create_for_bot(account_id: u32, char_id: u32, auth_code: i32, packetver: u32) -> Session {
+        Session {
+            account: Arc::new(AccountSession::default()),
+            char_server_socket: None,
+            map_server_socket: None,
+            account_id,
+            auth_code,
+            user_level: 0,
+            char_id: Some(char_id),
+            packetver,
+            is_simulated: true,
+            script_generation: AtomicU64::new(0),
+            script_handler_channel_sender: Mutex::new(None),
+        }
+    }
+
     pub fn recreate_with_character(&self, char_id: u32) -> Session {
         Session {
             account: self.account.clone(),

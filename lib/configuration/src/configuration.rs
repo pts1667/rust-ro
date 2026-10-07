@@ -40,6 +40,42 @@ pub struct Config {
     /// rathena battle options: `config/battle/*.conf` files are read first, then this object overrides them.
     #[serde(default)]
     pub battle: BattleConfig,
+    #[serde(default)]
+    pub bots: BotsConfig,
+}
+
+/// HTTP and WebSocket API that lets external programs drive characters, see `server/src/server/bots`.
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct BotsConfig {
+    pub enabled: bool,
+    pub host: String,
+    pub port: u16,
+    /// File holding the API key; created with a random key when missing.
+    pub api_key_path: String,
+    /// Where new bot characters are placed, instead of the character server start points.
+    pub start_map: String,
+    pub start_x: u16,
+    pub start_y: u16,
+    pub max_bots: usize,
+    /// Longest wait for one blocking action (walking to an NPC, a dialogue answer).
+    pub action_timeout_secs: u64,
+}
+
+impl Default for BotsConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            host: "127.0.0.1".into(),
+            port: 6902,
+            api_key_path: "config/bots_api_key.txt".into(),
+            start_map: "prontera".into(),
+            start_x: 156,
+            start_y: 191,
+            max_bots: 20,
+            action_timeout_secs: 30,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
