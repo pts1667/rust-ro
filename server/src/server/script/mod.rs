@@ -5,6 +5,7 @@ pub use script_sdk::Value;
 
 pub(crate) mod bonus;
 pub mod constant;
+mod array_variables;
 mod game_api;
 pub(crate) mod game_data;
 mod host;

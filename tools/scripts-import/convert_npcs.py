@@ -21,11 +21,36 @@ from rathena_script.names import load_names  # noqa: E402
 from rathena_script.parser import parse_file  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-DEFAULT_SOURCES = ["npc/quests", "npc/instances", "npc/merchants/refine.txt", "npc/merchants/advanced_refiner.txt"]
+PRE_RE_CONF = "npc/pre-re/scripts_main.conf"
+# Parts of the active pre-renewal chain that are Rust by hand (battlegrounds, castles: `castle_service` replaces the War of Emperium scripts of
+# `npc/guild`) or have their own importers (spawns, warps, map flags).
+NOT_CONVERTED = ("npc/battleground/", "npc/guild/", "npc/guild2/", "npc/mobs/", "npc/pre-re/mobs/", "npc/warps/", "npc/pre-re/warps/", "npc/mapflag/", "npc/pre-re/mapflag/", "npc/other/marriage.txt", "npc/other/divorce.txt")
 LIBRARY_SOURCES = ["npc"]
 LIBRARY_EXCLUDED = ("npc/re/", "npc/test/", "npc/custom/", "npc/quests/")
 FIRST_NPC_ENTRY = 10_000
 FIRST_EVENT_ENTRY = 100_000
+
+
+def conf_files(rathena, conf=PRE_RE_CONF):
+    """Script files of a rathena `scripts_*.conf` chain in load order: `npc:` adds a file, `import:` follows another conf, `delnpc:` removes a file again."""
+    files = []
+    for line in (rathena / conf).read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line or line.startswith("//"):
+            continue
+        kind, _, path = line.partition(":")
+        path = path.strip()
+        if kind == "import" and "scripts_custom" not in path:
+            files += [file for file in conf_files(rathena, path) if file not in files]
+        elif kind == "npc" and path not in files:
+            files.append(path)
+        elif kind == "delnpc" and path in files:
+            files.remove(path)
+    return files
+
+
+def active_sources(rathena):
+    return [path for path in conf_files(rathena) if not path.startswith(NOT_CONVERTED)]
 
 
 def module_name(path, rathena):
@@ -50,7 +75,7 @@ def collect_library(rathena, excluded_files):
     definitions = []
     for path in sorted((rathena / "npc").rglob("*.txt")):
         relative = str(path.relative_to(rathena)).replace("\\", "/")
-        if relative.startswith(LIBRARY_EXCLUDED) or relative in excluded_files:
+        if relative.startswith(LIBRARY_EXCLUDED) or relative in excluded_files or relative.startswith(tuple(f"{source}/" for source in excluded_files)):
             continue
         if "function	script	" not in path.read_text(encoding="utf-8", errors="replace"):
             continue
@@ -65,7 +90,7 @@ def collect_library(rathena, excluded_files):
 def convert(rathena, sources, library_sources):
     constants, parameters = load_names(rathena)
     definitions = collect(rathena, sources)
-    library = collect_library(rathena, set()) if library_sources else []
+    library = collect_library(rathena, set(sources)) if library_sources else []
     functions = [d for d in definitions + library if d.kind == "function" and not d.error]
     exnames = {d.exname: d.name for d in definitions if d.exname and d.place is not None and d.kind in ("script", "duplicate")}
     world = Context(constants, parameters, {}, exnames)
@@ -124,7 +149,7 @@ def report(definitions, scripts, functions):
         if len(script.blockers) == 1:
             sole[next(iter(script.blockers))] += copies
     for function in functions:
-        if function.blockers and function.file.startswith("npc/quests"):
+        if function.blockers:
             print(f"blocked function {function.name}: {sorted(function.blockers)}")
     print("\nblockers (NPCs affected, duplicates included) / (NPCs that only this blocks):")
     for blocker, count in counts.most_common():
@@ -133,14 +158,15 @@ def report(definitions, scripts, functions):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("sources", nargs="*", default=DEFAULT_SOURCES)
+    parser.add_argument("sources", nargs="*", help="files or directories below the rathena root; default: every file of the active pre-renewal script chain")
     parser.add_argument("--rathena", default=str(ROOT.parent / "rathena"))
     parser.add_argument("--survey", action="store_true")
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--no-library", action="store_true")
     options = parser.parse_args()
     rathena = pathlib.Path(options.rathena)
-    definitions, library, scripts, functions = convert(rathena, options.sources, [] if options.no_library else LIBRARY_SOURCES)
+    sources = options.sources or active_sources(rathena)
+    definitions, library, scripts, functions = convert(rathena, sources, [] if options.no_library else LIBRARY_SOURCES)
     report(definitions, scripts, functions)
     if options.write:
         from rathena_script.emit import write_outputs

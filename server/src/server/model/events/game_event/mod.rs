@@ -115,6 +115,7 @@ game_events! {
     WarpPortalEnter(crate::server::script::skill::WarpPortalEntry),
     FameChanged(FameChanged),
     TaekwonMissionKill(TaekwonMissionKill),
+    PlayerKilledMonster(PlayerKilledMonster),
     ItemScriptComplete(ItemScriptComplete),
     ScriptReveal(crate::server::script::skill::ScriptRevealActor),
     CharacterStatusChange(CharacterStatusChange),

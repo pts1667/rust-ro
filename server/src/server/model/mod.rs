@@ -3,6 +3,7 @@ pub mod autoloot;
 pub mod battleground;
 pub mod battleground_queue;
 pub mod chat_room;
+pub mod waiting_room;
 pub mod client_socket;
 pub mod damage_notification;
 pub mod duel;

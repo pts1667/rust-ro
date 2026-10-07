@@ -23,7 +23,7 @@ TODO make a cli from this.
 Usage: this tool need .gat and .rsw files to generated mapcache.
 Using GRF editor, extract .gat and .rsw into a folder.
 
-set GRF_DATA_PATH to this folder.
+set the GRF_DATA_PATH environment variable to this folder (the constant below is only the default).
  */
 static PARALLEL_EXECUTIONS: usize = 100;
 static NO_WATER: f32 = 1000000.0;
@@ -54,7 +54,8 @@ async fn main() {
         .fmt_fields(fmt::format::DefaultFields::new())
         .event_format(fmt::format().compact().with_target(false).with_thread_names(true))
         .init();
-    let grf_data_path = Path::new(GRF_DATA_PATH);
+    let grf_data_dir = std::env::var("GRF_DATA_PATH").unwrap_or_else(|_| GRF_DATA_PATH.to_string());
+    let grf_data_path = Path::new(&grf_data_dir);
     let paths = fs::read_dir(grf_data_path).unwrap();
     let mut file_paths = Vec::<String>::new();
     let mut map_names = Vec::<String>::new();

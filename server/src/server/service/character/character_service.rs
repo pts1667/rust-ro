@@ -1695,6 +1695,9 @@ impl CharacterService {
                                 npc,
                                 self.configuration_service.packetver(),
                             ));
+                            if let Some(packet) = crate::server::service::waiting_room_service::waiting_room_entry_packet(server_state, npc.id) {
+                                packets.extend(packet);
+                            }
                             if !npc.active_statuses.is_empty() {
                                 packets.extend(
                                     crate::server::service::status_effect_service::StatusEffectService::visual_state_packet(

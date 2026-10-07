@@ -22,7 +22,7 @@ use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::server::ServerState;
 use crate::util::tick::get_tick;
 
-fn npcs(state: &ServerState) -> Vec<(ScriptSkillActor, Arc<Script>)> {
+pub(crate) fn npcs(state: &ServerState) -> Vec<(ScriptSkillActor, Arc<Script>)> {
     state
         .map_instances()
         .values()
@@ -85,18 +85,37 @@ pub(crate) fn touch_area_entered(npc: (u16, u16), area: (u16, u16), from: (u16, 
     (area.0 > 0 || area.1 > 0) && inside(to) && !inside(from)
 }
 
-/// `(npc id, scope instance, entry id)` of the compiled `OnTouch` callbacks whose area the step enters.
-pub(crate) fn touched_npc_events(map: &MapInstanceState, from: (u16, u16), to: (u16, u16)) -> Vec<(u32, u8, u32)> {
+/// `(npc id, scope instance, OnTouch entry)` of the NPCs whose area the step enters; without an `OnTouch` label the NPC is clicked instead.
+pub(crate) fn touched_npc_events(map: &MapInstanceState, from: (u16, u16), to: (u16, u16)) -> Vec<(u32, u8, Option<u32>)> {
     map.script_skill_state
         .npcs
         .values()
         .filter(|npc: &&NpcSkillState| {
             !npc.hidden && touch_area_entered((npc.x, npc.y), (npc.script.x_size, npc.script.y_size), from, to)
         })
-        .filter_map(|npc| {
-            ScriptService::event_entry(&format!("{}::OnTouch", npc.script.name)).map(|entry| (npc.id, npc.script.scope_instance, entry))
-        })
+        .map(|npc| (npc.id, npc.script.scope_instance, ScriptService::event_entry(&format!("{}::OnTouch", npc.script.name))))
         .collect()
+}
+
+static LAST_CLOCK_TIME: std::sync::Mutex<Option<chrono::NaiveDateTime>> = std::sync::Mutex::new(None);
+
+/// The clock labels rathena fires when the wall clock goes from `previous` to `now`.
+fn clock_events(previous: chrono::NaiveDateTime, now: chrono::NaiveDateTime) -> Vec<String> {
+    use chrono::{Datelike, Timelike};
+    const WEEKDAYS: [&str; 7] = ["OnMon", "OnTue", "OnWed", "OnThu", "OnFri", "OnSat", "OnSun"];
+    let mut events = Vec::new();
+    if now.minute() != previous.minute() {
+        events.push(format!("OnMinute{:02}", now.minute()));
+        events.push(format!("OnClock{:02}{:02}", now.hour(), now.minute()));
+        events.push(format!("{}{:02}{:02}", WEEKDAYS[now.weekday().num_days_from_monday() as usize], now.hour(), now.minute()));
+    }
+    if now.hour() != previous.hour() {
+        events.push(format!("OnHour{:02}", now.hour()));
+    }
+    if now.day() != previous.day() {
+        events.push(format!("OnDay{:02}{:02}", now.month(), now.day()));
+    }
+    events
 }
 
 impl Server {
@@ -104,6 +123,31 @@ impl Server {
         self.broadcast_npc_event(state, "OnInit");
         self.broadcast_npc_event(state, "OnAgitInit");
         self.add_to_next_tick(GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::Init));
+    }
+
+    /// Fires the `OnMinute`, `OnClock`, weekday, `OnHour` and `OnDay` labels the wall clock just reached.
+    pub(crate) fn tick_npc_clock(&self, state: &ServerState) {
+        let now = chrono::Local::now().naive_local();
+        let Some(previous) = LAST_CLOCK_TIME.lock().unwrap().replace(now) else { return };
+        for event in clock_events(previous, now) {
+            self.broadcast_npc_event(state, &event);
+        }
+    }
+
+    /// Queues `OnPC...Event` for every NPC that has the label, with the player attached and `killedrid`/`killerrid` readable as `@` variables.
+    pub(crate) fn broadcast_player_npc_event(&self, state: &ServerState, char_id: u32, event: &str, related_id: Option<(&str, i32)>) {
+        let targets: Vec<_> = npcs(state).into_iter()
+            .filter_map(|(actor, script)| ScriptService::event_entry(&format!("{}::{event}", script.name)).map(|entry_id| (actor.id, script.scope_instance, entry_id)))
+            .collect();
+        if targets.is_empty() {
+            return;
+        }
+        if let Some((name, value)) = related_id {
+            self.script_service().install_temporary_variables(char_id, &[script_sdk::Variable { scope: script_sdk::VariableScope::CharacterTemporary, name: name.into(), index: 0, value: Value::Number(value) }]);
+        }
+        for (npc_id, scope_instance, entry_id) in targets {
+            self.queue_player_npc_event(char_id, npc_id, scope_instance, entry_id);
+        }
     }
 
     pub(crate) fn broadcast_npc_event(&self, state: &ServerState, event: &str) {
@@ -417,7 +461,16 @@ impl Server {
 
 #[cfg(test)]
 mod tests {
-    use super::touch_area_entered;
+    use super::{clock_events, touch_area_entered};
+    use chrono::NaiveDate;
+
+    #[test]
+    fn clock_labels_follow_the_wall_clock() {
+        let at = |day: u32, hour: u32, minute: u32| NaiveDate::from_ymd_opt(2026, 3, day).unwrap().and_hms_opt(hour, minute, 0).unwrap();
+        assert!(clock_events(at(1, 8, 4), at(1, 8, 4)).is_empty());
+        assert_eq!(clock_events(at(1, 8, 4), at(1, 8, 5)), ["OnMinute05", "OnClock0805", "OnSun0805"]);
+        assert_eq!(clock_events(at(1, 23, 59), at(2, 0, 0)), ["OnMinute00", "OnClock0000", "OnMon0000", "OnHour00", "OnDay0302"]);
+    }
 
     #[test]
     fn touch_fires_only_when_a_step_enters_the_area() {

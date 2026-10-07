@@ -2,6 +2,7 @@
 
 use crate::repository::mail_repository::{MAIL_TITLE_LENGTH, MailMessage};
 use crate::server::model::chat_room::ChatRoom;
+use crate::server::model::waiting_room::WaitingRoom;
 
 pub const WHISPER_SUCCESS: u8 = 0;
 pub const WHISPER_TARGET_OFFLINE: u8 = 1;
@@ -128,6 +129,27 @@ fn room_summary(room: &ChatRoom) -> Vec<u8> {
 /// `ZC_ROOM_NEWENTRY`: the title shown above the owner.
 pub fn room_entry(room: &ChatRoom) -> Vec<u8> {
     variable(0x00D7, &room_summary(room))
+}
+
+/// `ZC_ROOM_NEWENTRY` for a room an NPC owns: the NPC counts as a user.
+pub fn waiting_room_entry(room: &WaitingRoom) -> Vec<u8> {
+    let mut body = room.npc_id.to_le_bytes().to_vec();
+    body.extend_from_slice(&room.id.to_le_bytes());
+    body.extend_from_slice(&room.limit.to_le_bytes());
+    body.extend_from_slice(&(room.members.len() as u16 + 1).to_le_bytes());
+    body.push(1);
+    body.extend_from_slice(room.title.as_bytes());
+    variable(0x00D7, &body)
+}
+
+/// `ZC_ENTER_ROOM` for a room an NPC owns: nobody in the list is the owner.
+pub fn waiting_room_entered(room_id: u32, member_names: &[String]) -> Vec<u8> {
+    let mut body = room_id.to_le_bytes().to_vec();
+    for name in member_names {
+        body.extend_from_slice(&1u32.to_le_bytes());
+        body.extend_from_slice(&name_field(name));
+    }
+    variable(0x00DB, &body)
 }
 
 /// `ZC_CHANGE_CHATROOM`

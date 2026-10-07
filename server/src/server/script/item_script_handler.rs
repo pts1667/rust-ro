@@ -630,6 +630,7 @@ impl ItemScriptHost {
             | Function::MercenaryCreate
             | Function::MercenaryStartStatus
             | Function::MercenaryHeal
+            | Function::MercenarySetFaith
             | Function::SetFont
             | Function::SearchStores
             | Function::Homevolution

@@ -71,6 +71,12 @@ pub struct FameChanged {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub struct PlayerKilledMonster {
+    pub char_id: u32,
+    pub mob_id: u32,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct TaekwonMissionKill {
     pub char_id: u32,
     pub mob_id: u32,
@@ -325,6 +331,17 @@ impl GameEventHandler for FameChanged {
                 character.refresh_script_context();
             }
         }
+        Ok(())
+    }
+}
+
+impl GameEventHandler for PlayerKilledMonster {
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.broadcast_player_npc_event(state, self.char_id, "OnNPCKillEvent", Some(("killedrid", self.mob_id as i32)));
         Ok(())
     }
 }

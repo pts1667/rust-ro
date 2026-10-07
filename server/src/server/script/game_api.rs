@@ -42,7 +42,7 @@ impl ScriptService {
         } else { event };
         server.add_to_next_tick(event);
     }
-    fn validate_variable_scope(context: &ScriptRequest, scope: VariableScope) -> Result<(), String> {
+    pub(super) fn validate_variable_scope(context: &ScriptRequest, scope: VariableScope) -> Result<(), String> {
         if context.char_id == 0 && matches!(scope, VariableScope::Character | VariableScope::CharacterTemporary | VariableScope::Account) {
             return Err("Script variable requires an attached player".into());
         }
@@ -56,7 +56,7 @@ impl ScriptService {
         self.read_variable(server, &context, scope, name, 0)
     }
 
-    fn temporary_key(context: &ScriptRequest, scope: VariableScope, name: &str, index: u32) -> (u32, u8, u32, String, u32) {
+    pub(super) fn temporary_key(context: &ScriptRequest, scope: VariableScope, name: &str, index: u32) -> (u32, u8, u32, String, u32) {
         match scope {
             VariableScope::Npc => (0, 0, context.npc_entry, name.into(), index),
             VariableScope::NpcInstance => (1, context.npc_scope_instance, context.npc_id, name.into(), index),
@@ -101,7 +101,7 @@ impl ScriptService {
         })
     }
 
-    fn write_variables(&self, server: &Server, context: &ScriptRequest, variables: Vec<Variable>) -> Reply {
+    pub(super) fn write_variables(&self, server: &Server, context: &ScriptRequest, variables: Vec<Variable>) -> Reply {
         for variable in &variables {
             Self::validate_variable_scope(context, variable.scope)?;
             if variable.name.is_empty()
@@ -412,6 +412,9 @@ impl ScriptService {
                 }
                 if matches!(function, Function::GetVariableOfNpc | Function::SetVariableOfNpc) {
                     return self.npc_variable_call(state, context, function, &arguments);
+                }
+                if matches!(function, Function::ArrayGet | Function::ArraySet) {
+                    return self.array_call(server, context, function, &arguments);
                 }
                 if function == Function::Print {
                     debug!("NPC {}: {}", context.npc_id, arguments.iter().map(|value| value.text()).collect::<Vec<_>>().join(" "));

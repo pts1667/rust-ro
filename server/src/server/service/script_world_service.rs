@@ -225,12 +225,22 @@ enum WorldNotice {
     PetLoot { capacity: u8, returned_cargo: bool },
 }
 
+/// `mercenary_set_faith` takes the guild first and adds the (possibly negative) amount.
+fn mercenary_guild(args: &[Value]) -> Result<u8, String> {
+    u8::try_from(number(args, 0)?).ok().filter(|guild| *guild < 3).ok_or_else(|| "Unknown mercenary guild".to_string())
+}
+
+fn shifted_faith(faith: u16, amount: i32) -> u16 {
+    (i32::from(faith) + amount).clamp(0, i32::from(i16::MAX)) as u16
+}
+
 pub fn persistent_world_operation(function: Function) -> bool {
     matches!(
         function,
         Function::SetFont
             | Function::MercenaryCreate
             | Function::MercenaryHeal
+            | Function::MercenarySetFaith
             | Function::MercenaryStartStatus
             | Function::Homevolution
             | Function::GuildExperience
@@ -335,6 +345,12 @@ pub fn plan_persistent_effects(character: &Character, effects: &[(Function, Vec<
                 }
                 changed = true;
                 notices.push(WorldNotice::Mercenary);
+            }
+            Function::MercenarySetFaith => {
+                let guild = mercenary_guild(args)?;
+                let faith = systems.mercenary_faith.entry(guild).or_default();
+                *faith = shifted_faith(*faith, number(args, 1)?);
+                changed = true;
             }
             Function::MercenaryHeal => {
                 let hp = number(args, 0)?;
@@ -855,6 +871,7 @@ impl ScriptWorldService {
                 | Function::Homevolution
                 | Function::MercenaryCreate
                 | Function::MercenaryHeal
+                | Function::MercenarySetFaith
                 | Function::MercenaryStartStatus
                 | Function::GuildExperience
                 | Function::BuyingStore
@@ -940,6 +957,10 @@ impl ScriptWorldService {
                 {
                     return Err("A mercenary is already under contract".into());
                 }
+            }
+            Function::MercenarySetFaith => {
+                mercenary_guild(args)?;
+                number(args, 1)?;
             }
             Function::MercenaryHeal => {
                 number(args, 0)?;
@@ -1201,6 +1222,12 @@ impl ScriptWorldService {
                 self.persist(character)?;
                 self.send_mercenary(character, now)?;
                 self.render_companions(server, state, character, now)?;
+                Ok(Value::default())
+            }
+            Function::MercenarySetFaith => {
+                let faith = character.game_systems.mercenary_faith.entry(mercenary_guild(args)?).or_default();
+                *faith = shifted_faith(*faith, number(args, 1)?);
+                self.persist(character)?;
                 Ok(Value::default())
             }
             Function::MercenaryHeal => {

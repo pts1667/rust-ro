@@ -6,6 +6,7 @@ pub(crate) mod quest_packets;
 pub(crate) mod quest_service;
 pub(crate) mod social_packets;
 pub(crate) mod social_service;
+pub(crate) mod waiting_room_service;
 pub mod battle_service;
 pub mod char_server_service;
 pub(crate) mod battleground_service;

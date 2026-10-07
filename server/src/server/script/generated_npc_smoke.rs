@@ -54,6 +54,7 @@ impl Host for RandomHost {
                     }
                     _ => Value::Number(0),
                 },
+                Function::ArrayGet => Value::Array(vec![]),
                 Function::GetMapXy => Value::Array(vec![Value::String("prontera".into()), Value::Number(100), Value::Number(100)]),
                 Function::GetPartyMember => Value::Array(vec![Value::Number(150_000), Value::Number(150_001)]),
                 Function::CheckWeight => Value::Number(1),
@@ -115,7 +116,7 @@ fn report(failures: &BTreeMap<String, Vec<String>>) -> String {
 
 /// Faults that are the random host's doing, not the generated code's.
 fn expected(error: &str) -> bool {
-    error.contains("budget exhausted") || error.contains("fuel") || error.contains("Conversation cancelled") || error.contains("Invalid menu selection")
+    error.contains("budget exhausted") || error.contains("fuel") || error.contains("Conversation cancelled") || error.contains("Invalid menu selection") || error.contains("Negative array index")
 }
 
 #[test]

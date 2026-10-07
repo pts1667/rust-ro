@@ -1094,6 +1094,13 @@ impl Server {
             self.apply_nightmare_drops(state, damage.target_id);
             self.apply_pvp_death(state, damage.target_id, damage.credit_id.max(damage.attacker_id));
             self.battleground_member_died(state, damage.target_id);
+            let killer_id = damage.credit_id.max(damage.attacker_id);
+            let killer_account = state.characters().get(&killer_id).filter(|killer| killer.char_id != damage.target_id).map(|killer| killer.account_id);
+            let victim_account = state.characters().get(&damage.target_id).map(|victim| victim.account_id);
+            self.broadcast_player_npc_event(state, damage.target_id, "OnPCDieEvent", killer_account.map(|account| ("killerrid", account as i32)));
+            if let (Some(_), Some(victim_account)) = (killer_account, victim_account) {
+                self.broadcast_player_npc_event(state, killer_id, "OnPCKillEvent", Some(("killedrid", victim_account as i32)));
+            }
         }
         if damage.damage > 0
             && damage.landed

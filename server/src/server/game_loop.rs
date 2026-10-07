@@ -9,7 +9,7 @@ use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
 
 use crate::server::Server;
 use crate::server::model::events::client_notification::{AreaNotification, CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterMovement, CharacterSavePosition, GameEvent};
+use crate::server::model::events::game_event::{CharacterMovement, CharacterSavePosition, GameEvent, NpcContact};
 use crate::server::model::events::map_event::{MapEvent, UpdateActorVisibility, UpdateMobsFov};
 use crate::server::model::map_item::ToMapItemSnapshot;
 use crate::server::model::movement::{Movable, Movement};
@@ -50,6 +50,7 @@ impl Server {
         server_ref.tick_character_logouts(&mut server_state_mut, tick);
         server_ref.tick_script_timers(&mut server_state_mut, tick);
         server_ref.tick_instances(&mut server_state_mut);
+        server_ref.tick_npc_clock(&server_state_mut);
 
         let actor_ids: Vec<_> = server_state_mut
             .characters()
@@ -482,7 +483,14 @@ impl Server {
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
             }
             for (char_id, (npc_id, scope_instance, entry_id)) in npc_touches {
-                server_ref.queue_player_npc_event(char_id, npc_id, scope_instance, entry_id);
+                match entry_id {
+                    Some(entry_id) => server_ref.queue_player_npc_event(char_id, npc_id, scope_instance, entry_id),
+                    None => {
+                        if let Some(account_id) = server_state_mut.characters().get(&char_id).map(|character| character.account_id) {
+                            server_ref.add_to_next_tick(GameEvent::NpcContact(NpcContact { char_id, account_id, npc_id }));
+                        }
+                    }
+                }
             }
             for (char_id, warp) in warps_to_schedule {
                 server_ref

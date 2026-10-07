@@ -1496,6 +1496,13 @@ impl MapInstanceService {
                     delayed_tick(delay, GAME_TICK_RATE),
                 );
                 self.server_task_queue.add_to_index(
+                    GameEvent::PlayerKilledMonster(crate::server::model::events::game_event::PlayerKilledMonster {
+                        char_id: mob.last_credit_id,
+                        mob_id: mob.mob_id as u32,
+                    }),
+                    delayed_tick(delay, GAME_TICK_RATE),
+                );
+                self.server_task_queue.add_to_index(
                     GameEvent::TaekwonMissionKill(crate::server::model::events::game_event::TaekwonMissionKill {
                         char_id: mob.last_credit_id,
                         mob_id: mob.mob_id as u32,
@@ -1710,6 +1717,31 @@ impl MapInstanceService {
                     self.vanish_npc(state, &npc);
                 }
                 state.script_skill_state.npcs.insert(npc.id, npc);
+            }
+            ScriptMapCommand::NpcRemove { npc_id } => {
+                let Some(npc) = state.script_skill_state.npcs.remove(&npc_id) else { return };
+                state.script_skill_state.casts.remove(&npc_id);
+                state.script_skill_state.generations.remove(&npc_id);
+                state.remove_item_with_id(npc_id);
+                if !npc.hidden {
+                    self.vanish_npc(state, &npc);
+                }
+            }
+            ScriptMapCommand::NpcMove { npc_id, x, y, dir } => {
+                let Some(mut npc) = state.script_skill_state.npcs.get(&npc_id).cloned() else { return };
+                if !npc.hidden {
+                    self.vanish_npc(state, &npc);
+                }
+                state.script_skill_state.casts.remove(&npc_id);
+                state.script_skill_state.generations.remove(&npc_id);
+                npc.x = x;
+                npc.y = y;
+                npc.dir = dir.unwrap_or(npc.dir);
+                if !npc.hidden {
+                    state.insert_item(MapItem::new(npc.id, npc.sprite as i16, MapItemType::Npc));
+                    self.refresh_npc(state, &npc);
+                }
+                state.script_skill_state.npcs.insert(npc_id, npc);
             }
             ScriptMapCommand::FlagEmblem { castle_map, guild_id, version } => {
                 let flags: Vec<u32> = state

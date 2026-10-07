@@ -95,13 +95,15 @@ impl Server {
             return;
         }
         let text = text.split(|byte| *byte == 0).next().unwrap_or_default();
-        let listeners: Vec<u32> = match state.chat_rooms.room_of(char_id) {
-            Some(room) => room.members.iter().copied().filter(|member| *member != char_id).collect(),
-            None => state
+        let waiting_room = state.waiting_rooms.room_of(char_id);
+        let listeners: Vec<u32> = match (state.chat_rooms.room_of(char_id), waiting_room) {
+            (Some(room), _) => room.members.iter().copied().filter(|member| *member != char_id).collect(),
+            (None, Some(room)) => room.members.iter().copied().filter(|member| *member != char_id).collect(),
+            (None, None) => state
                 .directory()
                 .in_fov(speaker.current_map_name(), speaker.current_map_instance(), speaker.x(), speaker.y(), PLAYER_FOV, Some(char_id))
                 .into_iter()
-                .filter(|listener| state.chat_rooms.room_of(*listener).is_none())
+                .filter(|listener| state.chat_rooms.room_of(*listener).is_none() && state.waiting_rooms.room_of(*listener).is_none())
                 .collect(),
         };
         let heard = wire::notify_chat(char_id, text);
@@ -229,6 +231,9 @@ impl Server {
     }
 
     fn enter_chat_room(&self, state: &mut ServerState, char_id: u32, room_id: u32, password: &str) {
+        if self.join_waiting_room(state, char_id, room_id) {
+            return;
+        }
         let Some(character) = state.get_character(char_id) else { return };
         let name = character.name.clone();
         let bypass_password = state.has_permission(character.account_id, Permission::JoinChat);
@@ -317,6 +322,9 @@ impl Server {
     }
 
     fn depart_chat_room(&self, state: &mut ServerState, char_id: u32, kicked: bool) {
+        if self.depart_waiting_room(state, char_id, kicked) {
+            return;
+        }
         let Some(leaver) = state.get_character(char_id) else { return };
         let name = leaver.name.clone();
         let owner_id = state.chat_rooms.room_of(char_id).map(ChatRoom::owner);

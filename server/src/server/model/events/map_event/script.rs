@@ -53,6 +53,15 @@ pub enum ScriptMapCommand {
         guild_id: u32,
         version: u16,
     },
+    NpcRemove {
+        npc_id: u32,
+    },
+    NpcMove {
+        npc_id: u32,
+        x: u16,
+        y: u16,
+        dir: Option<u16>,
+    },
 }
 
 #[derive(Debug, PartialEq, Clone)]

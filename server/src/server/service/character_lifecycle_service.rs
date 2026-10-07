@@ -10,7 +10,7 @@ use crate::server::model::character_lifecycle::{
 };
 use crate::server::model::events::game_event::{GameEvent, CharacterInitInventory, CharacterJoinGame};
 use crate::server::model::events::map_event::{MapEvent, RemoveCharFromMap};
-use crate::server::model::script_timer::ScriptTimerOwner;
+use crate::server::model::script_timer::{NpcTimerKey, ScriptTimerOwner};
 use crate::server::model::session::Session;
 use crate::server::script::{NpcScriptHost, ScriptRequest};
 use crate::server::service::npc_event_service::event_npc;
@@ -408,6 +408,16 @@ impl Server {
                         entry_id,
                         timer_ms: timer.labels[timer.next_label].0,
                         label_count: timer.labels.len(),
+                    });
+                }
+            }
+            for (actor, script) in crate::server::service::npc_event_service::npcs(state) {
+                if let Some(entry_id) = ScriptService::event_entry(&format!("{}::OnPCLogoutEvent", script.name)) {
+                    callbacks.push_back(TimerQuitCallback {
+                        key: NpcTimerKey { npc_id: actor.id, scope_instance: script.scope_instance, char_id: Some(char_id) },
+                        entry_id,
+                        timer_ms: 0,
+                        label_count: 0,
                     });
                 }
             }
