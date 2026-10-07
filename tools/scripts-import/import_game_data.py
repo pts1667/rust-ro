@@ -14,7 +14,7 @@ LEGACY_GROUPS = [
 SUMMON_GROUPS = ["BRANCH_OF_DEAD_TREE", "PORING_BOX", "BLOODY_DEAD_BRANCH", "RED_POUCH_OF_SURPRISE", "CLASSCHANGE", "TAEKWON_MISSION"]
 SA_CREATECON = 1007
 ABRA_MAX_LEVEL = 10
-ITEM_USE_GROUPS = {"MF_NOTELEPORT", "MF_NORETURN", "GIANT_FLY_WING"}
+ITEM_USE_GROUPS = {"MF_NOTELEPORT", "MF_NORETURN", "GIANT_FLY_WING", "CASH_FOOD"}
 MOB_CAPABILITIES = {
     "Detector": "Detector", "StatusImmune": "StatusImmune", "SkillImmune": "SkillImmune",
     "KnockbackImmune": "KnockbackImmune", "KnockBackImmune": "KnockbackImmune",

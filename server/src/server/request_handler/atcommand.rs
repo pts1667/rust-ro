@@ -10,7 +10,7 @@ use regex_lite::Regex;
 
 use crate::load_scripts;
 use crate::server::Server;
-use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent, CharacterResetSkills, CharacterResetStats, CharacterRestoreAllHpAndSP, CharacterUpdateSpeed};
+use crate::server::model::events::game_event::{CharacterRemoveItem, CharacterRemoveItems, CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent, CharacterResetSkills, CharacterResetStats, CharacterRestoreAllHpAndSP, CharacterUpdateSpeed};
 use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::map_flags::MapFlag;
@@ -197,6 +197,10 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             }
             return;
         }
+        "itemreset" => {
+            let reply = state.characters_mut().get_mut(&char_id).map(|character| handle_itemreset(server, character));
+            packet_zc_notify_playerchat.set_msg(reply.unwrap_or_default());
+        }
         "reloadmotd" => {
             server.motd().reload(&server.configuration.server.motd_path);
             packet_zc_notify_playerchat.set_msg("Reloaded the Message of the Day.".to_string());
@@ -210,6 +214,26 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
         }
     }
     send_chat_reply(server, char_id, packet_zc_notify_playerchat);
+}
+
+/// Deletes everything that is not worn, except pet eggs.
+fn handle_itemreset(server: &Server, character: &mut crate::server::state::character::Character) -> String {
+    let items = character
+        .inventory
+        .iter()
+        .enumerate()
+        .filter_map(|(index, item)| item.as_ref().map(|item| (index, item)))
+        .filter(|(_, item)| item.equip == 0 && item.amount > 0 && item.item_type() != models::enums::item::ItemType::PetEgg)
+        .map(|(index, item)| CharacterRemoveItem { char_id: character.char_id, index, amount: item.amount, price: 0 })
+        .collect::<Vec<_>>();
+    if items.is_empty() {
+        return "All of your items have been removed.".to_string();
+    }
+    let removal = CharacterRemoveItems { char_id: character.char_id, sell: false, items, notify_client: true };
+    match server.inventory_service().remove_item_from_inventory(server.runtime.as_ref(), removal, character) {
+        Ok(_) => "All of your items have been removed.".to_string(),
+        Err(error) => error,
+    }
 }
 
 fn send_chat_reply(server: &Server, char_id: u32, reply: PacketZcNotifyPlayerchat) {

@@ -22,6 +22,7 @@ pub mod instance;
 pub mod refine;
 pub mod item;
 pub mod item_combos;
+pub mod item_noequip;
 pub mod map;
 pub mod map_flags;
 pub mod map_instance;

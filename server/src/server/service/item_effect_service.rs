@@ -67,9 +67,14 @@ pub(crate) fn status_to_end(arguments: &[Value]) -> Result<(Option<u32>, Option<
     Ok((target, kind))
 }
 
+const CASH_FOOD_KEY: &str = "cash_food";
+
 pub(crate) fn validate_item_map_flags(flags: &MapFlags, item: &ItemModel) -> Result<(), String> {
     if flags.enabled(MapFlag::NoItemConsumption) {
         return Err("Items cannot be used on this map".into());
+    }
+    if crate::server::model::item_noequip::is_no_equip(item.id as u32, flags) {
+        return Err("This item cannot be used on this map".into());
     }
     if item.flags & ItemFlag::DeadBranch.as_flag() != 0 && (flags.enabled(MapFlag::NoBranch) || flags.is_gvg()) {
         return Err("Dead branches cannot be used on this map".into());
@@ -125,12 +130,19 @@ impl ItemService {
         if !usable_by_gender || !usable_by_job || level < model.equip_level_min.unwrap_or(0) as u32 || model.equip_level_max.is_some_and(|max| max > 0 && level > max as u32) {
             return Err("The character does not meet the requirements of this item".into());
         }
+        let cash_food = crate::server::script::game_data::item_in_use_group(model.id, "CASH_FOOD");
+        if cash_food && character.game_systems.item_delays.get(CASH_FOOD_KEY).is_some_and(|until| *until > now) {
+            return Err("Stat food cannot be eaten that fast".into());
+        }
         let delay = model.delay_duration.filter(|duration| *duration > 0).map(|duration| (model.delay_status.clone().unwrap_or_else(|| model.id.to_string()), duration));
         if let Some((key, duration)) = delay {
             if character.game_systems.item_delays.get(&key).is_some_and(|until| *until > now) {
                 return Err("This item cannot be used again yet".into());
             }
             character.game_systems.item_delays.insert(key, now + duration as u128);
+        }
+        if cash_food {
+            character.game_systems.item_delays.insert(CASH_FOOD_KEY.into(), now + u128::from(self.configuration_service.config().game.cashfood_use_interval));
         }
         character.game_systems.item_next_use_at = now + u128::from(self.configuration_service.config().game.item_use_interval);
         Ok(())

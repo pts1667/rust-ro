@@ -145,6 +145,10 @@ fn default_vending_tax_min() -> u32 {
     100_000_000
 }
 
+fn default_cashfood_use_interval() -> u32 {
+    60_000
+}
+
 fn default_item_use_interval() -> u32 {
     100
 }
@@ -221,6 +225,9 @@ pub struct GameConfig {
     /// `item_use_interval`: milliseconds between two item uses of a character.
     #[serde(default = "default_item_use_interval")]
     pub item_use_interval: u32,
+    /// `cashfood_use_interval`: milliseconds between two uses of a stat food.
+    #[serde(default = "default_cashfood_use_interval")]
+    pub cashfood_use_interval: u32,
     /// Players need Basic Skill level 2 to use emotes.
     #[serde(default = "default_basic_skill_check")]
     pub basic_skill_check: bool,

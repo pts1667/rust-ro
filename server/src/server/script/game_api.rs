@@ -23,6 +23,17 @@ fn variable_name(name: &str) -> (VariableScope, String) {
 }
 
 impl ScriptService {
+    /// Levels of Discount, Compulsion Discount and Overcharge, in the order of `shop::skill_ids`.
+    fn shop_skill_levels(server: &Server, character: &crate::server::state::character::Character) -> [i32; 3] {
+        let mut host = server.item_service().prepare_host(server, character, 0, false);
+        super::shop::skill_ids().map(|id| {
+            futures::executor::block_on(host.invoke(Request::Call { function: Function::GetSkillLv, arguments: vec![Value::Number(id)] }))
+                .ok()
+                .and_then(|level| level.number_value().ok())
+                .unwrap_or(0)
+        })
+    }
+
     fn schedule_game_event(server: &Server, context: &ScriptRequest, event: GameEvent) {
         let event = if let Some(token) = context.logout_token {
             GameEvent::ScriptLogoutAction(crate::server::model::character_lifecycle::ScriptLogoutAction {
@@ -321,6 +332,7 @@ impl ScriptService {
                         },
                     );
                 }
+                let levels = Self::shop_skill_levels(server, character);
                 let mut additions = vec![];
                 for (id, amount, price) in items {
                     if amount <= 0 || price < 0 || offers.get(&id) != Some(&price) {
@@ -328,7 +340,7 @@ impl ScriptService {
                     }
                     let item = self.configuration_service.find_item(id as i32).ok_or("Unknown shop item")?;
                     let mut model = InventoryItemModel::from_item_model(item, amount, true);
-                    model.shop_price = Some(price);
+                    model.shop_price = Some(super::shop::discounted_price(price, levels[0], levels[1]));
                     additions.push(model);
                 }
                 let character = state.characters_mut().get_mut(&context.char_id).ok_or("Character disconnected")?;
@@ -353,6 +365,7 @@ impl ScriptService {
             }
             Request::Sale(items) => {
                 let character = state.characters_mut().get_mut(&context.char_id).ok_or("Character disconnected")?;
+                let levels = Self::shop_skill_levels(server, character);
                 let mut removals = vec![];
                 for (index, amount, price) in items {
                     let item = character.get_item_from_inventory(index).ok_or("Invalid sale item")?;
@@ -368,7 +381,7 @@ impl ScriptService {
                         char_id: context.char_id,
                         index,
                         amount,
-                        price,
+                        price: super::shop::overcharged_price(price, levels[2]),
                     });
                 }
                 server

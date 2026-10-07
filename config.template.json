@@ -47,6 +47,7 @@
     "vending_tax_min": 100000000,
     "buyer_name": true,
     "item_use_interval": 100,
+    "cashfood_use_interval": 60000,
     "friend_auto_add": true,
     "quest_skill_learn": false,
     "instance_block_leave": true,
