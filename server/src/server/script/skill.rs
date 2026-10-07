@@ -1130,6 +1130,7 @@ impl ScriptSkillService {
                     StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
                 }
                 "MC_IDENTIFY" => self.send_identification_list(character)?,
+                "SA_ABRACADABRA" => self.hocus_pocus(server, character, effect.level)?,
                 "TF_PICKSTONE" => {
                     let item = self.configuration.find_item(7049).ok_or("Stone item asset is unavailable")?;
                     server.add_to_next_tick(GameEvent::CharacterAddItems(CharacterAddItems {
@@ -1146,6 +1147,26 @@ impl ScriptSkillService {
         }
         self.notify_support_skill(character, effect);
         Ok(())
+    }
+
+    /// Picks a skill from `abra_db.yml` and offers it to the caster like an item skill, which costs nothing more.
+    fn hocus_pocus(&self, server: &Server, character: &mut Character, level: u8) -> Result<(), String> {
+        let spells = &crate::server::script::game_data::data().abra;
+        let slot = usize::from(level.saturating_sub(1)).min(9);
+        let mut picked = None;
+        for _ in 0..spells.len() * 3 {
+            let spell = &spells[fastrand::usize(0..spells.len())];
+            let Some(skill) = self.configuration.find_skill_config(&(spell.skill_id as i32).into()) else { continue };
+            if self.validate_skill(skill, 1).is_err() {
+                continue;
+            }
+            picked = Some(skill);
+            if fastrand::u32(0..10_000) < u32::from(spell.per[slot]) {
+                break;
+            }
+        }
+        let Some(skill) = picked else { return Ok(()) };
+        self.handle_skill(server, character, skill, u32::from(level).min(skill.max_level()), false)
     }
 
     fn send_identification_list(&self, character: &Character) -> Result<(), String> {
@@ -1308,6 +1329,7 @@ impl ScriptSkillService {
                 | "SA_REVERSEORCISH"
                 | "ITEM_ENCHANTARMS"
                 | "TF_PICKSTONE"
+                | "SA_ABRACADABRA"
         )
     }
 

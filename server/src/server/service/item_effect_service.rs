@@ -67,9 +67,6 @@ pub(crate) fn status_to_end(arguments: &[Value]) -> Result<(Option<u32>, Option<
     Ok((target, kind))
 }
 
-/// `item_use_interval` of `battle/items.conf`.
-const ITEM_USE_INTERVAL_MS: u128 = 100;
-
 pub(crate) fn validate_item_map_flags(flags: &MapFlags, item: &ItemModel) -> Result<(), String> {
     if flags.enabled(MapFlag::NoItemConsumption) {
         return Err("Items cannot be used on this map".into());
@@ -135,7 +132,7 @@ impl ItemService {
             }
             character.game_systems.item_delays.insert(key, now + duration as u128);
         }
-        character.game_systems.item_next_use_at = now + ITEM_USE_INTERVAL_MS;
+        character.game_systems.item_next_use_at = now + u128::from(self.configuration_service.config().game.item_use_interval);
         Ok(())
     }
 

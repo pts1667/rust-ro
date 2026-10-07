@@ -133,6 +133,22 @@ fn default_basic_skill_check() -> bool {
     true
 }
 
+fn default_vending_max_value() -> u32 {
+    1_000_000_000
+}
+
+fn default_vending_tax() -> u32 {
+    500
+}
+
+fn default_vending_tax_min() -> u32 {
+    100_000_000
+}
+
+fn default_item_use_interval() -> u32 {
+    100
+}
+
 fn default_groups_path() -> String {
     "config/groups.json".to_string()
 }
@@ -188,6 +204,23 @@ pub struct GameConfig {
     pub job_exp_rate: f32,
     #[serde(default)]
     pub pvp_exp: bool,
+    /// `vending_max_value` of rathena: the highest price of an item in a vending store, in zeny.
+    #[serde(default = "default_vending_max_value")]
+    pub vending_max_value: u32,
+    /// `vending_over_max`: a store may be opened even if its total price would take its owner over the zeny limit.
+    #[serde(default = "default_true")]
+    pub vending_over_max: bool,
+    /// `vending_tax`: share kept from the seller (10000 = 100%) in a purchase of at least `vending_tax_min` zeny.
+    #[serde(default = "default_vending_tax")]
+    pub vending_tax: u32,
+    #[serde(default = "default_vending_tax_min")]
+    pub vending_tax_min: u32,
+    /// `buyer_name`: the seller is told who bought from the store.
+    #[serde(default = "default_true")]
+    pub buyer_name: bool,
+    /// `item_use_interval`: milliseconds between two item uses of a character.
+    #[serde(default = "default_item_use_interval")]
+    pub item_use_interval: u32,
     /// Players need Basic Skill level 2 to use emotes.
     #[serde(default = "default_basic_skill_check")]
     pub basic_skill_check: bool,

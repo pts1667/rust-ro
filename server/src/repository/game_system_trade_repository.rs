@@ -1,4 +1,5 @@
 use super::*;
+use crate::repository::MAX_ZENY;
 use crate::server::model::game_systems::{ItemContainer, PlayerOption, VendingStore};
 
 pub struct StoreMove {
@@ -396,12 +397,14 @@ pub fn close_vending_store(repository: &SledRepository, char_id: u32, store_id: 
     Ok(())
 }
 
+/// `tax` is the `vending_tax` rate and the `vending_tax_min` it applies from.
 pub fn vending_store_trade(
     repository: &SledRepository,
     buyer_id: u32,
     store_id: u32,
     purchases: &[(u16, u16)],
     max_weight: u32,
+    tax: (u32, u32),
 ) -> Result<VendingTrade, Error> {
     if purchases.is_empty() || purchases.len() > 12 {
         return Err(Error::new("Invalid vending purchase list".into()));
@@ -467,14 +470,17 @@ pub fn vending_store_trade(
             }
             if buyer.zeny < 0
                 || total > buyer.zeny as u64
-                || total + seller.zeny.max(0) as u64 > i32::MAX as u64
+                || total > MAX_ZENY
+                || total + seller.zeny.max(0) as u64 > MAX_ZENY
                 || inventory.len() > buyer.inventory_slots as usize
                 || inventory_weight(&inventory, items)? >= u64::from(max_weight)
             {
                 return abort("Vending purchase exceeds zeny, slots or weight");
             }
             buyer.zeny -= total as i32;
-            seller.zeny += total as i32;
+            let (rate, minimum) = tax;
+            let kept = if rate > 0 && total >= u64::from(minimum) { total * u64::from(rate) / 10_000 } else { 0 };
+            seller.zeny += (total - kept) as i32;
             tx_write(characters, &(buyer_id as i32).to_be_bytes(), &buyer)?;
             tx_write(characters, &(store.char_id as i32).to_be_bytes(), &seller)?;
             tx_write(inventories, &(buyer_id as i32).to_be_bytes(), &inventory)?;

@@ -428,15 +428,15 @@ mod tests {
             title: "Poring Egg".into(), map: "prontera".into(), map_instance: 0, x: 100, y: 100,
             offers: vec![VendingOffer { inventory_id: egg.id, index: 0, amount: 1, price: 10 }] }).unwrap();
         let before = snapshot(&repository);
-        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 0).is_err());
+        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 0, (0, 0)).is_err());
         assert_eq!(snapshot(&repository), before);
-        let result = repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000).unwrap();
+        let result = repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000, (0, 0)).unwrap();
         assert_eq!((result.seller_zeny, result.buyer_zeny), (110, 40));
         assert!(result.store.is_none());
         assert!(result.cart.is_empty());
         assert_eq!((stored_pet(&repository, pet.id).owner_char_id, stored_pet(&repository, pet.id).egg_inventory_id), (150001, egg.id));
         let after = snapshot(&repository);
-        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000).is_err());
+        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000, (0, 0)).is_err());
         assert_eq!(snapshot(&repository), after);
         repository.commit_player_trade(&egg_trade(&repository, 150001, 150002, &egg)).unwrap();
         let hatched = repository.hatch_pet(150002, egg.id, 1000).unwrap().pet.unwrap();
@@ -605,7 +605,7 @@ mod tests {
             tx_write(tree, &4001_i32.to_be_bytes(), &card)
         }).unwrap();
         let before = snapshot(&repository);
-        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000).is_err());
+        assert!(repository.vending_store_trade(150001, store.id, &[(0, 1)], 10000, (0, 0)).is_err());
         assert_eq!(snapshot(&repository), before);
     }
 

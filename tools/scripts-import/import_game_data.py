@@ -12,6 +12,8 @@ LEGACY_GROUPS = [
     "MINERAL", "TAMING", "SCROLL", "QUIVER", "MASK", "ACCESORY", "JEWEL", "POTION",
 ]
 SUMMON_GROUPS = ["BRANCH_OF_DEAD_TREE", "PORING_BOX", "BLOODY_DEAD_BRANCH", "RED_POUCH_OF_SURPRISE", "CLASSCHANGE", "TAEKWON_MISSION"]
+SA_CREATECON = 1007
+ABRA_MAX_LEVEL = 10
 ITEM_USE_GROUPS = {"MF_NOTELEPORT", "MF_NORETURN", "GIANT_FLY_WING"}
 MOB_CAPABILITIES = {
     "Detector": "Detector", "StatusImmune": "StatusImmune", "SkillImmune": "SkillImmune",
@@ -116,7 +118,7 @@ def main():
         if not line:
             continue
         row = [int(value.strip()) for value in line.split(",")]
-        if row[1] == 0 or not (row[2] in {1, 2, 3} or 11 <= row[2] <= 23) or row[3] >= 1000:
+        if row[1] == 0 or not (row[2] in {1, 2, 3} or 11 <= row[2] <= 23) or row[3] >= 1000 and row[3] != SA_CREATECON:
             continue
         recipes.append({"id": row[0], "item_id": row[1], "level": row[2], "skill_id": row[3], "skill_level": row[4],
                         "materials": [{"item_id": row[index], "amount": row[index + 1]} for index in range(5, len(row), 2)]})
@@ -124,6 +126,19 @@ def main():
               for entry in load(args.rathena / "db/create_arrow_db.yml")["Body"]]
     arrows = [{"source": aliases[arrow["source"]], "make": [{"item_id": aliases[make["item"]], "amount": make["amount"]} for make in arrow["make"]]}
               for arrow in arrows if arrow["make"] and arrow["source"] in aliases and all(make["item"] in aliases for make in arrow["make"])]
+    skill_ids = {skill["Name"]: skill["Id"] for skill in json.loads((ROOT / "server/src/server/script/skill_metadata.json").read_text(encoding="utf-8"))}
+    abra = []
+    for entry in load(args.rathena / "db/abra_db.yml")["Body"]:
+        if entry["Skill"] not in skill_ids:
+            continue
+        chance = entry.get("Probability", 500)
+        per = [0] * ABRA_MAX_LEVEL
+        for level in range(ABRA_MAX_LEVEL):
+            per[level] = chance if not isinstance(chance, list) else 0
+        for level_entry in chance if isinstance(chance, list) else []:
+            if level_entry["Level"] <= ABRA_MAX_LEVEL:
+                per[level_entry["Level"] - 1] = level_entry["Probability"]
+        abra.append({"skill_id": skill_ids[entry["Skill"]], "per": per})
     required_ids = {recipe["item_id"] for recipe in recipes}
     required_ids.update(arrow["source"] for arrow in arrows)
     required_ids.update(make["item_id"] for arrow in arrows for make in arrow["make"])
@@ -167,7 +182,7 @@ def main():
         entries = [{"mob_id": mob_aliases[entry["Mob"]], "rate": entry["Rate"]} for entry in group.get("Summon", [])
                    if mob_aliases.get(entry["Mob"]) in mobs]
         summons.append({"id": SUMMON_GROUPS.index(name), "name": name, "default": mob_aliases[group["Default"]], "entries": entries})
-    data = {"source": "rAthena db/pre-re", "groups": groups, "summons": summons, "recipes": recipes, "arrows": arrows,
+    data = {"source": "rAthena db/pre-re", "groups": groups, "summons": summons, "recipes": recipes, "arrows": arrows, "abra": abra,
             "item_use_groups": item_use_groups(group_sources, aliases),
             "item_aliases": {name: item_id for name, item_id in aliases.items() if item_id in items}}
     (ROOT / "server/src/server/script/game_data.json").write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")

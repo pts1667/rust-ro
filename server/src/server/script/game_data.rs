@@ -13,8 +13,16 @@ pub struct ScriptGameData {
     pub recipes: Vec<Recipe>,
     /// `create_arrow_db.yml`: what Arrow Crafting turns an item into.
     pub arrows: Vec<ArrowRecipe>,
+    /// `abra_db.yml`: the skills Hocus Pocus can pick, with their chance (1 = 0.01%) per Hocus Pocus level.
+    pub abra: Vec<AbraSkill>,
     pub item_use_groups: HashMap<String, Vec<i32>>,
     pub item_aliases: HashMap<String, i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AbraSkill {
+    pub skill_id: u32,
+    pub per: [u16; 10],
 }
 
 #[derive(Debug, Deserialize)]
@@ -513,7 +521,7 @@ mod tests {
         assert_eq!(constant("IG_BlueBox"), Some(0.into()));
         assert!(constant("IG_Accesory").is_some());
         assert_eq!(constant("MOBG_BRANCH_OF_DEAD_TREE"), Some(0.into()));
-        assert!(data().recipes.iter().all(|recipe| recipe.skill_id < 1000 && recipe.level <= 23));
+        assert!(data().recipes.iter().all(|recipe| (recipe.skill_id < 1000 || recipe.skill_id == 1007) && recipe.level <= 23));
         let mut rng = fastrand::Rng::with_seed(7);
         assert!(random_group_item(0, &mut rng).is_some());
         assert!(random_summon("BLOODY_DEAD_BRANCH", &mut rng).is_some());

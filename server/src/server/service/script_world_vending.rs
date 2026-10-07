@@ -381,6 +381,7 @@ impl ScriptWorldService {
         {
             return Err("Vending preparation window is not open".into());
         }
+        let game = &self.configuration.config().game;
         let offers = offers
             .into_iter()
             .map(|(index, amount, price)| {
@@ -393,10 +394,14 @@ impl ScriptWorldService {
                     index,
                     inventory_id: record.id,
                     amount,
-                    price,
+                    price: price.min(game.vending_max_value),
                 })
             })
             .collect::<Result<Vec<_>, String>>()?;
+        let total: u64 = offers.iter().map(|offer| u64::from(offer.price) * u64::from(offer.amount)).sum();
+        if !game.vending_over_max && u64::from(character.status.zeny) + total > crate::repository::MAX_ZENY {
+            return Err("The total price of the store would take its owner over the zeny limit".into());
+        }
         let store = VendingStore {
             id: 0,
             char_id: character.char_id,
@@ -502,6 +507,7 @@ impl ScriptWorldService {
                 requested,
                 &purchases,
                 server.character_service().max_weight(character) * 9 / 10,
+                (self.configuration.config().game.vending_tax, self.configuration.config().game.vending_tax_min),
             )
             .map_err(|error| error.to_string())?;
         character.game_systems.opened_vending_store = None;
@@ -513,6 +519,9 @@ impl ScriptWorldService {
             .inventory_service()
             .reload_inventory(server.runtime(), character.char_id, character);
         self.send_cart(owner)?;
+        if self.configuration.config().game.buyer_name {
+            server.tell(owner.char_id, &format!("Player '{}' bought from your shop.", character.name));
+        }
         for (index, amount) in purchases {
             let mut packet = protocol::header(0x0137);
             packet.extend_from_slice(&(index + 2).to_le_bytes());

@@ -426,3 +426,6 @@ pub trait ScriptVariableRepository {
         todo!()
     }
 }
+
+/// `MAX_ZENY` of rathena.
+pub const MAX_ZENY: u64 = 1_000_000_000;

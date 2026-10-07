@@ -250,7 +250,7 @@ pub trait GameSystemRepository: Send + Sync {
     fn close_vending_store(&self, _char_id: u32, _store_id: u32) -> Result<(), Error> {
         Err(Error::new("Vending persistence is unavailable".into()))
     }
-    fn vending_store_trade(&self, _buyer: u32, _store_id: u32, _purchases: &[(u16, u16)], _max_weight: u32) -> Result<VendingTrade, Error> {
+    fn vending_store_trade(&self, _buyer: u32, _store_id: u32, _purchases: &[(u16, u16)], _max_weight: u32, _tax: (u32, u32)) -> Result<VendingTrade, Error> {
         Err(Error::new("Vending persistence is unavailable".into()))
     }
     fn character_game_systems(&self, _char_id: u32) -> Result<CharacterGameSystems, Error> {
@@ -676,8 +676,8 @@ impl GameSystemRepository for SledRepository {
         trade::close_vending_store(self, char_id, store_id)
     }
 
-    fn vending_store_trade(&self, buyer: u32, store_id: u32, purchases: &[(u16, u16)], max_weight: u32) -> Result<VendingTrade, Error> {
-        trade::vending_store_trade(self, buyer, store_id, purchases, max_weight)
+    fn vending_store_trade(&self, buyer: u32, store_id: u32, purchases: &[(u16, u16)], max_weight: u32, tax: (u32, u32)) -> Result<VendingTrade, Error> {
+        trade::vending_store_trade(self, buyer, store_id, purchases, max_weight, tax)
     }
 
     fn character_game_systems(&self, char_id: u32) -> Result<CharacterGameSystems, Error> {
@@ -2009,12 +2009,12 @@ mod tests {
                 }],
             })
             .unwrap();
-        assert!(repository.vending_store_trade(150_000, vendor.id, &[(0, 2)], 29).is_err());
+        assert!(repository.vending_store_trade(150_000, vendor.id, &[(0, 2)], 29, (0, 0)).is_err());
         assert_eq!(repository.character_cart(150_001).unwrap()[0].amount, 5);
         let buyer: CharacterRecord = read(&repository.database.characters, &150_000i32.to_be_bytes()).unwrap().unwrap();
         assert_eq!(buyer.zeny, 1000);
-        assert!(repository.vending_store_trade(150_000, vendor.id, &[(0, 1), (0, 1)], 1000).is_err());
-        let trade = repository.vending_store_trade(150_000, vendor.id, &[(0, 2)], 1000).unwrap();
+        assert!(repository.vending_store_trade(150_000, vendor.id, &[(0, 1), (0, 1)], 1000, (0, 0)).is_err());
+        let trade = repository.vending_store_trade(150_000, vendor.id, &[(0, 2)], 1000, (0, 0)).unwrap();
         assert_eq!((trade.buyer_zeny, trade.seller_zeny), (900, 100));
         assert_eq!(trade.cart[0].amount, 3);
         assert_eq!(trade.store.as_ref().unwrap().offers[0].amount, 3);

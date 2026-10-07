@@ -32,7 +32,7 @@ impl ScriptSkillService {
         Some(match name {
             "AL_HEAL" | "ALL_RESURRECTION" | "NV_FIRSTAID" | "AL_CURE" | "TF_DETOXIFY" | "PR_STRECOVERY" => Recovery,
             "MC_IDENTIFY" | "TF_PICKSTONE" | "BS_GREED" | "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST"
-            | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" => Inventory,
+            | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" | "SA_ABRACADABRA" => Inventory,
             "AL_TELEPORT" | "TF_BACKSLIDING" | "TK_HIGHJUMP" | "TK_RUN" | "RG_INTIMIDATE" => Movement,
             "MO_CALLSPIRITS" | "CH_SOULCOLLECT" | "GS_GLITTERING" => Spirit,
             "SA_DISPELL" | "SA_SPELLBREAKER" => Dispel,

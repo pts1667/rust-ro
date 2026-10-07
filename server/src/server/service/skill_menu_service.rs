@@ -1,6 +1,8 @@
 //! Skills that open a client menu and act on the choice: Arrow Crafting, Weapon Refine and Repair Weapon.
 
+use models::enums::cell::CellType;
 use models::enums::item::ItemType;
+use models::enums::EnumWithMaskValueU16;
 
 use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
 use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
@@ -36,6 +38,7 @@ const ORIDECON_STONE: i32 = 756;
 #[derive(Debug, Clone, PartialEq)]
 pub enum SkillMenuKind {
     MakingArrow,
+    ElementalConverter,
     WeaponRefine,
     RepairWeapon { target: u32 },
 }
@@ -57,8 +60,18 @@ pub enum SkillMenuChoice {
 }
 
 pub fn is_menu_skill(name: &str) -> bool {
-    matches!(name, "AC_MAKINGARROW" | "WS_WEAPONREFINE" | "BS_REPAIRWEAPON")
+    matches!(name, "AC_MAKINGARROW" | "WS_WEAPONREFINE" | "BS_REPAIRWEAPON") || is_crafting_skill(name)
 }
+
+/// Skills that make an item from the recipes of `produce_db.txt`.
+pub fn is_crafting_skill(name: &str) -> bool {
+    matches!(name, "AM_PHARMACY" | "SA_CREATECON" | "AL_HOLYWATER" | "ASC_CDP")
+}
+
+const ELEMENTAL_CONVERTER_LEVEL: u16 = 23;
+const POTION_LEVEL: u16 = 22;
+const HOLY_WATER: i32 = 523;
+const POISON_BOTTLE: i32 = 678;
 
 fn has_item(character: &Character, item_id: i32) -> bool {
     character.inventory.iter().flatten().any(|item| item.item_id == item_id && item.amount > 0)
@@ -141,7 +154,17 @@ impl Server {
         tick: u128,
     ) -> Result<(), String> {
         self.script_skill_service().requirements_plan(character, skill_id, level, tick)?;
+        if matches!(skill_name, "AM_PHARMACY" | "AL_HOLYWATER" | "ASC_CDP") {
+            return self.start_crafting_skill(state, character, skill_name, skill_id, level, tick);
+        }
         let (kind, packet) = match skill_name {
+            "SA_CREATECON" => {
+                let entries: Vec<u8> = self.item_service().makeable_items(character, ELEMENTAL_CONVERTER_LEVEL).iter().flat_map(|id| (*id as u16).to_le_bytes()).collect();
+                if entries.is_empty() {
+                    return Err("No elemental converter can be made".into());
+                }
+                (SkillMenuKind::ElementalConverter, list_packet(ARROW_LIST_PACKET, &entries)?)
+            }
             "AC_MAKINGARROW" => {
                 let entries: Vec<u8> = arrow_sources(character).iter().flat_map(|id| (*id as u16).to_le_bytes()).collect();
                 if entries.is_empty() {
@@ -178,6 +201,40 @@ impl Server {
         Ok(())
     }
 
+    /// Pharmacy opens its window, Aqua Benedicta and Create Deadly Poison make their one item at once.
+    fn start_crafting_skill(&self, state: &ServerState, character: &mut Character, skill_name: &str, skill_id: u32, level: u8, tick: u128) -> Result<(), String> {
+        let item_service = self.item_service();
+        match skill_name {
+            "AM_PHARMACY" => {
+                item_service.open_crafting_window(character, false, POTION_LEVEL, Some(skill_id))?;
+                if let Err(error) = item_service.pay_skill_requirements(self, character, skill_id, level, tick, true, None) {
+                    character.pending_craft = None;
+                    return Err(error);
+                }
+                Ok(())
+            }
+            "AL_HOLYWATER" => {
+                let water = state
+                    .get_map_instance_from_character(character)
+                    .is_some_and(|instance| instance.state().cells().get(character.y as usize * instance.x_size() as usize + character.x as usize).is_some_and(|cell| cell & CellType::Water.as_flag() != 0));
+                if !water {
+                    return Err("Aqua Benedicta requires standing in water".into());
+                }
+                item_service.pay_skill_requirements(self, character, skill_id, level, tick, true, None)?;
+                item_service.make_with_skill(self, character, HOLY_WATER, POTION_LEVEL, tick).map(|_| ())
+            }
+            _ => {
+                item_service.pay_skill_requirements(self, character, skill_id, level, tick, true, None)?;
+                if !item_service.make_with_skill(self, character, POISON_BOTTLE, POTION_LEVEL, tick)? {
+                    let max_hp = StatusService::instance().to_snapshot(&character.status).max_hp();
+                    let hp = character.status.hp.saturating_sub(max_hp / 4).max(1);
+                    self.character_service().update_hp_sp(character, hp, character.status.sp);
+                }
+                Ok(())
+            }
+        }
+    }
+
     fn repair_target<'a>(&self, state: &'a ServerState, character: &'a Character, skill_id: u32, level: u8, target_id: u32) -> Result<&'a Character, String> {
         if target_id == character.char_id {
             return Ok(character);
@@ -211,6 +268,13 @@ impl Server {
         }
         match (&menu.kind, choice) {
             (SkillMenuKind::MakingArrow, SkillMenuChoice::Arrow(item_id)) if item_id != MENU_CANCELLED => self.make_arrows(character, &menu, i32::from(item_id), tick),
+            (SkillMenuKind::ElementalConverter, SkillMenuChoice::Arrow(item_id)) if item_id != MENU_CANCELLED => {
+                if !self.item_service().makeable_items(character, ELEMENTAL_CONVERTER_LEVEL).contains(&i32::from(item_id)) {
+                    return Err("This elemental converter cannot be made now".into());
+                }
+                self.pay_menu_skill(character, &menu, tick)?;
+                self.item_service().make_with_skill(self, character, i32::from(item_id), ELEMENTAL_CONVERTER_LEVEL, tick).map(|_| ())
+            }
             (SkillMenuKind::WeaponRefine, SkillMenuChoice::WeaponRefine(index)) => {
                 let index = index.checked_sub(CLIENT_INDEX_OFFSET).and_then(|index| usize::try_from(index).ok());
                 index.map_or(Ok(()), |index| self.refine_weapon(character, &menu, index, tick))

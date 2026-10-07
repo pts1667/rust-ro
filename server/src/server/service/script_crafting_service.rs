@@ -59,11 +59,17 @@ impl ItemService {
 
     pub(crate) fn open_crafting(&self, character: &mut Character, function: Function, arguments: &[Value]) -> Result<(), String> {
         self.validate_crafting(character, function, arguments)?;
-        let trigger = arguments[0].number_value()? as u16;
+        self.open_crafting_window(character, function == Function::Cooking, arguments[0].number_value()? as u16, None)
+    }
+
+    /// The window of a crafting skill only lists the recipes of that skill.
+    pub(crate) fn open_crafting_window(&self, character: &mut Character, cooking: bool, trigger: u16, only_skill: Option<u32>) -> Result<(), String> {
         let counts = count_items(character);
         let recipes: Vec<_> = data().recipes.iter().filter(|recipe| recipe_matches(recipe, trigger) && can_make(character, recipe, &counts)
-            && self.configuration_service.find_item(recipe.item_id).is_some()).collect();
-        let cooking = function == Function::Cooking;
+            && only_skill.is_none_or(|skill| recipe.skill_id == skill) && self.configuration_service.find_item(recipe.item_id).is_some()).collect();
+        if only_skill.is_some() && recipes.is_empty() {
+            return Err("Nothing can be made".into());
+        }
         let mut packet = if cooking { 0x025a_u16.to_le_bytes().to_vec() } else { 0x018d_u16.to_le_bytes().to_vec() };
         packet.extend_from_slice(&((if cooking { 6 } else { 4 } + recipes.len() * if cooking { 2 } else { 8 }) as u16).to_le_bytes());
         if cooking { packet.extend_from_slice(&1_u16.to_le_bytes()); }
@@ -74,6 +80,22 @@ impl ItemService {
         let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
         character.pending_craft = (!recipes.is_empty()).then(|| CraftSession { trigger, cooking, recipes: recipes.iter().map(|recipe| recipe.id).collect(), expires_at: now + 120_000 });
         self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, packet))).map_err(|error| error.to_string())
+    }
+
+    /// Items the character can make with the recipes of a trigger level, in the order of the database.
+    pub(crate) fn makeable_items(&self, character: &Character, trigger: u16) -> Vec<i32> {
+        let counts = count_items(character);
+        data().recipes.iter().filter(|recipe| recipe_matches(recipe, trigger) && can_make(character, recipe, &counts)
+            && self.configuration_service.find_item(recipe.item_id).is_some()).map(|recipe| recipe.item_id).collect()
+    }
+
+    /// Makes `item_id` as the skill that owns its recipe, without a crafting window.
+    pub(crate) fn make_with_skill(&self, server: &Server, character: &mut Character, item_id: i32, trigger: u16, tick: u128) -> Result<bool, String> {
+        let recipe = data().recipes.iter().find(|recipe| recipe.item_id == item_id && recipe.level == trigger).ok_or("No recipe makes this item")?;
+        character.pending_craft = Some(CraftSession { trigger, cooking: false, recipes: vec![recipe.id], expires_at: tick + 1000 });
+        let result = self.make_item(server, character, CraftSelection { char_id: character.char_id, item_id, materials: [0; 3], cooking: false }, tick);
+        character.pending_craft = None;
+        result
     }
 
     pub(crate) fn make_item(&self, server: &Server, character: &mut Character, selection: CraftSelection, tick: u128) -> Result<bool, String> {
