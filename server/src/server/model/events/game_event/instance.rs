@@ -18,3 +18,16 @@ impl GameEventHandler for CharacterInstanceCommand {
         Ok(())
     }
 }
+
+/// The map caches of a booked memorial dungeon are read; the game loop creates its maps.
+#[derive(Debug, PartialEq, Clone)]
+pub struct InstanceMapsLoaded {
+    pub id: u8,
+}
+
+impl GameEventHandler for InstanceMapsLoaded {
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.instance_finish_build(state, self.id);
+        Ok(())
+    }
+}

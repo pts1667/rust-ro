@@ -424,6 +424,11 @@ impl Server {
         self.server_service.script_skill_service()
     }
 
+    /// Handle for threads that report back to the game loop.
+    pub(crate) fn game_tasks(&self) -> Arc<TasksQueue<GameEvent>> {
+        self.tasks_queue.clone()
+    }
+
     pub fn add_to_next_tick(&self, event: GameEvent) {
         self.tasks_queue.add_to_first_index(event)
     }

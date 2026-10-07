@@ -146,6 +146,10 @@ impl ScriptService {
                 self.delay_script(server, &context, *function, arguments, response);
                 return;
             }
+            if let Request::Call { function: Function::InstanceCreate, arguments } = &context.request {
+                server.instance_create_deferred(state, &context, arguments, response);
+                return;
+            }
         }
         let reply = if valid {
             self.process_request(server, state, &context)

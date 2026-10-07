@@ -6,6 +6,7 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use script_sdk::{Function, Reply, Value};
+use tokio::sync::oneshot;
 
 use crate::server::model::instance::{self, InstanceMode, MemorialInstance};
 use crate::server::model::map::Map;
@@ -15,9 +16,11 @@ use crate::server::state::server::ServerState;
 use crate::server::Server;
 
 const CREATE_PACKET: u16 = 0x02cb;
+const CHANGE_WAIT_PACKET: u16 = 0x02cc;
 const STATUS_PACKET: u16 = 0x02cd;
 const NOTIFY_PACKET: u16 = 0x02ce;
 const NAME_BYTES: usize = 61;
+const NO_MAP_POSITION: u16 = 0xffff;
 
 pub(crate) const IE_OK: i32 = 0;
 pub(crate) const IE_NOMEMBER: i32 = 1;
@@ -35,8 +38,7 @@ const NOT_DEAD_FLAG: i32 = 1;
 pub(crate) fn handles(function: Function) -> bool {
     matches!(
         function,
-        Function::InstanceCreate
-            | Function::InstanceDestroy
+        Function::InstanceDestroy
             | Function::InstanceEnter
             | Function::InstanceNpcName
             | Function::InstanceMapName
@@ -69,6 +71,13 @@ fn name_field(name: &str) -> [u8; NAME_BYTES] {
 fn create_packet(name: &str, position: u16) -> Vec<u8> {
     let mut packet = CREATE_PACKET.to_le_bytes().to_vec();
     packet.extend_from_slice(&name_field(name));
+    packet.extend_from_slice(&position.to_le_bytes());
+    packet
+}
+
+/// `ZC_MEMORIALDUNGEON_CHANGEWAIT`: new position in the creation queue, `NO_MAP_POSITION` when the maps could not be created.
+fn change_wait_packet(position: u16) -> Vec<u8> {
+    let mut packet = CHANGE_WAIT_PACKET.to_le_bytes().to_vec();
     packet.extend_from_slice(&position.to_le_bytes());
     packet
 }
@@ -146,10 +155,28 @@ impl Server {
         (1..=u8::MAX).find(|id| !self.instances().contains(*id) && !state.map_instances().values().flatten().any(|map| map.id() == *id))
     }
 
-    pub(crate) fn instance_create(&self, state: &mut ServerState, name: &str, mode: InstanceMode, owner_id: u32) -> i32 {
-        let Some(definition) = instance::definition_by_name(name) else {
+    /// Books the instance and returns it, or the reply the script gets at once (an error, or a negative `instance_create` code).
+    fn reserve_instance(&self, state: &ServerState, context: &ScriptRequest, arguments: &[Value]) -> Result<MemorialInstance, Reply> {
+        let name = arguments.first().ok_or_else(|| Err("Missing argument".to_string()))?.text();
+        let mode = match arguments.get(1) {
+            Some(mode) => InstanceMode::from_number(mode.number_value().map_err(Err)?).ok_or_else(|| Err("Unknown instance mode".to_string()))?,
+            None => InstanceMode::Party,
+        };
+        let character = state.characters().get(&context.char_id);
+        let owner_id = match arguments.get(2) {
+            Some(owner) => owner.number_value().map_err(Err)? as u32,
+            None => match mode {
+                InstanceMode::None => context.npc_id,
+                InstanceMode::Char => character.map_or(0, |character| character.char_id),
+                InstanceMode::Party => character.map_or(0, |character| character.game_systems.party_id),
+                InstanceMode::Guild => character.map_or(0, |character| character.game_systems.guild_id),
+                InstanceMode::Clan => 0,
+            },
+        };
+        let refused = |code: i32| Err(Ok(Value::Number(code)));
+        let Some(definition) = instance::definition_by_name(&name) else {
             error!("instance_create: unknown instance {name}");
-            return -1;
+            return refused(-1);
         };
         let owner_known = match mode {
             InstanceMode::None => true,
@@ -160,14 +187,18 @@ impl Server {
         };
         if !owner_known {
             error!("instance_create: owner {owner_id} of {name} was not found");
-            return -2;
+            return refused(-2);
         }
         if mode != InstanceMode::None && self.instances().of_owner(mode, owner_id).is_some() {
-            return -3;
+            return refused(-3);
         }
-        let Some(id) = self.free_instance_id(state) else { return -4 };
         let configuration = GlobalConfigService::instance();
-        let mut instance = MemorialInstance {
+        if let Some(missing) = definition.all_maps().find(|map| configuration.find_map(map).is_none()) {
+            error!("instance_create: map {missing} of {name} is not loaded");
+            return refused(-4);
+        }
+        let Some(id) = self.free_instance_id(state) else { return refused(-4) };
+        Ok(MemorialInstance {
             id,
             definition,
             mode,
@@ -177,28 +208,99 @@ impl Server {
             closing_since: None,
             maps: Vec::new(),
             item_ranges: Vec::new(),
+            building: true,
+        })
+    }
+
+    /// `instance_create`: books the instance at once and reads its map caches off the game loop; the script is answered when the maps exist.
+    pub(crate) fn instance_create_deferred(&self, state: &mut ServerState, context: &ScriptRequest, arguments: &[Value], response: oneshot::Sender<Reply>) {
+        let instance = match self.reserve_instance(state, context, arguments) {
+            Ok(instance) => instance,
+            Err(reply) => {
+                let _ = response.send(reply);
+                return;
+            }
         };
-        for map_name in definition.all_maps() {
-            let Some(map) = configuration.find_map(map_name) else {
-                error!("instance_create: map {map_name} of {name} is not loaded");
-                self.remove_instance_maps(state, &instance);
-                return -4;
-            };
-            let map_instance = self.server_service().create_map_instance_with(state, map, id, true);
-            instance.maps.push(map_name.clone());
-            instance.item_ranges.push(map_instance.item_range());
+        let (id, definition) = (instance.id, instance.definition);
+        let members = recipients(state, &instance);
+        let position = self.instances().begin_build(instance, response);
+        for char_id in members {
+            self.send_raw(char_id, create_packet(&definition.name, position as u16));
+        }
+        let instances = self.instances().clone();
+        let tasks = self.game_tasks();
+        let map_names: Vec<String> = definition.all_maps().cloned().collect();
+        self.runtime().spawn_blocking(move || {
+            let loaded = map_names
+                .iter()
+                .map(|name| map_cache::read_mcache(std::path::Path::new(unsafe { crate::MAP_DIR }), name).map(|cache| cache.cells).map_err(|error| format!("{name}: {error}")))
+                .collect();
+            instances.store_cells(id, loaded);
+            tasks.add_to_first_index(crate::server::model::events::game_event::GameEvent::InstanceMapsLoaded(crate::server::model::events::game_event::InstanceMapsLoaded { id }));
+        });
+    }
+
+    /// Game loop side of the creation: builds the maps from the cells that were read and answers the waiting script.
+    pub(crate) fn instance_finish_build(&self, state: &mut ServerState, id: u8) {
+        let Some(build) = self.instances().take_build(id) else { return };
+        let respond = |reply: Reply| {
+            if let Some(response) = build.response {
+                let _ = response.send(reply);
+            }
+        };
+        let Some(instance) = self.instances().get(id) else {
+            respond(Ok(Value::Number(-4)));
+            return;
+        };
+        let definition = instance.definition;
+        let loaded = match build.cells {
+            Some(Ok(cells)) => cells,
+            Some(Err(error)) => {
+                error!("[Instance] {}: maps could not be read: {error}", definition.name);
+                Vec::new()
+            }
+            None => Vec::new(),
+        };
+        let configuration = GlobalConfigService::instance();
+        let maps: Vec<_> = definition.all_maps().filter_map(|name| configuration.find_map(name)).collect();
+        if loaded.len() != maps.len() || maps.len() != definition.all_maps().count() {
+            for char_id in recipients(state, &instance) {
+                self.send_raw(char_id, change_wait_packet(NO_MAP_POSITION));
+            }
+            self.instances().remove(id);
+            self.send_queue_positions(state);
+            respond(Ok(Value::Number(-4)));
+            return;
+        }
+        let mut item_ranges = Vec::new();
+        for (map, cells) in maps.into_iter().zip(loaded) {
+            item_ranges.push(self.server_service().create_map_instance_with(state, map, id, true, Some(cells)).item_range());
         }
         let now = now_seconds();
-        instance.keep_deadline = (definition.time_limit > 0).then(|| now + definition.time_limit);
-        instance.idle_deadline = (definition.idle_timeout > 0).then(|| now + definition.idle_timeout);
-        let members = recipients(state, &instance);
-        for char_id in &members {
-            self.send_raw(*char_id, create_packet(&definition.name, 1));
-            self.send_raw(*char_id, status_packet_of(&instance));
+        self.instances().update(id, |instance| {
+            instance.maps = definition.all_maps().cloned().collect();
+            instance.item_ranges = item_ranges;
+            instance.keep_deadline = (definition.time_limit > 0).then(|| now + definition.time_limit);
+            instance.idle_deadline = (definition.idle_timeout > 0).then(|| now + definition.idle_timeout);
+            instance.building = false;
+        });
+        if let Some(ready) = self.instances().get(id) {
+            for char_id in recipients(state, &ready) {
+                self.send_raw(char_id, status_packet_of(&ready));
+            }
         }
+        self.send_queue_positions(state);
         info!("[Instance] Created: {} ({id})", definition.name);
-        self.instances().insert(instance);
-        i32::from(id)
+        respond(Ok(Value::Number(i32::from(id))));
+    }
+
+    fn send_queue_positions(&self, state: &ServerState) {
+        for (index, id) in self.instances().build_queue().into_iter().enumerate() {
+            let Some(instance) = self.instances().get(id) else { continue };
+            for char_id in recipients(state, &instance) {
+                self.send_raw(char_id, change_wait_packet(index as u16 + 1));
+            }
+        }
     }
 
     pub(crate) fn instance_enter(&self, state: &mut ServerState, char_id: u32, name: &str, position: Option<(u16, u16)>, instance_id: Option<u8>) -> i32 {
@@ -232,7 +334,7 @@ impl Server {
             InstanceMode::Clan => return IE_NOMEMBER,
             _ => {}
         }
-        if instance.definition.id != definition.id || instance.closing_since.is_some() {
+        if instance.definition.id != definition.id || instance.closing_since.is_some() || instance.building {
             return IE_OTHER;
         }
         let (x, y) = position.unwrap_or((definition.enter_x, definition.enter_y));
@@ -243,6 +345,9 @@ impl Server {
     /// Starts the destruction of an instance: nobody can enter any more and everybody inside goes to their save point.
     pub(crate) fn instance_destroy(&self, state: &mut ServerState, id: u8) -> bool {
         let Some(instance) = self.instances().get(id) else { return false };
+        if instance.building {
+            return false;
+        }
         if instance.closing_since.is_some() {
             return true;
         }
@@ -304,6 +409,9 @@ impl Server {
             return;
         }
         for instance in self.instances().snapshot() {
+            if instance.building {
+                continue;
+            }
             if let Some(since) = instance.closing_since {
                 let occupied = state.characters().values().any(|character| on_instance_map(character, &instance));
                 if !occupied || now.saturating_sub(since) >= FORCE_CLOSE_AFTER_SECONDS {
@@ -337,7 +445,7 @@ impl Server {
     pub(crate) fn instance_login(&self, state: &ServerState, char_id: u32) {
         let Some(character) = state.characters().get(&char_id) else { return };
         for instance in self.instances().snapshot() {
-            if instance.closing_since.is_none() && instance.mode != InstanceMode::None && belongs_to(character, &instance) {
+            if instance.closing_since.is_none() && !instance.building && instance.mode != InstanceMode::None && belongs_to(character, &instance) {
                 self.send_raw(char_id, status_packet_of(&instance));
             }
         }
@@ -393,23 +501,6 @@ impl Server {
         let own_instance = self.script_instance_id(context);
         let resolve_id = |explicit: Option<i32>, default: u8| -> u8 { explicit.and_then(|id| u8::try_from(id).ok()).filter(|id| *id != 0).unwrap_or(default) };
         match function {
-            Function::InstanceCreate => {
-                let mode = match optional(1)? {
-                    Some(mode) => InstanceMode::from_number(mode).ok_or("Unknown instance mode")?,
-                    None => InstanceMode::Party,
-                };
-                let owner = match optional(2)? {
-                    Some(owner) => owner as u32,
-                    None => match mode {
-                        InstanceMode::None => context.npc_id,
-                        InstanceMode::Char => state.characters().get(&attached).map_or(0, |character| character.char_id),
-                        InstanceMode::Party => state.characters().get(&attached).map_or(0, |character| character.game_systems.party_id),
-                        InstanceMode::Guild => state.characters().get(&attached).map_or(0, |character| character.game_systems.guild_id),
-                        InstanceMode::Clan => 0,
-                    },
-                };
-                Ok(Value::Number(self.instance_create(state, &text(0)?, mode, owner)))
-            }
             Function::InstanceDestroy => {
                 let id = resolve_id(optional(0)?, own_instance);
                 if id == 0 || !self.instance_destroy(state, id) {
@@ -580,6 +671,7 @@ mod tests {
         assert_eq!(&create_packet("A", 3)[63..], &[3, 0]);
         let status = status_packet("A", 7, 9);
         assert_eq!((status.len(), &status[..2], &status[63..71]), (71, &[0xcd, 0x02][..], &[7, 0, 0, 0, 9, 0, 0, 0][..]));
+        assert_eq!(change_wait_packet(0xffff), vec![0xcc, 0x02, 0xff, 0xff]);
         assert_eq!(notify_packet(3, 0), vec![0xce, 0x02, 3, 0, 0, 0, 0, 0, 0, 0]);
     }
 

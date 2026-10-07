@@ -159,11 +159,11 @@ impl ServerService {
     }
 
     pub fn create_map_instance(&self, server_state: &mut ServerState, map: &'static Map, instance_id: u8) -> Arc<MapInstance> {
-        self.create_map_instance_with(server_state, map, instance_id, false)
+        self.create_map_instance_with(server_state, map, instance_id, false, None)
     }
 
     /// `memorial` gives the NPCs of the map the instance id as name suffix so scripts of other maps can address them (`instance_npcname`).
-    pub fn create_map_instance_with(&self, server_state: &mut ServerState, map: &'static Map, instance_id: u8, memorial: bool) -> Arc<MapInstance> {
+    pub fn create_map_instance_with(&self, server_state: &mut ServerState, map: &'static Map, instance_id: u8, memorial: bool, loaded_cells: Option<Vec<u16>>) -> Arc<MapInstance> {
         info!(
             "create map instance: {} x_size: {}, y_size {}, length: {}",
             map.name(),
@@ -175,7 +175,7 @@ impl ServerService {
         let start_sequence = CHARACTER_MAX_MAP_ITEM_ID + item_range * MAP_INSTANCE_MAX_MAP_ITEM_ID;
         let mut map_items = MapItems::new(start_sequence);
 
-        let mut cells = MapLoader::generate_cells(map.name(), map.length() as usize, unsafe { MAP_DIR });
+        let mut cells = loaded_cells.unwrap_or_else(|| MapLoader::generate_cells(map.name(), map.length() as usize, unsafe { MAP_DIR }));
         map.set_warp_cells(&mut cells, &mut map_items);
 
         let map_instance = MapInstance::from_map_with(

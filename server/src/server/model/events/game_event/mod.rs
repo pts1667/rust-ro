@@ -181,4 +181,5 @@ game_events! {
     CharacterQuestActivation(CharacterQuestActivation),
     QuestMonsterKill(QuestMonsterKill),
     CharacterInstanceCommand(CharacterInstanceCommand),
+    InstanceMapsLoaded(InstanceMapsLoaded),
 }

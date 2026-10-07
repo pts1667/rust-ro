@@ -6,7 +6,9 @@
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock};
 
+use script_sdk::Reply;
 use serde::Deserialize;
+use tokio::sync::oneshot;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct InstanceDefinition {
@@ -91,12 +93,23 @@ pub struct MemorialInstance {
     /// Source map names, entry map first.
     pub maps: Vec<String>,
     pub item_ranges: Vec<u32>,
+    /// The map caches are still being read; the instance has no maps and nobody can enter.
+    pub building: bool,
+}
+
+/// What an instance waiting for its maps holds: the script that called `instance_create` and the map cells read off the game loop.
+pub struct PendingBuild {
+    pub response: Option<oneshot::Sender<Reply>>,
+    pub cells: Option<Result<Vec<Vec<u16>>, String>>,
 }
 
 #[derive(Default)]
 struct InstanceBook {
     instances: BTreeMap<u8, MemorialInstance>,
     last_check: u64,
+    /// Instances being built, oldest first; the position in this queue is what the client shows.
+    build_queue: Vec<u8>,
+    builds: std::collections::HashMap<u8, PendingBuild>,
 }
 
 /// Cloneable handle: instances are read by the game loop and by script requests.
@@ -114,6 +127,32 @@ impl Instances {
         let due = book.last_check != now;
         book.last_check = now;
         due
+    }
+
+    /// Registers an instance that is being built and returns its 1-based position in the queue.
+    pub fn begin_build(&self, instance: MemorialInstance, response: oneshot::Sender<Reply>) -> usize {
+        let mut book = self.book();
+        let id = instance.id;
+        book.instances.insert(id, instance);
+        book.builds.insert(id, PendingBuild { response: Some(response), cells: None });
+        book.build_queue.push(id);
+        book.build_queue.len()
+    }
+
+    pub fn store_cells(&self, id: u8, cells: Result<Vec<Vec<u16>>, String>) {
+        if let Some(build) = self.book().builds.get_mut(&id) {
+            build.cells = Some(cells);
+        }
+    }
+
+    pub fn take_build(&self, id: u8) -> Option<PendingBuild> {
+        let mut book = self.book();
+        book.build_queue.retain(|queued| *queued != id);
+        book.builds.remove(&id)
+    }
+
+    pub fn build_queue(&self) -> Vec<u8> {
+        self.book().build_queue.clone()
     }
 
     pub fn insert(&self, instance: MemorialInstance) {
@@ -166,7 +205,7 @@ mod tests {
     fn owners_find_only_open_instances() {
         let instances = Instances::default();
         let definition = definition_by_id(3).unwrap();
-        instances.insert(MemorialInstance { id: 5, definition, mode: InstanceMode::Party, owner_id: 9, keep_deadline: None, idle_deadline: None, closing_since: None, maps: vec!["1@orcs".into()], item_ranges: vec![] });
+        instances.insert(MemorialInstance { id: 5, definition, mode: InstanceMode::Party, owner_id: 9, keep_deadline: None, idle_deadline: None, closing_since: None, maps: vec!["1@orcs".into()], item_ranges: vec![], building: false });
         assert_eq!(instances.of_owner(InstanceMode::Party, 9), Some(5));
         assert_eq!(instances.of_owner(InstanceMode::Guild, 9), None);
         instances.update(5, |instance| instance.closing_since = Some(1));
