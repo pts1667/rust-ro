@@ -70,6 +70,17 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
         "CPC_NAME" => return Some(Value::Number(0)),
         "CPC_CHAR" => return Some(Value::Number(1)),
         "CPC_ACCOUNT" => return Some(Value::Number(2)),
+        "IM_NONE" | "IE_OK" | "IIT_ID" | "ILI_NAME" | "IWA_NONE" => return Some(Value::Number(0)),
+        "IM_CHAR" | "IE_NOMEMBER" | "IIT_TIME_LIMIT" | "ILI_MODE" | "IWA_NOTDEAD" => return Some(Value::Number(1)),
+        "IM_PARTY" | "IE_NOINSTANCE" | "IIT_IDLE_TIMEOUT" | "ILI_OWNER" => return Some(Value::Number(2)),
+        "IM_GUILD" | "IE_OTHER" | "IIT_ENTER_MAP" => return Some(Value::Number(3)),
+        "IM_CLAN" | "IIT_ENTER_X" => return Some(Value::Number(4)),
+        "IIT_ENTER_Y" => return Some(Value::Number(5)),
+        "IIT_MAPCOUNT" => return Some(Value::Number(6)),
+        "IIT_MAP" => return Some(Value::Number(7)),
+        "FW_THIN" => return Some(Value::Number(100)),
+        "FW_NORMAL" => return Some(Value::Number(400)),
+        "FW_BOLD" => return Some(Value::Number(700)),
         _ => {}
     }
     if name == "EAJL_THIRD" {
@@ -234,28 +245,29 @@ impl Server {
             }
             Function::MapAnnounce => {
                 let map = text(0)?;
-                let map = if map.eq_ignore_ascii_case("this") {
-                    crate::server::script::unit_data::script_actor(state, context)?.map(|npc| normalize_map(&npc.map)).ok_or("mapannounce \"this\" needs an NPC")?
+                let (map, instance) = if map.eq_ignore_ascii_case("this") {
+                    crate::server::script::unit_data::script_actor(state, context)?.map(|npc| (normalize_map(&npc.map), Some(npc.instance))).ok_or("mapannounce \"this\" needs an NPC")?
                 } else {
-                    normalize_map(&map)
+                    self.resolve_script_map(context.npc_scope_instance, &map)
                 };
                 let mut announcement = vec![arguments.get(1).cloned().ok_or("Missing announcement")?, arguments.get(2).cloned().ok_or("Missing announcement flags")?];
                 announcement.extend(arguments.iter().skip(3).cloned());
                 let packet = super::script_presentation_service::announcement_packet(&announcement)?;
-                let recipients: Vec<u32> = state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map).map(|character| character.char_id).collect();
+                let recipients: Vec<u32> = state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map && instance.is_none_or(|instance| instance == character.current_map_instance())).map(|character| character.char_id).collect();
                 self.map_notifications.extend(recipients.into_iter().map(|char_id| Notification::Char(CharNotification::new(char_id, packet.clone()))));
                 self.drain_map_notifications();
                 Ok(Value::default())
             }
             Function::GetMapUsers => {
-                let map = normalize_map(&text(0)?);
-                Ok(Value::Number(state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map).count() as i32))
+                let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
+                Ok(Value::Number(state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map && instance.is_none_or(|instance| instance == character.current_map_instance())).count() as i32))
             }
             Function::GetAreaUsers => {
-                let map = normalize_map(&text(0)?);
+                let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
                 let (x0, y0, x1, y1) = (number(1)?, number(2)?, number(3)?, number(4)?);
                 Ok(Value::Number(state.characters().values().filter(|character| {
                     normalize_map(character.current_map_name()) == map
+                        && instance.is_none_or(|instance| instance == character.current_map_instance())
                         && (x0..=x1).contains(&i32::from(character.x()))
                         && (y0..=y1).contains(&i32::from(character.y()))
                 }).count() as i32))

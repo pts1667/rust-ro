@@ -87,6 +87,10 @@ mod m_quests_skills_thief_skills;
 mod m_quests_skills_wizard_skills;
 mod m_quests_thana_quest;
 mod m_quests_the_sign_quest;
+mod m_instances_endlesstower;
+mod m_instances_nydhoggsnest;
+mod m_instances_orcsmemory;
+mod m_instances_sealedshrine;
 mod m_airports_airships;
 mod m_other_global_functions;
 
@@ -181,6 +185,10 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         .or_else(|| m_quests_skills_wizard_skills::run_npc(ctx, id))
         .or_else(|| m_quests_thana_quest::run_npc(ctx, id))
         .or_else(|| m_quests_the_sign_quest::run_npc(ctx, id))
+        .or_else(|| m_instances_endlesstower::run_npc(ctx, id))
+        .or_else(|| m_instances_nydhoggsnest::run_npc(ctx, id))
+        .or_else(|| m_instances_orcsmemory::run_npc(ctx, id))
+        .or_else(|| m_instances_sealedshrine::run_npc(ctx, id))
         .or_else(|| m_airports_airships::run_npc(ctx, id))
         .or_else(|| m_other_global_functions::run_npc(ctx, id))
 }
@@ -274,6 +282,10 @@ pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         .or_else(|| m_quests_skills_wizard_skills::run_event(ctx, id))
         .or_else(|| m_quests_thana_quest::run_event(ctx, id))
         .or_else(|| m_quests_the_sign_quest::run_event(ctx, id))
+        .or_else(|| m_instances_endlesstower::run_event(ctx, id))
+        .or_else(|| m_instances_nydhoggsnest::run_event(ctx, id))
+        .or_else(|| m_instances_orcsmemory::run_event(ctx, id))
+        .or_else(|| m_instances_sealedshrine::run_event(ctx, id))
         .or_else(|| m_airports_airships::run_event(ctx, id))
         .or_else(|| m_other_global_functions::run_event(ctx, id))
 }

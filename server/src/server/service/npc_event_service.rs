@@ -341,10 +341,12 @@ impl Server {
                 entry_id: ScriptService::event_entry(&request.event).ok_or("Monster callback has no compiled event entry")?,
             });
         }
-        let name = if map_name == "this" { Map::name_without_ext(&npc.map) } else { Map::name_without_ext(map_name) };
-        let id = if name == Map::name_without_ext(&npc.map) { npc.instance } else { 0 };
+        let (name, resolved) = if map_name == "this" { (Map::name_without_ext(&npc.map), None) } else { self.resolve_script_map(context.npc_scope_instance, map_name) };
+        let id = resolved.unwrap_or(if name == Map::name_without_ext(&npc.map) { npc.instance } else { 0 });
         let map = if let Some(map) = state.get_map_instance(&name, id) {
             map
+        } else if id != 0 && crate::server::model::instance::is_memorial_map(&name) {
+            return Err("Monster instance map is gone".into());
         } else {
             let definition = GlobalConfigService::instance().find_map(&name).ok_or("Monster map is unavailable")?;
             self.server_service().create_map_instance(state, definition, id)
@@ -365,6 +367,17 @@ impl Server {
         let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
         if function == Function::Monster {
             let request = self.item_service().spawn_request(arguments, context.char_id)?;
+            self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
+            return Ok(Value::default());
+        }
+        if function == Function::AreaMonster {
+            if arguments.len() < 8 {
+                return Err("areamonster needs a map, an area, a name, a class and an amount".into());
+            }
+            let corner = |index: usize| arguments[index].number_value();
+            let monster_arguments: Vec<Value> = arguments[..3].iter().chain(&arguments[5..]).cloned().collect();
+            let mut request = self.item_service().spawn_request(&monster_arguments, context.char_id)?;
+            request.area_end = Some((corner(3)?, corner(4)?));
             self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
             return Ok(Value::default());
         }

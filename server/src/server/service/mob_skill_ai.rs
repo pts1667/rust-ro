@@ -537,6 +537,7 @@ impl MapInstanceService {
                         max_hp: None,
                         lifetime_ms: None,
                     reserved_id: None,
+                    area_end: None,
                     };
                     match self.script_spawn(state, request) {
                         Ok(ids) => {

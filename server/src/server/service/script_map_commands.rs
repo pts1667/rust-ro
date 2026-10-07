@@ -32,13 +32,17 @@ pub(crate) fn handles(function: Function) -> bool {
 
 struct Area {
     map: String,
+    instance: Option<u8>,
     x: (i32, i32),
     y: (i32, i32),
 }
 
 impl Area {
-    fn contains(&self, map: &str, x: u16, y: u16) -> bool {
-        normalize_map(map) == self.map && (self.x.0..=self.x.1).contains(&i32::from(x)) && (self.y.0..=self.y.1).contains(&i32::from(y))
+    fn contains(&self, map: &str, instance: u8, x: u16, y: u16) -> bool {
+        normalize_map(map) == self.map
+            && self.instance.is_none_or(|expected| expected == instance)
+            && (self.x.0..=self.x.1).contains(&i32::from(x))
+            && (self.y.0..=self.y.1).contains(&i32::from(y))
     }
 }
 
@@ -93,7 +97,7 @@ impl Server {
                 Ok(Value::default())
             }
             Function::KillMonster | Function::MobCount | Function::SetMobImmunity => {
-                let map = normalize_map(&text(0)?);
+                let (map, resolved) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
                 let label = text(1)?;
                 let entry = if label.eq_ignore_ascii_case("all") {
                     None
@@ -101,7 +105,7 @@ impl Server {
                     Some(ScriptService::event_entry(&label).ok_or("Monster event is not a compiled event")?)
                 };
                 let npc = crate::server::script::unit_data::script_actor(state, context)?;
-                let instance = npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance);
+                let instance = resolved.unwrap_or_else(|| npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance));
                 let Some(map_instance) = state.get_map_instance(&map, instance) else {
                     return Ok(Value::Number(0));
                 };
@@ -144,7 +148,7 @@ impl Server {
                 Ok(Value::default())
             }
             Function::SetCell => {
-                let map = normalize_map(&text(0)?);
+                let (map, resolved) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
                 let cell = match number(5)? {
                     0 => CellType::Walkable,
                     1 => CellType::Shootable,
@@ -158,21 +162,22 @@ impl Server {
                 };
                 let area = CellArea { x1: coordinate(1)?, y1: coordinate(2)?, x2: coordinate(3)?, y2: coordinate(4)? };
                 let npc = crate::server::script::unit_data::script_actor(state, context)?;
-                let instance = npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance);
+                let instance = resolved.unwrap_or_else(|| npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance));
                 let map_instance = state.get_map_instance(&map, instance).ok_or("Cell map is unavailable")?;
                 map_instance.add_to_next_tick(MapEvent::ScriptMapCommand(ScriptMapCommand::SetCell { area, cell, enabled: number(6)? != 0 }));
                 Ok(Value::default())
             }
             Function::MapWarp | Function::AreaWarp | Function::AreaPercentHeal => {
+                let (source_map, source_instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
                 let area = if function == Function::MapWarp {
-                    Area { map: normalize_map(&text(0)?), x: (0, i32::from(u16::MAX)), y: (0, i32::from(u16::MAX)) }
+                    Area { map: source_map, instance: source_instance, x: (0, i32::from(u16::MAX)), y: (0, i32::from(u16::MAX)) }
                 } else {
-                    Area { map: normalize_map(&text(0)?), x: (number(1)?, number(3)?), y: (number(2)?, number(4)?) }
+                    Area { map: source_map, instance: source_instance, x: (number(1)?, number(3)?), y: (number(2)?, number(4)?) }
                 };
                 let members: Vec<u32> = state
                     .characters()
                     .values()
-                    .filter(|character| area.contains(character.current_map_name(), character.x(), character.y()))
+                    .filter(|character| area.contains(character.current_map_name(), character.current_map_instance(), character.x(), character.y()))
                     .map(|character| character.char_id)
                     .collect();
                 if function == Function::AreaPercentHeal {
@@ -187,13 +192,13 @@ impl Server {
                     return Ok(Value::default());
                 }
                 let (destination, x, y) = if function == Function::MapWarp { (1, 2, 3) } else { (5, 6, 7) };
-                let map = normalize_map(&text(destination)?);
+                let (map, destination_instance) = self.resolve_script_map(context.npc_scope_instance, &text(destination)?);
                 if GlobalConfigService::instance().find_map(&map).is_none() {
                     return Err("Warp destination map is unavailable".into());
                 }
                 let (x, y) = (coordinate(x)?, coordinate(y)?);
                 for char_id in members {
-                    self.add_to_next_tick(GameEvent::ScriptWarp(ScriptWarp { char_id, map: map.clone(), x, y, destination_instance: None }));
+                    self.add_to_next_tick(GameEvent::ScriptWarp(ScriptWarp { char_id, map: map.clone(), x, y, destination_instance }));
                 }
                 Ok(Value::default())
             }

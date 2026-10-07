@@ -17,6 +17,8 @@ pub struct ScriptSpawn {
     pub max_hp: Option<u32>,
     pub lifetime_ms: Option<u32>,
     pub reserved_id: Option<u32>,
+    /// Opposite corner of the rectangle `(x, y)` starts (`areamonster`).
+    pub area_end: Option<(i32, i32)>,
 }
 
 /// Script-driven changes to the monsters spawned with a callback event; `None` targets every monster.

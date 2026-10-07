@@ -135,6 +135,7 @@ pub enum VariableScope {
     CharacterTemporary,
     Npc,
     NpcInstance,
+    Instance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -348,6 +349,23 @@ pub enum Function {
     GetItem2,
     MakeItem,
     ReadBook,
+    InstanceCreate,
+    InstanceDestroy,
+    InstanceEnter,
+    InstanceNpcName,
+    InstanceMapName,
+    InstanceId,
+    InstanceWarpAll,
+    InstanceAnnounce,
+    InstanceCheckParty,
+    InstanceCheckGuild,
+    InstanceInfo,
+    InstanceLiveInfo,
+    InstanceList,
+    GetInstanceVar,
+    SetInstanceVar,
+    GetPartyName,
+    AreaMonster,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

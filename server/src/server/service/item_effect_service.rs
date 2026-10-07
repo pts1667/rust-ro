@@ -557,22 +557,23 @@ impl ItemService {
         self.client_notification_sender.send(Notification::Char(CharNotification::new(char_id, packet))).unwrap_or_else(|_| error!("Failed to notify item effect"));
     }
 
-    fn warp_destination(&self, character: &Character, arguments: &[Value]) -> Result<(String, u16, u16), String> {
+    fn warp_destination(&self, character: &Character, arguments: &[Value]) -> Result<(String, u16, u16, Option<u8>), String> {
         let name = arguments[0].text();
         let (name, x, y) = match name.as_str() {
             "SavePoint" => (Map::name_without_ext(&character.save_map).to_string(), character.save_x, character.save_y),
             "Random" => (Map::name_without_ext(character.current_map_name()).to_string(), RANDOM_CELL.0, RANDOM_CELL.1),
-            _ => (Map::name_without_ext(&name).to_string(), u16::try_from(arguments[1].number_value()?).map_err(|_| "Invalid warp coordinate")?, u16::try_from(arguments[2].number_value()?).map_err(|_| "Invalid warp coordinate")?),
+            _ => (Map::name_without_ext(super::instance_service::split_instance_map(&name).0).to_string(), u16::try_from(arguments[1].number_value()?).map_err(|_| "Invalid warp coordinate")?, u16::try_from(arguments[2].number_value()?).map_err(|_| "Invalid warp coordinate")?),
         };
         let map = self.configuration_service.find_map(&name).ok_or("Destination map is unavailable")?;
         if (x, y) != RANDOM_CELL && (x >= map.x_size() || y >= map.y_size()) { return Err("Warp coordinate is outside the destination map".into()); }
-        Ok((name, x, y))
+        let instance = super::instance_service::split_instance_map(&arguments[0].text()).1;
+        Ok((name, x, y, instance))
     }
 
     pub(crate) fn spawn_request(&self, arguments: &[Value], owner_id: u32) -> Result<ScriptSpawn, String> {
         let number = |index: usize| arguments.get(index).ok_or("Missing monster argument")?.number_value();
         let map = arguments.first().ok_or("Missing monster map")?.string_value()?;
-        if map != "this" && self.configuration_service.find_map(&Map::name_without_ext(map)).is_none() { return Err("Monster map is unavailable".into()); }
+        if map != "this" && self.configuration_service.find_map(&Map::name_without_ext(super::instance_service::split_instance_map(map).0)).is_none() { return Err("Monster map is unavailable".into()); }
         let mob_id = number(4)?;
         if mob_id >= 0 && self.configuration_service.get_mob_safe(mob_id).is_none() || mob_id < 0 && !super::super::script::game_data::data().summons.iter().any(|group| group.id == -1 - mob_id) { return Err("Unknown summoned monster".into()); }
         let amount = u16::try_from(number(5)?).map_err(|_| "Invalid monster count")?;
@@ -581,7 +582,7 @@ impl ItemService {
         if !event.is_empty() && super::script_service::ScriptService::event_entry(&event).is_none() { return Err("Monster event is not a compiled event".into()); }
         Ok(ScriptSpawn { mob_id, x: number(1)?, y: number(2)?, name: arguments.get(3).ok_or("Missing monster name")?.text(), amount, event, event_npc: None,
             size: arguments.get(7).map(Value::number_value).transpose()?.map(|value| u8::try_from(value).map_err(|_| "Invalid monster size")).transpose()?,
-            ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id, guardian: None, bg_id: 0, max_hp: None, lifetime_ms: None, reserved_id: None })
+            ai: arguments.get(8).map(Value::number_value).transpose()?.map(|value| u16::try_from(value).map_err(|_| "Invalid monster AI")).transpose()?, owner_id, guardian: None, bg_id: 0, max_hp: None, lifetime_ms: None, reserved_id: None, area_end: None })
     }
 
     fn apply_game_call(&self, server: &Server, state: &mut ServerState, character: &mut Character, function: Function, arguments: Vec<Value>, tick: u128) -> Result<(), String> {
@@ -607,8 +608,8 @@ impl ItemService {
                 else { server.add_to_next_tick(GameEvent::CharacterEndStatus(crate::server::model::events::game_event::CharacterEndStatus { char_id: target.unwrap(), kind })); }
             }
             Function::Warp => {
-                let (map, x, y) = self.warp_destination(character, &arguments)?;
-                server.server_service().schedule_warp_to_walkable_cell_by_character(&map, x, y, character.char_id);
+                let (map, x, y, instance) = self.warp_destination(character, &arguments)?;
+                server.server_service().schedule_warp_to_walkable_cell_by_character_in_instance(&map, x, y, character.char_id, instance.unwrap_or(0));
             }
             Function::PartyWarp => { self.warp_party(server, character, &arguments)?; }
             Function::Monster => {

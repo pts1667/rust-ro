@@ -30,10 +30,15 @@ impl ScriptService {
     }
 
     pub fn event_entry(label: &str) -> Option<u32> {
-        Self::compiled_events().get(label).copied()
+        let events = Self::compiled_events();
+        events.get(label).copied().or_else(|| {
+            let (name, event) = label.split_once("::")?;
+            events.get(&format!("{}::{event}", base_npc_name(name)?)).copied()
+        })
     }
 
     pub(crate) fn npc_timer_entries(name: &str) -> Vec<(u64, u32)> {
+        let name = if Self::compiled_events().keys().any(|label| label.starts_with(&format!("{name}::"))) { name } else { base_npc_name(name).unwrap_or(name) };
         let prefix = format!("{name}::OnTimer");
         let mut entries = Self::compiled_events().iter().filter_map(|(label, entry_id)| {
             let suffix = label.strip_prefix(&prefix)?;
@@ -104,4 +109,10 @@ impl ScriptService {
                     .collect(),
             }));
     }
+}
+
+/// Name of the NPC a memorial dungeon copy (`Name_12`) was duplicated from.
+pub(crate) fn base_npc_name(name: &str) -> Option<&str> {
+    let (base, suffix) = name.rsplit_once('_')?;
+    (!suffix.is_empty() && suffix.bytes().all(|byte| byte.is_ascii_digit())).then_some(base)
 }

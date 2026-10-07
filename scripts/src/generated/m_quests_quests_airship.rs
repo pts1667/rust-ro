@@ -3730,7 +3730,7 @@ fn npc_10699(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                         ctx.mes("How would you like")?;
                         ctx.mes("to play a game of Dice?")?;
                         ctx.next()?;
-                        super::m_airports_airships::fn_12_applegamble(ctx, 0, vec![s("Kaci")])?;
+                        super::m_airports_airships::fn_14_applegamble(ctx, 0, vec![s("Kaci")])?;
                     }
                 }
             }

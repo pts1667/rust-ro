@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Endless Tower",
+    "time_limit": 14400,
+    "idle_timeout": 300,
+    "no_npc": false,
+    "no_map_flag": false,
+    "destroyable": true,
+    "enter_map": "1@tower",
+    "enter_x": 50,
+    "enter_y": 355,
+    "maps": [
+      "2@tower",
+      "3@tower",
+      "4@tower",
+      "5@tower",
+      "6@tower"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Sealed Catacomb",
+    "time_limit": 7200,
+    "idle_timeout": 300,
+    "no_npc": false,
+    "no_map_flag": false,
+    "destroyable": true,
+    "enter_map": "1@cata",
+    "enter_x": 100,
+    "enter_y": 224,
+    "maps": [
+      "2@cata"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Orc's Memory",
+    "time_limit": 3600,
+    "idle_timeout": 300,
+    "no_npc": false,
+    "no_map_flag": false,
+    "destroyable": true,
+    "enter_map": "1@orcs",
+    "enter_x": 179,
+    "enter_y": 15,
+    "maps": [
+      "2@orcs"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Nidhoggur's Nest",
+    "time_limit": 14400,
+    "idle_timeout": 300,
+    "no_npc": false,
+    "no_map_flag": false,
+    "destroyable": true,
+    "enter_map": "1@nyd",
+    "enter_x": 32,
+    "enter_y": 36,
+    "maps": [
+      "2@nyd"
+    ]
+  }
+]

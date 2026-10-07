@@ -159,6 +159,11 @@ impl ServerService {
     }
 
     pub fn create_map_instance(&self, server_state: &mut ServerState, map: &'static Map, instance_id: u8) -> Arc<MapInstance> {
+        self.create_map_instance_with(server_state, map, instance_id, false)
+    }
+
+    /// `memorial` gives the NPCs of the map the instance id as name suffix so scripts of other maps can address them (`instance_npcname`).
+    pub fn create_map_instance_with(&self, server_state: &mut ServerState, map: &'static Map, instance_id: u8, memorial: bool) -> Arc<MapInstance> {
         info!(
             "create map instance: {} x_size: {}, y_size {}, length: {}",
             map.name(),
@@ -166,13 +171,14 @@ impl ServerService {
             map.y_size(),
             map.length()
         );
-        let start_sequence = CHARACTER_MAX_MAP_ITEM_ID + server_state.map_instances().len() as u32 * MAP_INSTANCE_MAX_MAP_ITEM_ID;
+        let item_range = server_state.allocate_item_range();
+        let start_sequence = CHARACTER_MAX_MAP_ITEM_ID + item_range * MAP_INSTANCE_MAX_MAP_ITEM_ID;
         let mut map_items = MapItems::new(start_sequence);
 
         let mut cells = MapLoader::generate_cells(map.name(), map.length() as usize, unsafe { MAP_DIR });
         map.set_warp_cells(&mut cells, &mut map_items);
 
-        let map_instance = MapInstance::from_map(
+        let map_instance = MapInstance::from_map_with(
             self.vm.clone(),
             map,
             instance_id,
@@ -180,6 +186,8 @@ impl ServerService {
             self.client_notification_sender.clone(),
             map_items,
             Arc::new(TasksQueue::new()),
+            memorial,
+            item_range,
         );
         map_instance.state_mut().flags = server_state.map_flags_for(map.name(), instance_id);
         server_state.map_instances_count().fetch_add(1, Relaxed);
@@ -217,6 +225,10 @@ impl ServerService {
         let origin = character.map_instance_key.clone();
         let map_name = Map::name_without_ext(destination_map);
         let map_instance = if let Some(instance) = server_state.get_map_instance(&map_name, instance_id) { instance }
+            else if instance_id != 0 && crate::server::model::instance::is_memorial_map(&map_name) {
+                script_debug!("Warp of char {char_id} to {map_name} skipped: instance {instance_id} is gone");
+                return;
+            }
             else if let Some(map) = self.configuration_service.find_map(&map_name) { self.create_map_instance(server_state, map, instance_id) }
             else {
                 script_debug!("Warp of char {char_id} to {map_name} ({x},{y}) skipped: map is not loaded");

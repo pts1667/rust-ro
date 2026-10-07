@@ -168,9 +168,6 @@ class BodyGenerator:
                 return f"get(ctx, {rust_string(canonical)})?"
             self.block(f"param:{canonical}")
             return "n(0)"
-        if scope == "instance":
-            self.block("construct:instance variable")
-            return "n(0)"
         return f"get(ctx, {self.persistent_name(node.name)})?"
 
     def read_index(self, node):
@@ -179,7 +176,7 @@ class BodyGenerator:
         if scope == "local":
             identifier = self.declare_local(node.name, True)
             return f"local_get(&{identifier}, &{index}, {str(node.name.endswith('$')).lower()})"
-        if scope in ("constant", "param", "instance"):
+        if scope in ("constant", "param"):
             self.block(f"construct:indexed {scope}")
             return "n(0)"
         return f"get_at(ctx, {self.persistent_name(node.name)}, &{index})?"
@@ -298,6 +295,8 @@ class BodyGenerator:
             return "n(args.len() as i32)"
         if name == "sprintf" and args:
             return f"sprintf({self.value(args[0])}, vec![{self.arguments(args[1:])}])?"
+        if name == "replacestr" and 3 <= len(args) <= 5:
+            return f"replacestr({self.value(args[0])}, {self.value(args[1])}, {self.value(args[2])}, &[{self.arguments(args[3:])}])?"
         if name == "implode" and len(args) in (1, 2) and isinstance(args[0], (Name, Index)) and args[0].name.startswith(".@"):
             delimiter = self.value(args[1]) if len(args) > 1 else 's("")'
             return f"implode(&{self.declare_local(args[0].name, True)}, {delimiter})?"
@@ -305,7 +304,7 @@ class BodyGenerator:
             if len(args) == 1 and isinstance(args[0], (Name, Index)) and args[0].name.startswith(".@"):
                 identifier = self.declare_local(args[0].name, True)
                 return f"n({identifier}.len() as i32)"
-            if len(args) == 1 and isinstance(args[0], Name) and self.variable_kind(args[0].name)[0] in ("character", "character_temp", "account", "server", "server_temp", "npc"):
+            if len(args) == 1 and isinstance(args[0], Name) and self.variable_kind(args[0].name)[0] in ("character", "character_temp", "account", "server", "server_temp", "npc", "instance"):
                 return f"array_size(ctx, {self.persistent_name(args[0].name)})?"
             self.block("function:getarraysize on this kind of variable")
             return "n(0)"
@@ -557,7 +556,7 @@ class BodyGenerator:
                 self.emit(f"ctx.write({rust_string(canonical)}, {rendered})?;")
             else:
                 self.block(f"param write:{canonical}")
-        elif scope in ("constant", "instance"):
+        elif scope == "constant":
             self.block(f"construct:assignment to {scope}")
         elif isinstance(target, Index):
             self.emit(f"set_at(ctx, {self.persistent_name(target.name)}, &{self.value(target.index)}, {rendered})?;")
@@ -656,7 +655,7 @@ class BodyGenerator:
             self.emit(f"let base = {start}.number_value()?;")
             for offset, argument in enumerate(args[1:]):
                 self.emit(f"local_set(&mut {identifier}, &n(base + {offset}), {self.value(argument)}, {str(target.name.endswith('$')).lower()});")
-        elif scope in ("character", "character_temp", "account", "server", "server_temp", "npc"):
+        elif scope in ("character", "character_temp", "account", "server", "server_temp", "npc", "instance"):
             self.emit(f"let base = {start}.number_value()?;")
             for offset, argument in enumerate(args[1:]):
                 self.emit(f"set_at(ctx, {self.persistent_name(target.name)}, &n(base + {offset}), {self.value(argument)})?;")
@@ -689,7 +688,7 @@ class BodyGenerator:
                 self.emit(f"local_set(&mut {identifier}, &n(0), {rendered}, {str(target.name.endswith('$')).lower()});")
             else:
                 self.emit(f"{identifier} = {rendered};")
-        elif scope in ("character", "character_temp", "account", "server", "server_temp", "npc") and isinstance(target, Name):
+        elif scope in ("character", "character_temp", "account", "server", "server_temp", "npc", "instance") and isinstance(target, Name):
             self.emit(f"set(ctx, {self.persistent_name(target.name)}, {rendered})?;")
         else:
             self.block("command:input target")
@@ -721,6 +720,10 @@ NEW_CALLS = {
     "getattachedrid": "GetAttachedRid", "implode": "Implode", "enablewaitingroomevent": "EnableWaitingRoomEvent",
     "disablewaitingroomevent": "DisableWaitingRoomEvent", "warpwaitingpc": "WarpWaitingPc", "sleep": "Sleep", "sleep2": "Sleep", "progressbar": "ProgressBar",
     "getvariableofnpc": "GetVariableOfNpc",
+    "areamonster": "AreaMonster", "getpartyname": "GetPartyName", "instance_create": "InstanceCreate", "instance_destroy": "InstanceDestroy",
+    "instance_enter": "InstanceEnter", "instance_npcname": "InstanceNpcName", "instance_mapname": "InstanceMapName", "instance_id": "InstanceId",
+    "instance_warpall": "InstanceWarpAll", "instance_announce": "InstanceAnnounce", "instance_check_party": "InstanceCheckParty",
+    "instance_check_guild": "InstanceCheckGuild", "instance_info": "InstanceInfo", "instance_live_info": "InstanceLiveInfo", "instance_list": "InstanceList",
 }
 for _name in ("getcastledata", "setcastledata"):
     SDK_CALLS.pop(_name, None)

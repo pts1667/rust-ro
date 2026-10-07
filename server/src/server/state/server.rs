@@ -35,6 +35,8 @@ pub struct ServerState {
     permission_groups: Arc<crate::server::model::permission_groups::PermissionGroups>,
     pub(crate) chat_rooms: crate::server::model::chat_room::ChatRooms,
     pub(crate) quest_infos: crate::server::model::quest_info::QuestInfos,
+    next_item_range: u32,
+    free_item_ranges: Vec<u32>,
 }
 
 #[cfg(test)]
@@ -160,6 +162,8 @@ impl ServerState {
             permission_groups: Default::default(),
             chat_rooms: Default::default(),
             quest_infos: Default::default(),
+            next_item_range: 1,
+            free_item_ranges: Vec::new(),
         }
     }
 
@@ -271,6 +275,20 @@ impl ServerState {
 
     pub fn map_instances_mut(&mut self) -> &mut HashMap<String, Vec<Arc<MapInstance>>> {
         &mut self.map_instances
+    }
+
+    /// Index of a block of `MAP_INSTANCE_MAX_MAP_ITEM_ID` map item ids no other map instance uses; index 0 overlaps the ids of the static NPCs.
+    pub fn allocate_item_range(&mut self) -> u32 {
+        self.free_item_ranges.pop().unwrap_or_else(|| {
+            self.next_item_range += 1;
+            self.next_item_range - 1
+        })
+    }
+
+    pub fn release_item_range(&mut self, range: u32) {
+        if !self.free_item_ranges.contains(&range) {
+            self.free_item_ranges.push(range);
+        }
     }
 
     pub fn map_instances_count(&self) -> &AtomicI8 {

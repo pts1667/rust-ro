@@ -565,7 +565,7 @@ fn npc_11911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     ctx.mes("[Liei]")?;
     if !ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?.truthy() {
         ctx.mes("I'm sorry, but you are not")?;
-        ctx.mes(op(op(s("carrying any "), "+", super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?, "+", s("."))?.text())?;
+        ctx.mes(op(op(s("carrying any "), "+", super::m_other_global_functions::fn_88_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?, "+", s("."))?.text())?;
         ctx.mes("Please check your inventory")?;
         ctx.mes("one more time, and then come")?;
         ctx.mes("to me to redeem your items")?;
@@ -580,14 +580,14 @@ fn npc_11911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     ctx.next()?;
     l_zeny_tt = op(ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?, "*", n(1000))?;
     ctx.mes("[Liei]")?;
-    ctx.mes(op(super::m_other_global_functions::fn_87_f_insertplural(ctx, 0, vec![ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?, ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?, "+", s(", then"))?.text())?;
+    ctx.mes(op(super::m_other_global_functions::fn_89_f_insertplural(ctx, 0, vec![ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?, ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?, "+", s(", then"))?.text())?;
     ctx.mes("you will receive a total of...")?;
     ctx.mes(" ")?;
     ctx.mes(op(op(s(""), "+", l_zeny_tt.clone())?, "+", s(" zeny"))?.text())?;
     ctx.next()?;
     ctx.mes("[Liei]")?;
     ctx.mes("Would you like to exchange")?;
-    ctx.mes(op(s("all of your "), "+", super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?.text())?;
+    ctx.mes(op(s("all of your "), "+", super::m_other_global_functions::fn_88_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?.text())?;
     ctx.mes("for your reward right now?")?;
     ctx.next()?;
     'b2: {

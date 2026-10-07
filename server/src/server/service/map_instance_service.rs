@@ -673,7 +673,10 @@ impl MapInstanceService {
         } else {
             Some(ScriptService::event_entry(&request.event).ok_or("Monster callback has no compiled event entry")?)
         };
-        let locations = spawn_locations(state.cells(), state.x_size(), state.y_size(), request.x, request.y);
+        let locations = match request.area_end {
+            Some((x2, y2)) => spawn_area_locations(state.cells(), state.x_size(), state.y_size(), (request.x, request.y), (x2, y2)),
+            None => spawn_locations(state.cells(), state.x_size(), state.y_size(), request.x, request.y),
+        };
         if locations.is_empty() {
             return Err("Monster spawn has no walkable cells".into());
         }
@@ -2014,6 +2017,21 @@ fn walkable(cells: &[u16], width: u16, height: u16, x: i32, y: i32) -> bool {
         && cells
             .get(y as usize * width as usize + x as usize)
             .is_some_and(|cell| cell & CellType::Walkable.as_flag() != 0)
+}
+
+/// Walkable cells of the rectangle between two corners; an all-zero rectangle is the whole map.
+fn spawn_area_locations(cells: &[u16], width: u16, height: u16, from: (i32, i32), to: (i32, i32)) -> Vec<(u16, u16)> {
+    if width == 0 || height == 0 {
+        return Vec::new();
+    }
+    let whole_map = from == (0, 0) && to == (0, 0);
+    let (min_x, max_x) = if whole_map { (0, width as i32 - 1) } else { (from.0.min(to.0).max(0), from.0.max(to.0).min(width as i32 - 1)) };
+    let (min_y, max_y) = if whole_map { (0, height as i32 - 1) } else { (from.1.min(to.1).max(0), from.1.max(to.1).min(height as i32 - 1)) };
+    (min_y..=max_y)
+        .flat_map(|y| (min_x..=max_x).map(move |x| (x, y)))
+        .filter(|(x, y)| walkable(cells, width, height, *x, *y))
+        .map(|(x, y)| (x as u16, y as u16))
+        .collect()
 }
 
 fn spawn_locations(cells: &[u16], width: u16, height: u16, x: i32, y: i32) -> Vec<(u16, u16)> {

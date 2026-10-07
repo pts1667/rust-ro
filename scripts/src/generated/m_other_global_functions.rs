@@ -4,13 +4,13 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-pub(crate) fn fn_73_f_sexmes(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_75_f_sexmes(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     return Ok(arg(&args, get(ctx, "Sex")?.number_value()?, n(0)));
     Ok(n(0))
 }
 
-pub(crate) fn fn_86_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_88_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_format_s = s("");
     let mut l_i = n(0);
     let mut l_index = n(0);
@@ -86,13 +86,35 @@ pub(crate) fn fn_86_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) 
     Ok(n(0))
 }
 
-pub(crate) fn fn_87_f_insertplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_89_f_insertplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
-    return Ok(sprintf(arg(&args, 3, s("%d %s")), vec![arg(&args, 0, n(0)), (if op(arg(&args, 0, n(0)), "==", n(1))?.truthy() { arg(&args, 1, n(0)) } else { super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![arg(&args, 1, n(0)), arg(&args, 2, n(0))])? })])?);
+    return Ok(sprintf(arg(&args, 3, s("%d %s")), vec![arg(&args, 0, n(0)), (if op(arg(&args, 0, n(0)), "==", n(1))?.truthy() { arg(&args, 1, n(0)) } else { super::m_other_global_functions::fn_88_f_getplural(ctx, 0, vec![arg(&args, 1, n(0)), arg(&args, 2, n(0))])? })])?);
     Ok(n(0))
 }
 
-pub(crate) fn fn_92_f_canopenstorage(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_93_f_getnumsuffix(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_mod = n(0);
+    let mut l_n = n(0);
+    let _ = pc;
+    l_n = arg(&args, 0, n(0));
+    l_mod = op(l_n.clone(), "%", n(10))?;
+    if (op(l_mod.clone(), "==", n(1))?.truthy() && op(l_n.clone(), "!=", n(11))?.truthy()) {
+        return Ok(op(l_n.clone(), "+", s("st"))?);
+    } else {
+        if (op(l_mod.clone(), "==", n(2))?.truthy() && op(l_n.clone(), "!=", n(12))?.truthy()) {
+            return Ok(op(l_n.clone(), "+", s("nd"))?);
+        } else {
+            if (op(l_mod.clone(), "==", n(3))?.truthy() && op(l_n.clone(), "!=", n(13))?.truthy()) {
+                return Ok(op(l_n.clone(), "+", s("rd"))?);
+            } else {
+                return Ok(op(l_n.clone(), "+", s("th"))?);
+            }
+        }
+    }
+    Ok(n(0))
+}
+
+pub(crate) fn fn_94_f_canopenstorage(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     return Ok(n(i32::from((!n(1).truthy() || !(op(ctx.call(Function::GetSkillLv, vec![s("NV_BASIC")])?, "<", n(6))?.truthy() && op(ctx.call(Function::GetSkillLv, vec![s("SU_BASIC_SKILL")])?, "<", n(1))?.truthy())))));
     Ok(n(0))

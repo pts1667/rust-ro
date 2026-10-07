@@ -73,6 +73,7 @@ pub struct MapInstance {
     scripts: Vec<Arc<Script>>,
     state: RwLock<MapInstanceState>,
     shutdown: AtomicBool,
+    item_range: u32,
 }
 
 const STATE_LOCK_TIMEOUT: Duration = Duration::from_secs(10);
@@ -119,6 +120,20 @@ impl DerefMut for MapStateRefMut<'_> {
 
 impl MapInstance {
     pub fn from_map(
+        vm: Arc<WasmRuntime>,
+        map: &'static Map,
+        id: u8,
+        cells: Vec<u16>,
+        client_notification_channel: SyncSender<Notification>,
+        map_items: MapItems,
+        tasks_queue: Arc<TasksQueue<MapEvent>>,
+    ) -> MapInstance {
+        Self::from_map_with(vm, map, id, cells, client_notification_channel, map_items, tasks_queue, false, 0)
+    }
+
+    /// `unique_npc_names` suffixes the NPC names with the instance id (`Name_12`), like the NPCs duplicated for a memorial dungeon.
+    #[allow(clippy::too_many_arguments)]
+    pub fn from_map_with(
         _vm: Arc<WasmRuntime>,
         map: &'static Map,
         id: u8,
@@ -126,11 +141,16 @@ impl MapInstance {
         client_notification_channel: SyncSender<Notification>,
         mut map_items: MapItems,
         tasks_queue: Arc<TasksQueue<MapEvent>>,
+        unique_npc_names: bool,
+        item_range: u32,
     ) -> MapInstance {
         let mut scripts = vec![];
         map.scripts().iter().for_each(|script| {
             let mut script = script.clone();
             script.scope_instance = id;
+            if unique_npc_names {
+                script.name = format!("{}_{id}", script.name);
+            }
             let script_arc = Arc::new(script);
             map_items.insert(script_arc.id(), script_arc.to_map_item());
             scripts.push(script_arc);
@@ -154,12 +174,17 @@ impl MapInstance {
                     .collect::<HashMap<u32, MobSpawnTrack>>(),
             )),
             shutdown: AtomicBool::new(false),
+            item_range,
         };
         instance.state_mut().flags = map.flags().clone();
         instance.state_mut().script_skill_state.npcs = instance.scripts.iter()
             .map(|script| (script.id, crate::server::script::skill::actor::NpcSkillState::uninitialized(script)))
             .collect();
         instance
+    }
+
+    pub fn item_range(&self) -> u32 {
+        self.item_range
     }
 
     pub fn shutdown(&self) {

@@ -1365,6 +1365,7 @@ mod tests {
             max_hp: None,
             lifetime_ms: None,
         reserved_id: None,
+        area_end: None,
         };
         let ids = context.map_instance_service.script_spawn(&mut state, request.clone()).unwrap();
         assert_eq!(ids.len(), 2);

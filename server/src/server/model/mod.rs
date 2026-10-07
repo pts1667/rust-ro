@@ -17,6 +17,7 @@ pub mod events;
 pub mod game_systems;
 pub(crate) mod ground_unit;
 pub mod hotkey;
+pub mod instance;
 pub mod item;
 pub mod map;
 pub mod map_flags;

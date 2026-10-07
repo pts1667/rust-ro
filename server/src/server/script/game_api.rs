@@ -49,6 +49,7 @@ impl ScriptService {
         match scope {
             VariableScope::Npc => (0, 0, context.npc_entry, name.into(), index),
             VariableScope::NpcInstance => (1, context.npc_scope_instance, context.npc_id, name.into(), index),
+            VariableScope::Instance => (4, 0, u32::from(context.npc_scope_instance), name.into(), index),
             VariableScope::ServerTemporary => (3, 0, 0, name.into(), index),
             _ => (2, 0, context.char_id, name.into(), index),
         }
@@ -108,7 +109,7 @@ impl ScriptService {
         for variable in variables {
             if matches!(
                 variable.scope,
-                VariableScope::CharacterTemporary | VariableScope::ServerTemporary | VariableScope::Npc | VariableScope::NpcInstance
+                VariableScope::CharacterTemporary | VariableScope::ServerTemporary | VariableScope::Npc | VariableScope::NpcInstance | VariableScope::Instance
             ) {
                 temporary.insert(
                     Self::temporary_key(context, variable.scope, &variable.name, variable.index),
@@ -400,7 +401,7 @@ impl ScriptService {
                     return Ok(Value::default());
                 }
                 if (context.char_id == 0 && function == Function::Announce)
-                    || (function == Function::Monster && super::unit_data::script_actor(state, context)?.is_some()) {
+                    || (matches!(function, Function::Monster | Function::AreaMonster) && super::unit_data::script_actor(state, context)?.is_some()) {
                     return server.npc_background_call(state, context, function, &arguments);
                 }
                 if matches!(function, Function::Rand | Function::Min | Function::Max | Function::Pow | Function::GetTime | Function::GetItemInfo | Function::GetItemName) {
@@ -482,6 +483,9 @@ impl ScriptService {
                 }
                 if crate::server::service::script_npc_commands::handles(function) {
                     return server.script_npc_call(state, context, function, &arguments);
+                }
+                if crate::server::service::instance_service::handles(function) {
+                    return server.script_instance_call(state, context, function, &arguments);
                 }
                 if crate::server::service::script_map_commands::handles(function) {
                     return server.script_map_call(state, context, function, &arguments);

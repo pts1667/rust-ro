@@ -239,7 +239,7 @@ fn write_variable(numbers: &TransactionalTree, strings: &TransactionalTree, chan
         VariableScope::Character => (0_u8, change.char_id),
         VariableScope::Account => (1_u8, change.account_id),
         VariableScope::Server => (2_u8, 0_u32),
-        VariableScope::CharacterTemporary | VariableScope::ServerTemporary | VariableScope::Npc | VariableScope::NpcInstance => return Ok(()),
+        VariableScope::CharacterTemporary | VariableScope::ServerTemporary | VariableScope::Npc | VariableScope::NpcInstance | VariableScope::Instance => return Ok(()),
     };
     if variable.name.is_empty() || variable.name.len() > 128 || variable.name.ends_with('$') != variable.value.is_string() {
         return abort("Invalid script variable name or value type");

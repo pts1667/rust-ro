@@ -219,6 +219,7 @@ fn battleground_monsters_are_protected_from_their_own_team_and_honor_damage_immu
         max_hp: None,
         lifetime_ms: None,
     reserved_id: None,
+    area_end: None,
     };
     let service = map_instance_service(&context);
     let ids = service.script_spawn(&mut *instance.state_mut(), request).unwrap();

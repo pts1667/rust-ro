@@ -571,7 +571,7 @@ fn npc_10194(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
             set(ctx, "tu_merchant", n(1))?;
             ctx.call(Function::SetQuest, vec![n(8229)])?;
             ctx.mes("[Guarnien]")?;
-            ctx.mes(super::m_other_global_functions::fn_73_f_sexmes(ctx, 0, vec![s("Atta girl~!"), s("Atta boy~!")])?.text())?;
+            ctx.mes(super::m_other_global_functions::fn_75_f_sexmes(ctx, 0, vec![s("Atta girl~!"), s("Atta boy~!")])?.text())?;
             ctx.mes("But first things first!")?;
             ctx.mes("You better learn the")?;
             ctx.mes("^871F78Increase Weight Limit^000000 skill!")?;

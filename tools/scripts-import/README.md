@@ -32,6 +32,8 @@ New executable behavior should be written in Rust using `script-sdk`. These conv
 
 `python tools/scripts-import/import_quests.py --rathena ../rathena` regenerates `server/src/server/script/quests.json` from the shared `db/pre-re/quest_db.yml` (time limits, hunting targets with race, size, element, level and map filters, quest-granted drops). Monster and item names resolve through `config/mobs.json` and `config/items.json`; a quest naming an unknown monster is skipped, as rathena does. The server embeds the catalog; rebuild it after regenerating. Quest NPCs register their map icons with `ctx.quest_info(icon, color, condition)` from `OnInit`.
 
+`python tools/scripts-import/import_instances.py --rathena ../rathena` regenerates `server/src/server/model/instances.json` from `db/pre-re/instance_db.yml` (memorial dungeon definitions); the server embeds it.
+
 Compiled NPC timer callbacks use entries such as `"NPC Name::OnTimer5000": 12` in `config/wasm/events.json`, with matching Rust dispatch in `scripts/src/events.rs`. Timer labels use positive millisecond counts and run through `run_event`; registering a label does not generate its handler body. The stock event registry currently contains no NPC timer handlers. The SDK exposes NPC timer controls, player timer attachment, and countdown calls through `Function`.
 
 NPC manifest entries may carry `x_size` and `y_size` (default 0). With either above zero the NPC has a touch area centred on it (`x +- x_size`, `y +- y_size`): when a player's step enters it, the server queues the NPC's compiled `OnTouch` event with that player attached. Register the label in `config/wasm/events.json` and in `scripts/src/events.rs` like any other NPC event; the Tierra Gorge barricade gates in `import_npcs.py` are the example.

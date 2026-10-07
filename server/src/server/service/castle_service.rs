@@ -126,6 +126,7 @@ fn spawn_request(mob_id: i32, x: u16, y: u16, name: &str, amount: u16) -> Script
         max_hp: None,
         lifetime_ms: None,
     reserved_id: None,
+    area_end: None,
     }
 }
 

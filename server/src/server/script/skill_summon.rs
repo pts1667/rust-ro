@@ -92,6 +92,7 @@ impl ScriptSkillService {
             max_hp: Some(summon.max_hp),
             lifetime_ms: Some(lifetime as u32),
         reserved_id: None,
+        area_end: None,
         }));
         Ok(())
     }

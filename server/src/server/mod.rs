@@ -85,6 +85,7 @@ pub struct Server {
     sessions: SessionRegistry,
     directory: CharacterDirectory,
     duels: Duels,
+    instances: crate::server::model::instance::Instances,
     battlegrounds: Battlegrounds,
     map_flag_overrides: MapFlagOverrides,
     siege: SiegeFlag,
@@ -143,6 +144,10 @@ impl Server {
 
     pub fn duels(&self) -> &Duels {
         &self.duels
+    }
+
+    pub fn instances(&self) -> &crate::server::model::instance::Instances {
+        &self.instances
     }
 
     pub fn battlegrounds(&self) -> &Battlegrounds {
@@ -281,6 +286,7 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            instances: Default::default(),
             battlegrounds: Battlegrounds::default(),
             map_flag_overrides,
             siege,
@@ -324,6 +330,7 @@ impl Server {
             sessions,
             directory,
             duels: Duels::default(),
+            instances: Default::default(),
             battlegrounds: Battlegrounds::default(),
             map_flag_overrides,
             siege,

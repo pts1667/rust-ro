@@ -1,5 +1,6 @@
 mod character;
 mod client_command;
+mod instance;
 mod lifecycle;
 mod quest;
 mod request;
@@ -10,6 +11,7 @@ mod world;
 
 pub use character::*;
 pub use client_command::*;
+pub use instance::*;
 pub use lifecycle::*;
 pub use quest::*;
 pub use request::*;
@@ -178,4 +180,5 @@ game_events! {
     CharacterSocial(CharacterSocial),
     CharacterQuestActivation(CharacterQuestActivation),
     QuestMonsterKill(QuestMonsterKill),
+    CharacterInstanceCommand(CharacterInstanceCommand),
 }

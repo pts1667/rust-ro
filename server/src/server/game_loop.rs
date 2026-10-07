@@ -49,6 +49,7 @@ impl Server {
         server_ref.tick_player_trades(&mut server_state_mut, tick as u64);
         server_ref.tick_character_logouts(&mut server_state_mut, tick);
         server_ref.tick_script_timers(&mut server_state_mut, tick);
+        server_ref.tick_instances(&mut server_state_mut);
 
         let actor_ids: Vec<_> = server_state_mut
             .characters()

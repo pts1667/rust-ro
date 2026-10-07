@@ -3,6 +3,7 @@ use movement::position::Position;
 use super::*;
 use crate::server::Server;
 use crate::server::model::events::map_event::{MapEvent, InsertCharToMap, RemoveCharFromMap};
+use crate::server::model::map::Map;
 use crate::server::model::map_item::ToMapItem;
 use crate::server::model::movement::Movement;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -214,6 +215,7 @@ impl GameEventHandler for CharacterLoadedFromClientSide {
         server.mail_login(char_id);
         server.channel_login(state, char_id);
         server.quest_login(state, char_id);
+        server.instance_login(state, char_id);
         Ok(())
     }
 }
@@ -241,6 +243,15 @@ impl GameEventHandler for CharacterChangeMap {
         server.leave_chat_room(state, event.char_id, false);
         if let Err(error) = server.cancel_player_trade(state, event.char_id) {
             warn!("Trade cancellation failed: {error}");
+        }
+        let memorial_gone = event.new_instance_id != 0
+            && crate::server::model::instance::is_memorial_map(&event.new_map_name)
+            && state.get_map_instance(&event.new_map_name, event.new_instance_id).is_none();
+        if memorial_gone {
+            let character = state.characters().get(&event.char_id).ok_or("Character disconnected")?;
+            let (map, x, y) = (Map::name_without_ext(&character.save_map), character.save_x, character.save_y);
+            server.server_service.schedule_warp_to_walkable_cell(state, &map, x, y, event.char_id);
+            return Ok(());
         }
         let map_instance = state
             .get_map_instance(&event.new_map_name, event.new_instance_id)

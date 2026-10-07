@@ -61,6 +61,8 @@ fn scope_of(name: &str) -> (VariableScope, &str) {
         (VariableScope::Server, rest)
     } else if let Some(rest) = name.strip_prefix('@') {
         (VariableScope::CharacterTemporary, rest)
+    } else if let Some(rest) = name.strip_prefix("''").or_else(|| name.strip_prefix('\'')) {
+        (VariableScope::Instance, rest)
     } else if let Some(rest) = name.strip_prefix('.') {
         (VariableScope::NpcInstance, rest)
     } else {
@@ -264,6 +266,27 @@ pub fn explode(value: Value, delimiter: Value) -> Result<Vec<Value>, String> {
 pub fn countstr(value: Value, needle: Value) -> Result<Value, String> {
     let needle = needle.text();
     Ok(n(if needle.is_empty() { 0 } else { value.text().matches(needle.as_str()).count() as i32 }))
+}
+
+pub fn replacestr(value: Value, search: Value, replacement: Value, options: &[Value]) -> Result<Value, String> {
+    let (text, search, replacement) = (value.text(), search.text(), replacement.text());
+    let case_sensitive = options.first().map_or(Ok(1), Value::number_value)? != 0;
+    let limit = options.get(1).map_or(Ok(-1), Value::number_value)?;
+    if search.is_empty() {
+        return Ok(Value::String(text));
+    }
+    let (haystack, needle) = if case_sensitive { (text.clone(), search.clone()) } else { (text.to_ascii_lowercase(), search.to_ascii_lowercase()) };
+    let mut result = String::new();
+    let (mut cursor, mut replaced) = (0, 0);
+    while limit < 0 || replaced < limit {
+        let Some(found) = haystack[cursor..].find(&needle) else { break };
+        result.push_str(&text[cursor..cursor + found]);
+        result.push_str(&replacement);
+        cursor += found + needle.len();
+        replaced += 1;
+    }
+    result.push_str(&text[cursor..]);
+    Ok(Value::String(result))
 }
 
 pub fn delchar(value: Value, characters: Value) -> Result<Value, String> {
