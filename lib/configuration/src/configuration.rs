@@ -53,13 +53,15 @@ pub struct BotsConfig {
     pub port: u16,
     /// File holding the API key; created with a random key when missing.
     pub api_key_path: String,
-    /// Where new bot characters are placed, instead of the character server start points.
+    /// Where new bot characters are placed. Empty (the default) leaves them at the character server start points, like players.
     pub start_map: String,
     pub start_x: u16,
     pub start_y: u16,
     pub max_bots: usize,
     /// Longest wait for one blocking action (walking to an NPC, a dialogue answer).
     pub action_timeout_secs: u64,
+    /// A bot nobody sent a request for in this time leaves the game, 0 keeps bots in the game until they are told to leave.
+    pub idle_logout_secs: u64,
 }
 
 impl Default for BotsConfig {
@@ -69,11 +71,12 @@ impl Default for BotsConfig {
             host: "127.0.0.1".into(),
             port: 6902,
             api_key_path: "config/bots_api_key.txt".into(),
-            start_map: "prontera".into(),
+            start_map: String::new(),
             start_x: 156,
             start_y: 191,
             max_bots: 20,
             action_timeout_secs: 30,
+            idle_logout_secs: 1200,
         }
     }
 }

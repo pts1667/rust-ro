@@ -344,6 +344,13 @@ pub fn delete_character(repository: &dyn Repository, config: &CharServerConfig, 
     }
 }
 
+/// Erases a character without the rules that protect players from deleting one by mistake (level, delay, party and guild):
+/// for the tools that own the account.
+pub fn purge_character(repository: &dyn Repository, account_id: u32, char_id: u32) -> Result<(), crate::repository::Error> {
+    let systems = repository.character_game_systems(char_id)?;
+    detach_and_purge(repository, account_id, char_id, &systems)
+}
+
 fn detach_and_purge(
     repository: &dyn Repository,
     account_id: u32,

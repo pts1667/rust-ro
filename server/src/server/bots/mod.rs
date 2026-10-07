@@ -8,6 +8,7 @@ mod command;
 mod controller;
 mod dialog;
 mod http;
+mod interaction;
 mod lifecycle;
 mod observation;
 mod registry;
@@ -26,6 +27,8 @@ use crate::server::Server;
 const MAP_CHANGE_PACKET_ID: [u8; 2] = 0x0091_u16.to_le_bytes();
 const CLIENT_LOAD_DELAY_MS: u128 = 200;
 const SHUTDOWN_POLL: Duration = Duration::from_millis(500);
+/// How often the bots are checked for being idle.
+const IDLE_CHECK: Duration = Duration::from_secs(30);
 const API_THREADS: usize = 2;
 
 /// Serves the API until the server stops. Runs on its own runtime, so a slow client can never starve the game.
@@ -59,7 +62,15 @@ pub fn serve(server: Arc<Server>) {
             }
         };
         info!("Bot API listens on http://{}:{}/bots, its skill is at /bots/SKILL.md", config.host, config.port);
-        let app = http::router(Arc::new(controller::BotController::new(server.clone())), key);
+        let controller = Arc::new(controller::BotController::new(server.clone()));
+        let idle_controller = controller.clone();
+        tokio::spawn(async move {
+            loop {
+                tokio::time::sleep(IDLE_CHECK).await;
+                idle_controller.logout_idle_bots().await;
+            }
+        });
+        let app = http::router(controller, key);
         let stopped = {
             let server = server.clone();
             async move {

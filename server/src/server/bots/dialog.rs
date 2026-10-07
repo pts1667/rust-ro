@@ -9,12 +9,20 @@ const SELECT_DEALTYPE: u16 = 0x00c4;
 const OPEN_EDITDLG: u16 = 0x0142;
 const OPEN_EDITDLG_STRING: u16 = 0x01d4;
 const NOTIFY_PLAYER_CHAT: u16 = 0x008e;
+const NOTIFY_CHAT: u16 = 0x008d;
+const WHISPER: u16 = 0x0097;
+const NOTIFY_CHAT_PARTY: u16 = 0x0109;
 
 // Fixed packets are `id, npc id`; variable ones are `id, length, npc id, text`
 const FIXED_NPC_ID: std::ops::Range<usize> = 2..6;
 const VARIABLE_NPC_ID: std::ops::Range<usize> = 4..8;
 const VARIABLE_TEXT_START: usize = 8;
 const CHAT_TEXT_START: usize = 4;
+/// Header, speaker id.
+const HEARD_CHAT_TEXT_START: usize = 8;
+const WHISPER_SENDER: std::ops::Range<usize> = 4..28;
+/// Header, sender name, administrator flag.
+const WHISPER_TEXT_START: usize = 32;
 
 /// What the conversation waits for.
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -43,7 +51,7 @@ pub enum Decoded {
     Unrelated,
     /// The dialogue changed, it is `None` once the conversation closed.
     Dialog,
-    Message(String),
+    Message { channel: &'static str, text: String },
 }
 
 fn text_from(packet: &[u8], start: usize) -> String {
@@ -103,7 +111,13 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
             *dialog = None;
             Decoded::Dialog
         }
-        NOTIFY_PLAYER_CHAT => Decoded::Message(text_from(packet, CHAT_TEXT_START)),
+        NOTIFY_PLAYER_CHAT => Decoded::Message { channel: "system", text: text_from(packet, CHAT_TEXT_START) },
+        NOTIFY_CHAT => Decoded::Message { channel: "chat", text: text_from(packet, HEARD_CHAT_TEXT_START) },
+        NOTIFY_CHAT_PARTY => Decoded::Message { channel: "party", text: text_from(packet, HEARD_CHAT_TEXT_START) },
+        WHISPER => {
+            let sender = packet.get(WHISPER_SENDER).map(|field| text_from(field, 0)).unwrap_or_default();
+            Decoded::Message { channel: "whisper", text: format!("{sender} : {}", text_from(packet, WHISPER_TEXT_START)) }
+        }
         _ => Decoded::Unrelated,
     }
 }

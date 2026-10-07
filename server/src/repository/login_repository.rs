@@ -43,6 +43,17 @@ impl LoginRepository for SledRepository {
         })?)
     }
 
+    fn account_delete(&self, account_id: u32) -> Result<bool, Error> {
+        Ok((&self.database.accounts, &self.database.account_names).transaction(|(accounts, names)| {
+            let Some(account) = tx_read::<AccountRecord>(accounts, &account_id.to_be_bytes())? else {
+                return Ok(false);
+            };
+            accounts.remove(account_id.to_be_bytes().to_vec())?;
+            names.remove(account.username.as_bytes())?;
+            Ok(true)
+        })?)
+    }
+
     fn ip_ban_active(&self, ip: Ipv4Addr, now: i64) -> Result<bool, Error> {
         for pattern in ip_ban_patterns(ip) {
             if read::<IpBanRecord>(&self.database.ip_bans, pattern.as_bytes())?.is_some_and(|ban| ban.release > now) {

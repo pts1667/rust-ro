@@ -28,11 +28,23 @@ curl -s -X POST localhost:6902/bots -H "Authorization: Bearer $KEY" -H 'Content-
 - A bot is named by its character: at most 19 characters, at least `char_server.char_name_min_length` (4 by default), with the characters the server allows for character names. Names are case-insensitive.
   `POST /bots` creates a new character on its own account and refuses a name that is taken (409). To play a bot that exists,
   `connect` it: it keeps its level, items and position across restarts of the server and of your program.
-- New bots start in `prontera` at `156,191` as Novices. Their look is chosen at creation and can not be changed afterwards.
+- A new bot is exactly a newly created player character: a level 1 Novice with the stats, status points, zeny, items and start point
+  the server gives to players, and no skills but the ones a Novice gets. Only its look (sex, hair) is chosen at creation, and can not be changed afterwards.
 - **Coordinates** are cells: `x` grows to the east, `y` grows to the **north**. A cell is walkable or not; see `/map`.
 - Everything on a map has a numeric **`id`**: NPCs, monsters, items on the ground, warps and other players. You pass that id as
   the `target` of actions. Ids change when a monster dies and respawns, so read them from a fresh observation.
 - Walking takes about 150 ms per cell. Actions that walk wait for the end of the walk (see `journey`).
+
+## Leaving the game
+
+A bot stays in the game until it is told to leave, with `POST /bots/{name}/disconnect` (or `delete`), and also when:
+
+- the **WebSocket** that put it in the game with `create` or `connect` closes, whatever the reason;
+- **20 minutes** pass without any request for it (`bots.idle_logout_secs`, 0 turns this off). Observations, maps, actions and
+  connect all count, the observations a `subscribe` pushes by itself do not.
+
+A bot that left keeps its level, items and position: `connect` brings it back. `delete` is the only way to get rid of one, and it can
+not be undone. Deleting bypasses the checks players have for deleting a character (level, delay, party and guild).
 
 ## Loop to follow
 
@@ -48,7 +60,8 @@ curl -s -X POST localhost:6902/bots -H "Authorization: Bearer $KEY" -H 'Content-
 | `POST /bots` | Creates a new character, see below |
 | `GET /bots/{name}` | Summary, plus the status of the character when connected |
 | `POST /bots/{name}/connect` | Puts a bot in the game, also one created before the server started |
-| `POST /bots/{name}/disconnect` | Saves the character and takes it out of the game |
+| `POST /bots/{name}/disconnect` | Logs the character out: saves it and takes it out of the game, the answer comes once it is gone |
+| `DELETE /bots/{name}` | Erases the character and its account for good, after logging it out. Answers `{name, char_id, deleted}` |
 | `GET /bots/{name}/observation` | Everything the bot sees, see below |
 | `GET /bots/{name}/map` | Walkable cells of the map. `?x=&y=&radius=` crops the square around a cell, to save space |
 | `POST /bots/{name}/actions` | Runs one action, the JSON body is the action |
@@ -66,7 +79,7 @@ POST /bots
 Only `name` is required. `sex` is `"M"` or `"F"` (default `"M"`), `hair_style` goes from 0 to 23 (default 1), `hair_color` from 0 to 8
 (default 0), `connect` (default true) puts the new character in the game at once. The answer is `{name, char_id, connected}`.
 Errors: 400 for a name or look the server refuses, 409 when a bot of this name exists or `bots.max_bots` bots are registered.
-Everything else about the character (job, stats) is the same for all bots: a level 1 Novice with the starting items.
+
 
 ### Observation
 
@@ -74,7 +87,8 @@ Everything else about the character (job, stats) is the same for all bots: a lev
 {
   "ready": true,
   "self": {"name": "Scout", "char_id": 150001, "job": "Novice", "base_level": 1, "job_level": 1, "hp": 40, "max_hp": 40,
-           "sp": 11, "max_sp": 11, "zeny": 0, "weight": 0, "status_points": 48, "x": 156, "y": 191,
+           "sp": 11, "max_sp": 11, "zeny": 0, "weight": 0, "status_points": 48, "skill_points": 0,
+           "stats": {"str": 1, "agi": 1, "vit": 1, "int": 1, "dex": 1, "luk": 1}, "x": 156, "y": 191,
            "action": "idle", "moving": false, "attack_target": null, "dead": false},
   "map": {"name": "prontera", "instance": 0, "width": 312, "height": 392},
   "players": [{"id": 150002, "name": "Other", "x": 150, "y": 190}],
@@ -82,14 +96,21 @@ Everything else about the character (job, stats) is the same for all bots: a lev
   "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29}],
   "items":   [{"id": 400301, "item_id": 909, "name": "Jellopy", "amount": 1, "x": 158, "y": 195}],
   "warps":   [{"id": 100500, "x": 156, "y": 20, "half_width": 2, "half_height": 1, "to_map": "prt_fild08", "to_x": 170, "to_y": 380}],
-  "inventory": [{"index": 2, "item_id": 1201, "name": "Knife", "amount": 1, "equipped": true}],
+  "inventory": [{"index": 0, "item_id": 1201, "name": "Knife", "kind": "Weapon", "amount": 1, "equipped": true}],
+  "skills": [{"id": 28, "name": "AL_HEAL", "level": 3, "aim": "target", "range": 9}],
+  "party": {"id": 1, "name": "Squad", "leader": 150001, "members": [{"char_id": 150001, "name": "Scout"}]},
+  "party_invitation": null,
+  "trade": null,
   "dialog": null,
-  "messages": [{"seq": 1, "text": "..."}]
+  "messages": [{"seq": 1, "channel": "system", "text": "..."}]
 }
 ```
 
 `action` is one of `idle`, `moving`, `attacking`, `using_skill`, `sitting`, `dead`. `ready` is false for a moment after connecting.
-`dialog` is what the NPC currently shows (see Dialogues). `messages` are the last system messages sent to the bot.
+`dialog` is what the NPC currently shows (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
+`chat` (said by someone around the bot, as `Name : text`), `whisper` or `party`. What the bot says itself comes back as `system`.
+`inventory[].index` is what the item actions take. `skills` lists what the bot knows, see Skills. `party`, `party_invitation` and `trade`
+are described in their sections.
 
 ## Actions
 
@@ -107,6 +128,15 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 | `dialog_number` | `value` | Answers a number prompt |
 | `dialog_text` | `text` | Answers a text prompt |
 | `dialog_close` | | Closes the conversation, whatever it waits for |
+| `use_item` `equip` `unequip` `drop_item` | `index` (`amount` to drop, default 1) | Items, see below |
+| `skill` | `skill`, `level`, `target`, `x`, `y` | Uses a skill, see below |
+| `raise_stat` `learn_skill` | `stat`, `amount` / `skill` | Spends points, see Skills |
+| `say` `whisper` `party_chat` | `text` (`to` for a whisper) | Chat, see below |
+| `party_create` `party_invite` `party_accept` `party_decline` `party_leave` | `name` | Parties, see below |
+| `trade_request` `trade_accept` `trade_decline` `trade_offer` `trade_zeny` `trade_lock` `trade_confirm` `trade_cancel` | | Trades, see below |
+
+A walk can be as long as the map: routes the game cannot walk in one go (about 100 cells) are walked in legs, one after the other.
+Without `wait`, the first leg starts and the rest follows in the background until another command of the bot takes over.
 
 `journey` tells how a walk ended: `arrived`, `map_changed` (a warp was taken), `stopped` (the path was blocked or cancelled) or
 `timeout` (still walking after `bots.action_timeout_secs`, 30 by default, observe to see where the bot is).
@@ -144,6 +174,54 @@ Every answer returns the next `dialog`, or `null` when the conversation ended. A
 leaves the conversation alone. An NPC that never ends its conversation can always be left with `dialog_close`. While a conversation is
 open the bot is not blocked, but a new `use` on an NPC replaces it.
 
+### Items
+
+`use_item`, `equip`, `unequip` and `drop_item` take the `index` of an item in the observation's `inventory`. They answer `{"sent": true}`
+once the request is queued, the result shows in the next observation (the item is gone, `equipped` changed). `equip` and `unequip`
+refuse an item that is already in that state.
+
+### Skills
+
+```json
+{"type": "skill", "skill": "AL_HEAL", "level": 3, "target": 150002}
+```
+
+`skill` is the name or the id from the `skills` list of the observation, `level` defaults to the highest the bot knows. What to give
+depends on the skill's `aim`: `target` takes the `target` id of a monster or a player (itself included), `ground` takes `x` and `y` (or a `target`, whose
+cell is used), `self` takes nothing, `passive` skills can not be used. The bot does not walk: a target beyond `range` is refused with
+the distance, move closer first. Casting takes time; `self.action` shows `using_skill` meanwhile. Skills that ask a question afterwards
+(teleport and warp portal menus) are not supported.
+
+Skills come from levelling up, as for players: `learn_skill` (`skill`) spends one skill point on the next level of a skill. Note that
+a Novice needs **Basic Skill** level 1 to trade and level 7 to create a party, which takes job level 8 (one skill point per job level
+after the first).
+
+### Stat points
+
+`raise_stat` (`stat`: `str`, `agi`, `vit`, `int`, `dex` or `luk`; `amount`, default 1) spends status points. `self.status_points`,
+`self.skill_points` and `self.stats` in the observation show what is left and what the bot has.
+
+### Chat
+
+`say` speaks to everyone around, `whisper` (`to` is a character name) and `party_chat` (needs a party) send to one place. Messages that
+start with `@`, `#` or `%` are refused, bots do not use commands or channels. What others say arrives in `messages`.
+
+### Parties
+
+`party_create` (`name`), `party_invite` (`name` of a character who is in the game), `party_accept` and `party_decline` (answers the
+`party_invitation` of the observation), `party_leave`. `party` in the observation lists the members, `name` is empty for those offline.
+
+### Trades
+
+Two characters standing close to each other can trade. The steps, in order:
+
+1. `trade_request` with the `target` id of a player. The other side sees `trade` with `phase: "requested"` and `incoming_request: true`.
+2. `trade_accept` (or `trade_decline`). The `phase` becomes `accepted`.
+3. `trade_offer` (`index` of an inventory item, `amount`) and `trade_zeny` (`amount`) put things on the table. What the partner offers is in
+   `partner_items` and `partner_zeny`. Equipped items must be taken off first.
+4. `trade_lock` when satisfied (`locked`), then `trade_confirm` once both are locked. When both confirmed, the items change hands and
+   `trade` becomes `null`. `trade_cancel` ends it at any time.
+
 ## WebSocket: `/bots/ws`
 
 Same key in the same header. Messages are JSON text. One connection controls any number of bots.
@@ -159,13 +237,14 @@ Same key in the same header. Messages are JSON text. One connection controls any
 
 - A command carries an `id` of your choice, which the answer repeats: `{"id", "ok": true, "result"}` or `{"id", "ok": false, "error"}`.
 - `type` is any action above, or `list`, `create` (the fields of `POST /bots`), `connect`, `disconnect`, `status`, `observe`, `map` (`x`, `y`,
-  `radius`), `subscribe`, `unsubscribe`. Every command except `list` and `create` names its bot in `bot`.
+  `radius`), `subscribe`, `unsubscribe`, `delete`. Every command except `list` and `create` names its bot in `bot`.
 - Commands run concurrently: send `stop` while a long `move` is waiting, the `move` is answered with `journey: "stopped"`.
 - After `subscribe`, the server pushes events without being asked: `observation` every `interval_ms` (200 to 10000, default 1000), and
-  at once `dialog` (`dialog`, `null` when it closed) and `message` (`message: {seq, text}`).
+  at once `dialog` (`dialog`, `null` when it closed) and `message` (`message: {seq, channel, text}`).
 
 ## Limits of this version
 
-Bots can move, use NPCs, pick items up and attack. They cannot yet use skills or items, equip, trade, chat, or join parties.
+Bots can move, use NPCs, pick items up, attack, use items and skills, equip, chat, trade, join parties and spend their points.
+They cannot yet change job or use storage, shops or vending.
 Monsters fight back and a bot can die: check `self.hp` and `self.dead`, and call `respawn` to come back at the save point with a
 few hit points. A novice has 40 HP: stay away from monsters that attack on sight (`Pupa`, `Wild Rose`...) until the bot is stronger.

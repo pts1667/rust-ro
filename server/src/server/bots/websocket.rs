@@ -3,7 +3,7 @@
 //! A command is `{"id": 1, "type": "move", "bot": "Name", ...}` and is answered by `{"id": 1, "ok": true, "result": ...}` or
 //! `{"id": 1, "ok": false, "error": "..."}`, whenever the command is done. Commands run side by side, so `stop` can interrupt a walk.
 //! Bots that were subscribed to are pushed as `{"event": "observation" | "dialog" | "message", "bot": ...}`.
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -29,6 +29,8 @@ struct Subscription {
 }
 
 type Subscriptions = Arc<Mutex<HashMap<String, Subscription>>>;
+/// Names of the bots this connection put in the game, they leave it with the connection.
+type Owned = Arc<Mutex<HashSet<String>>>;
 
 fn invalid(message: impl Into<String>) -> BotError {
     BotError { kind: ErrorKind::Invalid, message: message.into() }
@@ -45,11 +47,12 @@ pub async fn serve(socket: WebSocket, controller: Arc<BotController>) {
         }
     });
     let subscriptions = Subscriptions::default();
+    let owned = Owned::default();
     let pusher = tokio::spawn(push_events(controller.clone(), subscriptions.clone(), outgoing.clone()));
     while let Some(Ok(message)) = stream.next().await {
         match message {
             Message::Text(text) => {
-                tokio::spawn(answer(controller.clone(), subscriptions.clone(), outgoing.clone(), text.to_string()));
+                tokio::spawn(answer(controller.clone(), subscriptions.clone(), owned.clone(), outgoing.clone(), text.to_string()));
             }
             Message::Close(_) => break,
             _ => {}
@@ -57,13 +60,17 @@ pub async fn serve(socket: WebSocket, controller: Arc<BotController>) {
     }
     pusher.abort();
     writer.abort();
+    let leaving: Vec<String> = owned.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).drain().collect();
+    for name in leaving {
+        let _ = controller.disconnect(&name).await;
+    }
 }
 
-async fn answer(controller: Arc<BotController>, subscriptions: Subscriptions, outgoing: mpsc::Sender<String>, text: String) {
+async fn answer(controller: Arc<BotController>, subscriptions: Subscriptions, owned: Owned, outgoing: mpsc::Sender<String>, text: String) {
     let response = match serde_json::from_str::<Value>(&text) {
         Ok(request) => {
             let id = request.get("id").cloned().unwrap_or(Value::Null);
-            match dispatch(&controller, &subscriptions, &request).await {
+            match dispatch(&controller, &subscriptions, &owned, &request).await {
                 Ok(result) => json!({ "id": id, "ok": true, "result": result }),
                 Err(error) => json!({ "id": id, "ok": false, "error": error.message }),
             }
@@ -73,7 +80,8 @@ async fn answer(controller: Arc<BotController>, subscriptions: Subscriptions, ou
     let _ = outgoing.send(response.to_string()).await;
 }
 
-async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, request: &Value) -> Result<Value, BotError> {
+async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, owned: &Owned, request: &Value) -> Result<Value, BotError> {
+    let own = |name: &str| owned.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).insert(name.to_lowercase());
     let kind = request.get("type").and_then(Value::as_str).ok_or_else(|| invalid("Every command has a \"type\""))?;
     let bot = || {
         request
@@ -87,10 +95,29 @@ async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, req
         "create" => {
             let create: CreateBot = serde_json::from_value(request.clone()).map_err(|error| invalid(format!("Bad bot to create: {error}")))?;
             let (new_bot, connect) = create.into_parts();
-            controller.create(new_bot, connect).await
+            let name = new_bot.name.clone();
+            let created = controller.create(new_bot, connect).await?;
+            if connect {
+                own(&name);
+            }
+            Ok(created)
         }
-        "connect" => controller.connect(bot()?).await,
-        "disconnect" => controller.disconnect(bot()?).await,
+        "connect" => {
+            let name = bot()?;
+            let connected = controller.connect(name).await?;
+            own(name);
+            Ok(connected)
+        }
+        "disconnect" => {
+            let name = bot()?;
+            owned.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).remove(&name.to_lowercase());
+            controller.disconnect(name).await
+        }
+        "delete" => {
+            let name = bot()?;
+            owned.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).remove(&name.to_lowercase());
+            controller.delete(name).await
+        }
         "status" => controller.status(bot()?).await,
         "observe" => controller.observe(bot()?).await,
         "map" => {
@@ -145,7 +172,7 @@ async fn push_events(controller: Arc<BotController>, subscriptions: Subscription
             }
             if bot.is_connected() && subscription.last_observation.is_none_or(|at| at.elapsed() >= subscription.interval) {
                 subscription.last_observation = Some(Instant::now());
-                if let Ok(observation) = controller.observe(&name).await {
+                if let Ok(observation) = controller.observe_unprompted(&name).await {
                     events.push(json!({ "event": "observation", "bot": bot.name, "observation": observation }));
                 }
             }

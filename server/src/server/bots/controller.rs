@@ -8,7 +8,8 @@ use tokio::time::{Instant, sleep, timeout};
 
 use super::command::{BotCommand, BotRequest, DialogInput};
 use super::dialog::Prompt;
-use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, find_stored_bot, load_bot_character};
+use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, TradeAction};
+use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, delete_stored_bot, find_stored_bot, load_bot_character};
 use super::registry::BotHandle;
 use crate::server::Server;
 use crate::server::model::character_lifecycle::SelectedCharacter;
@@ -20,10 +21,15 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 const POLL_INTERVAL: Duration = Duration::from_millis(150);
 /// Polls without movement after which a walk counts as stopped; the movement thread starts a walk within a few of its ticks.
 const IDLE_POLLS_BEFORE_STOPPED: u32 = 4;
+/// Two ticks of the game loop: the event of a request runs on the next one.
+const EFFECT_DELAY: Duration = Duration::from_millis(100);
+/// A character leaves the game after the delay the server sets for logging out, and its last save.
+const LOGOUT_WAIT: Duration = Duration::from_secs(20);
+const SAVE_GRACE: Duration = Duration::from_secs(1);
 const WARP_POLLS: u32 = 10;
 const RECENT_MESSAGES: usize = 10;
-/// A fight started without `wait` has no caller to give up on it.
-const BACKGROUND_FIGHT_LIMIT: Duration = Duration::from_secs(600);
+/// A fight or a long walk started without `wait` has no caller to give up on it.
+const BACKGROUND_LIMIT: Duration = Duration::from_secs(600);
 const DIALOG_WAIT: Duration = Duration::from_secs(3);
 const DIALOG_POLL: Duration = Duration::from_millis(40);
 /// The packets of a script come one after the other, the dialogue is complete when none came for this long.
@@ -128,6 +134,85 @@ pub enum Action {
         text: String,
     },
     DialogClose,
+    /// Spends status points on a stat: `str`, `agi`, `vit`, `int`, `dex` or `luk`.
+    RaiseStat {
+        stat: Stat,
+        #[serde(default = "one_point")]
+        amount: u16,
+    },
+    /// Spends a skill point on the next level of a skill.
+    LearnSkill {
+        skill: SkillRef,
+    },
+    UseItem {
+        index: usize,
+    },
+    Equip {
+        index: usize,
+    },
+    Unequip {
+        index: usize,
+    },
+    DropItem {
+        index: usize,
+        #[serde(default = "one")]
+        amount: i16,
+    },
+    /// Uses a skill on a target, a cell, or oneself, as its kind in the observation says.
+    Skill {
+        skill: SkillRef,
+        level: Option<u8>,
+        target: Option<u32>,
+        x: Option<u16>,
+        y: Option<u16>,
+    },
+    Say {
+        text: String,
+    },
+    Whisper {
+        to: String,
+        text: String,
+    },
+    PartyChat {
+        text: String,
+    },
+    PartyCreate {
+        name: String,
+    },
+    PartyInvite {
+        name: String,
+    },
+    PartyAccept,
+    PartyDecline,
+    PartyLeave,
+    TradeRequest {
+        target: u32,
+    },
+    TradeAccept,
+    TradeDecline,
+    TradeOffer {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    TradeZeny {
+        amount: u32,
+    },
+    TradeLock,
+    TradeConfirm,
+    TradeCancel,
+}
+
+fn one_point() -> u16 {
+    1
+}
+
+fn one() -> i16 {
+    1
+}
+
+fn one_amount() -> u32 {
+    1
 }
 
 struct Probe {
@@ -189,8 +274,15 @@ impl BotController {
             .ok_or_else(|| BotError::new(ErrorKind::NotFound, format!("No bot named {name}, create it first")))
     }
 
+    /// A bot of the game, for a request made on its behalf: that keeps it from being logged out for being idle.
     fn connected(&self, name: &str) -> Result<Arc<BotHandle>, BotError> {
         let bot = self.find(name)?;
+        bot.touch();
+        self.connected_bot(bot)
+    }
+
+    fn connected_bot(&self, bot: Arc<BotHandle>) -> Result<Arc<BotHandle>, BotError> {
+        let name = &bot.name;
         if bot.is_connected() {
             Ok(bot)
         } else {
@@ -276,6 +368,7 @@ impl BotController {
 
     pub async fn connect(&self, name: &str) -> Result<Value, BotError> {
         let bot = self.known_or_stored(name).await?;
+        bot.touch();
         self.connect_bot(&bot).await?;
         Ok(Self::summary(&bot))
     }
@@ -319,18 +412,64 @@ impl BotController {
         Ok(())
     }
 
+    /// Takes the character out of the game, and returns once it is gone and saved.
     pub async fn disconnect(&self, name: &str) -> Result<Value, BotError> {
         let bot = self.find(name)?;
+        self.leave_game(&bot).await;
+        Ok(Self::summary(&bot))
+    }
+
+    async fn leave_game(&self, bot: &BotHandle) {
+        // Ends the fights and walks the bot runs on its own
+        bot.next_command();
         if bot.is_connected() {
             // The character may already be gone, which is what was asked for
-            let _ = self.run(&bot, BotRequest::Disconnect).await;
+            let _ = self.run(bot, BotRequest::Disconnect).await;
             bot.set_connected(false);
         }
-        Ok(Self::summary(&bot))
+        let deadline = Instant::now() + LOGOUT_WAIT;
+        while self.server.directory().presence(bot.char_id).is_some() && Instant::now() < deadline {
+            sleep(POLL_INTERVAL).await;
+        }
+    }
+
+    /// Erases the character and the account of the bot for good.
+    pub async fn delete(&self, name: &str) -> Result<Value, BotError> {
+        let bot = self.known_or_stored(name).await?;
+        self.leave_game(&bot).await;
+        if self.server.directory().presence(bot.char_id).is_some() {
+            return Err(BotError::new(ErrorKind::Conflict, "The character did not leave the game yet, try again in a moment"));
+        }
+        // The last saves of the character are on the database thread
+        sleep(SAVE_GRACE).await;
+        let server = self.server.clone();
+        let owned = bot.name.clone();
+        let deleted = tokio::task::spawn_blocking(move || delete_stored_bot(&server, &owned))
+            .await
+            .map_err(|error| BotError::new(ErrorKind::Unavailable, error.to_string()))?
+            .map_err(|message| BotError::new(ErrorKind::Unavailable, message))?;
+        self.server.bots().remove(&bot);
+        info!("Deleted bot {} (character {})", bot.name, bot.char_id);
+        Ok(json!({ "name": bot.name, "char_id": bot.char_id, "deleted": deleted }))
+    }
+
+    /// Logs out the bots nobody asked anything of for `bots.idle_logout_secs`.
+    pub async fn logout_idle_bots(&self) {
+        let limit = Duration::from_secs(self.server.configuration.bots.idle_logout_secs);
+        if limit.is_zero() {
+            return;
+        }
+        for bot in self.server.bots().list() {
+            if bot.is_connected() && bot.idle_for() >= limit {
+                info!("Bot {} was idle for {}s, logging it out", bot.name, bot.idle_for().as_secs());
+                self.leave_game(&bot).await;
+            }
+        }
     }
 
     pub async fn status(&self, name: &str) -> Result<Value, BotError> {
         let bot = self.find(name)?;
+        bot.touch();
         let mut summary = Self::summary(&bot);
         if bot.is_connected() {
             summary["status"] = self.run(&bot, BotRequest::Status).await?;
@@ -341,7 +480,18 @@ impl BotController {
     /// Everything the bot sees, plus what the NPC it talks to shows and the latest messages.
     pub async fn observe(&self, name: &str) -> Result<Value, BotError> {
         let bot = self.connected(name)?;
-        let mut observation = self.run(&bot, BotRequest::Observe).await?;
+        self.view(&bot).await
+    }
+
+    /// The observation for a subscription: nobody asked for it, so it does not count as a request.
+    pub(super) async fn observe_unprompted(&self, name: &str) -> Result<Value, BotError> {
+        let bot = self.find(name)?;
+        let bot = self.connected_bot(bot)?;
+        self.view(&bot).await
+    }
+
+    async fn view(&self, bot: &BotHandle) -> Result<Value, BotError> {
+        let mut observation = self.run(bot, BotRequest::Observe).await?;
         observation["dialog"] = serde_json::to_value(bot.dialog()).unwrap_or(Value::Null);
         observation["messages"] = serde_json::to_value(bot.recent_messages(RECENT_MESSAGES)).unwrap_or(Value::Null);
         Ok(observation)
@@ -356,10 +506,17 @@ impl BotController {
         let bot = self.connected(name)?;
         match action {
             Action::Move { x, y, wait } => {
-                bot.next_command();
-                let mut reply = self.run(&bot, BotRequest::Move { x, y }).await?;
+                let epoch = bot.next_command();
+                let first = self.run(&bot, BotRequest::Move { x, y }).await?;
+                let mut reply = json!({ "path_length": first["path_length"] });
                 if wait {
-                    reply["journey"] = self.follow_walk(&bot, Some((x, y))).await?.name().into();
+                    let journey = self.follow_route(&bot, (x, y), first, epoch, self.action_timeout()).await?;
+                    reply["journey"] = journey.name().into();
+                } else if first.get("waypoint").is_some() {
+                    let controller = self.clone();
+                    tokio::spawn(async move {
+                        let _ = controller.follow_route(&bot, (x, y), first, epoch, BACKGROUND_LIMIT).await;
+                    });
                 }
                 Ok(reply)
             }
@@ -379,7 +536,7 @@ impl BotController {
                 }
                 let controller = self.clone();
                 tokio::spawn(async move {
-                    let _ = controller.follow_fight(&bot, target, epoch, BACKGROUND_FIGHT_LIMIT).await;
+                    let _ = controller.follow_fight(&bot, target, epoch, BACKGROUND_LIMIT).await;
                 });
                 Ok(json!({ "action": "attack" }))
             }
@@ -392,11 +549,67 @@ impl BotController {
             Action::DialogChoose { option } => self.answer(&bot, DialogInput::Choose(option)).await,
             Action::DialogNumber { value } => self.answer(&bot, DialogInput::Number(value)).await,
             Action::DialogText { text } => self.answer(&bot, DialogInput::Text(text)).await,
+            Action::RaiseStat { stat, amount } => self.send(&bot, BotRequest::Progress(ProgressAction::RaiseStat { stat, amount })).await,
+            Action::LearnSkill { skill } => self.send(&bot, BotRequest::Progress(ProgressAction::LearnSkill { skill })).await,
+            Action::UseItem { index } => self.send(&bot, BotRequest::Item(ItemAction::Use { index })).await,
+            Action::Equip { index } => self.send(&bot, BotRequest::Item(ItemAction::Equip { index })).await,
+            Action::Unequip { index } => self.send(&bot, BotRequest::Item(ItemAction::Unequip { index })).await,
+            Action::DropItem { index, amount } => self.send(&bot, BotRequest::Item(ItemAction::Drop { index, amount })).await,
+            Action::Skill { skill, level, target, x, y } => {
+                let cell = x.zip(y);
+                self.send(&bot, BotRequest::Skill(SkillCast { skill, level, target, cell })).await
+            }
+            Action::Say { text } => self.send(&bot, BotRequest::Chat(ChatAction::Say(text))).await,
+            Action::Whisper { to, text } => self.send(&bot, BotRequest::Chat(ChatAction::Whisper { to, text })).await,
+            Action::PartyChat { text } => self.send(&bot, BotRequest::Chat(ChatAction::Party(text))).await,
+            Action::PartyCreate { name } => self.send(&bot, BotRequest::Party(PartyAction::Create { name })).await,
+            Action::PartyInvite { name } => self.send(&bot, BotRequest::Party(PartyAction::Invite { name })).await,
+            Action::PartyAccept => self.send(&bot, BotRequest::Party(PartyAction::Answer { accept: true })).await,
+            Action::PartyDecline => self.send(&bot, BotRequest::Party(PartyAction::Answer { accept: false })).await,
+            Action::PartyLeave => self.send(&bot, BotRequest::Party(PartyAction::Leave)).await,
+            Action::TradeRequest { target } => self.send(&bot, BotRequest::Trade(TradeAction::Request { target })).await,
+            Action::TradeAccept => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: true })).await,
+            Action::TradeDecline => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: false })).await,
+            Action::TradeOffer { index, amount } => self.send(&bot, BotRequest::Trade(TradeAction::OfferItem { index, amount })).await,
+            Action::TradeZeny { amount } => self.send(&bot, BotRequest::Trade(TradeAction::OfferZeny { amount })).await,
+            Action::TradeLock => self.send(&bot, BotRequest::Trade(TradeAction::Lock)).await,
+            Action::TradeConfirm => self.send(&bot, BotRequest::Trade(TradeAction::Confirm)).await,
+            Action::TradeCancel => self.send(&bot, BotRequest::Trade(TradeAction::Cancel)).await,
             Action::DialogClose => {
                 let reply = self.run(&bot, BotRequest::Dialog(DialogInput::Close)).await?;
                 bot.clear_dialog();
                 Ok(reply)
             }
+        }
+    }
+
+    /// Sends a request whose effect is in the state of the character, and gives the game loop the time to apply it.
+    async fn send(&self, bot: &BotHandle, request: BotRequest) -> Result<Value, BotError> {
+        let reply = self.run(bot, request).await?;
+        sleep(EFFECT_DELAY).await;
+        Ok(reply)
+    }
+
+    /// Walks the legs of a route that is too long for the pathfinder, `leg` being the answer to the request that started the first.
+    async fn follow_route(&self, bot: &BotHandle, destination: (u16, u16), mut leg: Value, epoch: u64, limit: Duration) -> Result<Journey, BotError> {
+        let deadline = Instant::now() + limit;
+        loop {
+            let waypoint = leg["waypoint"]["x"].as_u64().zip(leg["waypoint"]["y"].as_u64()).map(|(x, y)| (x as u16, y as u16));
+            let journey = self.follow_walk(bot, Some(waypoint.unwrap_or(destination))).await?;
+            if journey != Journey::Arrived || waypoint.is_none() {
+                return Ok(journey);
+            }
+            if !bot.is_current_command(epoch) {
+                return Ok(Journey::Stopped);
+            }
+            if Instant::now() > deadline {
+                return Ok(Journey::Timeout);
+            }
+            leg = match self.run(bot, BotRequest::Move { x: destination.0, y: destination.1 }).await {
+                Ok(next) => next,
+                Err(error) if error.kind == ErrorKind::Invalid => return Ok(Journey::Stopped),
+                Err(error) => return Err(error),
+            };
         }
     }
 
@@ -463,15 +676,28 @@ impl BotController {
     }
 
     async fn use_target(&self, bot: &BotHandle, target: u32) -> Result<Value, BotError> {
-        let approach = self.run(bot, BotRequest::Approach { target_id: target }).await?;
-        let kind = approach["kind"].as_str().unwrap_or_default().to_string();
         let start_map = self.probe(bot).await?.map;
+        let deadline = Instant::now() + self.action_timeout();
         let mut journey = None;
-        if approach["in_range"] == json!(false) {
+        let mut approach;
+        loop {
+            approach = self.run(bot, BotRequest::Approach { target_id: target }).await?;
+            if approach["in_range"] != json!(false) {
+                break;
+            }
             let destination = (approach["destination"]["x"].as_u64(), approach["destination"]["y"].as_u64());
             let destination = destination.0.zip(destination.1).map(|(x, y)| (x as u16, y as u16));
-            journey = Some(self.follow_walk(bot, destination).await?);
+            let leg = self.follow_walk(bot, destination).await?;
+            journey = Some(leg);
+            if leg != Journey::Arrived {
+                break;
+            }
+            if Instant::now() > deadline {
+                journey = Some(Journey::Timeout);
+                break;
+            }
         }
+        let kind = approach["kind"].as_str().unwrap_or_default().to_string();
         let mut reply = json!({ "target": target, "kind": kind });
         if let Some(journey) = journey {
             let journey = if kind == "warp" && journey == Journey::Arrived { self.await_map_change(bot, &start_map).await? } else { journey };

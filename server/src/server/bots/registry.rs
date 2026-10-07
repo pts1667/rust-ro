@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use dashmap::DashMap;
@@ -13,6 +14,8 @@ const MESSAGE_BACKLOG: usize = 50;
 pub struct BotMessage {
     /// Grows with every message of the bot, lets a client skip the ones it has seen.
     pub seq: u64,
+    /// `system`, `chat` (heard around the bot), `whisper` or `party`.
+    pub channel: &'static str,
     pub text: String,
 }
 
@@ -32,12 +35,14 @@ pub struct BotHandle {
     pub char_id: u32,
     connected: AtomicBool,
     command_epoch: AtomicU64,
+    /// Milliseconds since the epoch of the last request made for the bot.
+    last_request: AtomicU64,
     screen: Mutex<BotScreen>,
 }
 
 impl BotHandle {
     pub fn new(name: String, account_id: u32, char_id: u32) -> Self {
-        Self { name, account_id, char_id, connected: AtomicBool::new(false), command_epoch: AtomicU64::new(0), screen: Mutex::new(BotScreen::default()) }
+        Self { name, account_id, char_id, connected: AtomicBool::new(false), command_epoch: AtomicU64::new(0), last_request: AtomicU64::new(now_millis()), screen: Mutex::new(BotScreen::default()) }
     }
 
     fn screen(&self) -> MutexGuard<'_, BotScreen> {
@@ -53,6 +58,14 @@ impl BotHandle {
         if !connected {
             self.clear_dialog();
         }
+    }
+
+    pub fn touch(&self) {
+        self.last_request.store(now_millis(), Ordering::Release);
+    }
+
+    pub fn idle_for(&self) -> Duration {
+        Duration::from_millis(now_millis().saturating_sub(self.last_request.load(Ordering::Acquire)))
     }
 
     /// Numbers the commands that take over the bot, so that a fight running in the background can tell it was replaced.
@@ -92,16 +105,20 @@ impl BotHandle {
         match dialog::decode(&mut screen.dialog, packet) {
             Decoded::Unrelated => {}
             Decoded::Dialog => screen.dialog_version += 1,
-            Decoded::Message(text) => {
+            Decoded::Message { channel, text } => {
                 screen.next_seq += 1;
                 let seq = screen.next_seq;
-                screen.messages.push_back(BotMessage { seq, text });
+                screen.messages.push_back(BotMessage { seq, channel, text });
                 if screen.messages.len() > MESSAGE_BACKLOG {
                     screen.messages.pop_front();
                 }
             }
         }
     }
+}
+
+fn now_millis() -> u64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |elapsed| elapsed.as_millis() as u64)
 }
 
 #[derive(Default)]
@@ -138,6 +155,11 @@ impl BotRegistry {
 
     pub fn connected_count(&self) -> usize {
         self.0.by_name.iter().filter(|entry| entry.is_connected()).count()
+    }
+
+    pub fn remove(&self, bot: &BotHandle) {
+        self.0.by_char.remove(&bot.char_id);
+        self.0.by_name.remove(&Self::key(&bot.name));
     }
 
     pub fn is_bot(&self, char_id: u32) -> bool {

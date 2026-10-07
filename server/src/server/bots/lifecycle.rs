@@ -6,7 +6,7 @@ use crate::repository::model::char_model::CharSelectModel;
 use crate::server::Server;
 use crate::server::request_handler::char::load_character;
 use crate::server::service::char_server_service::{
-    AccountContext, CREATE_DENIED, CREATE_NAME_TAKEN, CreateRequest, create_character,
+    AccountContext, CREATE_DENIED, CREATE_NAME_TAKEN, CreateRequest, create_character, purge_character,
 };
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::Character;
@@ -81,7 +81,7 @@ pub fn find_stored_bot(server: &Server, name: &str) -> Result<Option<StoredBot>,
     Ok(living_character(server, account.account_id)?.map(|character| StoredBot { account_id: account.account_id, character }))
 }
 
-/// Creates the account and the character of a bot, which starts at `bots.start_map`.
+/// Creates the account and the character of a bot: the same as a new player character, placed at `bots.start_map` when it is set.
 pub fn create_stored_bot(server: &Server, new_bot: &NewBot) -> Result<StoredBot, CreateError> {
     let name = new_bot.name.trim();
     if name.is_empty() || name.chars().count() > MAX_NAME_LENGTH {
@@ -119,6 +119,9 @@ pub fn create_stored_bot(server: &Server, new_bot: &NewBot) -> Result<StoredBot,
     )
     .map_err(|code| CreateError::Refused(refusal(code)))?;
     let bots = &configuration.bots;
+    if bots.start_map.is_empty() {
+        return Ok(StoredBot { account_id, character: created });
+    }
     if GlobalConfigService::instance().find_map(&bots.start_map).is_none() {
         warn!("bots.start_map {} is not a loaded map, bot {name} starts at the character server start point", bots.start_map);
         return Ok(StoredBot { account_id, character: created });
@@ -134,6 +137,18 @@ pub fn create_stored_bot(server: &Server, new_bot: &NewBot) -> Result<StoredBot,
         })
         .map_err(database_error)?;
     Ok(StoredBot { account_id, character })
+}
+
+/// Erases the characters and the account of a bot. False when the bot has no account.
+pub fn delete_stored_bot(server: &Server, name: &str) -> Result<bool, String> {
+    let repository = server.repository.as_ref();
+    let Some(account) = repository.account_by_name(&account_name(name)).map_err(database_error)? else {
+        return Ok(false);
+    };
+    for character in repository.char_account_characters(account.account_id).map_err(database_error)? {
+        purge_character(repository, account.account_id, character.char_id as u32).map_err(database_error)?;
+    }
+    repository.account_delete(account.account_id).map_err(database_error)
 }
 
 pub fn load_bot_character(server: &Server, stored: &StoredBot) -> Result<Character, String> {

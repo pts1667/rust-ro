@@ -7,6 +7,7 @@ use movement::position::Position;
 use serde_json::{Value, json};
 use tokio::sync::oneshot;
 
+use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, TradeAction};
 use super::observation::{self, is_walkable};
 use crate::server::Server;
 use crate::server::model::character_lifecycle::{CharacterMapReady, CharacterRespawn, SelectedCharacter};
@@ -58,6 +59,12 @@ pub enum BotRequest {
     /// One step of a fight against a monster, see `bot_attack`.
     Attack { target_id: u32 },
     Dialog(DialogInput),
+    Item(ItemAction),
+    Skill(SkillCast),
+    Chat(ChatAction),
+    Party(PartyAction),
+    Trade(TradeAction),
+    Progress(ProgressAction),
     Stop,
     Respawn,
 }
@@ -75,6 +82,12 @@ impl BotRequest {
             BotRequest::Interact { .. } => "Interact",
             BotRequest::Attack { .. } => "Attack",
             BotRequest::Dialog(_) => "Dialog",
+            BotRequest::Item(_) => "Item",
+            BotRequest::Skill(_) => "Skill",
+            BotRequest::Chat(_) => "Chat",
+            BotRequest::Party(_) => "Party",
+            BotRequest::Trade(_) => "Trade",
+            BotRequest::Progress(_) => "Progress",
             BotRequest::Stop => "Stop",
             BotRequest::Respawn => "Respawn",
         }
@@ -146,7 +159,7 @@ impl TargetKind {
     }
 }
 
-struct Target {
+pub(super) struct Target {
     kind: TargetKind,
     x: u16,
     y: u16,
@@ -158,13 +171,21 @@ impl Target {
     fn at(kind: TargetKind, x: u16, y: u16) -> Self {
         Self { kind, x, y, half_width: 0, half_height: 0 }
     }
+
+    pub(super) fn position(&self) -> (u16, u16) {
+        (self.x, self.y)
+    }
+
+    pub(super) fn is_player(&self) -> bool {
+        self.kind == TargetKind::Player
+    }
 }
 
-fn distance(from: (u16, u16), to: (u16, u16)) -> u16 {
+pub(super) fn distance(from: (u16, u16), to: (u16, u16)) -> u16 {
     from.0.abs_diff(to.0).max(from.1.abs_diff(to.1))
 }
 
-fn locate(state: &ServerState, character: &Character, id: u32) -> Option<Target> {
+pub(super) fn locate(state: &ServerState, character: &Character, id: u32) -> Option<Target> {
     let instance = state.get_map_instance_from_character(character)?;
     let map_state = instance.state();
     if let Some(item) = map_state.get_dropped_item(id) {
@@ -185,7 +206,7 @@ fn locate(state: &ServerState, character: &Character, id: u32) -> Option<Target>
         .map(|other| Target::at(TargetKind::Player, other.x(), other.y()))
 }
 
-fn require_active(character: &Character) -> Result<(), String> {
+pub(super) fn require_active(character: &Character) -> Result<(), String> {
     if character.is_dead() || character.status.hp == 0 {
         return Err("The character is dead, respawn first".into());
     }
@@ -209,6 +230,12 @@ impl Server {
             BotRequest::Interact { target_id } => self.bot_interact(state, command.account_id, char_id, *target_id),
             BotRequest::Attack { target_id } => self.bot_attack(state, char_id, *target_id),
             BotRequest::Dialog(input) => bot_dialog(state, command.account_id, char_id, input),
+            BotRequest::Item(action) => self.bot_item(state, char_id, command.account_id, action),
+            BotRequest::Skill(cast) => self.bot_skill(state, char_id, cast),
+            BotRequest::Chat(action) => self.bot_chat(state, char_id, action),
+            BotRequest::Party(action) => self.bot_party(state, char_id, action),
+            BotRequest::Trade(action) => self.bot_trade(state, char_id, command.account_id, action),
+            BotRequest::Progress(action) => self.bot_progress(state, char_id, action),
             BotRequest::Stop => {
                 let character = state.characters_mut().get_mut(&char_id).ok_or("Character is not in game")?;
                 self.character_service().cancel_movement(character, tick);
@@ -245,18 +272,26 @@ impl Server {
         Ok(json!({ "connecting": true }))
     }
 
+    /// Walks to a cell. The pathfinder gives up on long routes, those are walked in legs: the answer then names the `waypoint`
+    /// the bot walks to first, and the caller asks again from there.
     fn bot_move(&self, state: &ServerState, char_id: u32, x: u16, y: u16) -> Result<Value, String> {
         let character = state.get_character(char_id).ok_or("Character is not in game")?;
         require_active(character)?;
         if (character.x(), character.y()) == (x, y) {
             return Ok(json!({ "path_length": 0 }));
         }
-        let path_length = path_length(state, character, x, y)?;
+        let (destination, reply) = match path_length(state, character, x, y) {
+            Ok(path_length) => ((x, y), json!({ "path_length": path_length })),
+            Err(error) => {
+                let (waypoint, route_length) = long_route_waypoint(state, character, x, y).ok_or(error)?;
+                (waypoint, json!({ "path_length": route_length, "waypoint": { "x": waypoint.0, "y": waypoint.1 } }))
+            }
+        };
         self.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
             char_id,
-            destination: Position { x, y, dir: 0 },
+            destination: Position { x: destination.0, y: destination.1, dir: 0 },
         }));
-        Ok(json!({ "path_length": path_length }))
+        Ok(reply)
     }
 
     fn bot_approach(&self, state: &ServerState, char_id: u32, target_id: u32) -> Result<Value, String> {
@@ -293,8 +328,8 @@ impl Server {
                 })
                 .collect()
         };
-        for cells in candidates {
-            for (x, y) in cells.into_iter().take(APPROACH_CANDIDATES) {
+        for cells in &candidates {
+            for &(x, y) in cells.iter().take(APPROACH_CANDIDATES) {
                 if (x, y) == here {
                     return Ok(json!({ "kind": target.kind.name(), "in_range": true }));
                 }
@@ -310,6 +345,21 @@ impl Server {
                         "path_length": path_length,
                     }));
                 }
+            }
+        }
+        // Too far for the pathfinder: walk a leg of the route, the caller approaches again from there
+        for &(x, y) in candidates.iter().filter_map(|cells| cells.first()) {
+            if let Some((waypoint, route_length)) = long_route_waypoint(state, character, x, y) {
+                self.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
+                    char_id,
+                    destination: Position { x: waypoint.0, y: waypoint.1, dir: 0 },
+                }));
+                return Ok(json!({
+                    "kind": target.kind.name(),
+                    "in_range": false,
+                    "destination": { "x": waypoint.0, "y": waypoint.1 },
+                    "path_length": route_length,
+                }));
             }
         }
         Err(format!("No reachable cell from where target {target_id} can be used"))
@@ -384,6 +434,62 @@ fn path_length(state: &ServerState, character: &Character, x: u16, y: u16) -> Re
         return Err(format!("({x},{y}) can not be reached from ({},{})", character.x(), character.y()));
     }
     Ok(path.len())
+}
+
+/// Cells ahead on the route (found on the whole map) that the pathfinder still reaches, longest first.
+const WAYPOINT_STEPS: [usize; 3] = [70, 40, 15];
+
+/// The next waypoint and the length of the whole route to `(x, y)`, when there is a route on foot.
+fn long_route_waypoint(state: &ServerState, character: &Character, x: u16, y: u16) -> Option<((u16, u16), usize)> {
+    let instance = state.get_map_instance_from_character(character)?;
+    let (width, height) = (instance.x_size(), instance.y_size());
+    let route = {
+        let map_state = instance.state();
+        if x >= width || y >= height || !is_walkable(map_state.cells(), width, x, y) {
+            return None;
+        }
+        route_on_grid(map_state.cells(), width, height, (character.x(), character.y()), (x, y))?
+    };
+    WAYPOINT_STEPS.iter().find_map(|step| {
+        let waypoint = *route.get((*step).min(route.len() - 1))?;
+        path_length(state, character, waypoint.0, waypoint.1).ok().map(|_| (waypoint, route.len()))
+    })
+}
+
+/// Breadth first search over the walkable cells, diagonals included but not around a corner. Cells after `from`, up to `to`.
+fn route_on_grid(cells: &[u16], width: u16, height: u16, from: (u16, u16), to: (u16, u16)) -> Option<Vec<(u16, u16)>> {
+    let index = |(x, y): (u16, u16)| usize::from(y) * usize::from(width) + usize::from(x);
+    let walkable = |x: i32, y: i32| {
+        (0..i32::from(width)).contains(&x) && (0..i32::from(height)).contains(&y) && is_walkable(cells, width, x as u16, y as u16)
+    };
+    let mut parent: Vec<Option<(u16, u16)>> = vec![None; usize::from(width) * usize::from(height)];
+    parent[index(from)] = Some(from);
+    let mut queue = std::collections::VecDeque::from([from]);
+    while let Some(current) = queue.pop_front() {
+        if current == to {
+            break;
+        }
+        let (cx, cy) = (i32::from(current.0), i32::from(current.1));
+        for (dx, dy) in [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)] {
+            let (nx, ny) = (cx + dx, cy + dy);
+            let diagonal_blocked = dx != 0 && dy != 0 && !(walkable(cx + dx, cy) && walkable(cx, cy + dy));
+            if !walkable(nx, ny) || diagonal_blocked {
+                continue;
+            }
+            let next = (nx as u16, ny as u16);
+            if parent[index(next)].is_none() {
+                parent[index(next)] = Some(current);
+                queue.push_back(next);
+            }
+        }
+    }
+    parent[index(to)]?;
+    let mut route = vec![to];
+    while let Some(previous) = parent[index(*route.last()?)].filter(|previous| *previous != from) {
+        route.push(previous);
+    }
+    route.reverse();
+    Some(route)
 }
 
 fn bot_session(state: &ServerState, account_id: u32, char_id: u32) -> Result<Arc<Session>, String> {

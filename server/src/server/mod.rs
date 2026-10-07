@@ -792,6 +792,7 @@ impl Server {
                                                 .into_iter()
                                                 .for_each(|char_id| {
                                                     if server_ref.bots().is_bot(char_id) {
+                                                        bots::receive_packet(&server_ref, char_id, area_notification.serialized_packet());
                                                         return;
                                                     }
                                                     if GlobalConfigService::instance().config().server.trace_packet {

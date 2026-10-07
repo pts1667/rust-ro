@@ -55,6 +55,10 @@ async fn show(State(controller): Controller, Path(name): Path<String>) -> Reply 
     controller.status(&name).await.map(Json)
 }
 
+async fn remove(State(controller): Controller, Path(name): Path<String>) -> Reply {
+    controller.delete(&name).await.map(Json)
+}
+
 async fn connect(State(controller): Controller, Path(name): Path<String>) -> Reply {
     controller.connect(&name).await.map(Json)
 }
@@ -89,7 +93,7 @@ pub fn router(controller: Arc<BotController>, key: Arc<ApiKey>) -> Router {
     let protected = Router::new()
         .route("/bots", get(list).post(create))
         .route("/bots/ws", get(socket))
-        .route("/bots/{name}", get(show))
+        .route("/bots/{name}", get(show).delete(remove))
         .route("/bots/{name}/connect", post(connect))
         .route("/bots/{name}/disconnect", post(disconnect))
         .route("/bots/{name}/observation", get(observation))

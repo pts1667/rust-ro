@@ -4,7 +4,10 @@ use models::enums::class::JobName;
 use models::enums::{EnumWithMaskValueU16, EnumWithNumberValue};
 use serde::Serialize;
 
+use super::interaction::target_kind;
 use crate::server::Server;
+use crate::server::model::game_systems::PlayerTradePhase;
+use crate::server::service::status_service::StatusService;
 use crate::server::model::movement::Movable;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::{Character, CharacterAction};
@@ -13,6 +16,16 @@ use crate::util::coordinate;
 
 /// Sprite of the NPCs that only exist to run a script (event timers, touch areas), nobody can click them.
 const INVISIBLE_NPC_SPRITE: u16 = 111;
+
+#[derive(Debug, Serialize)]
+pub struct StatsView {
+    pub str: u16,
+    pub agi: u16,
+    pub vit: u16,
+    pub int: u16,
+    pub dex: u16,
+    pub luk: u16,
+}
 
 #[derive(Debug, Serialize)]
 pub struct SelfView {
@@ -28,6 +41,8 @@ pub struct SelfView {
     pub zeny: u32,
     pub weight: u32,
     pub status_points: u32,
+    pub skill_points: u32,
+    pub stats: StatsView,
     pub x: u16,
     pub y: u16,
     pub action: &'static str,
@@ -101,6 +116,8 @@ pub struct InventoryView {
     pub name: String,
     pub amount: i16,
     pub equipped: bool,
+    /// `Healing`, `Weapon`, `Armor`, `Etc`... as the item database names it.
+    pub kind: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -116,6 +133,64 @@ pub struct GameView {
     pub items: Vec<GroundItemView>,
     pub warps: Vec<WarpView>,
     pub inventory: Vec<InventoryView>,
+    pub skills: Vec<SkillView>,
+    pub party: Option<PartyView>,
+    pub party_invitation: Option<PartyInvitationView>,
+    pub trade: Option<TradeView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SkillView {
+    pub id: u32,
+    pub name: String,
+    pub level: u8,
+    /// `target`, `ground`, `self` or `passive`: what the skill is aimed at.
+    pub aim: &'static str,
+    /// Cells, absent when the skill uses the range of the weapon.
+    pub range: Option<i32>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PartyMemberView {
+    pub char_id: u32,
+    /// Empty while the member is offline.
+    pub name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PartyView {
+    pub id: u32,
+    pub name: String,
+    pub leader: u32,
+    pub members: Vec<PartyMemberView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PartyInvitationView {
+    pub party_id: u32,
+    pub inviter: u32,
+    pub inviter_name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TradeItemView {
+    pub item_id: i32,
+    pub name: String,
+    pub amount: i16,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TradeView {
+    pub partner: u32,
+    pub partner_name: String,
+    /// `requested` (waiting for an answer), `accepted` (offers are open), `locked` or `confirmed`.
+    pub phase: &'static str,
+    /// The request comes from the partner: answer it with `trade_accept` or `trade_decline`.
+    pub incoming_request: bool,
+    pub my_items: Vec<TradeItemView>,
+    pub my_zeny: u32,
+    pub partner_items: Vec<TradeItemView>,
+    pub partner_zeny: u32,
 }
 
 #[derive(Debug, Serialize)]
@@ -164,6 +239,15 @@ fn self_view(server: &Server, character: &Character, tick: u128) -> SelfView {
         zeny: character.get_zeny(),
         weight: character.weight(),
         status_points: character.status.status_point,
+        skill_points: character.status.skill_point,
+        stats: StatsView {
+            str: character.status.str,
+            agi: character.status.agi,
+            vit: character.status.vit,
+            int: character.status.int,
+            dex: character.status.dex,
+            luk: character.status.luk,
+        },
         x: character.x(),
         y: character.y(),
         action: action_name(&character.action),
@@ -189,6 +273,79 @@ fn map_view(character: &Character, instance: Option<&crate::server::model::map_i
         width: instance.map_or(0, |instance| instance.x_size()),
         height: instance.map_or(0, |instance| instance.y_size()),
     }
+}
+
+fn skill_views(character: &Character) -> Vec<SkillView> {
+    let config = GlobalConfigService::instance();
+    StatusService::instance()
+        .to_snapshot(&character.status)
+        .known_skills()
+        .iter()
+        .filter(|skill| skill.level > 0)
+        .map(|skill| {
+            let id = skill.value.id();
+            let skill_config = config.find_skill_config(&script_sdk::Value::Number(id as i32));
+            SkillView {
+                id,
+                name: skill_config.map_or_else(|| format!("{:?}", skill.value), |found| found.name.clone()),
+                level: skill.level,
+                aim: skill_config.map_or("passive", |found| target_kind(*found.target_type())),
+                range: skill_config.and_then(|found| {
+                    found
+                        .range_per_level()
+                        .as_ref()
+                        .and_then(|ranges| ranges.get(usize::from(skill.level) - 1).copied())
+                        .or(*found.range())
+                        .filter(|range| *range > 0)
+                }),
+            }
+        })
+        .collect()
+}
+
+fn party_view(state: &ServerState, character: &Character) -> Option<PartyView> {
+    let party = character.game_systems.party.as_ref()?;
+    Some(PartyView {
+        id: party.id,
+        name: party.name.clone(),
+        leader: party.leader_char_id,
+        members: party
+            .members
+            .iter()
+            .map(|id| PartyMemberView { char_id: *id, name: state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default() })
+            .collect(),
+    })
+}
+
+fn trade_view(state: &ServerState, character: &Character) -> Option<TradeView> {
+    let trade = character.game_systems.trade.as_ref()?;
+    let partner = state.get_character(trade.partner_id);
+    let items = |items: &[crate::server::model::game_systems::PlayerTradeItem]| {
+        items
+            .iter()
+            .map(|offered| TradeItemView {
+                item_id: offered.item.item_id,
+                name: GlobalConfigService::instance().find_item(offered.item.item_id).map(|model| model.name_english.clone()).unwrap_or_default(),
+                amount: offered.amount,
+            })
+            .collect()
+    };
+    let partner_trade = partner.and_then(|partner| partner.game_systems.trade.as_ref());
+    Some(TradeView {
+        partner: trade.partner_id,
+        partner_name: partner.map(|partner| partner.name.clone()).unwrap_or_default(),
+        phase: match trade.phase {
+            PlayerTradePhase::Requested => "requested",
+            PlayerTradePhase::Accepted => "accepted",
+            PlayerTradePhase::Locked => "locked",
+            PlayerTradePhase::Confirmed => "confirmed",
+        },
+        incoming_request: trade.phase == PlayerTradePhase::Requested && trade.requested_by != character.char_id,
+        my_items: items(&trade.items),
+        my_zeny: trade.zeny,
+        partner_items: partner_trade.map(|other| items(&other.items)).unwrap_or_default(),
+        partner_zeny: partner_trade.map_or(0, |other| other.zeny),
+    })
 }
 
 pub fn status(server: &Server, state: &ServerState, char_id: u32, tick: u128) -> Result<StatusView, String> {
@@ -222,9 +379,22 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
                 name: item.name_english.clone(),
                 amount: item.amount,
                 equipped: item.equip != 0,
+                kind: format!("{:?}", item.item_type()),
             })
             .collect(),
+        skills: Vec::new(),
+        party: None,
+        party_invitation: None,
+        trade: None,
     };
+    view.skills = skill_views(character);
+    view.party = party_view(state, character);
+    view.party_invitation = character.game_systems.party_invitation.as_ref().map(|invitation| PartyInvitationView {
+        party_id: invitation.party_id,
+        inviter: invitation.inviter_id,
+        inviter_name: state.get_character(invitation.inviter_id).map(|inviter| inviter.name.clone()).unwrap_or_default(),
+    });
+    view.trade = trade_view(state, character);
     view.players = state
         .characters()
         .values()

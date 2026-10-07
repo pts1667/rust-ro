@@ -99,6 +99,10 @@ pub trait LoginRepository {
     fn account_update(&self, _account_id: u32, _update: &dyn Fn(&mut AccountRecord)) -> Result<AccountRecord, Error> {
         Err(Error::InvalidInput("Account storage is unavailable".into()))
     }
+    /// Removes the account record and its name; its characters are erased with `char_purge` first. False when it did not exist.
+    fn account_delete(&self, _account_id: u32) -> Result<bool, Error> {
+        Err(Error::InvalidInput("Account storage is unavailable".into()))
+    }
     fn ip_ban_active(&self, _ip: std::net::Ipv4Addr, _now: i64) -> Result<bool, Error> {
         Ok(false)
     }
