@@ -17,7 +17,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> bool {
     if raw.len() < 7 || u16::from_le_bytes([raw[0], raw[1]]) != CZ_ACTIVE_QUEST {
         return false;
     }
-    if let Some(char_id) = context.session().char_id {
+    if let Some(char_id) = super::connection_char_id(server, context) {
         server.add_to_next_tick(GameEvent::CharacterQuestActivation(CharacterQuestActivation {
             char_id,
             quest_id: u32::from_le_bytes([raw[2], raw[3], raw[4], raw[5]]),

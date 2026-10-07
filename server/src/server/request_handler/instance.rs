@@ -17,7 +17,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> bool {
     if raw.len() < 6 || u16::from_le_bytes([raw[0], raw[1]]) != CZ_MEMORIALDUNGEON_COMMAND {
         return false;
     }
-    if let Some(char_id) = context.session().char_id {
+    if let Some(char_id) = super::connection_char_id(server, context) {
         server.add_to_next_tick(GameEvent::CharacterInstanceCommand(CharacterInstanceCommand { char_id }));
     }
     true

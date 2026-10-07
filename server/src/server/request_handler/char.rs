@@ -250,7 +250,10 @@ pub fn handle_make_char(server: &Server, context: Request) {
             packet.fill_raw_with_packetver(Some(server.packetver()));
             socket_send!(context, packet);
         }
-        Err(code) => refuse_make_char(&context, code),
+        Err(code) => {
+            warn!("Character creation refused for account {} (name {:?}, slot {}, code {code})", session.account_id, request.name, request.slot);
+            refuse_make_char(&context, code)
+        }
     }
 }
 

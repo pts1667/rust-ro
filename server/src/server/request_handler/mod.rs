@@ -36,6 +36,12 @@ use crate::server::request_handler::movement::handle_char_move;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::util::tick::{get_tick, get_tick_client};
 
+/// The character behind the connection that sent the packet; the request has no session bound until the final dispatch below.
+pub(crate) fn connection_char_id(server: &Server, context: &Request) -> Option<u32> {
+    let session_id = server.ensure_session_exists(&context.socket())?;
+    server.sessions().find(session_id)?.char_id
+}
+
 pub mod action;
 pub mod atcommand;
 pub mod atcommand_admin;

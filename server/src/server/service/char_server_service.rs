@@ -73,6 +73,7 @@ pub fn max_sp(int: i32) -> i32 {
 /// `char_check_char_name`: `0` when the name can be used, `-1` when it is taken or reserved, `-2` when it is invalid.
 pub fn check_char_name(repository: &dyn Repository, config: &CharServerConfig, name: &str) -> i32 {
     if name.is_empty() || name.len() < config.char_name_min_length || name.chars().any(|c| c.is_control()) {
+        warn!("Character name {name:?} refused: shorter than {} characters or contains control characters", config.char_name_min_length);
         return CREATE_DENIED;
     }
     if name.eq_ignore_ascii_case(&config.wisp_server_name) {
@@ -82,7 +83,10 @@ pub fn check_char_name(repository: &dyn Repository, config: &CharServerConfig, n
         return CREATE_DENIED;
     }
     match config.char_name_option {
-        1 if !name.chars().all(|c| config.char_name_letters.contains(c)) => return CREATE_DENIED,
+        1 if !name.chars().all(|c| config.char_name_letters.contains(c)) => {
+            warn!("Character name {name:?} refused: it has characters outside char_name_letters");
+            return CREATE_DENIED;
+        }
         2 if name.chars().any(|c| config.char_name_letters.contains(c)) => return CREATE_DENIED,
         _ => {}
     }

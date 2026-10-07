@@ -32,9 +32,9 @@ impl NpcScriptHost {
                     return Err("Dialogue is too long".into());
                 }
                 let mut packet = PacketZcSayDialog::new(packetver);
-                packet.msg = text;
+                packet.msg = format!("{text}\0");
                 packet.naid = npc;
-                packet.packet_length = (PacketZcSayDialog::base_len(packetver) + packet.msg.len() + 1) as i16;
+                packet.packet_length = (PacketZcSayDialog::base_len(packetver) + packet.msg.len()) as i16;
                 packet.fill_raw();
                 self.send_packet(&mut packet).await?;
             }
@@ -64,8 +64,8 @@ impl NpcScriptHost {
                 let count = text.split(':').count();
                 let mut packet = PacketZcMenuList::new(packetver);
                 packet.naid = npc;
-                packet.msg = text;
-                packet.packet_length = (PacketZcMenuList::base_len(packetver) + packet.msg.len() + 1) as i16;
+                packet.msg = format!("{text}\0");
+                packet.packet_length = (PacketZcMenuList::base_len(packetver) + packet.msg.len()) as i16;
                 packet.fill_raw();
                 self.send_packet(&mut packet).await?;
                 match self.receive().await? {

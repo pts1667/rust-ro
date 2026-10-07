@@ -157,7 +157,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> bool {
     let Some(decoded) = decode(u16::from_le_bytes([raw[0], raw[1]]), raw) else {
         return false;
     };
-    let Some(char_id) = context.session().char_id else {
+    let Some(char_id) = super::connection_char_id(server, context) else {
         return true;
     };
     match decoded {
