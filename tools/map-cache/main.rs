@@ -24,6 +24,10 @@ Usage: this tool need .gat and .rsw files to generated mapcache.
 Using GRF editor, extract .gat and .rsw into a folder.
 
 set the GRF_DATA_PATH environment variable to this folder (the constant below is only the default).
+
+The client also renames maps through data/resnametable.txt (new_1-2 is drawn from new_zone02, ...). Put that file next to the
+.gat files (or set RESNAMETABLE) and the maps listed in MAPS_CONF (default ../rathena/conf/maps_athena.conf) that only exist
+as such an alias get a copy of the cache of the map they are drawn from. `--aliases-only` skips the generation of the caches.
  */
 static PARALLEL_EXECUTIONS: usize = 100;
 static NO_WATER: f32 = 1000000.0;
@@ -56,6 +60,10 @@ async fn main() {
         .init();
     let grf_data_dir = std::env::var("GRF_DATA_PATH").unwrap_or_else(|_| GRF_DATA_PATH.to_string());
     let grf_data_path = Path::new(&grf_data_dir);
+    if std::env::args().any(|argument| argument == "--aliases-only") {
+        link_aliases(grf_data_path);
+        return;
+    }
     let paths = fs::read_dir(grf_data_path).unwrap();
     let mut file_paths = Vec::<String>::new();
     let mut map_names = Vec::<String>::new();
@@ -196,6 +204,34 @@ async fn main() {
     join_all(futures).await;
     println!();
     info!("Map cache generation took {}s", start.elapsed().as_millis() as f32 / 1000.0);
+    link_aliases(grf_data_path);
+}
+
+fn link_aliases(grf_data_path: &Path) {
+    let table_path = std::env::var("RESNAMETABLE").map_or_else(|_| grf_data_path.join("resnametable.txt"), Into::into);
+    let Ok(table) = fs::read(&table_path) else {
+        warn!("{}: no resource name table, map aliases are not linked", table_path.display());
+        return;
+    };
+    let maps_conf = std::env::var("MAPS_CONF").unwrap_or_else(|_| "../rathena/conf/maps_athena.conf".to_string());
+    let served: std::collections::HashSet<String> = fs::read_to_string(&maps_conf)
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|line| line.strip_prefix("map:"))
+        .map(|name| name.trim().to_lowercase())
+        .collect();
+    let mut linked = 0;
+    for line in String::from_utf8_lossy(&table).lines() {
+        let mut names = line.split('#');
+        let (Some(alias), Some(target)) = (names.next(), names.next()) else { continue };
+        let (Some(alias), Some(target)) = (alias.to_lowercase().strip_suffix(".gat").map(str::to_string), target.to_lowercase().strip_suffix(".gat").map(str::to_string)) else { continue };
+        let alias_path = Path::new(MAP_CACHE_PATH).join(format!("{alias}.mcache"));
+        let target_path = Path::new(MAP_CACHE_PATH).join(format!("{target}.mcache"));
+        if served.contains(&alias) && !alias_path.exists() && target_path.exists() && fs::copy(&target_path, &alias_path).is_ok() {
+            linked += 1;
+        }
+    }
+    info!("Linked {linked} map aliases of the resource name table");
 }
 
 fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {

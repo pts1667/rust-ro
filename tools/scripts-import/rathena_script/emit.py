@@ -142,7 +142,8 @@ def write_script_warps(root, definitions, maps):
 def write_registries(root, definitions, scripts, by_name, event_entries):
     npcs_path = root / "config/wasm/npcs.json"
     events_path = root / "config/wasm/events.json"
-    npcs = [npc for npc in json.loads(npcs_path.read_text(encoding="utf-8")) if npc["entry_id"] < FIRST_NPC_ENTRY]
+    # Generated shops share entry 6 with the hand-written ones but are the only ones with a trigger area
+    npcs = [npc for npc in json.loads(npcs_path.read_text(encoding="utf-8")) if npc["entry_id"] < FIRST_NPC_ENTRY and not (npc["entry_id"] == SHOP_ENTRY and "x_size" in npc)]
     events = {label: entry for label, entry in json.loads(events_path.read_text(encoding="utf-8")).items() if entry < FIRST_EVENT_ENTRY}
     placed = 0
     taken = {npc["name"] for npc in npcs}
