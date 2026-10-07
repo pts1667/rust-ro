@@ -108,7 +108,7 @@ fn compiled_catalog_accepts_windows_line_endings() {
 fn npc_manifest_preserves_enabled_placements() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
     let scripts = crate::server::boot::script_loader::ScriptLoader::load_scripts(root.to_str().unwrap()).unwrap();
-    assert_eq!(scripts.values().map(Vec::len).sum::<usize>(), 550);
+    assert_eq!(scripts.values().flatten().filter(|npc| npc.entry_id < 10_000).count(), 550);
     let prontera = &scripts["prontera"];
     assert!(prontera.iter().any(|npc| npc.name == "Job Master" && npc.entry_id == 5));
     assert!(prontera.iter().any(|npc| npc.entry_id == 6 && !npc.constructor_args.is_empty()));

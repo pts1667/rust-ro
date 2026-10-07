@@ -17,6 +17,8 @@ pub mod fame_repository;
 pub use fame_repository::FameRepository;
 pub mod social_repository;
 pub use social_repository::SocialRepository;
+pub mod quest_repository;
+pub use quest_repository::QuestRepository;
 pub mod mail_repository;
 pub use mail_repository::MailRepository;
 #[cfg(test)]
@@ -78,6 +80,7 @@ pub trait Repository:
     + FameRepository
     + SocialRepository
     + MailRepository
+    + QuestRepository
 {
 }
 

@@ -190,6 +190,9 @@ pub struct GameConfig {
     /// Accepting a friend request also adds the requester to the accepter's list.
     #[serde(default = "default_friend_auto_add")]
     pub friend_auto_add: bool,
+    /// `quest_skill_learn` of rathena: quest skills can be raised with skill points instead of needing a quest grant.
+    #[serde(default)]
+    pub quest_skill_learn: bool,
     #[serde(default)]
     pub mail: MailConfig,
     #[serde(default = "default_channels")]

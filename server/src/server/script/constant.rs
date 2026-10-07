@@ -15,6 +15,25 @@ use crate::util::string::StringUtil;
 ([A-Z_]*): (.*)
 "$1" => Value::new_number($2),
  */
+/// `checkquest` types, `questinfo` icons and mark colours.
+fn quest_constant(name: &str) -> Option<i32> {
+    Some(match name {
+        "HAVEQUEST" | "QTYPE_QUEST" | "QMARK_NONE" => 0,
+        "PLAYTIME" | "QTYPE_QUEST2" | "QMARK_YELLOW" => 1,
+        "HUNTING" | "QTYPE_JOB" | "QMARK_GREEN" => 2,
+        "QTYPE_JOB2" | "QMARK_PURPLE" => 3,
+        "QTYPE_EVENT" => 4,
+        "QTYPE_EVENT2" => 5,
+        "QTYPE_WARG" | "QTYPE_CLICKME" => 6,
+        "QTYPE_DAILYQUEST" => 7,
+        "QTYPE_WARG2" | "QTYPE_EVENT3" => 8,
+        "QTYPE_JOBQUEST" => 9,
+        "QTYPE_JUMPING_PORING" => 10,
+        "QTYPE_NONE" => 9999,
+        _ => return None,
+    })
+}
+
 pub fn load_constant(constant_name: &String) -> Option<Value> {
     if constant_name.starts_with("MF_") {
         return crate::server::model::map_flags::MapFlag::from_name(constant_name).ok().map(|flag| Value::Number(flag as i32));
@@ -30,6 +49,9 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
             _=>return None,
         };
         return Some(Value::Number(i32::from(mask)));
+    }
+    if let Some(value) = quest_constant(constant_name) {
+        return Some(Value::Number(value));
     }
     if constant_name.starts_with("SKILLDMG_") {
         return Some(Value::Number(match constant_name.as_str() {"SKILLDMG_PC"=>0,"SKILLDMG_MOB"=>1,"SKILLDMG_BOSS"=>2,"SKILLDMG_OTHER"=>3,"SKILLDMG_CASTER"=>5,_=>return None}));

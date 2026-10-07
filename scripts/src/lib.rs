@@ -11,6 +11,8 @@ mod npcs;
 mod functions;
 mod events;
 mod pets;
+mod rt;
+mod generated;
 
 #[no_mangle]
 pub extern "C" fn script_abi() -> u32 {

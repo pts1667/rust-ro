@@ -81,6 +81,7 @@ pub fn constant(name: &str) -> Reply {
         .or_else(|| super::game_data::constant(name))
         .or_else(|| crate::server::service::script_world_service::pet_constant(name))
         .or_else(|| load_constant(&name.to_string()))
+        .or_else(|| crate::server::service::script_npc_commands::rathena_constant(name))
         .or_else(|| match name {
             "RC_undead" => load_constant(&"RC_Undead".into()),
             "RC_Demihuman" => load_constant(&"RC_DemiHuman".into()),
@@ -111,28 +112,28 @@ pub fn constant(name: &str) -> Reply {
 }
 
 pub fn status_variable(status: &Status, name: &str) -> Option<Value> {
-    let value = match name {
-        "Zeny" => status.zeny,
-        "Class" => status.job,
-        "Upper" => match status.job {
+    let value = match name.to_ascii_lowercase().as_str() {
+        "zeny" => status.zeny,
+        "class" => status.job,
+        "upper" => match status.job {
             4001..=4022 => 1,
             4023..=4045 => 2,
             _ => 0,
         },
-        "BaseLevel" => status.base_level,
-        "JobLevel" => status.job_level,
-        "SkillPoint" => status.skill_point,
-        "Hp" => status.hp,
-        "Sp" => status.sp,
-        "MaxHp" => status.max_hp,
-        "MaxSP" => status.max_sp,
-        "Sex" => u32::from(status.is_male),
-        "BaseClass" => JobName::from_mask(
+        "baselevel" => status.base_level,
+        "joblevel" => status.job_level,
+        "skillpoint" => status.skill_point,
+        "hp" => status.hp,
+        "sp" => status.sp,
+        "maxhp" => status.max_hp,
+        "maxsp" => status.max_sp,
+        "sex" => u32::from(status.is_male),
+        "baseclass" => JobName::from_mask(
             JobName::from_value(status.job as usize).mask() & models::enums::class::JOB_BASE_MASK,
             status.is_male,
         )
         .map_or(0, |job| job.value() as u32),
-        "BaseJob" => JobName::from_mask(
+        "basejob" => JobName::from_mask(
             JobName::from_value(status.job as usize).mask() & models::enums::class::JOB_UPPER_MASK,
             status.is_male,
         )

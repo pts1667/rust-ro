@@ -1440,6 +1440,16 @@ impl MapInstanceService {
             }
             if mob.last_credit_id != 0 {
                 self.server_task_queue.add_to_index(
+                    GameEvent::QuestMonsterKill(crate::server::model::events::game_event::QuestMonsterKill {
+                        char_id: mob.last_credit_id,
+                        mob_id: mob.mob_id as u16,
+                        map_instance_key: instance_key.clone(),
+                        mob_x: mob.x,
+                        mob_y: mob.y,
+                    }),
+                    delayed_tick(delay, GAME_TICK_RATE),
+                );
+                self.server_task_queue.add_to_index(
                     GameEvent::TaekwonMissionKill(crate::server::model::events::game_event::TaekwonMissionKill {
                         char_id: mob.last_credit_id,
                         mob_id: mob.mob_id as u32,

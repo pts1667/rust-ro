@@ -41,20 +41,49 @@ struct Execution<H> {
 }
 
 impl WasmRuntime {
+    /// Compiling the generated NPC module takes seconds, so the machine code is cached next to it and reused while it is newer than the module.
     pub fn from_file(path: impl AsRef<Path>) -> Result<Arc<Self>, String> {
-        let bytes = std::fs::read(path.as_ref()).map_err(|e| {
+        let path = path.as_ref();
+        let cache = path.with_extension("cwasm");
+        let fresh = |file: &Path| std::fs::metadata(file).and_then(|meta| meta.modified()).ok();
+        if let (Some(module_time), Some(cache_time)) = (fresh(path), fresh(&cache)) {
+            if cache_time >= module_time {
+                if let Some(runtime) = Self::from_precompiled(&cache) {
+                    return Ok(Arc::new(runtime));
+                }
+            }
+        }
+        let bytes = std::fs::read(path).map_err(|e| {
             format!(
                 "Cannot load {}: {e}. Build scripts with cargo run --package tools --bin scripts-build",
-                path.as_ref().display()
+                path.display()
             )
         })?;
-        Self::from_bytes(&bytes, Limits::default()).map(Arc::new)
+        let runtime = Self::from_bytes(&bytes, Limits::default())?;
+        if let Ok(compiled) = runtime.module.serialize() {
+            let partial = cache.with_extension("cwasm.tmp");
+            if std::fs::write(&partial, compiled).is_ok() {
+                let _ = std::fs::rename(&partial, &cache);
+            }
+        }
+        Ok(Arc::new(runtime))
+    }
+
+    fn from_precompiled(cache: &Path) -> Option<Self> {
+        let engine = Self::engine().ok()?;
+        // SAFETY: the file is produced by `module.serialize()` of this same build and rejected by wasmtime when it comes from another version or configuration.
+        let module = unsafe { Module::deserialize_file(&engine, cache) }.ok()?;
+        Some(Self { engine, module, limits: Limits::default() })
+    }
+
+    fn engine() -> Result<Engine, String> {
+        let mut config = Config::new();
+        config.consume_fuel(true);
+        Engine::new(&config).map_err(|e| e.to_string())
     }
 
     pub fn from_bytes(bytes: &[u8], limits: Limits) -> Result<Self, String> {
-        let mut config = Config::new();
-        config.consume_fuel(true);
-        let engine = Engine::new(&config).map_err(|e| e.to_string())?;
+        let engine = Self::engine()?;
         let module = Module::new(&engine, bytes).map_err(|e| e.to_string())?;
         Ok(Self { engine, module, limits })
     }

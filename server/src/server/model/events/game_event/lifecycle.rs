@@ -213,6 +213,7 @@ impl GameEventHandler for CharacterLoadedFromClientSide {
         server.friend_login(state, char_id);
         server.mail_login(char_id);
         server.channel_login(state, char_id);
+        server.quest_login(state, char_id);
         Ok(())
     }
 }

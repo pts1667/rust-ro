@@ -808,6 +808,12 @@ impl CharacterService {
         if old_level >= max_level {
             return false;
         }
+        if old_level == 0
+            && !self.configuration_service.config().game.quest_skill_learn
+            && crate::server::service::script_character_service::is_quest_skill(skill.id())
+        {
+            return false;
+        }
         let new_level = match self.repository.character_commit_skill_allocation(
             character.char_id,
             character.account_id,

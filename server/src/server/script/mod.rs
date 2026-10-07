@@ -18,6 +18,8 @@ pub(crate) mod pet_auto_bonus;
 pub mod skill;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod generated_npc_smoke;
 pub use host::{NpcScriptHost, PlayerInput, ScriptRequest};
 
 #[derive(Clone, Eq, Hash, PartialEq, Debug)]

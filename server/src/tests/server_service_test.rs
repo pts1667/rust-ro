@@ -70,6 +70,9 @@ mod battleground_tests;
 #[path = "player_trade_test.rs"]
 mod player_trade_tests;
 
+#[path = "quest_test.rs"]
+mod quest_tests;
+
 struct ServerServiceTestContext {
     test_context: TestContext,
     client_notification_sender: SyncSender<Notification>,

@@ -42,6 +42,7 @@
     "pvp_exp": false,
     "basic_skill_check": true,
     "friend_auto_add": true,
+    "quest_skill_learn": false,
     "mail": {
       "zeny_fee_percent": 2,
       "attachment_price": 2500,

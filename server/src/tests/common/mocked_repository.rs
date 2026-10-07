@@ -24,6 +24,7 @@ impl crate::repository::ScriptCharacterRepository for MockedRepository {
 impl crate::repository::FameRepository for MockedRepository {}
 impl crate::repository::SocialRepository for MockedRepository {}
 impl crate::repository::MailRepository for MockedRepository {}
+impl crate::repository::QuestRepository for MockedRepository {}
 
 impl HotKeyRepository for MockedRepository {}
 

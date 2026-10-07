@@ -26,6 +26,11 @@ pub fn refresh_rank_status(character: &mut Character, ranked_ids: &[u32]) -> boo
     changed
 }
 
+/// Skills flagged `IsQuest`: they need a quest grant before they show up in the skill tree.
+pub fn is_quest_skill(skill_id: u32) -> bool {
+    crate::server::script::skill::metadata::SkillMetadata::find(skill_id).is_some_and(|metadata| metadata.flags.get("IsQuest").copied().unwrap_or(false))
+}
+
 pub fn taekwon_rank_active(status: &Status) -> bool {
     status.taekwon_ranked && status.job == JobName::Taekwon.value() as u32 && status.base_level >= 90
 }
@@ -504,7 +509,8 @@ pub fn plan_reset_skills(character: &Character, refund_points: bool) -> Result<S
         let granted = character.game_systems.permanent_skill_grants.contains_key(&id);
         let keep_basic = skill.value == SkillEnum::NvBasic && !job.is_novice();
         let lost_trick_dead = skill.value == SkillEnum::NvTrickdead && !job.is_novice() && !granted;
-        let keep = !lost_trick_dead && (granted || keep_basic || skill.value.is_platinium());
+        let quest_skill = is_quest_skill(id) && !GlobalConfigService::instance().config().game.quest_skill_learn;
+        let keep = !lost_trick_dead && (granted || keep_basic || quest_skill || skill.value.is_platinium());
         let learned = learned_level(&character.status, id);
         if keep {
             known_skills.push(*skill);

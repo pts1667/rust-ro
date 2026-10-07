@@ -163,6 +163,12 @@ impl SkillTreeService {
                 .iter()
                 .find(|s| s.value.id() == skill.id())
                 .map_or(0, |s| s.level);
+            if level == 0
+                && !GlobalConfigService::instance().config().game.quest_skill_learn
+                && crate::server::service::script_character_service::is_quest_skill(skill.id())
+            {
+                continue;
+            }
             if let Some(requirements) = skill_in_tree.requires() {
                 let fulfill_requirements = requirements.iter().all(|requirement| {
                     let requirement_skill = SkillEnum::from_name(requirement.name());

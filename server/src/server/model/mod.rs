@@ -11,6 +11,8 @@ pub mod motd;
 pub mod notification_backlog;
 pub mod permission_groups;
 pub mod party_booking;
+pub mod quest;
+pub mod quest_info;
 pub mod events;
 pub mod game_systems;
 pub(crate) mod ground_unit;

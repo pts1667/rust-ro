@@ -312,6 +312,34 @@ pub enum Function {
     DisableNpc,
     SetCell,
     BgMonsterSetTeam,
+    SetQuest,
+    CompleteQuest,
+    EraseQuest,
+    ChangeQuest,
+    CheckQuest,
+    IsBeginQuest,
+    QuestInfo,
+    QuestInfoRefresh,
+    ShowEvent,
+    Emotion,
+    MapAnnounce,
+    SoundEffect,
+    SoundEffectAll,
+    ViewPoint,
+    NpcSpecialEffect,
+    CheckWeight,
+    StrNpcInfo,
+    GetMapUsers,
+    GetAreaUsers,
+    Sleep,
+    ProgressBar,
+    GetVariableOfNpc,
+    SetVariableOfNpc,
+    GetTimeTick,
+    GetTimeStr,
+    GetMapXy,
+    GetPartyMember,
+    IsPartyLeader,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -333,6 +361,10 @@ pub enum Request {
 pub type Reply = Result<Value, String>;
 
 pub struct Context;
+
+fn quest_number(quest_id: u32) -> Result<Value, String> {
+    i32::try_from(quest_id).map(Value::Number).map_err(|_| "Quest id is out of range".into())
+}
 
 impl Context {
     pub fn request(&self, request: Request) -> Reply {
@@ -452,6 +484,41 @@ impl Context {
     pub fn set_gvg(&self, map: &str, enabled: bool) -> Result<(), String> {
         self.call(if enabled { Function::GvgOn } else { Function::GvgOff }, vec![map.into()])
             .map(|_| ())
+    }
+
+    pub fn set_quest(&self, quest_id: u32) -> Result<(), String> {
+        self.call(Function::SetQuest, vec![quest_number(quest_id)?]).map(|_| ())
+    }
+
+    pub fn complete_quest(&self, quest_id: u32) -> Result<(), String> {
+        self.call(Function::CompleteQuest, vec![quest_number(quest_id)?]).map(|_| ())
+    }
+
+    pub fn erase_quest(&self, quest_id: u32) -> Result<(), String> {
+        self.call(Function::EraseQuest, vec![quest_number(quest_id)?]).map(|_| ())
+    }
+
+    pub fn change_quest(&self, old_quest_id: u32, new_quest_id: u32) -> Result<(), String> {
+        self.call(Function::ChangeQuest, vec![quest_number(old_quest_id)?, quest_number(new_quest_id)?]).map(|_| ())
+    }
+
+    /// `checkquest`: -1 when the player does not have the quest. `kind` is 0 (have), 1 (playtime) or 2 (hunting).
+    pub fn check_quest(&self, quest_id: u32, kind: i32) -> Result<i32, String> {
+        self.call(Function::CheckQuest, vec![quest_number(quest_id)?, kind.into()])?.number_value()
+    }
+
+    /// `isbegin_quest`: 0 not started, 1 in progress, 2 completed.
+    pub fn is_begin_quest(&self, quest_id: u32) -> Result<i32, String> {
+        self.call(Function::IsBeginQuest, vec![quest_number(quest_id)?])?.number_value()
+    }
+
+    /// Icon shown above the NPC while `condition` holds for the player, e.g. `"!isbegin_quest(7712) && BaseLevel >= 6"`.
+    pub fn quest_info(&self, icon: i32, color: i32, condition: &str) -> Result<(), String> {
+        self.call(Function::QuestInfo, vec![icon.into(), color.into(), condition.into()]).map(|_| ())
+    }
+
+    pub fn show_event(&self, icon: i32, color: i32) -> Result<(), String> {
+        self.call(Function::ShowEvent, vec![icon.into(), color.into()]).map(|_| ())
     }
 
     pub fn mes(&self, text: impl Into<String>) -> Result<(), String> {

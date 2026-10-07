@@ -51,6 +51,7 @@ pub mod login;
 pub mod map;
 pub mod movement;
 pub(crate) mod player_trade;
+pub mod quest;
 pub mod script_operations;
 pub mod social;
 mod talkie_box;
@@ -72,7 +73,7 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
             return;
         }
     }
-    if social::handle_raw(server.as_ref(), &context) {
+    if social::handle_raw(server.as_ref(), &context) || quest::handle_raw(server.as_ref(), &context) {
         return;
     }
     match script_operations::handle_raw(server.as_ref(), &context) {

@@ -22,6 +22,7 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> {
         17 => crate::battleground_tierra::npc(ctx),
         18 => crate::battleground_npcs::npc(ctx),
         19 => crate::castle_npcs::flag(ctx),
+        10_000..=99_999 => crate::generated::run_npc(ctx, id).unwrap_or_else(|| Err(format!("Unknown NPC script {id}"))),
         _ => Err(format!("Unknown NPC script {id}")),
     }
 }

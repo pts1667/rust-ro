@@ -160,6 +160,13 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             }
             packet_zc_notify_playerchat.set_msg(reply);
         }
+        "setquest" | "erasequest" | "completequest" | "checkquest" | "questskill" | "lostskill" => {
+            let reply = server.quest_command(state, char_id, canonical.as_str(), &args.join(" "));
+            for line in reply.lines() {
+                server.tell(char_id, line);
+            }
+            return;
+        }
         "channel" | "main" | "join" => {
             let reply = server.channel_command(state, char_id, canonical.as_str(), &args);
             for line in reply.lines() {

@@ -1,6 +1,7 @@
 mod character;
 mod client_command;
 mod lifecycle;
+mod quest;
 mod request;
 mod script;
 mod skill;
@@ -10,6 +11,7 @@ mod world;
 pub use character::*;
 pub use client_command::*;
 pub use lifecycle::*;
+pub use quest::*;
 pub use request::*;
 pub use script::*;
 pub use skill::*;
@@ -174,4 +176,6 @@ game_events! {
     CharacterSlotCard(CharacterSlotCard),
     CharacterClientCommand(CharacterClientCommand),
     CharacterSocial(CharacterSocial),
+    CharacterQuestActivation(CharacterQuestActivation),
+    QuestMonsterKill(QuestMonsterKill),
 }

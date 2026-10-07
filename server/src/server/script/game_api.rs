@@ -1,5 +1,7 @@
 use std::sync::atomic::Ordering;
 
+use tokio::sync::oneshot;
+
 use models::enums::class::JobName;
 use models::enums::look::LookType;
 use models::enums::{EnumWithNumberValue, EnumWithStringValue};
@@ -138,6 +140,12 @@ impl ScriptService {
         } else { state.find_session(context.account_id).is_some_and(|session| {
             (context.background || session.script_generation.load(Ordering::Acquire) == context.generation) && session.char_id == Some(context.char_id)
         }) && state.characters().contains_key(&context.char_id) };
+        if valid {
+            if let Request::Call { function: function @ (Function::Sleep | Function::ProgressBar), arguments } = &context.request {
+                self.delay_script(server, &context, *function, arguments, response);
+                return;
+            }
+        }
         let reply = if valid {
             self.process_request(server, state, &context)
         } else {
@@ -149,11 +157,59 @@ impl ScriptService {
         let _ = response.send(reply);
     }
 
+    /// `sleep` and `progressbar`: the script resumes after the delay, the game loop is not blocked.
+    fn delay_script(&self, server: &Server, context: &ScriptRequest, function: Function, arguments: &[Value], response: oneshot::Sender<Reply>) {
+        const LONGEST_DELAY_MS: u64 = 5 * 60 * 1000;
+        let milliseconds = match function {
+            Function::Sleep => arguments.first().and_then(|value| value.number_value().ok()).unwrap_or(0).max(0) as u64,
+            _ => arguments.get(1).and_then(|value| value.number_value().ok()).unwrap_or(0).max(0) as u64 * 1000,
+        }
+        .min(LONGEST_DELAY_MS);
+        if function == Function::ProgressBar && context.char_id != 0 {
+            let color = arguments.first().map(|value| value.text()).unwrap_or_default();
+            let color = u32::from_str_radix(color.trim_start_matches("0x").trim_start_matches("0X"), 16).unwrap_or(0xFFFFFF);
+            let mut packet = 0x02f0_u16.to_le_bytes().to_vec();
+            packet.extend_from_slice(&color.to_le_bytes());
+            packet.extend_from_slice(&((milliseconds / 1000) as u32).to_le_bytes());
+            server.send_raw(context.char_id, packet);
+        }
+        server.runtime().spawn(async move {
+            tokio::time::sleep(std::time::Duration::from_millis(milliseconds)).await;
+            let _ = response.send(Ok(Value::default()));
+        });
+    }
+
+    fn npc_variable_call(&self, state: &ServerState, context: &ScriptRequest, function: Function, arguments: &[Value]) -> Reply {
+        let name = arguments.first().ok_or("Missing variable name")?.text();
+        let name = name.strip_prefix('.').ok_or("getvariableofnpc needs a .variable")?.to_string();
+        let target = arguments.get(1).ok_or("Missing NPC name")?.text();
+        let index = u32::try_from(arguments.get(2).ok_or("Missing array index")?.number_value()?).map_err(|_| "Negative array index")?;
+        let Some((actor, script)) = crate::server::service::npc_event_service::named_npc(state, context, &target)? else {
+            return Err(format!("NPC {target} does not exist"));
+        };
+        let key = (1, script.scope_instance, actor.id, name.clone(), index);
+        if function == Function::GetVariableOfNpc {
+            let default = if name.ends_with('$') { Value::String(String::new()) } else { Value::default() };
+            return Ok(self.npc_variables.lock().unwrap().get(&key).cloned().unwrap_or(default));
+        }
+        let value = arguments.get(3).ok_or("Missing value")?.clone();
+        if name.ends_with('$') != value.is_string() || !matches!(value, Value::Number(_) | Value::String(_)) {
+            return Err("Invalid script variable".into());
+        }
+        self.npc_variables.lock().unwrap().insert(key, value);
+        Ok(Value::default())
+    }
+
     fn process_request(&self, server: &Server, state: &mut ServerState, context: &ScriptRequest) -> Reply {
         match context.request.clone() {
             Request::Read(name) => {
                 if let Some(character) = state.characters().get(&context.char_id) {
                     if let Some(value) = status_variable(&character.status, &name) { return Ok(value); }
+                    match name.as_str() {
+                        "Weight" => return Ok(Value::Number(character.weight() as i32)),
+                        "MaxWeight" => return Ok(Value::Number(server.character_service().max_weight(character) as i32)),
+                        _ => {}
+                    }
                 }
                 let (scope, name) = variable_name(&name);
                 self.read_variable(server, context, scope, name, 0)
@@ -336,6 +392,9 @@ impl ScriptService {
                 if matches!(function, Function::GetNpcId | Function::DoEvent | Function::DoNpcEvent) {
                     return server.npc_event_call(state, context, function, &arguments);
                 }
+                if matches!(function, Function::GetVariableOfNpc | Function::SetVariableOfNpc) {
+                    return self.npc_variable_call(state, context, function, &arguments);
+                }
                 if function == Function::Print {
                     debug!("NPC {}: {}", context.npc_id, arguments.iter().map(|value| value.text()).collect::<Vec<_>>().join(" "));
                     return Ok(Value::default());
@@ -415,8 +474,14 @@ impl ScriptService {
                 if crate::server::service::battleground_service::handles(function) {
                     return server.battleground_call(state, context.char_id, function, &arguments);
                 }
+                if crate::server::service::quest_service::handles(function) {
+                    return server.quest_script_call(state, context, function, &arguments);
+                }
                 if function == Function::SpecialEffect && context.char_id == 0 {
                     return server.script_npc_effect(state, context, &arguments);
+                }
+                if crate::server::service::script_npc_commands::handles(function) {
+                    return server.script_npc_call(state, context, function, &arguments);
                 }
                 if crate::server::service::script_map_commands::handles(function) {
                     return server.script_map_call(state, context, function, &arguments);

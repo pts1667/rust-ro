@@ -57,6 +57,14 @@ pub struct CharacterGameSystems {
     /// Day number and mails sent that day, for `mail.daily_count`.
     #[serde(skip)]
     pub mails_sent_today: (i64, u32),
+    /// Loaded from the quest repository when the character enters the map.
+    #[serde(skip)]
+    pub quests: crate::server::model::quest::QuestLog,
+    #[serde(skip)]
+    pub quests_loaded: bool,
+    /// NPC ids whose quest icon the client currently shows, with the icon and colour.
+    #[serde(skip)]
+    pub quest_icons: std::collections::HashMap<u32, (u16, u8)>,
     #[serde(skip)]
     pub less_effect: bool,
     #[serde(skip)]
