@@ -918,10 +918,10 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101949 => npc_call(npc_11520(ctx, 1, vec![])),
-        101950 => npc_call(npc_11521(ctx, 1, vec![])),
-        101951 => npc_call(npc_11522(ctx, 1, vec![])),
-        101952 => npc_call(npc_11523(ctx, 1, vec![])),
+        101961 => npc_call(npc_11520(ctx, 1, vec![])),
+        101962 => npc_call(npc_11521(ctx, 1, vec![])),
+        101963 => npc_call(npc_11522(ctx, 1, vec![])),
+        101964 => npc_call(npc_11523(ctx, 1, vec![])),
         _ => None,
     }
 }

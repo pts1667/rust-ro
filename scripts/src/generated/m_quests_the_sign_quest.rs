@@ -8396,6 +8396,179 @@ fn npc_11988(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11989(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    super::m_quests_the_sign_quest::fn_11_f_updatesignvars(ctx, 0, vec![])?;
+    ctx.mes("[Mahatra]")?;
+    if op(get(ctx, "sign_q")?, "<", n(37))?.truthy() {
+        ctx.mes("Welcome to the")?;
+        ctx.mes("Alchesh Estate.")?;
+        ctx.mes("The Alcheshs are the")?;
+        ctx.mes("most esteemed family")?;
+        ctx.mes("in all of Alberta.")?;
+        ctx.next()?;
+        ctx.mes("[Mahatra]")?;
+        ctx.mes("I am Mahatra Mornen,")?;
+        ctx.mes("steward of this family.")?;
+        ctx.mes("Feel free to ask me if")?;
+        ctx.mes("you need anything and")?;
+        ctx.mes("I shall do my best")?;
+        ctx.mes("to assist you.")?;
+        ctx.close()?;
+        return Err(END.into());
+    } else {
+        if op(get(ctx, "sign_q")?, "==", n(37))?.truthy() {
+            ctx.mes("Ah yes, the master informed")?;
+            ctx.mes("me that you would be taking")?;
+            ctx.mes("care of an urgent delivery for")?;
+            ctx.mes("him. Please take this to a")?;
+            ctx.mes("man named ^3355FFLeibech^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Mahatra]")?;
+            ctx.mes("It may be difficult")?;
+            ctx.mes("to find him since he")?;
+            ctx.mes("travels around the world.")?;
+            ctx.mes("Ah yes, I have heard that")?;
+            ctx.mes("he was in some other country...")?;
+            ctx.next()?;
+            ctx.mes("[Mahatra]")?;
+            ctx.mes("Now, the item I am")?;
+            ctx.mes("about to give you is")?;
+            ctx.mes("one of a kind. Don't lose")?;
+            ctx.mes("it or you will fall out of favor with the master...")?;
+            ctx.next()?;
+            ctx.mes("^3355FFMahatra gives you")?;
+            ctx.mes("a unique stone that has")?;
+            ctx.mes("your name attached to it.^000000")?;
+            set(ctx, "sign_q", n(38))?;
+            ctx.call(Function::GetNamedItem, vec![n(7049), ctx.call(Function::StrCharInfo, vec![n(0)])?])?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if (op(get(ctx, "sign_q")?, "==", n(38))?.truthy() || (op(get(ctx, "sign_q")?, "==", n(39))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7181)])?, "<", n(1))?.truthy())) {
+                ctx.mes("You haven't delivered")?;
+                ctx.mes("the Stone yet? Please take")?;
+                ctx.mes("good care of it since it's very")?;
+                ctx.mes("rare. Don't use it or lose it.")?;
+                ctx.mes("before it's delivered!")?;
+                ctx.mes("Take care, now...")?;
+                ctx.close()?;
+                return Err(END.into());
+            } else {
+                if op(get(ctx, "sign_q")?, "==", n(39))?.truthy() {
+                    ctx.mes("Ah, you've returned.")?;
+                    ctx.mes("And I see you already")?;
+                    ctx.mes("delivered the Stone. Great,")?;
+                    ctx.mes("well done. Let me send a")?;
+                    ctx.mes("message to the master, so")?;
+                    ctx.mes("please visit him later.")?;
+                    ctx.call(Function::DelItem, vec![n(7181), n(1)])?;
+                    set(ctx, "sign_q", n(40))?;
+                    ctx.close()?;
+                    return Err(END.into());
+                } else {
+                    if op(get(ctx, "sign_q")?, "==", n(40))?.truthy() {
+                        ctx.mes("Thank you very")?;
+                        ctx.mes("much for the trouble")?;
+                        ctx.mes("you've gone through")?;
+                        ctx.mes("on our behalf.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if op(get(ctx, "sign_q")?, "==", n(41))?.truthy() {
+                            ctx.mes("Greetings. Hm?")?;
+                            ctx.mes("Did the master ask")?;
+                            ctx.mes("you to perform another")?;
+                            ctx.mes("task for him already?")?;
+                            ctx.next()?;
+                            'b1: {
+                                let sw1 = n(select(ctx, &["No.", "You have another assignment for me."])?);
+                                let mut m1 = false;
+                                let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                                if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                                if m1 {
+                                    ctx.mes("[Mahatra]")?;
+                                    ctx.mes("Very well.")?;
+                                    ctx.mes("Then we shall")?;
+                                    ctx.mes("converse later~")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                                if m1 {
+                                    ctx.mes("[Mahatra]")?;
+                                    ctx.mes("I... I do...?")?;
+                                    ctx.mes("The master didn't")?;
+                                    ctx.mes("leave me any instructions.")?;
+                                    ctx.mes("Hmmm. Oh, I know what you can")?;
+                                    ctx.mes("do! Why don't you help ^FF0000Seylin^000000? She seems bothered by something...")?;
+                                    set(ctx, "sign_q", n(42))?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            }
+                        } else {
+                            if op(get(ctx, "sign_q")?, "<", n(51))?.truthy() {
+                                ctx.mes("Although you may only")?;
+                                ctx.mes("be doing it for the Sobbing")?;
+                                ctx.mes("Starlight, I really appreciate")?;
+                                ctx.mes("all your help. Seylin's a very")?;
+                                ctx.mes("nice girl and doesn't deserve")?;
+                                ctx.mes("to feel down...")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if op(get(ctx, "sign_q")?, "==", n(51))?.truthy() {
+                                    ctx.mes("Yes.")?;
+                                    ctx.mes("I heard from Seylin.")?;
+                                    ctx.mes("I did not know she was worried about her brother.")?;
+                                    ctx.mes("Ahem ahem...")?;
+                                    ctx.mes("Thank you for helping her.")?;
+                                    ctx.mes("I will send a message to my master.")?;
+                                    ctx.next()?;
+                                    ctx.mes("Mahatra]")?;
+                                    ctx.mes("If there is anything else, he will let you pass the test.")?;
+                                    ctx.mes("Good luck.")?;
+                                    set(ctx, "sign_q", n(52))?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if op(get(ctx, "sign_q")?, "==", n(98))?.truthy() {
+                                        ctx.mes("I'm very disappointed")?;
+                                        ctx.mes("in you. We put our trust")?;
+                                        ctx.mes("in you and you really")?;
+                                        ctx.mes("let us down.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Mahatra]")?;
+                                        ctx.mes("Well, I suppose")?;
+                                        ctx.mes("that's the nature")?;
+                                        ctx.mes("of the testing. They're")?;
+                                        ctx.mes("designed so that only")?;
+                                        ctx.mes("the best of the best")?;
+                                        ctx.mes("can pass them.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        ctx.mes("I hope the master listens")?;
+                                        ctx.mes("to me and dresses more like")?;
+                                        ctx.mes("a man in his position. Even if")?;
+                                        ctx.mes("he thinks he's just a merchant,")?;
+                                        ctx.mes("he's the master of this estate!")?;
+                                        ctx.mes("But please don't tell him that~")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_11990(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Hurubu]")?;
@@ -15380,6 +15553,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11986 => npc_call(npc_11986(ctx, 0, vec![])),
         11987 => npc_call(npc_11987(ctx, 0, vec![])),
         11988 => npc_call(npc_11988(ctx, 0, vec![])),
+        11989 => npc_call(npc_11989(ctx, 0, vec![])),
         11990 => npc_call(npc_11990(ctx, 0, vec![])),
         11991 => npc_call(npc_11991(ctx, 0, vec![])),
         11993 => npc_call(npc_11993(ctx, 0, vec![])),
@@ -15431,127 +15605,127 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        102287 => npc_call(npc_11941(ctx, 1, vec![])),
-        102288 => npc_call(npc_11963(ctx, 1, vec![])),
-        102289 => npc_call(npc_11966(ctx, 1, vec![])),
-        102290 => npc_call(npc_11967(ctx, 1, vec![])),
-        102291 => npc_call(npc_11968(ctx, 1, vec![])),
-        102292 => npc_call(npc_11969(ctx, 1, vec![])),
-        102293 => npc_call(npc_11969(ctx, 2, vec![])),
-        102294 => npc_call(npc_11969(ctx, 3, vec![])),
-        102295 => npc_call(npc_11970(ctx, 1, vec![])),
-        102296 => npc_call(npc_11970(ctx, 2, vec![])),
-        102297 => npc_call(npc_11970(ctx, 3, vec![])),
-        102298 => npc_call(npc_11970(ctx, 4, vec![])),
-        102299 => npc_call(npc_11972(ctx, 1, vec![])),
-        102300 => npc_call(npc_11972(ctx, 2, vec![])),
-        102301 => npc_call(npc_11973(ctx, 1, vec![])),
-        102302 => npc_call(npc_11978(ctx, 1, vec![])),
-        102303 => npc_call(npc_11978(ctx, 2, vec![])),
-        102304 => npc_call(npc_11978(ctx, 3, vec![])),
-        102305 => npc_call(npc_11978(ctx, 4, vec![])),
-        102306 => npc_call(npc_11978(ctx, 5, vec![])),
-        102307 => npc_call(npc_11978(ctx, 6, vec![])),
-        102308 => npc_call(npc_11978(ctx, 7, vec![])),
-        102309 => npc_call(npc_11978(ctx, 8, vec![])),
-        102310 => npc_call(npc_11978(ctx, 9, vec![])),
-        102311 => npc_call(npc_11978(ctx, 10, vec![])),
-        102312 => npc_call(npc_11978(ctx, 11, vec![])),
-        102313 => npc_call(npc_11978(ctx, 12, vec![])),
-        102314 => npc_call(npc_11978(ctx, 13, vec![])),
-        102315 => npc_call(npc_11978(ctx, 14, vec![])),
-        102316 => npc_call(npc_11978(ctx, 15, vec![])),
-        102317 => npc_call(npc_11978(ctx, 16, vec![])),
-        102318 => npc_call(npc_11978(ctx, 17, vec![])),
-        102319 => npc_call(npc_11979(ctx, 1, vec![])),
-        102320 => npc_call(npc_11979(ctx, 2, vec![])),
-        102321 => npc_call(npc_11979(ctx, 3, vec![])),
-        102322 => npc_call(npc_11979(ctx, 4, vec![])),
-        102323 => npc_call(npc_11979(ctx, 5, vec![])),
-        102324 => npc_call(npc_11979(ctx, 6, vec![])),
-        102325 => npc_call(npc_11980(ctx, 1, vec![])),
-        102326 => npc_call(npc_11980(ctx, 2, vec![])),
-        102327 => npc_call(npc_11980(ctx, 3, vec![])),
-        102328 => npc_call(npc_11980(ctx, 4, vec![])),
-        102329 => npc_call(npc_11980(ctx, 5, vec![])),
-        102330 => npc_call(npc_11980(ctx, 6, vec![])),
-        102331 => npc_call(npc_11981(ctx, 1, vec![])),
-        102332 => npc_call(npc_11981(ctx, 2, vec![])),
-        102333 => npc_call(npc_11981(ctx, 3, vec![])),
-        102334 => npc_call(npc_11981(ctx, 4, vec![])),
-        102335 => npc_call(npc_11981(ctx, 5, vec![])),
-        102336 => npc_call(npc_11981(ctx, 6, vec![])),
-        102337 => npc_call(npc_11982(ctx, 1, vec![])),
-        102338 => npc_call(npc_11982(ctx, 2, vec![])),
-        102339 => npc_call(npc_11982(ctx, 3, vec![])),
-        102340 => npc_call(npc_11982(ctx, 4, vec![])),
-        102341 => npc_call(npc_11982(ctx, 5, vec![])),
-        102342 => npc_call(npc_11982(ctx, 6, vec![])),
-        102343 => npc_call(npc_11983(ctx, 1, vec![])),
-        102344 => npc_call(npc_11983(ctx, 2, vec![])),
-        102345 => npc_call(npc_11983(ctx, 3, vec![])),
-        102346 => npc_call(npc_11983(ctx, 4, vec![])),
-        102347 => npc_call(npc_11983(ctx, 5, vec![])),
-        102348 => npc_call(npc_11983(ctx, 6, vec![])),
-        102349 => npc_call(npc_11984(ctx, 1, vec![])),
-        102350 => npc_call(npc_11984(ctx, 2, vec![])),
-        102351 => npc_call(npc_11984(ctx, 3, vec![])),
-        102352 => npc_call(npc_11984(ctx, 4, vec![])),
-        102353 => npc_call(npc_12000(ctx, 1, vec![])),
-        102354 => npc_call(npc_12002(ctx, 1, vec![])),
-        102355 => npc_call(npc_12002(ctx, 2, vec![])),
-        102356 => npc_call(npc_12002(ctx, 3, vec![])),
-        102357 => npc_call(npc_12002(ctx, 4, vec![])),
-        102358 => npc_call(npc_12002(ctx, 5, vec![])),
-        102359 => npc_call(npc_12002(ctx, 6, vec![])),
-        102360 => npc_call(npc_12002(ctx, 7, vec![])),
-        102361 => npc_call(npc_12002(ctx, 8, vec![])),
-        102362 => npc_call(npc_12003(ctx, 1, vec![])),
-        102363 => npc_call(npc_12003(ctx, 2, vec![])),
-        102364 => npc_call(npc_12003(ctx, 3, vec![])),
-        102365 => npc_call(npc_12004(ctx, 1, vec![])),
-        102366 => npc_call(npc_12004(ctx, 2, vec![])),
-        102367 => npc_call(npc_12005(ctx, 1, vec![])),
-        102368 => npc_call(npc_12005(ctx, 2, vec![])),
-        102369 => npc_call(npc_12008(ctx, 1, vec![])),
-        102370 => npc_call(npc_12013(ctx, 1, vec![])),
-        102371 => npc_call(npc_12013(ctx, 2, vec![])),
-        102372 => npc_call(npc_12014(ctx, 1, vec![])),
-        102373 => npc_call(npc_12015(ctx, 1, vec![])),
-        102374 => npc_call(npc_12025(ctx, 1, vec![])),
-        102375 => npc_call(npc_12025(ctx, 2, vec![])),
-        102376 => npc_call(npc_12025(ctx, 3, vec![])),
-        102377 => npc_call(npc_12025(ctx, 4, vec![])),
-        102378 => npc_call(npc_12025(ctx, 5, vec![])),
-        102379 => npc_call(npc_12025(ctx, 6, vec![])),
-        102380 => npc_call(npc_12025(ctx, 7, vec![])),
-        102381 => npc_call(npc_12025(ctx, 8, vec![])),
-        102382 => npc_call(npc_12025(ctx, 9, vec![])),
-        102383 => npc_call(npc_12027(ctx, 1, vec![])),
-        102384 => npc_call(npc_12027(ctx, 2, vec![])),
-        102385 => npc_call(npc_12028(ctx, 1, vec![])),
-        102386 => npc_call(npc_12028(ctx, 2, vec![])),
-        102387 => npc_call(npc_12028(ctx, 3, vec![])),
-        102388 => npc_call(npc_12028(ctx, 4, vec![])),
-        102389 => npc_call(npc_12029(ctx, 1, vec![])),
-        102390 => npc_call(npc_12029(ctx, 2, vec![])),
-        102391 => npc_call(npc_12029(ctx, 3, vec![])),
-        102392 => npc_call(npc_12030(ctx, 1, vec![])),
-        102393 => npc_call(npc_12030(ctx, 2, vec![])),
-        102394 => npc_call(npc_12030(ctx, 3, vec![])),
-        102395 => npc_call(npc_12031(ctx, 1, vec![])),
-        102396 => npc_call(npc_12031(ctx, 2, vec![])),
-        102397 => npc_call(npc_12032(ctx, 1, vec![])),
-        102398 => npc_call(npc_12032(ctx, 2, vec![])),
-        102399 => npc_call(npc_12032(ctx, 3, vec![])),
-        102400 => npc_call(npc_12033(ctx, 1, vec![])),
-        102401 => npc_call(npc_12033(ctx, 2, vec![])),
-        102402 => npc_call(npc_12033(ctx, 3, vec![])),
-        102403 => npc_call(npc_12033(ctx, 4, vec![])),
-        102404 => npc_call(npc_12034(ctx, 1, vec![])),
-        102405 => npc_call(npc_12034(ctx, 2, vec![])),
-        102406 => npc_call(npc_12034(ctx, 3, vec![])),
-        102407 => npc_call(npc_12035(ctx, 1, vec![])),
+        102302 => npc_call(npc_11941(ctx, 1, vec![])),
+        102303 => npc_call(npc_11963(ctx, 1, vec![])),
+        102304 => npc_call(npc_11966(ctx, 1, vec![])),
+        102305 => npc_call(npc_11967(ctx, 1, vec![])),
+        102306 => npc_call(npc_11968(ctx, 1, vec![])),
+        102307 => npc_call(npc_11969(ctx, 1, vec![])),
+        102308 => npc_call(npc_11969(ctx, 2, vec![])),
+        102309 => npc_call(npc_11969(ctx, 3, vec![])),
+        102310 => npc_call(npc_11970(ctx, 1, vec![])),
+        102311 => npc_call(npc_11970(ctx, 2, vec![])),
+        102312 => npc_call(npc_11970(ctx, 3, vec![])),
+        102313 => npc_call(npc_11970(ctx, 4, vec![])),
+        102314 => npc_call(npc_11972(ctx, 1, vec![])),
+        102315 => npc_call(npc_11972(ctx, 2, vec![])),
+        102316 => npc_call(npc_11973(ctx, 1, vec![])),
+        102317 => npc_call(npc_11978(ctx, 1, vec![])),
+        102318 => npc_call(npc_11978(ctx, 2, vec![])),
+        102319 => npc_call(npc_11978(ctx, 3, vec![])),
+        102320 => npc_call(npc_11978(ctx, 4, vec![])),
+        102321 => npc_call(npc_11978(ctx, 5, vec![])),
+        102322 => npc_call(npc_11978(ctx, 6, vec![])),
+        102323 => npc_call(npc_11978(ctx, 7, vec![])),
+        102324 => npc_call(npc_11978(ctx, 8, vec![])),
+        102325 => npc_call(npc_11978(ctx, 9, vec![])),
+        102326 => npc_call(npc_11978(ctx, 10, vec![])),
+        102327 => npc_call(npc_11978(ctx, 11, vec![])),
+        102328 => npc_call(npc_11978(ctx, 12, vec![])),
+        102329 => npc_call(npc_11978(ctx, 13, vec![])),
+        102330 => npc_call(npc_11978(ctx, 14, vec![])),
+        102331 => npc_call(npc_11978(ctx, 15, vec![])),
+        102332 => npc_call(npc_11978(ctx, 16, vec![])),
+        102333 => npc_call(npc_11978(ctx, 17, vec![])),
+        102334 => npc_call(npc_11979(ctx, 1, vec![])),
+        102335 => npc_call(npc_11979(ctx, 2, vec![])),
+        102336 => npc_call(npc_11979(ctx, 3, vec![])),
+        102337 => npc_call(npc_11979(ctx, 4, vec![])),
+        102338 => npc_call(npc_11979(ctx, 5, vec![])),
+        102339 => npc_call(npc_11979(ctx, 6, vec![])),
+        102340 => npc_call(npc_11980(ctx, 1, vec![])),
+        102341 => npc_call(npc_11980(ctx, 2, vec![])),
+        102342 => npc_call(npc_11980(ctx, 3, vec![])),
+        102343 => npc_call(npc_11980(ctx, 4, vec![])),
+        102344 => npc_call(npc_11980(ctx, 5, vec![])),
+        102345 => npc_call(npc_11980(ctx, 6, vec![])),
+        102346 => npc_call(npc_11981(ctx, 1, vec![])),
+        102347 => npc_call(npc_11981(ctx, 2, vec![])),
+        102348 => npc_call(npc_11981(ctx, 3, vec![])),
+        102349 => npc_call(npc_11981(ctx, 4, vec![])),
+        102350 => npc_call(npc_11981(ctx, 5, vec![])),
+        102351 => npc_call(npc_11981(ctx, 6, vec![])),
+        102352 => npc_call(npc_11982(ctx, 1, vec![])),
+        102353 => npc_call(npc_11982(ctx, 2, vec![])),
+        102354 => npc_call(npc_11982(ctx, 3, vec![])),
+        102355 => npc_call(npc_11982(ctx, 4, vec![])),
+        102356 => npc_call(npc_11982(ctx, 5, vec![])),
+        102357 => npc_call(npc_11982(ctx, 6, vec![])),
+        102358 => npc_call(npc_11983(ctx, 1, vec![])),
+        102359 => npc_call(npc_11983(ctx, 2, vec![])),
+        102360 => npc_call(npc_11983(ctx, 3, vec![])),
+        102361 => npc_call(npc_11983(ctx, 4, vec![])),
+        102362 => npc_call(npc_11983(ctx, 5, vec![])),
+        102363 => npc_call(npc_11983(ctx, 6, vec![])),
+        102364 => npc_call(npc_11984(ctx, 1, vec![])),
+        102365 => npc_call(npc_11984(ctx, 2, vec![])),
+        102366 => npc_call(npc_11984(ctx, 3, vec![])),
+        102367 => npc_call(npc_11984(ctx, 4, vec![])),
+        102368 => npc_call(npc_12000(ctx, 1, vec![])),
+        102369 => npc_call(npc_12002(ctx, 1, vec![])),
+        102370 => npc_call(npc_12002(ctx, 2, vec![])),
+        102371 => npc_call(npc_12002(ctx, 3, vec![])),
+        102372 => npc_call(npc_12002(ctx, 4, vec![])),
+        102373 => npc_call(npc_12002(ctx, 5, vec![])),
+        102374 => npc_call(npc_12002(ctx, 6, vec![])),
+        102375 => npc_call(npc_12002(ctx, 7, vec![])),
+        102376 => npc_call(npc_12002(ctx, 8, vec![])),
+        102377 => npc_call(npc_12003(ctx, 1, vec![])),
+        102378 => npc_call(npc_12003(ctx, 2, vec![])),
+        102379 => npc_call(npc_12003(ctx, 3, vec![])),
+        102380 => npc_call(npc_12004(ctx, 1, vec![])),
+        102381 => npc_call(npc_12004(ctx, 2, vec![])),
+        102382 => npc_call(npc_12005(ctx, 1, vec![])),
+        102383 => npc_call(npc_12005(ctx, 2, vec![])),
+        102384 => npc_call(npc_12008(ctx, 1, vec![])),
+        102385 => npc_call(npc_12013(ctx, 1, vec![])),
+        102386 => npc_call(npc_12013(ctx, 2, vec![])),
+        102387 => npc_call(npc_12014(ctx, 1, vec![])),
+        102388 => npc_call(npc_12015(ctx, 1, vec![])),
+        102389 => npc_call(npc_12025(ctx, 1, vec![])),
+        102390 => npc_call(npc_12025(ctx, 2, vec![])),
+        102391 => npc_call(npc_12025(ctx, 3, vec![])),
+        102392 => npc_call(npc_12025(ctx, 4, vec![])),
+        102393 => npc_call(npc_12025(ctx, 5, vec![])),
+        102394 => npc_call(npc_12025(ctx, 6, vec![])),
+        102395 => npc_call(npc_12025(ctx, 7, vec![])),
+        102396 => npc_call(npc_12025(ctx, 8, vec![])),
+        102397 => npc_call(npc_12025(ctx, 9, vec![])),
+        102398 => npc_call(npc_12027(ctx, 1, vec![])),
+        102399 => npc_call(npc_12027(ctx, 2, vec![])),
+        102400 => npc_call(npc_12028(ctx, 1, vec![])),
+        102401 => npc_call(npc_12028(ctx, 2, vec![])),
+        102402 => npc_call(npc_12028(ctx, 3, vec![])),
+        102403 => npc_call(npc_12028(ctx, 4, vec![])),
+        102404 => npc_call(npc_12029(ctx, 1, vec![])),
+        102405 => npc_call(npc_12029(ctx, 2, vec![])),
+        102406 => npc_call(npc_12029(ctx, 3, vec![])),
+        102407 => npc_call(npc_12030(ctx, 1, vec![])),
+        102408 => npc_call(npc_12030(ctx, 2, vec![])),
+        102409 => npc_call(npc_12030(ctx, 3, vec![])),
+        102410 => npc_call(npc_12031(ctx, 1, vec![])),
+        102411 => npc_call(npc_12031(ctx, 2, vec![])),
+        102412 => npc_call(npc_12032(ctx, 1, vec![])),
+        102413 => npc_call(npc_12032(ctx, 2, vec![])),
+        102414 => npc_call(npc_12032(ctx, 3, vec![])),
+        102415 => npc_call(npc_12033(ctx, 1, vec![])),
+        102416 => npc_call(npc_12033(ctx, 2, vec![])),
+        102417 => npc_call(npc_12033(ctx, 3, vec![])),
+        102418 => npc_call(npc_12033(ctx, 4, vec![])),
+        102419 => npc_call(npc_12034(ctx, 1, vec![])),
+        102420 => npc_call(npc_12034(ctx, 2, vec![])),
+        102421 => npc_call(npc_12034(ctx, 3, vec![])),
+        102422 => npc_call(npc_12035(ctx, 1, vec![])),
         _ => None,
     }
 }

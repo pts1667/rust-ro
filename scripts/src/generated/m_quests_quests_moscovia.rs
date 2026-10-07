@@ -1232,6 +1232,187 @@ fn npc_11342(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_11343(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_S_RUD1: usize = 1;
+    let mut l_d_s: Vec<Value> = Vec::new();
+    let mut l_direction = n(0);
+    let mut l_j = n(0);
+    let mut l_monster_setting = n(0);
+    let mut l_r = n(0);
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(get(ctx, "mos_whale_edq")?, "==", n(5))?.truthy() {
+                        npc_11343(ctx, LABEL_S_RUD1, vec![n(1), n(0)])?;
+                    } else {
+                        if op(get(ctx, "mos_whale_edq")?, "==", n(4))?.truthy() {
+                            ctx.mes("[Mr. Ibanoff]")?;
+                            ctx.mes("You don't have to adjust the rudder for now.")?;
+                            ctx.mes("Wait for my direction.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "mos_whale_edq")?, "==", n(6))?.truthy() {
+                                ctx.mes("[Mr. Ibanoff]")?;
+                                ctx.mes("Do not yet adjust the rudder.")?;
+                                ctx.mes("Only when I order you to,")?;
+                                ctx.mes("you adjust the rudder.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if op(get(ctx, "$@mos1_edq")?, ">", n(0))?.truthy() {
+                                    ctx.mes("[Mr. Ibanoff]")?;
+                                    ctx.mes("We should make sure to kill any")?;
+                                    ctx.mes("monsters onboard.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if op(get(ctx, "mos_whale_edq")?, "==", n(7))?.truthy() {
+                                        npc_11343(ctx, LABEL_S_RUD1, vec![n(4), n(1)])?;
+                                    } else {
+                                        if ((op(get(ctx, "mos_whale_edq")?, "==", n(8))?.truthy() || op(get(ctx, "mos_whale_edq")?, "==", n(21))?.truthy()) || op(get(ctx, "mos_whale_edq")?, "==", n(23))?.truthy()) {
+                                            ctx.mes("[Mr. Ibanoff]")?;
+                                            ctx.mes("Do not yet adjust the rudder.")?;
+                                            ctx.mes("Only when I order you to,")?;
+                                            ctx.mes("you adjust the rudder.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            if (op(get(ctx, "mos_whale_edq")?, ">=", n(91))?.truthy() && op(get(ctx, "mos_whale_edq")?, "<=", n(94))?.truthy()) {
+                                                npc_11343(ctx, LABEL_S_RUD1, vec![op(get(ctx, "mos_whale_edq")?, "-", n(90))?, n(2)])?;
+                                            } else {
+                                                if (op(get(ctx, "mos_whale_edq")?, ">", n(10))?.truthy() && op(get(ctx, "mos_whale_edq")?, "<", n(13))?.truthy()) {
+                                                    ctx.mes("[Mr. Ibanoff]")?;
+                                                    ctx.mes("Look... Beyond the sea!")?;
+                                                    ctx.mes("Do you see something moving")?;
+                                                    ctx.mes("mysteriously?")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Mr. Ibanoff]")?;
+                                                    ctx.mes("Heheh... What is...")?;
+                                                    ctx.mes("that... Hey! You...")?;
+                                                    ctx.mes("Go around the deck to look more")?;
+                                                    ctx.mes("carefully! Go!")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    if op(get(ctx, "mos_whale_edq")?, "==", n(20))?.truthy() {
+                                                        npc_11343(ctx, LABEL_S_RUD1, vec![n(1), n(0)])?;
+                                                    } else {
+                                                        if op(get(ctx, "mos_whale_edq")?, "==", n(22))?.truthy() {
+                                                            npc_11343(ctx, LABEL_S_RUD1, vec![n(4), n(1)])?;
+                                                        } else {
+                                                            if (op(get(ctx, "mos_whale_edq")?, ">=", n(241))?.truthy() && op(get(ctx, "mos_whale_edq")?, "<=", n(243))?.truthy()) {
+                                                                npc_11343(ctx, LABEL_S_RUD1, vec![op(get(ctx, "mos_whale_edq")?, "-", n(240))?, n(2)])?;
+                                                            } else {
+                                                                if op(get(ctx, "mos_whale_edq")?, "==", n(244))?.truthy() {
+                                                                    npc_11343(ctx, LABEL_S_RUD1, vec![n(4), n(1)])?;
+                                                                } else {
+                                                                    if op(get(ctx, "mos_whale_edq")?, "==", n(25))?.truthy() {
+                                                                        ctx.mes("[Mr. Ibanoff]")?;
+                                                                        ctx.mes("You can adjust the rudder,")?;
+                                                                        ctx.mes("under my direction.")?;
+                                                                        ctx.close()?;
+                                                                        return Err(END.into());
+                                                                    } else {
+                                                                        if op(get(ctx, "mos_whale_edq")?, "==", n(26))?.truthy() {
+                                                                            ctx.mes("[Mr. Ibanoff]")?;
+                                                                            ctx.mes("Hey! Listen to what I am saying.")?;
+                                                                            ctx.mes("How come you go there without my")?;
+                                                                            ctx.mes("permission...")?;
+                                                                            ctx.close()?;
+                                                                            return Err(END.into());
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    ctx.mes("[Mr. Ibanoff]")?;
+                    ctx.mes("What? How did you get on")?;
+                    ctx.mes("this ship?? You... No.")?;
+                    ctx.mes("I'll forgive you this once, but go")?;
+                    ctx.mes("back now.")?;
+                    ctx.close()?;
+                    ctx.call(Function::Warp, vec![s("moscovia"), n(162), n(56)])?;
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    l_direction = arg(&args, 0, n(0));
+                    l_monster_setting = arg(&args, 1, n(0));
+                    ctx.mes("Which way?")?;
+                    ctx.next()?;
+                    let base = n(1).number_value()?;
+                    local_set(&mut l_d_s, &n(base + 0), s("East"), true);
+                    local_set(&mut l_d_s, &n(base + 1), s("West"), true);
+                    local_set(&mut l_d_s, &n(base + 2), s("South"), true);
+                    local_set(&mut l_d_s, &n(base + 3), s("North"), true);
+                    l_j = op(n(select_text(ctx, &[implode(&l_d_s, s(":"))?])?), "-", n(1))?;
+                    if op(l_j.clone(), "==", l_direction.clone())?.truthy() {
+                        ctx.mes("[Mr. Ibanoff]")?;
+                        ctx.mes("Good. Firstly, we should")?;
+                        ctx.mes(op(op(s("keep heading "), "+", strtolower(local_get(&l_d_s, &l_direction.clone(), true))?)?, "+", s(" this way."))?.text())?;
+                        ctx.mes("When I give the order,")?;
+                        ctx.mes("please adjust the rudder again.")?;
+                        if op(l_monster_setting.clone(), "==", n(2))?.truthy() {
+                            l_r = ctx.call(Function::Rand, vec![n(1), n(4)])?;
+                        }
+                        if (op(l_monster_setting.clone(), "==", n(2))?.truthy() && op(l_r.clone(), "==", n(3))?.truthy()) {
+                            ctx.next()?;
+                            ctx.mes("[Mr. Ibanoff]")?;
+                            ctx.mes("Wait! Something has appeared in front of us...")?;
+                            ctx.next()?;
+                            ctx.mes("[Mr. Ibanoff]")?;
+                            ctx.mes("Monsters!!!")?;
+                            ctx.next()?;
+                            ctx.mes("[Mr. Ibanoff]")?;
+                            ctx.mes("These monsters are like none I have")?;
+                            ctx.mes("ever encountered! Be careful! We")?;
+                            ctx.mes("must repulse these monsters!")?;
+                            set(ctx, "$@mos1_edq", op(get(ctx, "$@mos1_edq")?, "+", n(1))?)?;
+                            if op(get(ctx, "mos_whale_edq")?, ">=", n(241))?.truthy() {
+                                ctx.call(Function::DoNpcEvent, vec![s("Baehideun4#ship::OnEnable")])?;
+                            } else {
+                                ctx.call(Function::DoNpcEvent, vec![s("Baehideun3#ship::OnEnable")])?;
+                            }
+                        }
+                        set(ctx, "mos_whale_edq", (if op(l_monster_setting.clone(), "==", n(2))?.truthy() { (if op(get(ctx, "mos_whale_edq")?, ">=", n(241))?.truthy() { (if op(l_r.clone(), "!=", n(3))?.truthy() { n(26) } else { n(25) }) } else { (if op(l_r.clone(), "!=", n(3))?.truthy() { n(10) } else { n(11) }) }) } else { op(get(ctx, "mos_whale_edq")?, "+", n(1))? }))?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Mr. Ibanoff]")?;
+                    ctx.mes(op(op(s("I said that we should go "), "+", local_get(&l_d_s, &l_direction.clone(), true))?, "+", s("!"))?.text())?;
+                    ctx.mes("You should sail in the right")?;
+                    ctx.mes(op(op(s("direction! To the "), "+", strtolower(local_get(&l_d_s, &l_direction.clone(), true))?)?, "+", s("!"))?.text())?;
+                    if op(l_monster_setting.clone(), ">=", n(1))?.truthy() {
+                        l_r = (if op(l_monster_setting.clone(), "==", n(1))?.truthy() { n(5) } else { n(4) });
+                        if op(ctx.call(Function::Rand, vec![n(1), l_r.clone()])?, "<=", n(2))?.truthy() {
+                            ctx.next()?;
+                            ctx.mes("[Mr. Ibanoff]")?;
+                            ctx.mes("Oh no! Monsters have appeared!")?;
+                            ctx.mes("Let's get ready to fight! Hurry!")?;
+                            set(ctx, "$@mos1_edq", op(get(ctx, "$@mos1_edq")?, "+", n(1))?)?;
+                            ctx.call(Function::DoNpcEvent, vec![s("Baehideun1#ship::OnEnable")])?;
+                        }
+                    }
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_11344(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_AS_1: usize = 1;
     const LABEL_S_AS_2: usize = 2;
@@ -5967,6 +6148,391 @@ fn npc_11365(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11366(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_bat = n(0);
+    let mut l_implode2_s = s("");
+    let mut l_implode3_s = s("");
+    let mut l_implode_s = s("");
+    let mut l_input = n(0);
+    let mut l_locker = n(0);
+    let mut l_m = n(0);
+    let mut l_maho = n(0);
+    let mut l_menu2_s: Vec<Value> = Vec::new();
+    let mut l_menu3_s: Vec<Value> = Vec::new();
+    let mut l_menu_s: Vec<Value> = Vec::new();
+    let mut l_mush = n(0);
+    let mut l_nankai = n(0);
+    let mut l_sand = n(0);
+    let mut l_star = n(0);
+    let mut l_w = n(0);
+    let _ = pc;
+    if op(get(ctx, "mos_nowinter")?, "!=", n(16))?.truthy() {
+        return Err(END.into());
+    }
+    ctx.mes("-It is a very dirty pot.")?;
+    ctx.mes("Something is boiling")?;
+    ctx.mes("Baba Yaga might have done something")?;
+    ctx.mes("with it.")?;
+    ctx.mes("Well, let's get it started.-")?;
+    ctx.next()?;
+    let base = n(0).number_value()?;
+    local_set(&mut l_menu_s, &n(base + 0), s("Powder Of Wing Of Bat"), true);
+    local_set(&mut l_menu_s, &n(base + 1), s("Liquid Of Spawn"), true);
+    local_set(&mut l_menu_s, &n(base + 2), s("Grasshopper's Leg"), true);
+    local_set(&mut l_menu_s, &n(base + 3), s("Starsand Of Witch"), true);
+    local_set(&mut l_menu_s, &n(base + 4), s("Fine Grit"), true);
+    l_implode_s = implode(&l_menu_s, s(":"))?;
+    'l1: loop {
+        if !op(l_nankai.clone(), "<", n(3))?.truthy() { break; }
+        'b1: {
+            ctx.mes("-Something is still being boiled in the pot.")?;
+            ctx.mes("What am I going to do?-")?;
+            ctx.next()?;
+            'b2: {
+                let sw2 = n(select(ctx, &["Put the materials in it.", "Pour water in it.", "Stir it up.", "It is over!"])?);
+                let mut m2 = false;
+                let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2)) && !eq(&sw2, &n(3)) && !eq(&sw2, &n(4));
+                if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                if m2 {
+                    l_m = op(n(select_text(ctx, &[l_implode_s.clone()])?), "-", n(1))?;
+                    if (((!l_m.clone().truthy() && l_bat.clone().truthy()) || (op(l_m.clone(), "==", n(1))?.truthy() && l_mush.clone().truthy())) || (op(l_m.clone(), "==", n(2))?.truthy() && l_locker.clone().truthy())) {
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                    } else {
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SMOKE")?])?;
+                        if op(l_m.clone(), "==", n(0))?.truthy() {
+                            l_bat = op(l_bat.clone(), "+", n(1))?;
+                        }
+                        if op(l_m.clone(), "==", n(1))?.truthy() {
+                            l_mush = op(l_mush.clone(), "+", n(1))?;
+                        }
+                        if op(l_m.clone(), "==", n(2))?.truthy() {
+                            set(ctx, ".locker", op(get(ctx, ".locker")?, "+", n(1))?)?;
+                        }
+                        l_maho = op(l_maho.clone(), "+", n(1))?;
+                    }
+                    if op(l_m.clone(), ">=", n(3))?.truthy() {
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                    }
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    ctx.mes(op(op(s("-I put the "), "+", local_get(&l_menu_s, &l_m.clone(), true))?, "+", s(" in the pot."))?.text())?;
+                    ctx.mes("Its smell slightly changes.-")?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                if m2 {
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    ctx.mes("-I pour water in the pot a little.")?;
+                    ctx.mes("The liquid has become thin.")?;
+                    ctx.mes("No other remarkable changes")?;
+                    ctx.mes("have happened.-")?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(3)) { m2 = true; }
+                if m2 {
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    ctx.mes("-I stir it up")?;
+                    ctx.mes("with a stick several times.")?;
+                    ctx.mes("No other remarkable changes")?;
+                    ctx.mes("have happened.-")?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(4)) { m2 = true; }
+                if m2 {
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONATTACK")?])?;
+                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                    ctx.mes("I will tell Baba Yaga that")?;
+                    ctx.mes("the work has been done.")?;
+                    set(ctx, "mos_nowinter", n(17))?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+            }
+            ctx.next()?;
+        }
+    }
+    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_BUBBLE")?])?;
+    ctx.mes("-The liquid has been changed")?;
+    ctx.mes("and is now bubbling.")?;
+    ctx.mes("It seems to have shrunk,")?;
+    ctx.mes("but not by much.-")?;
+    ctx.next()?;
+    ctx.mes("-Anyway, the first step is done")?;
+    ctx.mes("let's go on the next stage.-")?;
+    ctx.next()?;
+    'l3: loop {
+        if !op(l_nankai.clone(), "<", n(7))?.truthy() { break; }
+        'b3: {
+            ctx.mes("-Well, What am I going to do?-")?;
+            ctx.next()?;
+            'b4: {
+                let sw4 = n(select(ctx, &["Put the materials in it.", "Pour water in it.", "Stir it up.", "It is over!"])?);
+                let mut m4 = false;
+                let d4 = !eq(&sw4, &n(1)) && !eq(&sw4, &n(2)) && !eq(&sw4, &n(3)) && !eq(&sw4, &n(4));
+                if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                if m4 {
+                    l_w = n(0);
+                    l_m = op(n(select_text(ctx, &[implode(&l_menu_s, s(":"))?])?), "-", n(1))?;
+                    if op(l_m.clone(), ">=", n(3))?.truthy() {
+                        if (op(l_nankai.clone(), "==", n(5))?.truthy() || op(l_nankai.clone(), "==", n(6))?.truthy()) {
+                            if ((op(l_m.clone(), "==", n(3))?.truthy() && l_star.clone().truthy()) || (op(l_m.clone(), "==", n(4))?.truthy() && l_sand.clone().truthy())) {
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                            } else {
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SMOKE")?])?;
+                                l_maho = op(l_maho.clone(), "+", n(1))?;
+                                if op(l_m.clone(), "==", n(3))?.truthy() {
+                                    l_star = op(l_star.clone(), "+", n(1))?;
+                                }
+                                if op(l_m.clone(), "==", n(4))?.truthy() {
+                                    l_sand = op(l_sand.clone(), "+", n(1))?;
+                                }
+                                l_w = n(1);
+                            }
+                        } else {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                            if op(l_m.clone(), "==", n(3))?.truthy() {
+                                l_star = op(l_star.clone(), "+", n(1))?;
+                            }
+                            if op(l_m.clone(), "==", n(4))?.truthy() {
+                                l_sand = op(l_sand.clone(), "+", n(1))?;
+                            }
+                        }
+                        ctx.next()?;
+                    } else {
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                    }
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    ctx.mes(op(op(s("-I put the "), "+", local_get(&l_menu_s, &l_m.clone(), true))?, "+", s(" in the pot."))?.text())?;
+                    if op(l_m.clone(), "<=", n(2))?.truthy() {
+                        ctx.mes("It's smell drastically changes.-")?;
+                    } else {
+                        ctx.mes(op(op(s("Its "), "+", (if l_w.clone().truthy() { s("smell") } else { s("color") }))?, "+", s(" slightly changes.-"))?.text())?;
+                    }
+                    break 'b4;
+                }
+                if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                if m4 {
+                    if op(l_nankai.clone(), "==", n(3))?.truthy() {
+                        ctx.mes("-I pour water in the pot a little.")?;
+                        ctx.mes("The boiling sounds stronger as if")?;
+                        ctx.mes("something in the cloudy liquid")?;
+                        ctx.mes("has changed.-")?;
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_DRAGONSMOKE")?])?;
+                        l_maho = op(l_maho.clone(), "+", n(1))?;
+                    } else {
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                        ctx.mes("-I pour water in the pot and, the liquid gets thin.-")?;
+                    }
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    break 'b4;
+                }
+                if !m4 && eq(&sw4, &n(3)) { m4 = true; }
+                if m4 {
+                    if op(l_nankai.clone(), "==", n(4))?.truthy() {
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Ok, I will stir it up this time.")?;
+                        ctx.mes("How many times should I..?")?;
+                        ctx.next()?;
+                        let input = ctx.call(Function::InputNumber, vec![])?;
+                        l_input = input;
+                        if op(l_input.clone(), "==", n(20))?.truthy() {
+                            ctx.mes("-It must be 20 times.-")?;
+                            ctx.next()?;
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_WIND")?])?;
+                            ctx.mes("-Stirring up makes it")?;
+                            ctx.mes("brighter and")?;
+                            ctx.mes("its smell gets")?;
+                            ctx.mes("more bearable.")?;
+                            l_maho = op(l_maho.clone(), "+", n(1))?;
+                            l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                        } else {
+                            if !l_input.clone().truthy() {
+                                ctx.mes("-I won't stir it up.-")?;
+                            } else {
+                                if op(l_input.clone(), ">", n(100))?.truthy() {
+                                    ctx.mes("-It won't be able")?;
+                                    ctx.mes("to stir so many times.")?;
+                                    ctx.mes("Let me think again.-")?;
+                                } else {
+                                    ctx.mes(op(op(s("-Yes, it must be "), "+", l_input.clone())?, "+", s(" times.-"))?.text())?;
+                                    ctx.next()?;
+                                    ctx.mes("-I stir it up really hard.")?;
+                                    ctx.mes("It is boiled.-")?;
+                                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                                }
+                            }
+                        }
+                    } else {
+                        ctx.mes("-Bubble, bubble-")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Something changed?")?;
+                        l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    }
+                    break 'b4;
+                }
+                if !m4 && eq(&sw4, &n(4)) { m4 = true; }
+                if m4 {
+                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                    ctx.mes("I will tell Baba Yaga that")?;
+                    ctx.mes("it has been done.")?;
+                    set(ctx, "mos_nowinter", n(17))?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONATTACK")?])?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+            }
+            ctx.next()?;
+        }
+    }
+    ctx.mes("-I am sure that the book told me")?;
+    ctx.mes("to wait for some time.-")?;
+    ctx.next()?;
+    ctx.mes("............")?;
+    ctx.next()?;
+    ctx.mes("............")?;
+    ctx.next()?;
+    ctx.mes("-The smell of the liquid boiling in")?;
+    ctx.mes("the pot has changed enough.")?;
+    ctx.mes("Let's go on to the next stage.-")?;
+    ctx.next()?;
+    let base = n(0).number_value()?;
+    local_set(&mut l_menu2_s, &n(base + 0), s("Witched Starsand"), true);
+    local_set(&mut l_menu2_s, &n(base + 1), s("Fine Grit"), true);
+    local_set(&mut l_menu2_s, &n(base + 2), s("Detonator"), true);
+    local_set(&mut l_menu2_s, &n(base + 3), s("Red Blood"), true);
+    local_set(&mut l_menu2_s, &n(base + 4), s("Burning Heart"), true);
+    let base = n(0).number_value()?;
+    local_set(&mut l_menu3_s, &n(base + 0), s("Witched Starsand"), true);
+    local_set(&mut l_menu3_s, &n(base + 1), s("Fine Grit"), true);
+    local_set(&mut l_menu3_s, &n(base + 2), s("Detonator"), true);
+    local_set(&mut l_menu3_s, &n(base + 3), s("Red Blood"), true);
+    local_set(&mut l_menu3_s, &n(base + 4), s("Burning Heart"), true);
+    local_set(&mut l_menu3_s, &n(base + 5), s("Piece Of Diamond"), true);
+    l_implode2_s = implode(&l_menu2_s, s(":"))?;
+    l_implode3_s = implode(&l_menu3_s, s(":"))?;
+    'l5: loop {
+        if !true { break; }
+        'b5: {
+            ctx.mes("-Well, What am I going to do?-")?;
+            ctx.next()?;
+            'b6: {
+                let sw6 = n(select(ctx, &["Put the materials in it.", "Pour water in it.", "Stir it up.", "It is over!"])?);
+                let mut m6 = false;
+                let d6 = !eq(&sw6, &n(1)) && !eq(&sw6, &n(2)) && !eq(&sw6, &n(3)) && !eq(&sw6, &n(4));
+                if !m6 && eq(&sw6, &n(1)) { m6 = true; }
+                if m6 {
+                    l_w = n(0);
+                    if op(l_nankai.clone(), "!=", n(11))?.truthy() {
+                        l_m = op(n(select_text(ctx, &[l_implode2_s.clone()])?), "-", n(1))?;
+                        if (((op(l_m.clone(), "==", n(2))?.truthy() && op(l_nankai.clone(), "==", n(9))?.truthy()) || (op(l_m.clone(), "==", n(3))?.truthy() && op(l_nankai.clone(), "==", n(8))?.truthy())) || (op(l_m.clone(), "==", n(4))?.truthy() && op(l_nankai.clone(), "==", n(10))?.truthy())) {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SMOKE")?])?;
+                            l_maho = op(l_maho.clone(), "+", n(1))?;
+                        } else {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                            l_w = n(1);
+                        }
+                        if op(l_m.clone(), "<=", n(1))?.truthy() {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                        }
+                        l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                        ctx.mes(op(op(s("-I put the "), "+", local_get(&l_menu2_s, &l_m.clone(), true))?, "+", s(" in the pot."))?.text())?;
+                        if op(l_m.clone(), "<=", n(1))?.truthy() {
+                            ctx.mes("Its smell slightly changes.-")?;
+                        } else {
+                            ctx.mes((if l_w.clone().truthy() { s("The smell gets worse.-") } else { s("The smell has been changed a little.-") }).text())?;
+                        }
+                    } else {
+                        l_m = op(n(select_text(ctx, &[l_implode3_s.clone()])?), "-", n(1))?;
+                        if op(l_m.clone(), "!=", n(5))?.truthy() {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                        } else {
+                            l_maho = op(l_maho.clone(), "+", n(1))?;
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SMOKE")?])?;
+                        }
+                        l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                        ctx.mes(op(op(op(op(s("-I put "), "+", (if op(l_m.clone(), "==", n(5))?.truthy() { s("a") } else { s("the") }))?, "+", s(" "))?, "+", local_get(&l_menu3_s, &l_m.clone(), true))?, "+", s(" in the pot."))?.text())?;
+                        if op(l_m.clone(), "==", n(5))?.truthy() {
+                            ctx.mes("The solution alters in color.-")?;
+                        } else {
+                            ctx.mes("The smell gets worse.-")?;
+                        }
+                    }
+                    break 'b6;
+                }
+                if !m6 && eq(&sw6, &n(2)) { m6 = true; }
+                if m6 {
+                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    ctx.mes("-I pour water in the pot a little.")?;
+                    ctx.mes("The smell gets better.-")?;
+                    break 'b6;
+                }
+                if !m6 && eq(&sw6, &n(3)) { m6 = true; }
+                if m6 {
+                    if op(l_nankai.clone(), "==", n(7))?.truthy() {
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Ok, I will stir it up this time.")?;
+                        ctx.mes("How many times should I...?")?;
+                        ctx.next()?;
+                        let input = ctx.call(Function::InputNumber, vec![])?;
+                        l_input = input;
+                        if op(l_input.clone(), "==", n(15))?.truthy() {
+                            ctx.mes("-It must be 15 times.-")?;
+                            ctx.next()?;
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_WIND")?])?;
+                            ctx.mes("-Stirring up makes it")?;
+                            ctx.mes("brighter.-")?;
+                            l_maho = op(l_maho.clone(), "+", n(1))?;
+                            l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                        } else {
+                            if op(l_input.clone(), "==", n(0))?.truthy() {
+                                ctx.mes("-I won't stir it up.-")?;
+                            } else {
+                                if op(l_input.clone(), ">", n(100))?.truthy() {
+                                    ctx.mes("-It won't be to")?;
+                                    ctx.mes("stir so many times.")?;
+                                    ctx.mes("Let me think again.-")?;
+                                } else {
+                                    ctx.mes(op(op(s("-Yes, it must be "), "+", l_input.clone())?, "+", s(" times.-"))?.text())?;
+                                    ctx.next()?;
+                                    ctx.mes("-I stir it up really hard.")?;
+                                    ctx.mes("It is boiled.-")?;
+                                    l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                                }
+                            }
+                        }
+                    } else {
+                        ctx.mes("-Bubble, bubble-")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Something changed?")?;
+                        l_nankai = op(l_nankai.clone(), "+", n(1))?;
+                    }
+                    break 'b6;
+                }
+                if !m6 && eq(&sw6, &n(4)) { m6 = true; }
+                if m6 {
+                    ctx.mes("-It seems that the work is over.")?;
+                    ctx.mes("I need to show this to Baba Yaga.-")?;
+                    if op(l_maho.clone(), "==", n(12))?.truthy() {
+                        set(ctx, "mos_nowinter", n(18))?;
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_GASPUSH")?])?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONATTACK")?])?;
+                    set(ctx, "mos_nowinter", n(17))?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+            }
+            ctx.next()?;
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_11367(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "mos_nowinter")?, "!=", n(19))?.truthy() {
@@ -7991,6 +8557,320 @@ fn npc_11391(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
             _ => return Err("Invalid script position".into()),
         }
     }
+}
+
+fn npc_11392(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    if op(op(get(ctx, "MaxWeight")?, "-", get(ctx, "Weight")?)?, "<", n(3500))?.truthy() {
+        ctx.mes("[The Blacksmith]")?;
+        ctx.mes("Why are you carrying that much?")?;
+        ctx.mes("Are you training for something?")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "rhea_rus_main")?, "<", n(6))?.truthy() {
+        ctx.mes("[The Blacksmith]")?;
+        ctx.mes("Bahaha~")?;
+        ctx.mes("Good weather! Eh?")?;
+        ctx.mes("Perfect for a picnic.")?;
+        ctx.next()?;
+        ctx.mes("[The Blacksmith]")?;
+        ctx.mes("But, I've heard that some people have become lost in the forest on the island near this village. What's going on?")?;
+        ctx.close()?;
+        return Err(END.into());
+    } else {
+        if op(get(ctx, "rhea_rus_main")?, "==", n(6))?.truthy() {
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Bahaha~")?;
+            ctx.mes("Good weather! Eh?")?;
+            ctx.mes("Perfect for a picnic.")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("But, I've heard that some people have become lost in the forest on the island near this village. What's going on?")?;
+            ctx.next()?;
+            let choice = select(ctx, &["Excuse me..."])?;
+            ctx.write("@menu", n(choice))?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("Excuse me, have you heard of a keymaker who knows how to make a '^0000ffGolden Key^000000'?")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Hmm, are you an adventurer? Who told you about the '^0000ffGolden Key^000000'?")?;
+            ctx.next()?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("Ah, in fact...")?;
+            ctx.next()?;
+            ctx.mes("- You tell him about -")?;
+            ctx.mes("- Maria Morebna -")?;
+            ctx.mes("- and Gray Wolf -")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Well, then... The keymaker for the '^0000ffGolden Key^000000'.")?;
+            ctx.mes("You are very lucky to have asked me about this.")?;
+            ctx.next()?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("W, what do you mean...?")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("I'm the only one in this town that knows what materials are needed to make the '^0000ffGolden Key^000000'! Bahaha!")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("I guess you think that getting the materials will be easy huh?")?;
+            ctx.next()?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("Hey I didn't say...")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Bahahaha~")?;
+            ctx.mes("It will take a lot of work.")?;
+            ctx.mes("A long journey awaits you")?;
+            ctx.mes("If you choose to take it.")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Your boots will be worn")?;
+            ctx.mes("out after this journey.")?;
+            ctx.mes("What do you think?")?;
+            ctx.mes("Would you like to try?")?;
+            ctx.next()?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("Of course! I have to help Maria!")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Bahaha! I like you!")?;
+            ctx.mes("Ok, first, bring me ^0000ff25 Steel^000000. I'm not going anywhere so come back here when you have them.")?;
+            ctx.next()?;
+            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+            ctx.mes("Ok so that's the first thing you need for the 'Golden Key' right?")?;
+            ctx.next()?;
+            ctx.mes("[The Blacksmith]")?;
+            ctx.mes("Bahahaha~")?;
+            ctx.mes("I promise you, I'll explain when you bring the ^0000ff25 Steel^000000 to me. Please just get the Steel and come back.")?;
+            set(ctx, "rhea_rus_main", n(7))?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if op(get(ctx, "rhea_rus_main")?, "==", n(7))?.truthy() {
+                if op(ctx.call(Function::CountItem, vec![n(999)])?, ">", n(24))?.truthy() {
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Ohhh, that was faster than I expected!")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Ok then, wait here.")?;
+                    ctx.next()?;
+                    ctx.mes("- He melts the steel -")?;
+                    ctx.mes("- and begins to forge -")?;
+                    ctx.mes("- it into something !! -")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Bahaha~, it's not my")?;
+                    ctx.mes("best work, but it'll do.")?;
+                    ctx.mes("Here ya go!")?;
+                    ctx.next()?;
+                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                    ctx.mes("Ah?! This is?!!")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Strong Steel Boots!")?;
+                    ctx.next()?;
+                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                    ctx.mes("The Golden!!.........................")?;
+                    ctx.mes("....................Eh, what?")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Bahaha~ Didn't I tell you? A long journey awaits you. These boots will help you on your long journey.")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("When they have worn out, you will know that your journey is near it's end.")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("^ff0000You must always wear these boots while gathering the materials for the 'Golden Key'.^000000")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Ok, I'll tell you what materials you need to get. I can make the key anytime if you get them to me.")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("You need ^0000ff2 Cursed Ruby, 3 Gold, 1 Red Ring, 2 Lusalka's Hair, 10 Golden Thread^000000 to make the key.")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Well, you know what to do now. I will be waiting here.")?;
+                    ctx.mes("Bahahaha~")?;
+                    ctx.mes("And don't forget to wear these!")?;
+                    ctx.call(Function::DelItem, vec![n(999), n(25)])?;
+                    set(ctx, "rhea_rus_main", n(8))?;
+                    if (((op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_MERCHANT")?)?.truthy() || op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_SWORDMAN")?)?.truthy()) || op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_THIEF")?)?.truthy()) || op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_ARCHER")?)?.truthy()) {
+                        ctx.call(Function::GetItem, vec![n(2429), n(1)])?;
+                    } else {
+                        ctx.call(Function::GetItem, vec![n(2430), n(1)])?;
+                    }
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+                ctx.mes("[The Blacksmith]")?;
+                ctx.mes("What are you doing? First, you must get me ^0000ff25 Steel^000000.")?;
+                ctx.next()?;
+                ctx.mes("[The Blacksmith]")?;
+                ctx.mes("The faster you get me the materials, The faster you can help Maria Morebna.")?;
+                ctx.close()?;
+                return Err(END.into());
+            } else {
+                if op(get(ctx, "rhea_rus_main")?, "==", n(8))?.truthy() {
+                    if ((((op(ctx.call(Function::CountItem, vec![n(724)])?, ">", n(1))?.truthy() && op(ctx.call(Function::CountItem, vec![n(969)])?, ">", n(2))?.truthy()) && ctx.call(Function::CountItem, vec![n(7877)])?.truthy()) && op(ctx.call(Function::CountItem, vec![n(7878)])?, ">", n(1))?.truthy()) && op(ctx.call(Function::CountItem, vec![n(7879)])?, ">", n(9))?.truthy()) {
+                        if ((op(get(ctx, "rhea_rus_ring")?, ">", n(8))?.truthy() && op(get(ctx, "rhea_rus_hair")?, ">", n(8))?.truthy()) && op(get(ctx, "rhea_rus_quiz")?, ">", n(29))?.truthy()) {
+                            if (op(ctx.call(Function::GetEquipId, vec![constant(ctx, "EQI_SHOES")?])?, "!=", n(2429))?.truthy() && op(ctx.call(Function::GetEquipId, vec![constant(ctx, "EQI_SHOES")?])?, "!=", n(2430))?.truthy()) {
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("...Hmm, did I forget to wear something...?")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("So, you got all the materials. I can't believe it.")?;
+                            ctx.mes("You did your best until your boots were worn out, didn't you?")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                            ctx.mes("Yes, you know, it's not very comfortable walking around in Steel boots all day!")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Bahaha~ Ok, well done.")?;
+                            ctx.mes("Well.. While you were looking for the materials, I was searching for the keymaker who can make the key!")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                            ctx.mes("I thought you said that you knew how to make the key?")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Hmm... Well I know the materials. And I know who makes the key. So I will tell you where to find the keymaker. Is that ok?")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                            ctx.mes("Of course! I have to know where this person is.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Ok, listen carefully. The Keymaker is at a cabin deep inside of the forest.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Ah, wait. Take off your armor. I need to cast a protection spell on you, ok? Hey, don't get the wrong idea. This is just a simple protection spell!")?;
+                            ctx.call(Function::Nude, vec![])?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Bah ram y--- wait that's uh something else...")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("'^ff0000Spellshield Protection^000000.")?;
+                            ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_ABSORBSPIRITS")?])?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("This spell protects you from any curse the keymaker might try to use. Remember the words of the spell. It won't last very long because I am just a blacksmith.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            if ctx.call(Function::CountItem, vec![n(2429)])?.truthy() {
+                                ctx.call(Function::DelItem, vec![n(2429), n(1)])?;
+                            } else {
+                                if ctx.call(Function::CountItem, vec![n(2430)])?.truthy() {
+                                    ctx.call(Function::DelItem, vec![n(2430), n(1)])?;
+                                } else {
+                                    ctx.mes("The forest is dangerous. Be very careful in there!")?;
+                                    ctx.mes("Ah, and your steel boots..?")?;
+                                    ctx.next()?;
+                                    ctx.mes("[The Blacksmith]")?;
+                                    ctx.mes("Where are they?")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            }
+                            ctx.mes("The forest is dangerous. Be very careful in there!")?;
+                            ctx.mes("Ah and you shouldn't be needing those Steel Boots anymore. Good luck!")?;
+                            set(ctx, "rhea_rus_main", n(9))?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                    }
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("You need ^0000ff2 Cursed Ruby, 3 Gold, 1 Red Ring, 2 Lusalka's Hair, 10 Golden Thread^000000 to make the key.")?;
+                    ctx.next()?;
+                    'b1: {
+                        let sw1 = n(select(ctx, &["Red Ring?", "Lusalka's Hair?", "Golden Thread?"])?);
+                        let mut m1 = false;
+                        let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3));
+                        if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                        if m1 {
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("The Red Ring has powerful enchanting powers. I had one before, but I gave it to my friend, Vassili, as a gift.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("I think it would be odd to ask him to give it back to me. So uh you've got to ask him if he would give it to you.")?;
+                            break 'b1;
+                        }
+                        if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                        if m1 {
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("It's said that a bride who drowns to death just before her wedding becomes Lusalka, the aqua fairy.")?;
+                            ctx.mes("You must find Lusalka's hair.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("I heard that a young maid has been lost recently.")?;
+                            ctx.mes("It's very unfortunate but...")?;
+                            ctx.mes("she might be Lusalka...")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Her mother is somewhere in this village asking for people to help her find her missing daughter.")?;
+                            break 'b1;
+                        }
+                        if !m1 && eq(&sw1, &n(3)) { m1 = true; }
+                        if m1 {
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Golden Thread is made from gold by using a special spinning wheel technique. I don't know exactly how it's done. But I know who does.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Find a man named Marozka. He is the only one who knows how to use the spinning wheel to make the Golden Thread.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("Maria should know where he is.")?;
+                            break 'b1;
+                        }
+                    }
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Ah, and... You still have the boots that I made right? ^ff0000Without them, you cannot get anything for the key, I swear. You must put on them.^000000")?;
+                    ctx.next()?;
+                    ctx.mes("[The Blacksmith]")?;
+                    ctx.mes("Well, you know what to do now. I will be waiting here.")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                } else {
+                    if op(get(ctx, "rhea_rus_main")?, "==", n(9))?.truthy() {
+                        ctx.mes("[The Blacksmith]")?;
+                        ctx.mes("The keymaker is at a cabin deep inside of the forest.")?;
+                        ctx.next()?;
+                        ctx.mes("[The Blacksmith]")?;
+                        ctx.mes("This person is no ordinary person. It is said that you can be cursed by the keymaker's words.")?;
+                        ctx.next()?;
+                        ctx.mes("[The Blacksmith]")?;
+                        ctx.mes("Don't forget the spell, '^ff0000Spellshield Protection.^000000'")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if (op(get(ctx, "rhea_rus_main")?, ">", n(9))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(52))?.truthy()) {
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("He is in his cabin deep inside of the forest. There, the keymaker of the Golden Key is living.")?;
+                            ctx.next()?;
+                            ctx.mes("[The Blacksmith]")?;
+                            ctx.mes("The Golden Key is able to release Maria. Good luck!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "rhea_rus_main")?, ">", n(51))?.truthy() {
+                                ctx.mes("[The Blacksmith]")?;
+                                ctx.mes("I heard the news. You have done well.")?;
+                                ctx.next()?;
+                                ctx.mes("[The Blacksmith]")?;
+                                ctx.mes("Ah, the person living around that cabin wants you to see her. She seems to have something to tell you.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(n(0))
 }
 
 fn npc_11393(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
@@ -11572,6 +12452,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11340 => npc_call(npc_11340(ctx, 0, vec![])),
         11341 => npc_call(npc_11341(ctx, 0, vec![])),
         11342 => npc_call(npc_11342(ctx, 0, vec![])),
+        11343 => npc_call(npc_11343(ctx, 0, vec![])),
         11344 => npc_call(npc_11344(ctx, 0, vec![])),
         11345 => npc_call(npc_11345(ctx, 0, vec![])),
         11346 => npc_call(npc_11346(ctx, 0, vec![])),
@@ -11594,6 +12475,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11363 => npc_call(npc_11363(ctx, 0, vec![])),
         11364 => npc_call(npc_11364(ctx, 0, vec![])),
         11365 => npc_call(npc_11365(ctx, 0, vec![])),
+        11366 => npc_call(npc_11366(ctx, 0, vec![])),
         11367 => npc_call(npc_11367(ctx, 0, vec![])),
         11368 => npc_call(npc_11368(ctx, 0, vec![])),
         11369 => npc_call(npc_11369(ctx, 0, vec![])),
@@ -11619,6 +12501,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11389 => npc_call(npc_11389(ctx, 0, vec![])),
         11390 => npc_call(npc_11390(ctx, 0, vec![])),
         11391 => npc_call(npc_11391(ctx, 0, vec![])),
+        11392 => npc_call(npc_11392(ctx, 0, vec![])),
         11393 => npc_call(npc_11393(ctx, 0, vec![])),
         11394 => npc_call(npc_11394(ctx, 0, vec![])),
         11395 => npc_call(npc_11395(ctx, 0, vec![])),
@@ -11653,66 +12536,66 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101803 => npc_call(npc_11345(ctx, 1, vec![])),
-        101804 => npc_call(npc_11347(ctx, 1, vec![])),
-        101805 => npc_call(npc_11348(ctx, 1, vec![])),
-        101806 => npc_call(npc_11348(ctx, 2, vec![])),
-        101807 => npc_call(npc_11348(ctx, 3, vec![])),
-        101808 => npc_call(npc_11348(ctx, 4, vec![])),
-        101809 => npc_call(npc_11349(ctx, 1, vec![])),
-        101810 => npc_call(npc_11349(ctx, 2, vec![])),
-        101811 => npc_call(npc_11349(ctx, 3, vec![])),
-        101812 => npc_call(npc_11349(ctx, 4, vec![])),
-        101813 => npc_call(npc_11349(ctx, 5, vec![])),
-        101814 => npc_call(npc_11354(ctx, 1, vec![])),
-        101815 => npc_call(npc_11354(ctx, 2, vec![])),
-        101816 => npc_call(npc_11358(ctx, 1, vec![])),
-        101817 => npc_call(npc_11362(ctx, 1, vec![])),
-        101818 => npc_call(npc_11364(ctx, 2, vec![])),
-        101819 => npc_call(npc_11384(ctx, 1, vec![])),
-        101820 => npc_call(npc_11388(ctx, 1, vec![])),
-        101821 => npc_call(npc_11388(ctx, 2, vec![])),
-        101822 => npc_call(npc_11388(ctx, 3, vec![])),
-        101823 => npc_call(npc_11388(ctx, 4, vec![])),
-        101824 => npc_call(npc_11389(ctx, 1, vec![])),
-        101825 => npc_call(npc_11389(ctx, 2, vec![])),
-        101826 => npc_call(npc_11389(ctx, 3, vec![])),
-        101827 => npc_call(npc_11389(ctx, 4, vec![])),
-        101828 => npc_call(npc_11390(ctx, 1, vec![])),
-        101829 => npc_call(npc_11390(ctx, 2, vec![])),
-        101830 => npc_call(npc_11390(ctx, 3, vec![])),
-        101831 => npc_call(npc_11390(ctx, 4, vec![])),
-        101832 => npc_call(npc_11390(ctx, 5, vec![])),
-        101833 => npc_call(npc_11390(ctx, 6, vec![])),
-        101834 => npc_call(npc_11390(ctx, 7, vec![])),
-        101835 => npc_call(npc_11391(ctx, 1, vec![])),
-        101836 => npc_call(npc_11391(ctx, 2, vec![])),
-        101837 => npc_call(npc_11391(ctx, 3, vec![])),
-        101838 => npc_call(npc_11391(ctx, 4, vec![])),
-        101839 => npc_call(npc_11397(ctx, 1, vec![])),
-        101840 => npc_call(npc_11397(ctx, 2, vec![])),
-        101841 => npc_call(npc_11397(ctx, 3, vec![])),
-        101842 => npc_call(npc_11400(ctx, 1, vec![])),
-        101843 => npc_call(npc_11401(ctx, 1, vec![])),
-        101844 => npc_call(npc_11401(ctx, 2, vec![])),
-        101845 => npc_call(npc_11401(ctx, 3, vec![])),
-        101846 => npc_call(npc_11401(ctx, 4, vec![])),
-        101847 => npc_call(npc_11405(ctx, 1, vec![])),
-        101848 => npc_call(npc_11405(ctx, 2, vec![])),
-        101849 => npc_call(npc_11405(ctx, 3, vec![])),
-        101850 => npc_call(npc_11405(ctx, 4, vec![])),
-        101851 => npc_call(npc_11406(ctx, 1, vec![])),
-        101852 => npc_call(npc_11407(ctx, 1, vec![])),
-        101853 => npc_call(npc_11407(ctx, 2, vec![])),
-        101854 => npc_call(npc_11407(ctx, 3, vec![])),
-        101855 => npc_call(npc_11410(ctx, 1, vec![])),
-        101856 => npc_call(npc_11412(ctx, 1, vec![])),
-        101857 => npc_call(npc_11412(ctx, 2, vec![])),
-        101858 => npc_call(npc_11412(ctx, 3, vec![])),
-        101859 => npc_call(npc_11412(ctx, 4, vec![])),
-        101860 => npc_call(npc_11418(ctx, 1, vec![])),
-        101861 => npc_call(npc_11418(ctx, 2, vec![])),
-        101862 => npc_call(npc_11418(ctx, 3, vec![])),
+        101815 => npc_call(npc_11345(ctx, 1, vec![])),
+        101816 => npc_call(npc_11347(ctx, 1, vec![])),
+        101817 => npc_call(npc_11348(ctx, 1, vec![])),
+        101818 => npc_call(npc_11348(ctx, 2, vec![])),
+        101819 => npc_call(npc_11348(ctx, 3, vec![])),
+        101820 => npc_call(npc_11348(ctx, 4, vec![])),
+        101821 => npc_call(npc_11349(ctx, 1, vec![])),
+        101822 => npc_call(npc_11349(ctx, 2, vec![])),
+        101823 => npc_call(npc_11349(ctx, 3, vec![])),
+        101824 => npc_call(npc_11349(ctx, 4, vec![])),
+        101825 => npc_call(npc_11349(ctx, 5, vec![])),
+        101826 => npc_call(npc_11354(ctx, 1, vec![])),
+        101827 => npc_call(npc_11354(ctx, 2, vec![])),
+        101828 => npc_call(npc_11358(ctx, 1, vec![])),
+        101829 => npc_call(npc_11362(ctx, 1, vec![])),
+        101830 => npc_call(npc_11364(ctx, 2, vec![])),
+        101831 => npc_call(npc_11384(ctx, 1, vec![])),
+        101832 => npc_call(npc_11388(ctx, 1, vec![])),
+        101833 => npc_call(npc_11388(ctx, 2, vec![])),
+        101834 => npc_call(npc_11388(ctx, 3, vec![])),
+        101835 => npc_call(npc_11388(ctx, 4, vec![])),
+        101836 => npc_call(npc_11389(ctx, 1, vec![])),
+        101837 => npc_call(npc_11389(ctx, 2, vec![])),
+        101838 => npc_call(npc_11389(ctx, 3, vec![])),
+        101839 => npc_call(npc_11389(ctx, 4, vec![])),
+        101840 => npc_call(npc_11390(ctx, 1, vec![])),
+        101841 => npc_call(npc_11390(ctx, 2, vec![])),
+        101842 => npc_call(npc_11390(ctx, 3, vec![])),
+        101843 => npc_call(npc_11390(ctx, 4, vec![])),
+        101844 => npc_call(npc_11390(ctx, 5, vec![])),
+        101845 => npc_call(npc_11390(ctx, 6, vec![])),
+        101846 => npc_call(npc_11390(ctx, 7, vec![])),
+        101847 => npc_call(npc_11391(ctx, 1, vec![])),
+        101848 => npc_call(npc_11391(ctx, 2, vec![])),
+        101849 => npc_call(npc_11391(ctx, 3, vec![])),
+        101850 => npc_call(npc_11391(ctx, 4, vec![])),
+        101851 => npc_call(npc_11397(ctx, 1, vec![])),
+        101852 => npc_call(npc_11397(ctx, 2, vec![])),
+        101853 => npc_call(npc_11397(ctx, 3, vec![])),
+        101854 => npc_call(npc_11400(ctx, 1, vec![])),
+        101855 => npc_call(npc_11401(ctx, 1, vec![])),
+        101856 => npc_call(npc_11401(ctx, 2, vec![])),
+        101857 => npc_call(npc_11401(ctx, 3, vec![])),
+        101858 => npc_call(npc_11401(ctx, 4, vec![])),
+        101859 => npc_call(npc_11405(ctx, 1, vec![])),
+        101860 => npc_call(npc_11405(ctx, 2, vec![])),
+        101861 => npc_call(npc_11405(ctx, 3, vec![])),
+        101862 => npc_call(npc_11405(ctx, 4, vec![])),
+        101863 => npc_call(npc_11406(ctx, 1, vec![])),
+        101864 => npc_call(npc_11407(ctx, 1, vec![])),
+        101865 => npc_call(npc_11407(ctx, 2, vec![])),
+        101866 => npc_call(npc_11407(ctx, 3, vec![])),
+        101867 => npc_call(npc_11410(ctx, 1, vec![])),
+        101868 => npc_call(npc_11412(ctx, 1, vec![])),
+        101869 => npc_call(npc_11412(ctx, 2, vec![])),
+        101870 => npc_call(npc_11412(ctx, 3, vec![])),
+        101871 => npc_call(npc_11412(ctx, 4, vec![])),
+        101872 => npc_call(npc_11418(ctx, 1, vec![])),
+        101873 => npc_call(npc_11418(ctx, 2, vec![])),
+        101874 => npc_call(npc_11418(ctx, 3, vec![])),
         _ => None,
     }
 }

@@ -8466,6 +8466,839 @@ fn npc_10481(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_10482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_CATWARP: usize = 1;
+    const LABEL___AFTER_CATWARP: usize = 2;
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(get(ctx, "ep13_yong1")?, "<", n(1))?.truthy() {
+                        ctx.mes("[Cat Paw Agent]")?;
+                        ctx.mes("Welcome to Cat Trading.")?;
+                        ctx.mes("I guess you're a first-time")?;
+                        ctx.mes("customer, huh?")?;
+                        ctx.next()?;
+                        ctx.mes("[Cat Paw Agent]")?;
+                        ctx.mes("How'd you like to make")?;
+                        ctx.mes("a contract with us?")?;
+                        ctx.mes("We'll guarantee that you'll")?;
+                        ctx.mes("be provided with various")?;
+                        ctx.mes("conveniences during your")?;
+                        ctx.mes("stay at this expedition camp?")?;
+                        ctx.next()?;
+                        'b1: {
+                            let sw1 = n(select(ctx, &["Tell me more about your services.", "No. thanks"])?);
+                            let mut m1 = false;
+                            let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                            if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                            if m1 {
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("Before making a contract with us, youll have to go through a few steps to satisfy our terms and conditions.")?;
+                                ctx.next()?;
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("More clearly, you'll have to provide us something in return for our services.")?;
+                                ctx.mes("You know what I mean, don't you?")?;
+                                ctx.next()?;
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("For more information, please speak to Agent Gyaruk standing down there.")?;
+                                ctx.mes("I'm sure you'll find our business proposition to be very reasonable.")?;
+                                set(ctx, "ep13_yong1", n(1))?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                            if m1 {
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("Well, feel free to come back whenever you change your mind.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    } else {
+                        if op(get(ctx, "ep13_yong1")?, "==", n(1))?.truthy() {
+                            ctx.mes("[Cat Paw Agent]")?;
+                            ctx.mes("For more information, please speak to Agent Gyaruk standing down there.")?;
+                            ctx.mes("I'm sure you'll find our business proposition to be very reasonable.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "ep13_yong1")?, "==", n(2))?.truthy() {
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("Thank you for making an official contract with us.")?;
+                                ctx.mes("You're now eligable to use our services.")?;
+                                ctx.next()?;
+                                ctx.mes("[Cat Paw Agent]")?;
+                                ctx.mes("For our newcomers, we're offering a location-saving service with which you can save this camp as your returning location.")?;
+                                ctx.mes("Would you like to save your location?")?;
+                                set(ctx, "ep13_yong1", n(3))?;
+                                ctx.next()?;
+                                'b2: {
+                                    let sw2 = n(select(ctx, &["Save your location", "Cancel"])?);
+                                    let mut m2 = false;
+                                    let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                                    if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                                    if m2 {
+                                        ctx.call(Function::SavePoint, vec![s("mid_camp"), n(56), n(139), n(1), n(1)])?;
+                                        ctx.mes("[Cat Paw Agent]")?;
+                                        ctx.mes("Thank you.")?;
+                                        ctx.mes("Your location has been saved.")?;
+                                        ctx.mes("You can now directly return to this camp.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                    if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                                    if m2 {
+                                        ctx.mes("[Cat Paw Agent]")?;
+                                        ctx.mes("Thank you for using our service.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                }
+                            } else {
+                                if (op(get(ctx, "ep13_yong1")?, ">", n(2))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(20))?.truthy()) {
+                                    ctx.mes("[Cat Paw Agent]")?;
+                                    ctx.mes("Cat Trading's available services are as followed.")?;
+                                    ctx.mes("For additional services, please consult Agent Gyaruk.")?;
+                                    ctx.next()?;
+                                    'b3: {
+                                        let sw3 = n(select(ctx, &["Save your location", "Cancel"])?);
+                                        let mut m3 = false;
+                                        let d3 = !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                                        if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                                        if m3 {
+                                            ctx.call(Function::SavePoint, vec![s("mid_camp"), n(56), n(139), n(1), n(1)])?;
+                                            ctx.mes("[Cat Paw Agent]")?;
+                                            ctx.mes("Thank you.")?;
+                                            ctx.mes("Your location has been saved.")?;
+                                            ctx.mes("You can now directly return to this camp.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                                        if m3 {
+                                            ctx.mes("[Cat Paw Agent]")?;
+                                            ctx.mes("Thank you for using our service.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                    }
+                                } else {
+                                    if (op(get(ctx, "ep13_yong1")?, ">", n(19))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(40))?.truthy()) {
+                                        ctx.mes("[Cat Paw Agent]")?;
+                                        ctx.mes("Cat Trading's available services are as followed.")?;
+                                        ctx.mes("For additional services, please consult Agent Gyaruk.")?;
+                                        ctx.next()?;
+                                        'b4: {
+                                            let sw4 = n(select(ctx, &["Save your location", "Use Storage", "Cancel"])?);
+                                            let mut m4 = false;
+                                            let d4 = !eq(&sw4, &n(1)) && !eq(&sw4, &n(2)) && !eq(&sw4, &n(3));
+                                            if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                                            if m4 {
+                                                ctx.call(Function::SavePoint, vec![s("mid_camp"), n(56), n(139), n(1), n(1)])?;
+                                                ctx.mes("[Cat Paw Agent]")?;
+                                                ctx.mes("Thank you.")?;
+                                                ctx.mes("Your location has been saved.")?;
+                                                ctx.mes("You can now directly return to this camp.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                                            if m4 {
+                                                if !super::m_other_global_functions::fn_92_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                    ctx.mes("[Cat Paw Agent]")?;
+                                                    ctx.mes("I'm sorry, but you")?;
+                                                    ctx.mes("need the Novice's")?;
+                                                    ctx.mes("Basic Skill Level 6 to")?;
+                                                    ctx.mes("use the Storage Service.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    if op(get(ctx, "Zeny")?, ">=", n(60))?.truthy() {
+                                                        ctx.write("Zeny", op(get(ctx, "Zeny")?, "-", n(60))?)?;
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("Thank you.")?;
+                                                        ctx.mes("Your storage will")?;
+                                                        ctx.mes("be opened shortly.")?;
+                                                        ctx.close()?;
+                                                        ctx.call(Function::OpenStorage, vec![])?;
+                                                        return Err(END.into());
+                                                    } else {
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("I'm sorry, but you don't")?;
+                                                        ctx.mes("have enough money?")?;
+                                                        ctx.mes("Cat Trading's storage")?;
+                                                        ctx.mes("service is 60 zeny.")?;
+                                                        ctx.mes("It's cheap, isn't it?")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                }
+                                            }
+                                            if !m4 && eq(&sw4, &n(3)) { m4 = true; }
+                                            if m4 {
+                                                ctx.mes("[Cat Paw Agent]")?;
+                                                ctx.mes("Thank you for using our service.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    } else {
+                                        if (op(get(ctx, "ep13_yong1")?, ">", n(39))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(100))?.truthy()) {
+                                            ctx.mes("[Cat Paw Agent]")?;
+                                            ctx.mes("Cat Trading's available services are as followed.")?;
+                                            ctx.mes("For additional services, please consult Agent Gyaruk.")?;
+                                            ctx.next()?;
+                                            'b5: {
+                                                let sw5 = n(select(ctx, &["Save your location", "Use Storage", "Use Cat Warp (Midgard)", "Cancel"])?);
+                                                let mut m5 = false;
+                                                let d5 = !eq(&sw5, &n(1)) && !eq(&sw5, &n(2)) && !eq(&sw5, &n(3)) && !eq(&sw5, &n(4));
+                                                if !m5 && eq(&sw5, &n(1)) { m5 = true; }
+                                                if m5 {
+                                                    ctx.call(Function::SavePoint, vec![s("mid_camp"), n(56), n(139), n(1), n(1)])?;
+                                                    ctx.mes("[Cat Paw Agent]")?;
+                                                    ctx.mes("Thank you.")?;
+                                                    ctx.mes("Your location has been saved.")?;
+                                                    ctx.mes("You can now directly return to this camp.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                                if !m5 && eq(&sw5, &n(2)) { m5 = true; }
+                                                if m5 {
+                                                    if !super::m_other_global_functions::fn_92_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("I'm sorry, but you")?;
+                                                        ctx.mes("need the Novice's")?;
+                                                        ctx.mes("Basic Skill Level 6 to")?;
+                                                        ctx.mes("use the Storage Service.")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    } else {
+                                                        if op(get(ctx, "Zeny")?, ">=", n(60))?.truthy() {
+                                                            ctx.write("Zeny", op(get(ctx, "Zeny")?, "-", n(60))?)?;
+                                                            ctx.mes("[Cat Paw Agent]")?;
+                                                            ctx.mes("Thank you.")?;
+                                                            ctx.mes("Your storage will")?;
+                                                            ctx.mes("be opened shortly.")?;
+                                                            ctx.close()?;
+                                                            ctx.call(Function::OpenStorage, vec![])?;
+                                                            return Err(END.into());
+                                                        } else {
+                                                            ctx.mes("[Cat Paw Agent]")?;
+                                                            ctx.mes("I'm sorry, but you don't")?;
+                                                            ctx.mes("have enough money?")?;
+                                                            ctx.mes("Cat Trading's storage")?;
+                                                            ctx.mes("service is 60 zeny.")?;
+                                                            ctx.mes("It's cheap, isn't it?")?;
+                                                            ctx.close()?;
+                                                            return Err(END.into());
+                                                        }
+                                                    }
+                                                }
+                                                if !m5 && eq(&sw5, &n(3)) { m5 = true; }
+                                                if m5 {
+                                                    ctx.mes("[Cat Paw Agent]")?;
+                                                    ctx.mes("The warp service is only")?;
+                                                    ctx.mes("available for customers with")?;
+                                                    ctx.mes("40 or more Cat Trading Points.")?;
+                                                    ctx.mes("Please remember, you can't come back easily once you move to Midgard.")?;
+                                                    ctx.next()?;
+                                                    if (op(get(ctx, "ep13_yong1")?, ">", n(39))?.truthy() && op(get(ctx, "ep13_yong1")?, "<=", n(49))?.truthy()) {
+                                                        'b6: {
+                                                            let sw6 = n(select(ctx, &["Prontera -> 5500z", "Cancel"])?);
+                                                            let mut m6 = false;
+                                                            let d6 = !eq(&sw6, &n(1)) && !eq(&sw6, &n(2));
+                                                            if !m6 && eq(&sw6, &n(1)) { m6 = true; }
+                                                            if m6 {
+                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(5500), n(2)])?;
+                                                            }
+                                                            if !m6 && eq(&sw6, &n(2)) { m6 = true; }
+                                                            if m6 {
+                                                                break 'b6;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        if (op(get(ctx, "ep13_yong1")?, ">", n(49))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(60))?.truthy()) {
+                                                            'b7: {
+                                                                let sw7 = n(select(ctx, &["Alberta -> 5500z", "Prontera -> 5500z", "Cancel"])?);
+                                                                let mut m7 = false;
+                                                                let d7 = !eq(&sw7, &n(1)) && !eq(&sw7, &n(2)) && !eq(&sw7, &n(3));
+                                                                if !m7 && eq(&sw7, &n(1)) { m7 = true; }
+                                                                if m7 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(5500), n(1)])?;
+                                                                }
+                                                                if !m7 && eq(&sw7, &n(2)) { m7 = true; }
+                                                                if m7 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(5500), n(2)])?;
+                                                                }
+                                                                if !m7 && eq(&sw7, &n(3)) { m7 = true; }
+                                                                if m7 {
+                                                                    break 'b7;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            if (op(get(ctx, "ep13_yong1")?, ">", n(59))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(70))?.truthy()) {
+                                                                'b8: {
+                                                                    let sw8 = n(select(ctx, &["Alberta -> 5025z", "Prontera -> 5025z", "Izlude -> 5025z", "Cancel"])?);
+                                                                    let mut m8 = false;
+                                                                    let d8 = !eq(&sw8, &n(1)) && !eq(&sw8, &n(2)) && !eq(&sw8, &n(3)) && !eq(&sw8, &n(4));
+                                                                    if !m8 && eq(&sw8, &n(1)) { m8 = true; }
+                                                                    if m8 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(1)])?;
+                                                                    }
+                                                                    if !m8 && eq(&sw8, &n(2)) { m8 = true; }
+                                                                    if m8 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(2)])?;
+                                                                    }
+                                                                    if !m8 && eq(&sw8, &n(3)) { m8 = true; }
+                                                                    if m8 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(3)])?;
+                                                                    }
+                                                                    if !m8 && eq(&sw8, &n(4)) { m8 = true; }
+                                                                    if m8 {
+                                                                        break 'b8;
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                if (op(get(ctx, "ep13_yong1")?, ">", n(69))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(80))?.truthy()) {
+                                                                    'b9: {
+                                                                        let sw9 = n(select(ctx, &["Alberta -> 5025z", "Prontera -> 5025z", "Izlude -> 5025z", "Geffen -> 5025z", "Cancel"])?);
+                                                                        let mut m9 = false;
+                                                                        let d9 = !eq(&sw9, &n(1)) && !eq(&sw9, &n(2)) && !eq(&sw9, &n(3)) && !eq(&sw9, &n(4)) && !eq(&sw9, &n(5));
+                                                                        if !m9 && eq(&sw9, &n(1)) { m9 = true; }
+                                                                        if m9 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(1)])?;
+                                                                        }
+                                                                        if !m9 && eq(&sw9, &n(2)) { m9 = true; }
+                                                                        if m9 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(2)])?;
+                                                                        }
+                                                                        if !m9 && eq(&sw9, &n(3)) { m9 = true; }
+                                                                        if m9 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(3)])?;
+                                                                        }
+                                                                        if !m9 && eq(&sw9, &n(4)) { m9 = true; }
+                                                                        if m9 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(5025), n(4)])?;
+                                                                        }
+                                                                        if !m9 && eq(&sw9, &n(5)) { m9 = true; }
+                                                                        if m9 {
+                                                                            break 'b9;
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    if (op(get(ctx, "ep13_yong1")?, ">", n(79))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(90))?.truthy()) {
+                                                                        'b10: {
+                                                                            let sw10 = n(select(ctx, &["Alberta -> 4765z", "Prontera -> 4765z", "Izlude -> 4765z", "Geffen -> 4765z", "Payon -> 4765z", "Cancel"])?);
+                                                                            let mut m10 = false;
+                                                                            let d10 = !eq(&sw10, &n(1)) && !eq(&sw10, &n(2)) && !eq(&sw10, &n(3)) && !eq(&sw10, &n(4)) && !eq(&sw10, &n(5)) && !eq(&sw10, &n(6));
+                                                                            if !m10 && eq(&sw10, &n(1)) { m10 = true; }
+                                                                            if m10 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(1)])?;
+                                                                            }
+                                                                            if !m10 && eq(&sw10, &n(2)) { m10 = true; }
+                                                                            if m10 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(2)])?;
+                                                                            }
+                                                                            if !m10 && eq(&sw10, &n(3)) { m10 = true; }
+                                                                            if m10 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(3)])?;
+                                                                            }
+                                                                            if !m10 && eq(&sw10, &n(4)) { m10 = true; }
+                                                                            if m10 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(4)])?;
+                                                                            }
+                                                                            if !m10 && eq(&sw10, &n(5)) { m10 = true; }
+                                                                            if m10 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(5)])?;
+                                                                            }
+                                                                            if !m10 && eq(&sw10, &n(6)) { m10 = true; }
+                                                                            if m10 {
+                                                                                break 'b10;
+                                                                            }
+                                                                        }
+                                                                    } else {
+                                                                        if (op(get(ctx, "ep13_yong1")?, ">", n(89))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(100))?.truthy()) {
+                                                                            'b11: {
+                                                                                let sw11 = n(select(ctx, &["Alberta -> 4765z", "Prontera -> 4765z", "Izlude -> 4765z", "Geffen -> 4765z", "Payon -> 4765z", "Morocc -> 4765z", "Cancel"])?);
+                                                                                let mut m11 = false;
+                                                                                let d11 = !eq(&sw11, &n(1)) && !eq(&sw11, &n(2)) && !eq(&sw11, &n(3)) && !eq(&sw11, &n(4)) && !eq(&sw11, &n(5)) && !eq(&sw11, &n(6)) && !eq(&sw11, &n(7));
+                                                                                if !m11 && eq(&sw11, &n(1)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(1)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(2)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(2)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(3)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(3)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(4)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(4)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(5)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(5)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(6)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4765), n(6)])?;
+                                                                                }
+                                                                                if !m11 && eq(&sw11, &n(7)) { m11 = true; }
+                                                                                if m11 {
+                                                                                    break 'b11;
+                                                                                }
+                                                                            }
+                                                                        } else {
+                                                                            if op(get(ctx, "ep13_yong1")?, ">", n(99))?.truthy() {
+                                                                                'b12: {
+                                                                                    let sw12 = n(select(ctx, &["Alberta -> 4590z", "Prontera -> 4590z", "Izlude -> 4590z", "Geffen -> 4590z", "Payon -> 4590z", "Morocc -> 4590z", "Al De Baran -> 4590z", "Cancel"])?);
+                                                                                    let mut m12 = false;
+                                                                                    let d12 = !eq(&sw12, &n(1)) && !eq(&sw12, &n(2)) && !eq(&sw12, &n(3)) && !eq(&sw12, &n(4)) && !eq(&sw12, &n(5)) && !eq(&sw12, &n(6)) && !eq(&sw12, &n(7)) && !eq(&sw12, &n(8));
+                                                                                    if !m12 && eq(&sw12, &n(1)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(1)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(2)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(2)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(3)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(3)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(4)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(4)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(5)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(5)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(6)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(6)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(7)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(7)])?;
+                                                                                    }
+                                                                                    if !m12 && eq(&sw12, &n(8)) { m12 = true; }
+                                                                                    if m12 {
+                                                                                        break 'b12;
+                                                                                    }
+                                                                                }
+                                                                            } else {
+                                                                                ctx.mes("[Cat Paw Agent]")?;
+                                                                                ctx.mes("I'm sorry, but you're not eligible to use the warp service. Please check your points, and then come back.")?;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                                if !m5 && eq(&sw5, &n(4)) { m5 = true; }
+                                                if m5 {
+                                                    ctx.mes("[Cat Paw Agent]")?;
+                                                    ctx.mes("Thank you for using our service.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        } else {
+                                            if op(get(ctx, "ep13_yong1")?, ">", n(99))?.truthy() {
+                                                ctx.mes("[Cat Paw Agent]")?;
+                                                ctx.mes("Cat Trading's available services are as followed.")?;
+                                                ctx.mes("For additional services, please consult Agent Gyaruk.")?;
+                                                ctx.next()?;
+                                                'b13: {
+                                                    let sw13 = n(select(ctx, &["Save your location", "Use Storage", "Use Cat Warp (Midgard)", "Use Cat Warp (Jottunheim)", "Cancel"])?);
+                                                    let mut m13 = false;
+                                                    let d13 = !eq(&sw13, &n(1)) && !eq(&sw13, &n(2)) && !eq(&sw13, &n(3)) && !eq(&sw13, &n(4)) && !eq(&sw13, &n(5));
+                                                    if !m13 && eq(&sw13, &n(1)) { m13 = true; }
+                                                    if m13 {
+                                                        ctx.call(Function::SavePoint, vec![s("mid_camp"), n(56), n(139), n(1), n(1)])?;
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("Thank you.")?;
+                                                        ctx.mes("Your location has been saved.")?;
+                                                        ctx.mes("You can now directly return to this camp.")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                    if !m13 && eq(&sw13, &n(2)) { m13 = true; }
+                                                    if m13 {
+                                                        if !super::m_other_global_functions::fn_92_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                            ctx.mes("[Cat Paw Agent]")?;
+                                                            ctx.mes("I'm sorry, but you")?;
+                                                            ctx.mes("need the Novice's")?;
+                                                            ctx.mes("Basic Skill Level 6 to")?;
+                                                            ctx.mes("use the Storage Service.")?;
+                                                            ctx.close()?;
+                                                            return Err(END.into());
+                                                        } else {
+                                                            if op(get(ctx, "Zeny")?, ">=", n(60))?.truthy() {
+                                                                ctx.write("Zeny", op(get(ctx, "Zeny")?, "-", n(60))?)?;
+                                                                ctx.mes("[Cat Paw Agent]")?;
+                                                                ctx.mes("Thank you.")?;
+                                                                ctx.mes("Your storage will")?;
+                                                                ctx.mes("be opened shortly.")?;
+                                                                ctx.close()?;
+                                                                ctx.call(Function::OpenStorage, vec![])?;
+                                                                return Err(END.into());
+                                                            } else {
+                                                                ctx.mes("[Cat Paw Agent]")?;
+                                                                ctx.mes("I'm sorry, but you don't")?;
+                                                                ctx.mes("have enough money?")?;
+                                                                ctx.mes("Cat Trading's storage")?;
+                                                                ctx.mes("service is 60 zeny.")?;
+                                                                ctx.mes("It's cheap, isn't it?")?;
+                                                                ctx.close()?;
+                                                                return Err(END.into());
+                                                            }
+                                                        }
+                                                    }
+                                                    if !m13 && eq(&sw13, &n(3)) { m13 = true; }
+                                                    if m13 {
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("The warp service is only")?;
+                                                        ctx.mes("available for customers with")?;
+                                                        ctx.mes("40 or more Cat Trading Points.")?;
+                                                        ctx.mes("Please remember, you can't come back easily once you move to Midgard.")?;
+                                                        ctx.next()?;
+                                                        if (op(get(ctx, "ep13_yong1")?, ">", n(99))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(200))?.truthy()) {
+                                                            'b14: {
+                                                                let sw14 = n(select(ctx, &["Alberta -> 4590z", "Prontera -> 4590z", "Izlude -> 4590z", "Geffen -> 4590z", "Payon -> 4590z", "Morocc -> 4590z", "Al De Baran -> 4590z", "Cancel"])?);
+                                                                let mut m14 = false;
+                                                                let d14 = !eq(&sw14, &n(1)) && !eq(&sw14, &n(2)) && !eq(&sw14, &n(3)) && !eq(&sw14, &n(4)) && !eq(&sw14, &n(5)) && !eq(&sw14, &n(6)) && !eq(&sw14, &n(7)) && !eq(&sw14, &n(8));
+                                                                if !m14 && eq(&sw14, &n(1)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(1)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(2)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(2)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(3)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(3)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(4)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(4)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(5)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(5)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(6)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(6)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(7)) { m14 = true; }
+                                                                if m14 {
+                                                                    npc_10482(ctx, LABEL_CATWARP, vec![n(4590), n(7)])?;
+                                                                }
+                                                                if !m14 && eq(&sw14, &n(8)) { m14 = true; }
+                                                                if m14 {
+                                                                    break 'b14;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            if (op(get(ctx, "ep13_yong1")?, ">", n(199))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(250))?.truthy()) {
+                                                                'b15: {
+                                                                    let sw15 = n(select(ctx, &["Alberta -> 4170z", "Prontera -> 4170z", "Izlude -> 4170z", "Geffen -> 4170z", "Payon -> 4170z", "Morocc -> 4170z", "Al De Baran -> 4170z", "Juno -> 4170z", "Cancel"])?);
+                                                                    let mut m15 = false;
+                                                                    let d15 = !eq(&sw15, &n(1)) && !eq(&sw15, &n(2)) && !eq(&sw15, &n(3)) && !eq(&sw15, &n(4)) && !eq(&sw15, &n(5)) && !eq(&sw15, &n(6)) && !eq(&sw15, &n(7)) && !eq(&sw15, &n(8)) && !eq(&sw15, &n(9));
+                                                                    if !m15 && eq(&sw15, &n(1)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(1)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(2)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(2)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(3)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(3)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(4)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(4)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(5)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(5)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(6)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(6)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(7)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(7)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(8)) { m15 = true; }
+                                                                    if m15 {
+                                                                        npc_10482(ctx, LABEL_CATWARP, vec![n(4170), n(8)])?;
+                                                                    }
+                                                                    if !m15 && eq(&sw15, &n(9)) { m15 = true; }
+                                                                    if m15 {
+                                                                        break 'b15;
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                if (op(get(ctx, "ep13_yong1")?, ">", n(249))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(300))?.truthy()) {
+                                                                    'b16: {
+                                                                        let sw16 = n(select(ctx, &["Alberta -> 4025z", "Prontera -> 4025z", "Izlude -> 4025z", "Geffen -> 4025z", "Payon -> 4025z", "Morocc -> 4025z", "Al De Baran -> 4025z", "Juno -> 4025z", "Einbroch -> 4025z", "Cancel"])?);
+                                                                        let mut m16 = false;
+                                                                        let d16 = !eq(&sw16, &n(1)) && !eq(&sw16, &n(2)) && !eq(&sw16, &n(3)) && !eq(&sw16, &n(4)) && !eq(&sw16, &n(5)) && !eq(&sw16, &n(6)) && !eq(&sw16, &n(7)) && !eq(&sw16, &n(8)) && !eq(&sw16, &n(9)) && !eq(&sw16, &n(10));
+                                                                        if !m16 && eq(&sw16, &n(1)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(1)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(2)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(2)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(3)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(3)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(4)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(4)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(5)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(5)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(6)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(6)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(7)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(7)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(8)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(8)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(9)) { m16 = true; }
+                                                                        if m16 {
+                                                                            npc_10482(ctx, LABEL_CATWARP, vec![n(4025), n(9)])?;
+                                                                        }
+                                                                        if !m16 && eq(&sw16, &n(10)) { m16 = true; }
+                                                                        if m16 {
+                                                                            break 'b16;
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    if op(get(ctx, "ep13_yong1")?, ">", n(299))?.truthy() {
+                                                                        'b17: {
+                                                                            let sw17 = n(select(ctx, &["Alberta -> 3970z", "Prontera -> 3970z", "Izlude -> 3970z", "Geffen -> 3970z", "Payon -> 3970z", "Morocc -> 3970z", "Al De Baran -> 3970z", "Juno -> 3970z", "Einbroch -> 3970z", "Lighthalzen -> 3970z", "Cancel"])?);
+                                                                            let mut m17 = false;
+                                                                            let d17 = !eq(&sw17, &n(1)) && !eq(&sw17, &n(2)) && !eq(&sw17, &n(3)) && !eq(&sw17, &n(4)) && !eq(&sw17, &n(5)) && !eq(&sw17, &n(6)) && !eq(&sw17, &n(7)) && !eq(&sw17, &n(8)) && !eq(&sw17, &n(9)) && !eq(&sw17, &n(10)) && !eq(&sw17, &n(11));
+                                                                            if !m17 && eq(&sw17, &n(1)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(1)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(2)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(2)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(3)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(3)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(4)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(4)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(5)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(5)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(6)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(6)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(7)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(7)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(8)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(8)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(9)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(9)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(10)) { m17 = true; }
+                                                                            if m17 {
+                                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(3970), n(10)])?;
+                                                                            }
+                                                                            if !m17 && eq(&sw17, &n(11)) { m17 = true; }
+                                                                            if m17 {
+                                                                                break 'b17;
+                                                                            }
+                                                                        }
+                                                                    } else {
+                                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                                        ctx.mes("I'm sorry, but you're not eligible to use the warp service. Please check your points, and then come back.")?;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                    if !m13 && eq(&sw13, &n(4)) { m13 = true; }
+                                                    if m13 {
+                                                        'b18: {
+                                                            let sw18 = n(select(ctx, &["Splendide Camp -> 5500z", "Manuk Camp -> 5500z", "Cancel"])?);
+                                                            let mut m18 = false;
+                                                            let d18 = !eq(&sw18, &n(1)) && !eq(&sw18, &n(2)) && !eq(&sw18, &n(3));
+                                                            if !m18 && eq(&sw18, &n(1)) { m18 = true; }
+                                                            if m18 {
+                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(5500), n(11)])?;
+                                                            }
+                                                            if !m18 && eq(&sw18, &n(2)) { m18 = true; }
+                                                            if m18 {
+                                                                npc_10482(ctx, LABEL_CATWARP, vec![n(5500), n(12)])?;
+                                                            }
+                                                            if !m18 && eq(&sw18, &n(3)) { m18 = true; }
+                                                            if m18 {
+                                                                ctx.mes("[Cat Paw Agent]")?;
+                                                                ctx.mes("Thank you for using our service.")?;
+                                                                ctx.close()?;
+                                                                return Err(END.into());
+                                                            }
+                                                        }
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                    if !m13 && eq(&sw13, &n(5)) { m13 = true; }
+                                                    if m13 {
+                                                        ctx.mes("[Cat Paw Agent]")?;
+                                                        ctx.mes("Thank you for using our service.")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                }
+                                            } else {
+                                                ctx.mes("[Cat Paw Agent]")?;
+                                                ctx.mes("*Yawn...*")?;
+                                                ctx.mes("I want to eat fish.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    pc = LABEL___AFTER_CATWARP; continue 'sm;
+                    pc = 1;
+                }
+                1 => {
+                    if op(get(ctx, "Zeny")?, "<", arg(&args, 0, n(0)))?.truthy() {
+                        ctx.mes("[Cat Paw Agent]")?;
+                        ctx.mes("Don't play with money.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.close()?;
+                    ctx.write("Zeny", op(get(ctx, "Zeny")?, "-", arg(&args, 0, n(0)))?)?;
+                    'b19: {
+                        let sw19 = arg(&args, 1, n(0));
+                        let mut m19 = false;
+                        let d19 = !eq(&sw19, &n(1)) && !eq(&sw19, &n(2)) && !eq(&sw19, &n(3)) && !eq(&sw19, &n(4)) && !eq(&sw19, &n(5)) && !eq(&sw19, &n(6)) && !eq(&sw19, &n(7)) && !eq(&sw19, &n(8)) && !eq(&sw19, &n(9)) && !eq(&sw19, &n(10)) && !eq(&sw19, &n(11)) && !eq(&sw19, &n(12));
+                        if !m19 && eq(&sw19, &n(1)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("alberta"), n(117), n(56)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(2)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("prontera"), n(116), n(72)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(3)) { m19 = true; }
+                        if m19 {
+                            if n(0).truthy() {
+                                ctx.call(Function::Warp, vec![s("izlude"), n(128), n(98)])?;
+                            } else {
+                                ctx.call(Function::Warp, vec![s("izlude"), n(91), n(105)])?;
+                            }
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(4)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("geffen"), n(120), n(39)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(5)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("payon"), n(161), n(58)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(6)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("morocc"), n(156), n(46)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(7)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("aldebaran"), n(168), n(112)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(8)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("yuno"), n(158), n(125)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(9)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("einbroch"), n(158), n(301)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(10)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("lighthalzen"), n(163), n(64)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(11)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("spl_fild02"), n(32), n(225)])?;
+                            return Err(END.into());
+                        }
+                        if !m19 && eq(&sw19, &n(12)) { m19 = true; }
+                        if m19 {
+                            ctx.call(Function::Warp, vec![s("man_fild02"), n(129), n(61)])?;
+                            return Err(END.into());
+                        }
+                    }
+                    return Ok(n(0));
+                    pc = 2;
+                }
+                2 => {
+                    pc = 3;
+                }
+            3 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_10483(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "ep13_yong1")?, "<", n(1))?.truthy() {
@@ -8622,6 +9455,193 @@ fn npc_10483(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     }
                 }
             }
+        }
+    }
+    Ok(n(0))
+}
+
+fn npc_10484(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    if op(ctx.call(Function::CheckQuest, vec![n(12060), constant(ctx, "PLAYTIME")?])?, "==", n(-1))?.truthy() {
+        if op(get(ctx, "ep13_yong1")?, "<", n(4))?.truthy() {
+            ctx.mes("[Ferocious Gorurug]")?;
+            ctx.mes("Grrr....")?;
+            ctx.next()?;
+            ctx.mes("A cat purring like a lion")?;
+            ctx.mes("is looking into the water.")?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if op(get(ctx, "ep13_yong1")?, "==", n(4))?.truthy() {
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("I'm busy.")?;
+                ctx.mes("I need to catch fish.")?;
+                ctx.next()?;
+                let choice = select(ctx, &["Gyaruk has sent me."])?;
+                ctx.write("@menu", n(choice))?;
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("Gyaruk sent you?")?;
+                ctx.mes("Oh, you are here to fish? *Purr*")?;
+                ctx.next()?;
+                let choice = select(ctx, &["What should I do?"])?;
+                ctx.write("@menu", n(choice))?;
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("You need to catch fish. There are schools of fish in the waters.")?;
+                ctx.mes("It's hard to see them but if you use your cursor to click around, you should be able to catch them.")?;
+                ctx.next()?;
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("It's easier to fish in the water outside the town.")?;
+                ctx.mes("If you're not afraid of monsters, you can go fishing over there.")?;
+                ctx.mes("*Purr*")?;
+                ctx.next()?;
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("Now, let me teach you how to fish.")?;
+                ctx.mes("It's simple: bring your cursor to a school of fish, and then click it to grab them.")?;
+                ctx.next()?;
+                ctx.mes("[Ferocious Gorurug]")?;
+                ctx.mes("You'll have a hard time to catch them at first, but you'll get better.")?;
+                ctx.mes("It gets easier with a bit of practice.")?;
+                set(ctx, "ep13_yong1", n(5))?;
+                ctx.close()?;
+                return Err(END.into());
+            } else {
+                if op(get(ctx, "ep13_yong1")?, "==", n(5))?.truthy() {
+                    if op(ctx.call(Function::CountItem, vec![n(6039)])?, ">", n(9))?.truthy() {
+                        ctx.mes("[Ferocious Gorurug]")?;
+                        ctx.mes("You've brough Pieces of Fish!")?;
+                        ctx.mes("GOOD JOB!")?;
+                        ctx.call(Function::DelItem, vec![n(6039), n(10)])?;
+                        ctx.call(Function::GetExperience, vec![(if n(0).truthy() { n(20000) } else { n(30000) }), n(0)])?;
+                        set(ctx, "ep13_yong1", n(10))?;
+                        ctx.call(Function::SetQuest, vec![n(12060)])?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("^0000ffYou gain EXP "), "+", (if n(0).truthy() { s("20,000") } else { s("30,000") }))?, "+", s("^000000"))?.text())?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        ctx.mes("[Ferocious Gorurug]")?;
+                        ctx.mes("Bring your cursor to a school of fish, then click it to grab them.")?;
+                        ctx.mes("Don't move while doing it!")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                } else {
+                    if (op(get(ctx, "ep13_yong1")?, ">", n(5))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(20))?.truthy()) {
+                        if op(ctx.call(Function::CountItem, vec![n(6039)])?, ">", n(9))?.truthy() {
+                            ctx.mes("[Ferocious Gorurug]")?;
+                            ctx.mes("You've brough Pieces of Fish!")?;
+                            ctx.mes("GOOD JOB!")?;
+                            ctx.call(Function::DelItem, vec![n(6039), n(10)])?;
+                            ctx.call(Function::GetExperience, vec![n(15000), n(0)])?;
+                            ctx.call(Function::SetQuest, vec![n(12060)])?;
+                            set(ctx, "ep13_yong1", op(get(ctx, "ep13_yong1")?, "+", n(1))?)?;
+                            ctx.next()?;
+                            ctx.mes("^0000ffYou gain EXP 15,000^000000")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            ctx.mes("[Ferocious Gorurug]")?;
+                            ctx.mes("Do you want to fish again?")?;
+                            ctx.mes("Don't forget to bring me")?;
+                            ctx.mes("Pieces of Fish if you catch them.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                    } else {
+                        if (op(get(ctx, "ep13_yong1")?, ">", n(19))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(40))?.truthy()) {
+                            if op(ctx.call(Function::CountItem, vec![n(6039)])?, ">", n(9))?.truthy() {
+                                ctx.mes("[Ferocious Gorurug]")?;
+                                ctx.mes("You've brough Pieces of Fish!")?;
+                                ctx.mes("GOOD JOB!")?;
+                                ctx.call(Function::DelItem, vec![n(6039), n(10)])?;
+                                ctx.call(Function::GetExperience, vec![n(15000), n(0)])?;
+                                ctx.call(Function::SetQuest, vec![n(12060)])?;
+                                set(ctx, "ep13_yong1", op(get(ctx, "ep13_yong1")?, "+", n(1))?)?;
+                                ctx.next()?;
+                                ctx.mes("^0000ffYou gain EXP 15,000^000000")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                ctx.mes("[Ferocious Gorurug]")?;
+                                ctx.mes("Hey, I've been waiting for you!")?;
+                                ctx.mes("Good luck fishing today!")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        } else {
+                            if (op(get(ctx, "ep13_yong1")?, ">", n(39))?.truthy() && op(get(ctx, "ep13_yong1")?, "<", n(60))?.truthy()) {
+                                if op(ctx.call(Function::CountItem, vec![n(6039)])?, ">", n(9))?.truthy() {
+                                    ctx.mes("[Ferocious Gorurug]")?;
+                                    ctx.mes("You've brough Pieces of Fish!")?;
+                                    ctx.mes("GOOD JOB!")?;
+                                    ctx.call(Function::DelItem, vec![n(6039), n(10)])?;
+                                    ctx.call(Function::GetExperience, vec![n(15000), n(0)])?;
+                                    ctx.call(Function::SetQuest, vec![n(12060)])?;
+                                    set(ctx, "ep13_yong1", op(get(ctx, "ep13_yong1")?, "+", n(1))?)?;
+                                    ctx.next()?;
+                                    ctx.mes("^0000ffYou gain EXP 15,000^000000")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    ctx.mes("Gorurug looks happy to see you.")?;
+                                    ctx.next()?;
+                                    ctx.mes("[Ferocious Gorurug]")?;
+                                    ctx.mes("What do you want to catch today? *Purr*")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            } else {
+                                if op(get(ctx, "ep13_yong1")?, ">", n(59))?.truthy() {
+                                    npc_skill(ctx, s("AL_HEAL"), n(8), n(50), n(50))?;
+                                    if op(ctx.call(Function::CountItem, vec![n(6039)])?, ">", n(9))?.truthy() {
+                                        ctx.mes("[Ferocious Gorurug]")?;
+                                        ctx.mes("You've brough Pieces of Fish!")?;
+                                        ctx.mes("GOOD JOB!")?;
+                                        ctx.call(Function::DelItem, vec![n(6039), n(10)])?;
+                                        ctx.call(Function::GetExperience, vec![n(15000), n(0)])?;
+                                        ctx.call(Function::SetQuest, vec![n(12060)])?;
+                                        set(ctx, "ep13_yong1", op(get(ctx, "ep13_yong1")?, "+", n(1))?)?;
+                                        ctx.next()?;
+                                        ctx.mes("^0000ffYou gain EXP 1,500^000000")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        ctx.mes("Gorurung welcomes you with a happy purr.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Ferocious Gorurug]")?;
+                                        ctx.mes("Welcome!")?;
+                                        ctx.mes("You're here to give me fishes, aren't you?")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                } else {
+                                    ctx.mes("Ferocious Gorurug is asleep.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        if (op(ctx.call(Function::CheckQuest, vec![n(12060), constant(ctx, "PLAYTIME")?])?, "==", n(0))?.truthy() || op(ctx.call(Function::CheckQuest, vec![n(12060), constant(ctx, "PLAYTIME")?])?, "==", n(1))?.truthy()) {
+            ctx.mes("[Ferocious Gorurug]")?;
+            ctx.mes("*Yawn*")?;
+            ctx.mes("I'm sorry, but I'm off-duty.")?;
+            ctx.mes("I can't accept any fish right now.")?;
+            ctx.mes("Come back tomorrow, alright?")?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            ctx.call(Function::EraseQuest, vec![n(12060)])?;
+            ctx.mes("[Ferocious Gorurug]")?;
+            ctx.mes("*Purr*")?;
+            ctx.mes("Another day has started, back to work!")?;
+            ctx.mes("You can now bring me fish if you catch them.")?;
+            ctx.close()?;
+            return Err(END.into());
         }
     }
     Ok(n(0))
@@ -15595,7 +16615,9 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10479 => npc_call(npc_10479(ctx, 0, vec![])),
         10480 => npc_call(npc_10480(ctx, 0, vec![])),
         10481 => npc_call(npc_10481(ctx, 0, vec![])),
+        10482 => npc_call(npc_10482(ctx, 0, vec![])),
         10483 => npc_call(npc_10483(ctx, 0, vec![])),
+        10484 => npc_call(npc_10484(ctx, 0, vec![])),
         10485 => npc_call(npc_10485(ctx, 0, vec![])),
         10486 => npc_call(npc_10486(ctx, 0, vec![])),
         10487 => npc_call(npc_10487(ctx, 0, vec![])),
@@ -15662,162 +16684,162 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        100537 => npc_call(npc_10418(ctx, 1, vec![])),
-        100538 => npc_call(npc_10419(ctx, 1, vec![])),
-        100539 => npc_call(npc_10420(ctx, 1, vec![])),
-        100540 => npc_call(npc_10421(ctx, 1, vec![])),
-        100541 => npc_call(npc_10438(ctx, 1, vec![])),
-        100542 => npc_call(npc_10438(ctx, 2, vec![])),
-        100543 => npc_call(npc_10438(ctx, 3, vec![])),
-        100544 => npc_call(npc_10438(ctx, 4, vec![])),
-        100545 => npc_call(npc_10438(ctx, 5, vec![])),
-        100546 => npc_call(npc_10438(ctx, 6, vec![])),
-        100547 => npc_call(npc_10447(ctx, 1, vec![])),
-        100548 => npc_call(npc_10461(ctx, 1, vec![])),
-        100549 => npc_call(npc_10462(ctx, 1, vec![])),
-        100550 => npc_call(npc_10464(ctx, 1, vec![])),
-        100551 => npc_call(npc_10469(ctx, 1, vec![])),
-        100552 => npc_call(npc_10469(ctx, 2, vec![])),
-        100553 => npc_call(npc_10469(ctx, 3, vec![])),
-        100554 => npc_call(npc_10469(ctx, 4, vec![])),
-        100555 => npc_call(npc_10469(ctx, 5, vec![])),
-        100556 => npc_call(npc_10469(ctx, 6, vec![])),
-        100557 => npc_call(npc_10469(ctx, 7, vec![])),
-        100558 => npc_call(npc_10469(ctx, 8, vec![])),
-        100559 => npc_call(npc_10473(ctx, 1, vec![])),
-        100560 => npc_call(npc_10473(ctx, 2, vec![])),
-        100561 => npc_call(npc_10473(ctx, 3, vec![])),
-        100562 => npc_call(npc_10473(ctx, 4, vec![])),
-        100563 => npc_call(npc_10474(ctx, 1, vec![])),
-        100564 => npc_call(npc_10474(ctx, 2, vec![])),
-        100565 => npc_call(npc_10474(ctx, 3, vec![])),
-        100566 => npc_call(npc_10474(ctx, 4, vec![])),
-        100567 => npc_call(npc_10475(ctx, 1, vec![])),
-        100568 => npc_call(npc_10475(ctx, 2, vec![])),
-        100569 => npc_call(npc_10475(ctx, 3, vec![])),
-        100570 => npc_call(npc_10475(ctx, 4, vec![])),
-        100571 => npc_call(npc_10478(ctx, 1, vec![])),
-        100572 => npc_call(npc_10478(ctx, 2, vec![])),
-        100573 => npc_call(npc_10478(ctx, 3, vec![])),
-        100574 => npc_call(npc_10479(ctx, 1, vec![])),
-        100575 => npc_call(npc_10479(ctx, 2, vec![])),
-        100576 => npc_call(npc_10479(ctx, 3, vec![])),
-        100577 => npc_call(npc_10480(ctx, 1, vec![])),
-        100578 => npc_call(npc_10480(ctx, 2, vec![])),
-        100579 => npc_call(npc_10480(ctx, 3, vec![])),
-        100580 => npc_call(npc_10481(ctx, 1, vec![])),
-        100581 => npc_call(npc_10481(ctx, 2, vec![])),
-        100582 => npc_call(npc_10481(ctx, 3, vec![])),
-        100583 => npc_call(npc_10481(ctx, 4, vec![])),
-        100584 => npc_call(npc_10481(ctx, 5, vec![])),
-        100585 => npc_call(npc_10488(ctx, 1, vec![])),
-        100586 => npc_call(npc_10493(ctx, 1, vec![])),
-        100587 => npc_call(npc_10494(ctx, 1, vec![])),
-        100588 => npc_call(npc_10494(ctx, 2, vec![])),
-        100589 => npc_call(npc_10494(ctx, 3, vec![])),
-        100590 => npc_call(npc_10494(ctx, 4, vec![])),
-        100591 => npc_call(npc_10495(ctx, 1, vec![])),
-        100592 => npc_call(npc_10495(ctx, 2, vec![])),
-        100593 => npc_call(npc_10495(ctx, 3, vec![])),
-        100594 => npc_call(npc_10495(ctx, 4, vec![])),
-        100595 => npc_call(npc_10496(ctx, 1, vec![])),
-        100596 => npc_call(npc_10496(ctx, 2, vec![])),
-        100597 => npc_call(npc_10496(ctx, 3, vec![])),
-        100598 => npc_call(npc_10501(ctx, 1, vec![])),
-        100599 => npc_call(npc_10501(ctx, 2, vec![])),
-        100600 => npc_call(npc_10501(ctx, 3, vec![])),
-        100601 => npc_call(npc_10501(ctx, 4, vec![])),
-        100602 => npc_call(npc_10501(ctx, 5, vec![])),
-        100603 => npc_call(npc_10502(ctx, 1, vec![])),
-        100604 => npc_call(npc_10502(ctx, 2, vec![])),
-        100605 => npc_call(npc_10502(ctx, 3, vec![])),
-        100606 => npc_call(npc_10502(ctx, 4, vec![])),
-        100607 => npc_call(npc_10502(ctx, 5, vec![])),
-        100608 => npc_call(npc_10503(ctx, 1, vec![])),
-        100609 => npc_call(npc_10503(ctx, 2, vec![])),
-        100610 => npc_call(npc_10503(ctx, 3, vec![])),
-        100611 => npc_call(npc_10503(ctx, 4, vec![])),
-        100612 => npc_call(npc_10503(ctx, 5, vec![])),
-        100613 => npc_call(npc_10504(ctx, 1, vec![])),
-        100614 => npc_call(npc_10504(ctx, 2, vec![])),
-        100615 => npc_call(npc_10504(ctx, 3, vec![])),
-        100616 => npc_call(npc_10504(ctx, 4, vec![])),
-        100617 => npc_call(npc_10504(ctx, 5, vec![])),
-        100618 => npc_call(npc_10507(ctx, 1, vec![])),
-        100619 => npc_call(npc_10508(ctx, 1, vec![])),
-        100620 => npc_call(npc_10512(ctx, 1, vec![])),
-        100621 => npc_call(npc_10514(ctx, 1, vec![])),
-        100622 => npc_call(npc_10517(ctx, 1, vec![])),
-        100623 => npc_call(npc_10517(ctx, 2, vec![])),
-        100624 => npc_call(npc_10517(ctx, 3, vec![])),
-        100625 => npc_call(npc_10518(ctx, 1, vec![])),
-        100626 => npc_call(npc_10518(ctx, 2, vec![])),
-        100627 => npc_call(npc_10518(ctx, 3, vec![])),
-        100628 => npc_call(npc_10518(ctx, 4, vec![])),
-        100629 => npc_call(npc_10518(ctx, 5, vec![])),
-        100630 => npc_call(npc_10519(ctx, 1, vec![])),
-        100631 => npc_call(npc_10519(ctx, 2, vec![])),
-        100632 => npc_call(npc_10519(ctx, 3, vec![])),
-        100633 => npc_call(npc_10519(ctx, 4, vec![])),
-        100634 => npc_call(npc_10520(ctx, 1, vec![])),
-        100635 => npc_call(npc_10521(ctx, 1, vec![])),
-        100636 => npc_call(npc_10521(ctx, 2, vec![])),
-        100637 => npc_call(npc_10521(ctx, 3, vec![])),
-        100638 => npc_call(npc_10522(ctx, 1, vec![])),
-        100639 => npc_call(npc_10522(ctx, 2, vec![])),
-        100640 => npc_call(npc_10522(ctx, 3, vec![])),
-        100641 => npc_call(npc_10523(ctx, 1, vec![])),
-        100642 => npc_call(npc_10523(ctx, 2, vec![])),
-        100643 => npc_call(npc_10523(ctx, 3, vec![])),
-        100644 => npc_call(npc_10523(ctx, 4, vec![])),
-        100645 => npc_call(npc_10523(ctx, 5, vec![])),
-        100646 => npc_call(npc_10524(ctx, 1, vec![])),
-        100647 => npc_call(npc_10524(ctx, 2, vec![])),
-        100648 => npc_call(npc_10524(ctx, 3, vec![])),
-        100649 => npc_call(npc_10524(ctx, 4, vec![])),
-        100650 => npc_call(npc_10525(ctx, 1, vec![])),
-        100651 => npc_call(npc_10525(ctx, 2, vec![])),
-        100652 => npc_call(npc_10525(ctx, 3, vec![])),
-        100653 => npc_call(npc_10525(ctx, 4, vec![])),
-        100654 => npc_call(npc_10526(ctx, 1, vec![])),
-        100655 => npc_call(npc_10527(ctx, 1, vec![])),
-        100656 => npc_call(npc_10529(ctx, 1, vec![])),
-        100657 => npc_call(npc_10529(ctx, 2, vec![])),
-        100658 => npc_call(npc_10529(ctx, 3, vec![])),
-        100659 => npc_call(npc_10530(ctx, 1, vec![])),
-        100660 => npc_call(npc_10530(ctx, 2, vec![])),
-        100661 => npc_call(npc_10530(ctx, 3, vec![])),
-        100662 => npc_call(npc_10531(ctx, 1, vec![])),
-        100663 => npc_call(npc_10534(ctx, 1, vec![])),
-        100664 => npc_call(npc_10534(ctx, 2, vec![])),
-        100665 => npc_call(npc_10534(ctx, 3, vec![])),
-        100666 => npc_call(npc_10534(ctx, 4, vec![])),
-        100667 => npc_call(npc_10534(ctx, 5, vec![])),
-        100668 => npc_call(npc_10534(ctx, 6, vec![])),
-        100669 => npc_call(npc_10534(ctx, 7, vec![])),
-        100670 => npc_call(npc_10534(ctx, 8, vec![])),
-        100671 => npc_call(npc_10534(ctx, 9, vec![])),
-        100672 => npc_call(npc_10535(ctx, 1, vec![])),
-        100673 => npc_call(npc_10535(ctx, 2, vec![])),
-        100674 => npc_call(npc_10535(ctx, 3, vec![])),
-        100675 => npc_call(npc_10535(ctx, 4, vec![])),
-        100676 => npc_call(npc_10536(ctx, 1, vec![])),
-        100677 => npc_call(npc_10536(ctx, 2, vec![])),
-        100678 => npc_call(npc_10536(ctx, 3, vec![])),
-        100679 => npc_call(npc_10536(ctx, 4, vec![])),
-        100680 => npc_call(npc_10536(ctx, 5, vec![])),
-        100681 => npc_call(npc_10536(ctx, 6, vec![])),
-        100682 => npc_call(npc_10536(ctx, 7, vec![])),
-        100683 => npc_call(npc_10536(ctx, 8, vec![])),
-        100684 => npc_call(npc_10536(ctx, 9, vec![])),
-        100685 => npc_call(npc_10536(ctx, 10, vec![])),
-        100686 => npc_call(npc_10537(ctx, 1, vec![])),
-        100687 => npc_call(npc_10537(ctx, 2, vec![])),
-        100688 => npc_call(npc_10537(ctx, 3, vec![])),
-        100689 => npc_call(npc_10538(ctx, 1, vec![])),
-        100690 => npc_call(npc_10540(ctx, 1, vec![])),
-        100691 => npc_call(npc_10540(ctx, 2, vec![])),
-        100692 => npc_call(npc_10540(ctx, 3, vec![])),
+        100541 => npc_call(npc_10418(ctx, 1, vec![])),
+        100542 => npc_call(npc_10419(ctx, 1, vec![])),
+        100543 => npc_call(npc_10420(ctx, 1, vec![])),
+        100544 => npc_call(npc_10421(ctx, 1, vec![])),
+        100545 => npc_call(npc_10438(ctx, 1, vec![])),
+        100546 => npc_call(npc_10438(ctx, 2, vec![])),
+        100547 => npc_call(npc_10438(ctx, 3, vec![])),
+        100548 => npc_call(npc_10438(ctx, 4, vec![])),
+        100549 => npc_call(npc_10438(ctx, 5, vec![])),
+        100550 => npc_call(npc_10438(ctx, 6, vec![])),
+        100551 => npc_call(npc_10447(ctx, 1, vec![])),
+        100552 => npc_call(npc_10461(ctx, 1, vec![])),
+        100553 => npc_call(npc_10462(ctx, 1, vec![])),
+        100554 => npc_call(npc_10464(ctx, 1, vec![])),
+        100555 => npc_call(npc_10469(ctx, 1, vec![])),
+        100556 => npc_call(npc_10469(ctx, 2, vec![])),
+        100557 => npc_call(npc_10469(ctx, 3, vec![])),
+        100558 => npc_call(npc_10469(ctx, 4, vec![])),
+        100559 => npc_call(npc_10469(ctx, 5, vec![])),
+        100560 => npc_call(npc_10469(ctx, 6, vec![])),
+        100561 => npc_call(npc_10469(ctx, 7, vec![])),
+        100562 => npc_call(npc_10469(ctx, 8, vec![])),
+        100563 => npc_call(npc_10473(ctx, 1, vec![])),
+        100564 => npc_call(npc_10473(ctx, 2, vec![])),
+        100565 => npc_call(npc_10473(ctx, 3, vec![])),
+        100566 => npc_call(npc_10473(ctx, 4, vec![])),
+        100567 => npc_call(npc_10474(ctx, 1, vec![])),
+        100568 => npc_call(npc_10474(ctx, 2, vec![])),
+        100569 => npc_call(npc_10474(ctx, 3, vec![])),
+        100570 => npc_call(npc_10474(ctx, 4, vec![])),
+        100571 => npc_call(npc_10475(ctx, 1, vec![])),
+        100572 => npc_call(npc_10475(ctx, 2, vec![])),
+        100573 => npc_call(npc_10475(ctx, 3, vec![])),
+        100574 => npc_call(npc_10475(ctx, 4, vec![])),
+        100575 => npc_call(npc_10478(ctx, 1, vec![])),
+        100576 => npc_call(npc_10478(ctx, 2, vec![])),
+        100577 => npc_call(npc_10478(ctx, 3, vec![])),
+        100578 => npc_call(npc_10479(ctx, 1, vec![])),
+        100579 => npc_call(npc_10479(ctx, 2, vec![])),
+        100580 => npc_call(npc_10479(ctx, 3, vec![])),
+        100581 => npc_call(npc_10480(ctx, 1, vec![])),
+        100582 => npc_call(npc_10480(ctx, 2, vec![])),
+        100583 => npc_call(npc_10480(ctx, 3, vec![])),
+        100584 => npc_call(npc_10481(ctx, 1, vec![])),
+        100585 => npc_call(npc_10481(ctx, 2, vec![])),
+        100586 => npc_call(npc_10481(ctx, 3, vec![])),
+        100587 => npc_call(npc_10481(ctx, 4, vec![])),
+        100588 => npc_call(npc_10481(ctx, 5, vec![])),
+        100589 => npc_call(npc_10488(ctx, 1, vec![])),
+        100590 => npc_call(npc_10493(ctx, 1, vec![])),
+        100591 => npc_call(npc_10494(ctx, 1, vec![])),
+        100592 => npc_call(npc_10494(ctx, 2, vec![])),
+        100593 => npc_call(npc_10494(ctx, 3, vec![])),
+        100594 => npc_call(npc_10494(ctx, 4, vec![])),
+        100595 => npc_call(npc_10495(ctx, 1, vec![])),
+        100596 => npc_call(npc_10495(ctx, 2, vec![])),
+        100597 => npc_call(npc_10495(ctx, 3, vec![])),
+        100598 => npc_call(npc_10495(ctx, 4, vec![])),
+        100599 => npc_call(npc_10496(ctx, 1, vec![])),
+        100600 => npc_call(npc_10496(ctx, 2, vec![])),
+        100601 => npc_call(npc_10496(ctx, 3, vec![])),
+        100602 => npc_call(npc_10501(ctx, 1, vec![])),
+        100603 => npc_call(npc_10501(ctx, 2, vec![])),
+        100604 => npc_call(npc_10501(ctx, 3, vec![])),
+        100605 => npc_call(npc_10501(ctx, 4, vec![])),
+        100606 => npc_call(npc_10501(ctx, 5, vec![])),
+        100607 => npc_call(npc_10502(ctx, 1, vec![])),
+        100608 => npc_call(npc_10502(ctx, 2, vec![])),
+        100609 => npc_call(npc_10502(ctx, 3, vec![])),
+        100610 => npc_call(npc_10502(ctx, 4, vec![])),
+        100611 => npc_call(npc_10502(ctx, 5, vec![])),
+        100612 => npc_call(npc_10503(ctx, 1, vec![])),
+        100613 => npc_call(npc_10503(ctx, 2, vec![])),
+        100614 => npc_call(npc_10503(ctx, 3, vec![])),
+        100615 => npc_call(npc_10503(ctx, 4, vec![])),
+        100616 => npc_call(npc_10503(ctx, 5, vec![])),
+        100617 => npc_call(npc_10504(ctx, 1, vec![])),
+        100618 => npc_call(npc_10504(ctx, 2, vec![])),
+        100619 => npc_call(npc_10504(ctx, 3, vec![])),
+        100620 => npc_call(npc_10504(ctx, 4, vec![])),
+        100621 => npc_call(npc_10504(ctx, 5, vec![])),
+        100622 => npc_call(npc_10507(ctx, 1, vec![])),
+        100623 => npc_call(npc_10508(ctx, 1, vec![])),
+        100624 => npc_call(npc_10512(ctx, 1, vec![])),
+        100625 => npc_call(npc_10514(ctx, 1, vec![])),
+        100626 => npc_call(npc_10517(ctx, 1, vec![])),
+        100627 => npc_call(npc_10517(ctx, 2, vec![])),
+        100628 => npc_call(npc_10517(ctx, 3, vec![])),
+        100629 => npc_call(npc_10518(ctx, 1, vec![])),
+        100630 => npc_call(npc_10518(ctx, 2, vec![])),
+        100631 => npc_call(npc_10518(ctx, 3, vec![])),
+        100632 => npc_call(npc_10518(ctx, 4, vec![])),
+        100633 => npc_call(npc_10518(ctx, 5, vec![])),
+        100634 => npc_call(npc_10519(ctx, 1, vec![])),
+        100635 => npc_call(npc_10519(ctx, 2, vec![])),
+        100636 => npc_call(npc_10519(ctx, 3, vec![])),
+        100637 => npc_call(npc_10519(ctx, 4, vec![])),
+        100638 => npc_call(npc_10520(ctx, 1, vec![])),
+        100639 => npc_call(npc_10521(ctx, 1, vec![])),
+        100640 => npc_call(npc_10521(ctx, 2, vec![])),
+        100641 => npc_call(npc_10521(ctx, 3, vec![])),
+        100642 => npc_call(npc_10522(ctx, 1, vec![])),
+        100643 => npc_call(npc_10522(ctx, 2, vec![])),
+        100644 => npc_call(npc_10522(ctx, 3, vec![])),
+        100645 => npc_call(npc_10523(ctx, 1, vec![])),
+        100646 => npc_call(npc_10523(ctx, 2, vec![])),
+        100647 => npc_call(npc_10523(ctx, 3, vec![])),
+        100648 => npc_call(npc_10523(ctx, 4, vec![])),
+        100649 => npc_call(npc_10523(ctx, 5, vec![])),
+        100650 => npc_call(npc_10524(ctx, 1, vec![])),
+        100651 => npc_call(npc_10524(ctx, 2, vec![])),
+        100652 => npc_call(npc_10524(ctx, 3, vec![])),
+        100653 => npc_call(npc_10524(ctx, 4, vec![])),
+        100654 => npc_call(npc_10525(ctx, 1, vec![])),
+        100655 => npc_call(npc_10525(ctx, 2, vec![])),
+        100656 => npc_call(npc_10525(ctx, 3, vec![])),
+        100657 => npc_call(npc_10525(ctx, 4, vec![])),
+        100658 => npc_call(npc_10526(ctx, 1, vec![])),
+        100659 => npc_call(npc_10527(ctx, 1, vec![])),
+        100660 => npc_call(npc_10529(ctx, 1, vec![])),
+        100661 => npc_call(npc_10529(ctx, 2, vec![])),
+        100662 => npc_call(npc_10529(ctx, 3, vec![])),
+        100663 => npc_call(npc_10530(ctx, 1, vec![])),
+        100664 => npc_call(npc_10530(ctx, 2, vec![])),
+        100665 => npc_call(npc_10530(ctx, 3, vec![])),
+        100666 => npc_call(npc_10531(ctx, 1, vec![])),
+        100667 => npc_call(npc_10534(ctx, 1, vec![])),
+        100668 => npc_call(npc_10534(ctx, 2, vec![])),
+        100669 => npc_call(npc_10534(ctx, 3, vec![])),
+        100670 => npc_call(npc_10534(ctx, 4, vec![])),
+        100671 => npc_call(npc_10534(ctx, 5, vec![])),
+        100672 => npc_call(npc_10534(ctx, 6, vec![])),
+        100673 => npc_call(npc_10534(ctx, 7, vec![])),
+        100674 => npc_call(npc_10534(ctx, 8, vec![])),
+        100675 => npc_call(npc_10534(ctx, 9, vec![])),
+        100676 => npc_call(npc_10535(ctx, 1, vec![])),
+        100677 => npc_call(npc_10535(ctx, 2, vec![])),
+        100678 => npc_call(npc_10535(ctx, 3, vec![])),
+        100679 => npc_call(npc_10535(ctx, 4, vec![])),
+        100680 => npc_call(npc_10536(ctx, 1, vec![])),
+        100681 => npc_call(npc_10536(ctx, 2, vec![])),
+        100682 => npc_call(npc_10536(ctx, 3, vec![])),
+        100683 => npc_call(npc_10536(ctx, 4, vec![])),
+        100684 => npc_call(npc_10536(ctx, 5, vec![])),
+        100685 => npc_call(npc_10536(ctx, 6, vec![])),
+        100686 => npc_call(npc_10536(ctx, 7, vec![])),
+        100687 => npc_call(npc_10536(ctx, 8, vec![])),
+        100688 => npc_call(npc_10536(ctx, 9, vec![])),
+        100689 => npc_call(npc_10536(ctx, 10, vec![])),
+        100690 => npc_call(npc_10537(ctx, 1, vec![])),
+        100691 => npc_call(npc_10537(ctx, 2, vec![])),
+        100692 => npc_call(npc_10537(ctx, 3, vec![])),
+        100693 => npc_call(npc_10538(ctx, 1, vec![])),
+        100694 => npc_call(npc_10540(ctx, 1, vec![])),
+        100695 => npc_call(npc_10540(ctx, 2, vec![])),
+        100696 => npc_call(npc_10540(ctx, 3, vec![])),
         _ => None,
     }
 }

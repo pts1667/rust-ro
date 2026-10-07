@@ -4,6 +4,101 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
+fn npc_10802(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONINIT: usize = 1;
+    const LABEL_ONTIMER10000: usize = 2;
+    const LABEL_ONGO: usize = 3;
+    let mut l_rand = n(0);
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(get(ctx, "BaseLevel")?, "<", n(40))?.truthy() {
+                        ctx.mes("[Angelo]")?;
+                        ctx.mes("Pets went out the village~!!")?;
+                        ctx.mes("Gosh... what can I do... ?")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(ctx.call(Function::CheckQuest, vec![n(9032), constant(ctx, "PLAYTIME")?])?, "==", n(2))?.truthy() {
+                        ctx.call(Function::EraseQuest, vec![n(9032)])?;
+                    }
+                    if op(ctx.call(Function::CheckQuest, vec![n(9032), constant(ctx, "PLAYTIME")?])?, "==", n(0))?.truthy() {
+                        ctx.mes("[Angelo]")?;
+                        ctx.mes("The day is not finished yet.")?;
+                        ctx.mes("You can only help once a day. Hehe.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(ctx.call(Function::CheckQuest, vec![n(9030)])?, "==", n(1))?.truthy() {
+                        ctx.mes("[Angelo]")?;
+                        ctx.mes("My pets are in the field outside of the village.")?;
+                        ctx.mes("Why did they leave? Please find them.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(ctx.call(Function::CheckQuest, vec![n(9031)])?, "==", n(1))?.truthy() {
+                        ctx.mes("[Angelo]")?;
+                        ctx.mes("Oh, thank you. You found all of 3 puppies.")?;
+                        ctx.mes("Thanks a lot.")?;
+                        ctx.mes("I hope this is useful to you. hoho.")?;
+                        if (constant(ctx, "VIP_SCRIPT")?.truthy() && ctx.call(Function::VipStatus, vec![constant(ctx, "VIP_STATUS_ACTIVE")?])?.truthy()) {
+                            ctx.call(Function::GetExperience, vec![n(75000), n(0)])?;
+                        } else {
+                            ctx.call(Function::GetExperience, vec![n(50000), n(0)])?;
+                        }
+                        ctx.call(Function::EraseQuest, vec![n(9031)])?;
+                        ctx.call(Function::SetQuest, vec![n(9032)])?;
+                        ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_ASSUMPTIO")?])?;
+                        if n(0).truthy() {
+                            ctx.call(Function::ConsumeItem, vec![n(607)])?;
+                            l_rand = ctx.call(Function::Rand, vec![n(1), n(10)])?;
+                            if (op(l_rand.clone(), ">", n(4))?.truthy() && op(l_rand.clone(), "<", n(9))?.truthy()) {
+                                ctx.call(Function::GetItem, vec![n(504), n(2)])?;
+                            } else {
+                                if op(l_rand.clone(), ">", n(8))?.truthy() {
+                                    ctx.call(Function::GetItem, vec![n(608), n(1)])?;
+                                }
+                            }
+                        }
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Angelo]")?;
+                    ctx.mes("Are you an adventurer? You came here right on time.")?;
+                    ctx.mes("Puppies have been disappearing.")?;
+                    ctx.mes("And someone said that they saw them out on the field just outside the village....")?;
+                    ctx.next()?;
+                    ctx.mes("[Angelo]")?;
+                    ctx.mes("It's pretty difficult and dangerous to find 'em.")?;
+                    ctx.mes("You have to find ^0000FF3 puppies^000000.")?;
+                    ctx.call(Function::SetQuest, vec![n(9030)])?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::InitNpcTimer, vec![])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::StopNpcTimer, vec![])?;
+                    ctx.call(Function::DoNpcEvent, vec![s("Angelo#br::OnGo")])?;
+                    return Err(END.into());
+                    pc = 3;
+                }
+                3 => {
+                    ctx.call(Function::Emotion, vec![constant(ctx, "ET_SURPRISE")?])?;
+                    ctx.call(Function::InitNpcTimer, vec![])?;
+                    return Err(END.into());
+                    pc = 4;
+                }
+            4 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_10803(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONENABLE: usize = 2;
@@ -593,6 +688,64 @@ fn npc_10807(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10808(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_display: Vec<Value> = Vec::new();
+    let _ = pc;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Abracadabra~")?;
+    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?, constant(ctx, "AREA")?, s("Poring#bra")])?;
+    let base = n(0).number_value()?;
+    local_set(&mut l_display, &n(base + 0), n(800), false);
+    local_set(&mut l_display, &n(base + 1), n(876), false);
+    local_set(&mut l_display, &n(base + 2), n(909), false);
+    ctx.call(Function::SetNpcDisplay, vec![s("Poring#bra"), local_get(&l_display, &ctx.call(Function::Rand, vec![n(3)])?, false)])?;
+    if op(get(ctx, "brazil_gua")?, "!=", n(5))?.truthy() {
+        ctx.close()?;
+        return Err(END.into());
+    }
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Ohoooh~!")?;
+    ctx.mes("I have a guest.")?;
+    ctx.mes("Good to see you.")?;
+    ctx.mes("I am the Mage Paje.")?;
+    ctx.next()?;
+    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+    ctx.mes("Hello. Mr. Cherto told me to find you.")?;
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Um.. Mr. Cherto? What's happened?")?;
+    ctx.mes("Have you come here to ask about lots of weird rumors?")?;
+    ctx.next()?;
+    ctx.mes("- You give the note to Paje-")?;
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Ohoooh~")?;
+    ctx.mes("Hmm gosh.. that's what happened.")?;
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("I can't help you directly.")?;
+    ctx.mes("But I will give you simple magic so you can figure it out by yourself.")?;
+    ctx.next()?;
+    let choice = select(ctx, &["What kind of magic?"])?;
+    ctx.write("@menu", n(choice))?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("It's a magic that will make you appear as an animal to other animals. Pretty cool huh?")?;
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Ok~ I will give you the magic.")?;
+    ctx.mes("Most animals are really sensitive so they might be aware of it. Find a Toucan in the field that's oblivious to the spell. You'll know when you talk to it.")?;
+    ctx.next()?;
+    ctx.mes("[Mage Paje]")?;
+    ctx.mes("Good luck~!")?;
+    set(ctx, "brazil_gua", n(6))?;
+    ctx.call(Function::ChangeQuest, vec![n(2195), n(2196)])?;
+    ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_ASSUMPTIO")?])?;
+    ctx.close()?;
+    return Err(END.into());
+    Ok(n(0))
+}
+
 fn npc_10809(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     Ok(n(0))
@@ -661,6 +814,81 @@ fn npc_10810(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     } else {
                         ctx.mes("[Toucan]")?;
                         ctx.mes("Bbbaaeec~! Baaeec~!")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_10811(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    pc = 1;
+                }
+                1 => {
+                    if op(get(ctx, "brazil_gua")?, "==", n(7))?.truthy() {
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Hhooww..hhooww.....")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Smelling! This smell is from a human!")?;
+                        ctx.mes("Somewhere, a human!")?;
+                        ctx.mes("I got it. You are!!!")?;
+                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_HIT1")?, constant(ctx, "AREA")?, s("Jaguar#bra")])?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?, n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))])?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Don't be afraid human.")?;
+                        ctx.mes("I don't have enough power to hunt humans, just waiting time to end my lifetime in this jungle.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Anyway you can talk with me, are you a guarana kid?")?;
+                        ctx.next()?;
+                        let choice = select(ctx, &["Yes? N...o......actually...."])?;
+                        ctx.write("@menu", n(choice))?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("The son of guarana woman became our friend also.")?;
+                        ctx.mes("They treated all life preciously.")?;
+                        ctx.mes("I hope you are same the as her.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Bird's chirpings informed me.")?;
+                        ctx.mes("The son of guarana woman has a diseased heart.")?;
+                        ctx.mes("Her brothers made him lonely, don't you think?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Here is fresh meat that I hunted just a few days ago.")?;
+                        ctx.mes("Take it and give it to the poor kid.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("I can give this tiny thing to you so, don't forget it.")?;
+                        ctx.mes("The jungle will welcome you whenever!")?;
+                        ctx.next()?;
+                        ctx.mes("- You get fresh meat from Jaguar. -")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("Monkey, who's always meddling with others, wants to meet you.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("I will give you a Jaguar's high blessing.")?;
+                        ctx.mes("Go to monkey by flowing through the wind like a bee.")?;
+                        ctx.mes("Let's meet again my friend!")?;
+                        set(ctx, "brazil_gua", n(8))?;
+                        ctx.call(Function::ChangeQuest, vec![n(2197), n(2198)])?;
+                        ctx.close()?;
+                        ctx.call(Function::ConsumeItem, vec![n(12016)])?;
+                        return Err(END.into());
+                    } else {
+                        ctx.mes("[Jaguar]")?;
+                        ctx.mes("krrrrrr....")?;
                         ctx.close()?;
                         return Err(END.into());
                     }
@@ -965,6 +1193,470 @@ fn npc_10815(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
         }
     }
     Ok(n(0))
+}
+
+fn npc_10816(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH: usize = 1;
+    let mut l_card: Vec<Value> = Vec::new();
+    'sm: loop {
+        match pc {
+                0 => {
+                    if !ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?.truthy() {
+                        ctx.mes("- wait a second!! -")?;
+                        ctx.mes("- you have too many items -")?;
+                        ctx.mes("- so you can't get any more items. -")?;
+                        ctx.mes("- make your body lighter -")?;
+                        ctx.mes("- then try again. -")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(get(ctx, "brazil_regia")?, "==", n(2))?.truthy() {
+                        ctx.mes("[Distant Sound]")?;
+                        ctx.mes("Jasira!!!")?;
+                        ctx.mes("Where are you going again?!!")?;
+                        ctx.mes("come back~, please!!")?;
+                        ctx.next()?;
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("Mom, I have to go out!!")?;
+                        ctx.next()?;
+                        ctx.mes("[Distant Sound]")?;
+                        ctx.mes("No way~!! You shouldn't!!")?;
+                        ctx.next()?;
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("Gosh.. today also failed.")?;
+                        ctx.next()?;
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("......")?;
+                        ctx.mes("What's up? Why are you looking at me?")?;
+                        ctx.mes("I don't want to be a showgirl!! Get out!!")?;
+                        ctx.next()?;
+                        if op(n(select(ctx, &["Nothing, sorry.", "What's wrong?"])?), "==", n(1))?.truthy() {
+                            ctx.mes("[Brasilis Girl]")?;
+                            ctx.mes("I am so sad!!!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("It's not your business.")?;
+                        ctx.mes("You are just an outsider!")?;
+                        ctx.next()?;
+                        if op(n(select(ctx, &["How rude!", "Just trying to help."])?), "==", n(1))?.truthy() {
+                            ctx.mes("[Brasilis Girl]")?;
+                            ctx.mes("What's it matter to you that I'm rude??!!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("I know that I'm just passing by but I might be able to help you. What do you think?")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("This kind of meeting could be more than just a coincidence.")?;
+                        ctx.next()?;
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("......................")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Hmm can you tell me your name?")?;
+                        ctx.next()?;
+                        ctx.mes("[Brasilis Girl]")?;
+                        ctx.mes("ja...")?;
+                        ctx.mes("Jasira.")?;
+                        ctx.mes("My name is Jasira.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Nice name~.")?;
+                        ctx.mes("Jasira what's going on?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes(".............")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("I have to meet 'Jasi' but I can't go out....")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("who is Jasi?")?;
+                        ctx.mes("Your.... lover?")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("l...o...v...e...lover??!!")?;
+                        ctx.mes("No way~")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("If he is my lover, it would be great... but...")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Jasi is......")?;
+                        ctx.mes("the great moon.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("The moon?")?;
+                        ctx.mes("Maybe... are you talking about the moon from the story?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Yeah!")?;
+                        ctx.mes("Dear Jasi is from the moon from the sky!")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Why are you thinking like that?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Cuz' Jasi is really gorgeous and the most important thing is he is taking care of the water lily in Brasilis.")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?, n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))])?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Brasilis water lily??!!")?;
+                        ctx.mes("Isn't it the uniqe flower?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Right. It's a really mysterious flower and difficult to find.")?;
+                        ctx.mes("But around Jasi there are lots of water lilies.")?;
+                        ctx.mes("That's why I believe Jasi is the moon.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Where is Jasi?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("He is deep inside the Jungle.")?;
+                        ctx.mes("As you can see I am so weak so, I've been staying home. But once, I was strong enough to leave this village.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("I just wandered the jungle and fell down somewhere and that's where I saw him.")?;
+                        ctx.mes("He was so nice. He helped heal me and guided me back home.")?;
+                        ctx.mes("That was really really great time.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Since I came back home, my parents punished me.")?;
+                        ctx.mes("I can understand why they are worrying but i missed Jasi a lot!")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Why don't you meet him after recovering your strength?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes(".................")?;
+                        ctx.mes("I wanna see him right now...")?;
+                        ctx.next()?;
+                        if op(n(select(ctx, &["Help Jasira.", "Ignore her."])?), "==", n(2))?.truthy() {
+                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                            ctx.mes("Sorry I can't help you. Cheer up!")?;
+                            ctx.next()?;
+                            ctx.mes("[Jasira]")?;
+                            ctx.mes("Crying........")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Jasira I came here to find the Brasilis water lily.")?;
+                        ctx.mes("Don't you think fate has brought us together?")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("If you tell me how to find Jasi, I can help you.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Really? But I don't know exactly how to get there. I was just wandering around when I met him.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Can't you remember anything?")?;
+                        ctx.mes("If you know something you've gotta tell me.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Let's see... I was wandering around a waterfall then fell down into the water then I was sucked into somewhere.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Good, that's better than nothing! I will look for a similar place.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("I gave you your information, so can you do me a favor?")?;
+                        ctx.mes("It's really simple...")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("I'd like to give a delicious fruit.")?;
+                        ctx.mes("The place where Jas seemed cozy but I didn't see any food around... So if he sees a yummy fruit he will be happy!")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasira]")?;
+                        ctx.mes("Give him 10 Banana and tell him that I really miss him.")?;
+                        ctx.mes("Sorry for ignoring you before. Please, only you can help me!")?;
+                        set(ctx, "brazil_regia", n(3))?;
+                        ctx.call(Function::ChangeQuest, vec![n(2201), n(2202)])?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if (op(get(ctx, "brazil_regia")?, "==", n(3))?.truthy() || op(get(ctx, "brazil_regia")?, "==", n(4))?.truthy()) {
+                            ctx.mes("[Jasira]")?;
+                            ctx.mes("If you meet Jasi, give him 10 Bananas.")?;
+                            ctx.mes("Let's see... I was wandering around a waterfall then fell down into the water then I was sucked into somewhere.")?;
+                            ctx.next()?;
+                            ctx.mes("[Jasira]")?;
+                            ctx.mes("If you can't find the way, go up to the waterfall and ask the kids in Brasilis village.")?;
+                            ctx.mes("I heard one of the children went to a strange place before. He might've gone to the same place as me!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "brazil_regia")?, "==", n(5))?.truthy() {
+                                ctx.mes("[Jasira]")?;
+                                ctx.mes("Did you meet Jasi?")?;
+                                ctx.mes("Did you talk about me?")?;
+                                ctx.mes("You didn't? Uh? Stupid! Gosh~!")?;
+                                ctx.next()?;
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("Hey girl~ you've got a short temper.")?;
+                                ctx.mes("I did see him and I talked about you!")?;
+                                ctx.next()?;
+                                ctx.mes("[Jasira]")?;
+                                ctx.mes("Did you?")?;
+                                ctx.mes("What did he say?")?;
+                                ctx.mes("Does he remember me?")?;
+                                ctx.next()?;
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("That you have a really good heart~")?;
+                                ctx.mes("I told him that you will try to meet him when your condition gets better.")?;
+                                ctx.next()?;
+                                ctx.mes("[Jasira]")?;
+                                ctx.mes("Yeahhhhh!!")?;
+                                ctx.mes("Thank you! You are more reliable than I thought you would be.")?;
+                                ctx.next()?;
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("Anyway, I'm looking for a fruit that's brown and has a hard shell.")?;
+                                ctx.mes("It has juice inside and can be used as a cup to drink out of.")?;
+                                ctx.next()?;
+                                ctx.mes("[Jasira]")?;
+                                ctx.mes("Duh! You mean a coconut right?!")?;
+                                ctx.mes("They're everywhere here in Brasilis.")?;
+                                ctx.next()?;
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("Thanks Jasira!")?;
+                                set(ctx, "brazil_regia", n(6))?;
+                                ctx.call(Function::ChangeQuest, vec![n(2204), n(2205)])?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if (op(get(ctx, "brazil_regia")?, "==", n(6))?.truthy() || op(get(ctx, "brazil_regia")?, "==", n(7))?.truthy()) {
+                                    ctx.mes("[Jasira]")?;
+                                    ctx.mes("I should take care of my strength by myself!")?;
+                                    ctx.mes("I can't just lie in my bed forever. Don't you agree?")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if op(get(ctx, "brazil_regia")?, "==", n(8))?.truthy() {
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("Uh? Why have you come back?")?;
+                                        ctx.next()?;
+                                        ctx.mes("- You tell her what Jasi told you to tell her -")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("Oh... really?")?;
+                                        ctx.mes("Did he say that?")?;
+                                        ctx.mes("Gosh! Gosh!!!")?;
+                                        ctx.mes("Kkkkkaaaaa - !!")?;
+                                        ctx.next()?;
+                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                        ctx.mes("Thanks to you, I was able to get a flower.")?;
+                                        ctx.mes("Thanks a lot!!")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("Wooow. It's so beautiful.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("Ah... can I see it for a second?")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("Surprise~!!")?;
+                                        ctx.mes("I've been working on this hat while you were gone and now it's complete with the water lily flower!")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasira]")?;
+                                        ctx.mes("I know, I know! I'm the best...")?;
+                                        ctx.call(Function::DelItem, vec![n(7553), n(1)])?;
+                                        set(ctx, "brazil_regia", n(9))?;
+                                        ctx.call(Function::ChangeQuest, vec![n(2206), n(2207)])?;
+                                        let base = n(0).number_value()?;
+                                        local_set(&mut l_card, &n(base + 0), n(4195), false);
+                                        local_set(&mut l_card, &n(base + 1), n(4177), false);
+                                        local_set(&mut l_card, &n(base + 2), n(4188), false);
+                                        ctx.call(Function::GetItem2, vec![n(5302), n(1), n(1), n(0), n(0), local_get(&l_card, &ctx.call(Function::Rand, vec![n(3)])?, false), n(0), n(0), n(0)])?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        if op(get(ctx, "brazil_regia")?, ">", n(8))?.truthy() {
+                                            ctx.mes("[Jasira]")?;
+                                            ctx.mes("I just need to get a little bit stronger!")?;
+                                            ctx.mes("I can't just lie in bed forever. My Jasi is waiting for me~")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            ctx.mes("[Distant Sound]")?;
+                                            ctx.mes("Jasira!!!")?;
+                                            ctx.mes("Where are you going again?!!")?;
+                                            ctx.mes("Come back~, please!!")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Brasilis Girl]")?;
+                                            ctx.mes("Please mom~!")?;
+                                            ctx.mes("Please let me go!")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    if op(get(ctx, "brazil_regia")?, "==", n(2))?.truthy() {
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_FRET")?])?;
+                    }
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_10817(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCHNPC: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(get(ctx, "brazil_regia")?, "==", n(3))?.truthy() {
+                        ctx.mes("[Recluse]")?;
+                        ctx.mes("Oh, I haven't seen another person in such a long time.")?;
+                        ctx.next()?;
+                        if op(n(select(ctx, &["Keep going.", "Are you the moon?"])?), "==", n(1))?.truthy() {
+                            ctx.mes("[Recluse]")?;
+                            ctx.mes("You don't have specific business with me.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes("[Recluse]")?;
+                        ctx.mes("Moon?")?;
+                        ctx.mes("My name is Jasi.")?;
+                        ctx.mes("My family has worked to take care of the water lily from generation to generation.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("Basically the Brasilis water lily is too shy to appear in front of people so, they only bloom in rare places. I guess they like it here, though, that's why I've been staying here for such a long time.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("My family has taken care of the water lily calmly to prevent harm from people's hand or monsters.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Do you remember a girl named Jasi.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("Ja...si..........")?;
+                        ctx.mes("Ah!! a hurry scurry girl. ")?;
+                        ctx.mes("Gosh.. I was in trouble due to that girl.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Trouble?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("One day a young lady appeared with lots of scars so I helped her. Then suddenly she tried to pick up the water lily and asked me to accept her as my wife or make her into a water lily what a nutcase!")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("I was barely able to calm down and send her to the village.")?;
+                        ctx.mes("My life is that water lily so I didn't want anything embarrassing to happen.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("This is a gift from Jasira to say sorry for that time.")?;
+                        ctx.mes("She is really sad that can't come here by herself due to private difficulties.")?;
+                        ctx.next()?;
+                        if op(ctx.call(Function::CountItem, vec![n(513)])?, "<", n(10))?.truthy() {
+                            ctx.mes("[Jasi]")?;
+                            ctx.mes("What are you saying?")?;
+                            ctx.next()?;
+                            ctx.mes("- Oh yeah, I forgot to bring 10 Bananas -")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("Ah! Bananas! Wow it's been a long time. She's pretty considerate isn't she?")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("Anyway is that all the business you have with me?")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Umm honestly I was wondering to find water lily and met you by coincidence. Jasira told me her sad story so that's what led me here.")?;
+                        ctx.next()?;
+                        ctx.mes("[Jasi]")?;
+                        ctx.mes("I got it.")?;
+                        ctx.mes("As you can see, there are lots of Brasilis water lily around here.")?;
+                        ctx.mes("If you make sure that you won't destroy them you can appreciate them as you wish.")?;
+                        set(ctx, "brazil_regia", n(4))?;
+                        ctx.call(Function::ChangeQuest, vec![n(2202), n(2203)])?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if op(get(ctx, "brazil_regia")?, "==", n(4))?.truthy() {
+                            ctx.mes("[Jasi]")?;
+                            ctx.mes("Did you enjoy the water lily?")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "brazil_regia")?, "==", n(5))?.truthy() {
+                                ctx.mes("[Jasi]")?;
+                                ctx.mes("I forgot what the name of that fruit was...")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if op(get(ctx, "brazil_regia")?, "==", n(6))?.truthy() {
+                                    if op(ctx.call(Function::CountItem, vec![n(11515)])?, "<", n(5))?.truthy() {
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("I forgot what the name of that fruit was...")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("Did you find the fruit?")?;
+                                        ctx.mes("Oh right this is....?")?;
+                                        ctx.next()?;
+                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                        ctx.mes("It's called a 'coconut'.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("Ahah! COCONUT!!")?;
+                                        ctx.mes("Now I remember thank you very much. I can't remember the last time I had this fruit.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("I guess I should keep my promise.")?;
+                                        ctx.mes("You can take one Water lily.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("I hope the Brasilis water lily will understand me.")?;
+                                        ctx.mes("You better grab the flower while you have a chance~")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Jasi]")?;
+                                        ctx.mes("Oh, can you tell that girl Jasira something for me?")?;
+                                        ctx.mes("Tell her that I am not the moon from the story, but I want to become the moon to shine only for her.")?;
+                                        ctx.call(Function::DelItem, vec![n(11515), n(5)])?;
+                                        set(ctx, "brazil_regia", n(7))?;
+                                        ctx.call(Function::ChangeQuest, vec![n(2205), n(2206)])?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                } else {
+                                    ctx.mes("[Jasi]")?;
+                                    ctx.mes("The flowers blooming from the Water lily today is wonderful.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            }
+                        }
+                    }
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::Warp, vec![s("this"), n(67), n(215)])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
 }
 
 fn npc_10818(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
@@ -2228,6 +2920,116 @@ fn npc_10835(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10836(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(ctx.call(Function::CountItem, vec![n(11517)])?, ">", n(0))?.truthy() {
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Should I use a Purification Potion?")?;
+                        ctx.next()?;
+                        'b1: {
+                            let sw1 = n(select(ctx, &["Yes.", "No."])?);
+                            let mut m1 = false;
+                            let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                            if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                            if m1 {
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_MAPPILLAR")?])?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("Ah...this light is...")?;
+                                ctx.mes("It's like getting cleansed of evil thoughts")?;
+                                ctx.mes("from deep within my heart.")?;
+                                ctx.next()?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("At last I can forget the curse that I placed on myself when I drowned in the water.")?;
+                                ctx.next()?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("Do you think I can be born again as a kind water nymph?")?;
+                                ctx.next()?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_GHOST")?])?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("Ah... Thank you for helping me recover my consciousness for a while.")?;
+                                ctx.mes("But... I think that the curse has been with me too long.")?;
+                                ctx.mes("Get away from me quickly.")?;
+                                ctx.call(Function::DelItem, vec![n(11517), n(1)])?;
+                                if n(0).truthy() {
+                                    ctx.call(Function::PercentHeal, vec![n(100), n(100)])?;
+                                    ctx.call(Function::StartStatus, vec![constant(ctx, "SC_INCFLEE")?, n(3600000), n(20)])?;
+                                    ctx.call(Function::StartStatus, vec![constant(ctx, "SC_INCCRI")?, n(3600000), n(10)])?;
+                                } else {
+                                    ctx.call(Function::StartStatus, vec![constant(ctx, "SC_INCCRI")?, n(3600000), n(7)])?;
+                                }
+                                ctx.call(Function::ConsumeItem, vec![n(12043)])?;
+                                ctx.call(Function::ConsumeItem, vec![n(12063)])?;
+                                ctx.call(Function::ConsumeItem, vec![n(12058)])?;
+                                ctx.call(Function::ConsumeItem, vec![n(12053)])?;
+                                ctx.call(Function::ConsumeItem, vec![n(12048)])?;
+                                ctx.call(Function::ConsumeItem, vec![n(12068)])?;
+                                ctx.next()?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("Ahhh~...")?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_DEVIL")?])?;
+                                ctx.next()?;
+                                ctx.mes("[Iara]")?;
+                                ctx.mes("The curse is too strong for me to keep contained.")?;
+                                ctx.mes("Leave now while you are safe.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                            if m1 {
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("(I guess I should ignore her.)")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    } else {
+                        ctx.mes("[Iara]")?;
+                        ctx.mes("Aaaaaaaaaaaaaaaaaaaaaah.")?;
+                        ctx.mes("Eeeeeeeeeeeeeeeeeeeh.")?;
+                        ctx.mes("Oooooooooooooooooh.")?;
+                        if op(ctx.call(Function::Rand, vec![n(1), n(2)])?, "==", n(1))?.truthy() {
+                            ctx.call(Function::StartStatus, vec![constant(ctx, "SC_CURSE")?, n(60000), n(0)])?;
+                        } else {
+                            ctx.call(Function::StartStatus, vec![constant(ctx, "SC_CONFUSION")?, n(60000), n(0)])?;
+                        }
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Ugh! What's this strange voice?")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    if op(ctx.call(Function::CountItem, vec![n(11517)])?, "<", n(1))?.truthy() {
+                        ctx.mes("[Iara]")?;
+                        ctx.mes("Aaaaaaaaaaaaaaaaaaaaaah.")?;
+                        ctx.mes("Eeeeeeeeeeeeeeeeeeeh.")?;
+                        ctx.mes("Oooooooooooooooooh.")?;
+                        if op(ctx.call(Function::Rand, vec![n(1), n(2)])?, "==", n(1))?.truthy() {
+                            ctx.call(Function::StartStatus, vec![constant(ctx, "SC_CURSE")?, n(60000), n(0)])?;
+                        } else {
+                            ctx.call(Function::StartStatus, vec![constant(ctx, "SC_CONFUSION")?, n(60000), n(0)])?;
+                        }
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Ugh! What's this strange voice?")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_10837(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Native Warrior]")?;
@@ -2255,16 +3057,21 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
+        10802 => npc_call(npc_10802(ctx, 0, vec![])),
         10803 => npc_call(npc_10803(ctx, 0, vec![])),
         10805 => npc_call(npc_10805(ctx, 0, vec![])),
         10806 => npc_call(npc_10806(ctx, 0, vec![])),
         10807 => npc_call(npc_10807(ctx, 0, vec![])),
+        10808 => npc_call(npc_10808(ctx, 0, vec![])),
         10809 => npc_call(npc_10809(ctx, 0, vec![])),
         10810 => npc_call(npc_10810(ctx, 0, vec![])),
+        10811 => npc_call(npc_10811(ctx, 0, vec![])),
         10812 => npc_call(npc_10812(ctx, 0, vec![])),
         10813 => npc_call(npc_10813(ctx, 0, vec![])),
         10814 => npc_call(npc_10814(ctx, 0, vec![])),
         10815 => npc_call(npc_10815(ctx, 0, vec![])),
+        10816 => npc_call(npc_10816(ctx, 0, vec![])),
+        10817 => npc_call(npc_10817(ctx, 0, vec![])),
         10818 => npc_call(npc_10818(ctx, 0, vec![])),
         10820 => npc_call(npc_10820(ctx, 0, vec![])),
         10821 => npc_call(npc_10821(ctx, 0, vec![])),
@@ -2282,6 +3089,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10833 => npc_call(npc_10833(ctx, 0, vec![])),
         10834 => npc_call(npc_10834(ctx, 0, vec![])),
         10835 => npc_call(npc_10835(ctx, 0, vec![])),
+        10836 => npc_call(npc_10836(ctx, 0, vec![])),
         10837 => npc_call(npc_10837(ctx, 0, vec![])),
         _ => None,
     }
@@ -2289,13 +3097,20 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101035 => npc_call(npc_10803(ctx, 1, vec![])),
-        101036 => npc_call(npc_10803(ctx, 2, vec![])),
-        101037 => npc_call(npc_10803(ctx, 3, vec![])),
-        101038 => npc_call(npc_10810(ctx, 1, vec![])),
-        101039 => npc_call(npc_10828(ctx, 1, vec![])),
-        101040 => npc_call(npc_10830(ctx, 1, vec![])),
-        101041 => npc_call(npc_10834(ctx, 1, vec![])),
+        101039 => npc_call(npc_10802(ctx, 1, vec![])),
+        101040 => npc_call(npc_10802(ctx, 2, vec![])),
+        101041 => npc_call(npc_10802(ctx, 3, vec![])),
+        101042 => npc_call(npc_10803(ctx, 1, vec![])),
+        101043 => npc_call(npc_10803(ctx, 2, vec![])),
+        101044 => npc_call(npc_10803(ctx, 3, vec![])),
+        101045 => npc_call(npc_10810(ctx, 1, vec![])),
+        101046 => npc_call(npc_10811(ctx, 1, vec![])),
+        101047 => npc_call(npc_10816(ctx, 1, vec![])),
+        101048 => npc_call(npc_10817(ctx, 1, vec![])),
+        101049 => npc_call(npc_10828(ctx, 1, vec![])),
+        101050 => npc_call(npc_10830(ctx, 1, vec![])),
+        101051 => npc_call(npc_10834(ctx, 1, vec![])),
+        101052 => npc_call(npc_10836(ctx, 1, vec![])),
         _ => None,
     }
 }

@@ -175,6 +175,688 @@ fn npc_10147(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10148(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    ctx.mes("[Asthe]")?;
+    'b1: {
+        let sw1 = get(ctx, "tu_acolyte01")?;
+        let mut m1 = false;
+        let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3)) && !eq(&sw1, &n(4)) && !eq(&sw1, &n(5)) && !eq(&sw1, &n(6)) && !eq(&sw1, &n(7)) && !eq(&sw1, &n(9)) && !eq(&sw1, &n(11)) && !eq(&sw1, &n(12)) && !eq(&sw1, &n(13)) && !eq(&sw1, &n(14)) && !eq(&sw1, &n(15)) && !eq(&sw1, &n(16)) && !eq(&sw1, &n(17)) && !eq(&sw1, &n(18)) && !eq(&sw1, &n(19)) && !eq(&sw1, &n(20)) && !eq(&sw1, &n(21)) && !eq(&sw1, &n(22)) && !eq(&sw1, &n(23)) && !eq(&sw1, &n(24));
+        if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+        if m1 {
+            ctx.mes("Oh my...")?;
+            ctx.mes("How did such")?;
+            ctx.mes("a young Acolyte")?;
+            ctx.mes("manage to reach")?;
+            ctx.mes("this remote place?")?;
+            ctx.next()?;
+            if op(n(select(ctx, &["I came for fun.", "Priest Praupin suggested I come here."])?), "==", n(1))?.truthy() {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("This convent is always quiet and peaceful. Sitting on the benches and feeling the almighty presense all around you is such a relaxing, meditative experience.")?;
+            } else {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Priest Praupin?")?;
+                ctx.mes("He's a very kind man")?;
+                ctx.mes("who's always thinking")?;
+                ctx.mes("about others. So he's")?;
+                ctx.mes("sent you to me for training?")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Before we begin,")?;
+                ctx.mes("why don't you rest")?;
+                ctx.mes("for a little bit? You must be tired after traveling all the way here. When you're ready, just come")?;
+                ctx.mes("see me, okay?")?;
+                set(ctx, "tu_acolyte01", n(2))?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+        if m1 {
+            ctx.mes("This castle, Saint Capitolina Convent, is a beautiful and peaceful place that brings")?;
+            ctx.mes("calm to any heart.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Well then...")?;
+            ctx.mes("Shall we begin")?;
+            ctx.mes("the lessons?")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes(op(op(s(""), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(","))?.text())?;
+            ctx.mes("have you thought about what kind of Acolyte you would like to become? It's very important that you plan for the future that you want.")?;
+            ctx.next()?;
+            if op(n(select(ctx, &["One that supports others.", "One that punishes evil."])?), "==", n(1))?.truthy() {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Ah, you have such")?;
+                ctx.mes("a generous heart!")?;
+                ctx.mes("Healing the pain of others and supporting your comrades in battle. You must have become an Acolyte in order to become a ^3131FFPriest^000000.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Priests have great supportive abilities and the power to battle evil. They use weapons to battle monsters like other fighters, but are ^3131FFforbidden from using blades^000000.")?;
+            } else {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("We call those who use their fists as tools of divine punishment Monks. They deliver our message")?;
+                ctx.mes("of love and peace in a more... colorful manner.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("But the path towards becoming")?;
+                ctx.mes("a Monk will require great patience and self-restraint. You'll often see Monks training their minds")?;
+                ctx.mes("and bodies throughout the land.")?;
+            }
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Well, you still have a long way to go. The best thing to do would be to take your time planning and consider your future seriously.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Now,")?;
+            ctx.mes(op(op(s(""), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("..."))?.text())?;
+            ctx.mes("What do you think")?;
+            ctx.mes("is the most necessary")?;
+            ctx.mes("skill for an Acolyte?")?;
+            ctx.next()?;
+            'b2: {
+                let sw2 = n(select(ctx, &["Heal", "Aqua Benedicta", "Teleport"])?);
+                let mut m2 = false;
+                let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2)) && !eq(&sw2, &n(3));
+                if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                if m2 {
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("Ah, yes.")?;
+                    ctx.mes("^3131FFHeal ^000000 is a basic, yet important skill for people like us. It can recover your own health as")?;
+                    ctx.mes("well as that of others.")?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                if m2 {
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("^3131FFAqua Benedicta^000000 blesses")?;
+                    ctx.mes("normal water and turns it into Holy Water. This is an important skill, but not considered one of the essentials that all Acolytes")?;
+                    ctx.mes("should know.")?;
+                    ctx.next()?;
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("In my opinion,")?;
+                    ctx.mes("^3131FFHeal^000000 is the most important")?;
+                    ctx.mes("skill that an Acolyte can learn. It's a special ability that can save others and defeat the")?;
+                    ctx.mes("monsters borne of darkness.")?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(3)) { m2 = true; }
+                if m2 {
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("^3131FFTeleport^000000 allows you to instantly move to another place. It is a great skill, but it's difficult to consider it necessary for all Acolytes.")?;
+                    ctx.next()?;
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("In my opinion,")?;
+                    ctx.mes("^3131FFHeal^000000 is the most important skill that an Acolyte can learn. It's a special ability that can save others and defeat the")?;
+                    ctx.mes("monsters borne of darkness.")?;
+                    break 'b2;
+                }
+            }
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("You can use the holy power")?;
+            ctx.mes("in the Heal skill to attack Undead monsters (^3131FFShift + Heal^000000). The light of truth protects the righteous and destroys the wicked.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Just gather the")?;
+            ctx.mes("strength within your")?;
+            ctx.mes("heart into your hands...")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("HEAL !!")?;
+            npc_skill(ctx, s("AL_HEAL"), n(11), n(99), n(60))?;
+            set(ctx, "tu_acolyte01", n(3))?;
+            if op(ctx.call(Function::GetSkillLv, vec![s("AL_HEAL")])?, "==", n(0))?.truthy() {
+                ctx.call(Function::GetExperience, vec![n(0), n(100)])?;
+                ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_CONE")?])?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(3)) { m1 = true; }
+        if m1 {
+            ctx.mes("I would like to give you an assignment, but what do you")?;
+            ctx.mes("think? I believe learning the basics is your most important")?;
+            ctx.mes("task for now.")?;
+            ctx.next()?;
+            if op(ctx.call(Function::GetSkillLv, vec![s("AL_HEAL")])?, "<", n(3))?.truthy() {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Well then, learn")?;
+                ctx.mes("the Heal skill up to")?;
+                ctx.mes("^3131FFLevel 3 ^000000 and then")?;
+                ctx.mes("return to me.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Your strength is undeveloped,")?;
+                ctx.mes("so fight weaker monsters for now.")?;
+                ctx.mes("I will lend you a Mace from the church, so use it well and ^3131FFreturn it^000000 when you're done, alright?")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("First ^0033FFstart fighting monsters around each town such as Prontera^000000. It'd be more convenient to fight the monsters here, but they might be too strong for you right now.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("I'll change your Save Point so that you will respawn in the convent. Once you've learned Level 3 Heal, you can use a Butterfly Wing to return here.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("You can also speak to ^3131FFPriest Praupin at the Prontera Church^000000")?;
+                ctx.mes("and he will send you back here.")?;
+                ctx.mes("He takes special care in helping young Acolytes.")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Well then,")?;
+                ctx.mes("I hope you")?;
+                ctx.mes("have a safe trip.")?;
+                set(ctx, "tu_acolyte01", n(4))?;
+                ctx.call(Function::GetItem, vec![n(1504), n(1)])?;
+                ctx.call(Function::GetItem, vec![n(602), n(1)])?;
+                ctx.call(Function::SavePoint, vec![s("prt_monk"), n(30), n(250), n(1), n(1)])?;
+            } else {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Oh my!")?;
+                ctx.mes("You've already")?;
+                ctx.mes("learned how to")?;
+                ctx.mes("properly use the")?;
+                ctx.mes("Heal skill. Very good!")?;
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("I believe you're")?;
+                ctx.mes("ready for me to discuss")?;
+                ctx.mes("the next subject. Now,")?;
+                ctx.mes("let's see... Hmm...")?;
+                set(ctx, "tu_acolyte01", n(5))?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(4)) { m1 = true; }
+        if m1 {
+            if op(ctx.call(Function::GetSkillLv, vec![s("AL_HEAL")])?, ">", n(2))?.truthy() {
+                if op(ctx.call(Function::CountItem, vec![n(1504)])?, ">", n(0))?.truthy() {
+                    ctx.mes("Oh my!")?;
+                    ctx.mes("Welcome back~")?;
+                    ctx.mes("I see that you've")?;
+                    ctx.mes("completed the assignment")?;
+                    ctx.mes("already. Good work!")?;
+                    ctx.next()?;
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("Now, I would like to have the Mace back, if you don't mind.")?;
+                    ctx.mes("By any chance, do you carry ^FF0000any other Mace with an elemental Property^000000?")?;
+                    ctx.mes("If so, please store the mace somewhere first.")?;
+                    ctx.mes("I am afraid that my sight is too bad to distinguish the difference...Hoho.")?;
+                    ctx.next()?;
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("Would you like me to take the mace away from your inventory now?")?;
+                    ctx.next()?;
+                    if op(n(select(ctx, &["Sure.", "Let me check again."])?), "==", n(2))?.truthy() {
+                        ctx.mes("[Asthe]")?;
+                        ctx.mes("Okay, no problem.")?;
+                        ctx.mes("Please make sure that you do not carry any ^FF0000Mace with an elemental Property^000000.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("Thank you so much.")?;
+                    ctx.mes("You have returned the Mace.")?;
+                    ctx.call(Function::Emotion, vec![constant(ctx, "ET_SMILE")?])?;
+                    set(ctx, "tu_acolyte01", n(5))?;
+                    ctx.call(Function::DelItem, vec![n(1504), n(1)])?;
+                    if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_ACOLYTE_HIGH")?)?.truthy() {
+                        ctx.call(Function::GetExperience, vec![n(2000), n(1000)])?;
+                    } else {
+                        ctx.call(Function::GetExperience, vec![n(1000), n(500)])?;
+                    }
+                    ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_CONE")?])?;
+                } else {
+                    ctx.mes("Oh my!")?;
+                    ctx.mes("Welcome back~")?;
+                    ctx.mes("I see that you've")?;
+                    ctx.mes("completed the assignment.")?;
+                    ctx.next()?;
+                    ctx.mes("[Asthe]")?;
+                    ctx.mes("But you must have forgotten the Mace I've lent you. Would you bring it back so that I can return it to the church?")?;
+                }
+                ctx.close()?;
+                return Err(END.into());
+            }
+            ctx.mes("Are you having")?;
+            ctx.mes("a hard time training")?;
+            ctx.mes("to learn Level 3 Heal?")?;
+            ctx.mes("Please don't be discouraged.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The basics are crucial to gaining mastery of the more advanced skills that you'll learn later. Just keep in mind that all of your efforts and suffering will become glory")?;
+            ctx.mes("and happiness.")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(5)) { m1 = true; }
+        if m1 {
+            ctx.mes("I suppose I can tell you a little more about the Acolyte job. You already know that Novices must train and go to Prontera Church to become an Acolyte, your First Job Class.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("After you become an Acolyte")?;
+            ctx.mes("at ^3131FFJob Level 40^000000, you will have the opportunity to change to a more specialized Second Job Class.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("When changing")?;
+            ctx.mes("to the Second Jobs,")?;
+            ctx.mes("Acolytes can become ^3131FFPriests^000000,")?;
+            ctx.mes("the apostles of mercy, or ^3131FFMonks^000000")?;
+            ctx.mes("who carry out God's wrath.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Priests and Monks can")?;
+            ctx.mes("change to the Transcendent Class")?;
+            ctx.mes("by visiting Valkyrie in Valhalla. Priests can become ^3131FFHigh Priests^000000 and Monks can become ^3131FFChampions^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Did you undertand all that?")?;
+            ctx.mes("Ho ho ho~ No need to try to remember everything right now. You'll get the hang of it.")?;
+            set(ctx, "tu_acolyte01", n(6))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(6)) { m1 = true; }
+        if m1 {
+            ctx.mes(op(op(s(""), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(","))?.text())?;
+            ctx.mes("I just received this letter, but it seems to have been a mistake.")?;
+            ctx.mes("It's actually addressed")?;
+            ctx.mes("to Priest Gardron.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("However, I'm a little busy with")?;
+            ctx.mes("my work right now, so would you deliver this to Priest Gardron in the next building for me?")?;
+            set(ctx, "tu_acolyte01", n(7))?;
+            ctx.call(Function::GetItem, vec![n(7148), n(1)])?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(7)) { m1 = true; }
+        if m1 {
+            ctx.mes("Would you please")?;
+            ctx.mes("deliver this letter")?;
+            ctx.mes("to Priest Gardron for me?")?;
+            ctx.mes("You can find him in the")?;
+            ctx.mes("building nearby.")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(9)) { m1 = true; }
+        if m1 {
+            ctx.mes(op(op(s("You went to "), "+", (if n(0).truthy() { s("Prontera") } else { s("Payon") }))?, "+", s(" on behalf of the convent for Priest Gardron? That must have been tough..."))?.text())?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Blessing!")?;
+            npc_skill(ctx, s("AL_BLESSING"), n(10), n(0), n(0))?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Now I'm going to teach you")?;
+            ctx.mes("about ^FF0000Blessing^000000. This is a holy skill that delivers the blessing of God. Blessing will temporarily raise ^3131FFSTR^000000,^3131FFINT^000000,^3131FFDEX^000000 and remove ^3131FFCurse^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Like Heal,")?;
+            ctx.mes("Blessing can be used")?;
+            ctx.mes("against Undead monsters.")?;
+            ctx.mes("(^3131FFSHIFT + Blessing^000000)")?;
+            ctx.mes("Blessing will actually")?;
+            ctx.mes("place a curse on the Undead.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Blessing can be learned after you learn Level 5 ^3131FFDivine Protection^000000. That's the skill that will increase your resistance to damage from Undead and Demon monsters.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Being able to serve God and")?;
+            ctx.mes("bless others with his glory is a great honor. Well, that's all for this lesson.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Oh, yes...!")?;
+            ctx.mes("In the cemetary northwest")?;
+            ctx.mes("of here, I've been taking care of a lost dog. Right now, it's time to feed him.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Sorry for the hassle,")?;
+            ctx.mes("but would you go and")?;
+            ctx.mes("feed the dog for me?")?;
+            ctx.next()?;
+            ctx.mes("^3355FFSister Asthe gives")?;
+            ctx.mes("you some dog food.^000000")?;
+            set(ctx, "tu_acolyte01", n(10))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(11)) { m1 = true; }
+        if !m1 && eq(&sw1, &n(12)) { m1 = true; }
+        if m1 {
+            ctx.mes("How to expel")?;
+            ctx.mes("an evil spirit?")?;
+            ctx.mes("Why, it's the same")?;
+            ctx.mes("way that you would")?;
+            ctx.mes("remove a curse...")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Ah...")?;
+            ctx.mes("I believe")?;
+            ctx.mes("this is a test")?;
+            ctx.mes("given to you by God.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("You already")?;
+            ctx.mes("know the answer.")?;
+            ctx.mes("Think carefully")?;
+            ctx.mes("and it will come.")?;
+            set(ctx, "tu_acolyte01", n(12))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(13)) { m1 = true; }
+        if m1 {
+            ctx.mes("You remember that")?;
+            ctx.mes("you can learn Divine")?;
+            ctx.mes("Protection after learning")?;
+            ctx.mes("Blessing, right?")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("When you open the")?;
+            ctx.mes("Skill Window, you'll see that you can also learn ^3131FFDemon Bane^000000 and ^3131FFAngelus^000000, depending on your level of Divine Protection.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Now, ^3131FFDemon Bane^000000 increases your Attack Strength against Undead and Demon monsters, so it's useful for those of us who serve God by expelling evil.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Once you have learned Level 3 Demon Bane, you can learn ^3131FFSignum Crucis^000000 which decreases the defense of the targeted Undead or Ghost monster.")?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SIGNUM")?])?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("^3131FFAngelus^000000 increases the defense in your party, including yourself. It is affected by the VIT stat, so the higher your VIT, the better it works.")?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_ANGELUS")?])?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("That's about it")?;
+            ctx.mes("for Divine Protection.")?;
+            ctx.mes("Let's take a break before")?;
+            ctx.mes("we proceed to the next lesson,")?;
+            ctx.mes("alright? I'll be right here.")?;
+            set(ctx, "tu_acolyte01", n(14))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(14)) { m1 = true; }
+        if m1 {
+            ctx.mes("Now it's time")?;
+            ctx.mes("for your next lesson.")?;
+            ctx.mes("Let's talk about the")?;
+            ctx.mes("^3131FFIncrease AGI^000000 skill which is")?;
+            ctx.mes("part of the Heal skill tree.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("You can learn Increase AGI after you learn Level 3 ^3131FFHeal^000000. True to its name, Increase AGI temporarily increases the ^3131FFagility (AGI)^000000 of its target.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Increase AGI")?;
+            ctx.mes("also increases")?;
+            ctx.mes("^3131FFDodge Rate^000000,")?;
+            ctx.mes("^3131FFAttack Speed^000000,")?;
+            ctx.mes("and ^3131FFMovement Speed^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Try it for")?;
+            ctx.mes("yourself, okay?")?;
+            set(ctx, "tu_acolyte01", n(15))?;
+            npc_skill(ctx, s("AL_INCAGI"), n(10), n(0), n(0))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(15)) { m1 = true; }
+        if m1 {
+            ctx.mes("Once you learn")?;
+            ctx.mes("Level 1 Increase AGI,")?;
+            ctx.mes("you can begin learning")?;
+            ctx.mes("^3131FFDecrease AGI^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Like you'd expect, Decrease AGI slows down enemies, reducing their agility, Movement Speed, Dodge Rate and Attack Speed. Its effect is the exact reverse of Increase AGI.")?;
+            set(ctx, "tu_acolyte01", n(15))?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The last skill in the Heal skill tree is ^3131FFCure^000000. You can learn Cure after learning Level 2 Heal.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Cure can remove irregular")?;
+            ctx.mes("statuses like ^3131FFSilence^000000, ^3131FFCurse^000000,")?;
+            ctx.mes("and ^3131FFStone Curse^000000. When used on Undead monsters, Cure will")?;
+            ctx.mes("actually curse them.")?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CURE")?])?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("For now, don't forget that the Increase AGI, Decrease AGI and")?;
+            ctx.mes("Cure skills can only be learned")?;
+            ctx.mes("by learning the Heal skill.")?;
+            set(ctx, "tu_acolyte01", n(16))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(16)) { m1 = true; }
+        if m1 {
+            ctx.mes("You've been learning")?;
+            ctx.mes("really quickly. I'm glad")?;
+            ctx.mes("that we've gotten to this")?;
+            ctx.mes("point already.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Once you become")?;
+            ctx.mes("an Acolyte, you can")?;
+            ctx.mes("learn the ^3131FFRuwach^000000 skill.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Ruwach is used to detect ^3131FFhidden enemies^000000. Mages have a similar skill called Sight, but only it can only detect enemies. Ruwach will simultaneously detect and")?;
+            ctx.mes("damage hidden enemies.")?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_RUWACH")?])?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("After you have learned Ruwach,")?;
+            ctx.mes("you can learn ^3131FFTeleport^000000. Teleport will instantly send you to a random spot on the map or to your Save Point.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("After learning Level 2 Teleport, you can learn ^3131FFWarp Portal^000000 which will allow you to warp to a Memo Point, or saved destination, by consuming ^FF00001 Blue Gemstone^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Once you have mastered Warp Portal you can ^3131FFremember three Memo Points^000000. You can't save Memo Points in most fields or dungeons, but you can use the ^FF0000/memo^000000 command in")?;
+            ctx.mes("towns and certain fields.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Was that confusing?")?;
+            ctx.mes("Just think that Teleport")?;
+            ctx.mes("and Warp Portal allow servants")?;
+            ctx.mes("of God to move swiftly from place")?;
+            ctx.mes("to place.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("I have my home and the convent saved as Memo Points, so I simply warp back and forth between work and home.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Now...")?;
+            ctx.mes("The last skill")?;
+            ctx.mes("of the Ruwach tree")?;
+            ctx.mes("is called ^3131FFPneuma^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Pneuma shields characters")?;
+            ctx.mes("within a 3*3 block, or a 9 cell area, from ^FF0000long range attacks^000000. If you party with Archers or other Bow users, be careful since you might accidentally block their attacks.")?;
+            ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_PNEUMA")?])?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("There are some Undead monsters")?;
+            ctx.mes("that can attack from a distance, so protecting yourself with Pneuma and attacking with Heal would be a good strategy.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Now, we've covered some")?;
+            ctx.mes("pretty complicated material in this lesson. Would you like to hear this again?")?;
+            ctx.next()?;
+            if op(n(select(ctx, &["Listen again.", "Move to the next topic."])?), "==", n(1))?.truthy() {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Alright,")?;
+                ctx.mes("give me a moment")?;
+                ctx.mes("to catch my breath~")?;
+            } else {
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Ho ho!")?;
+                ctx.mes("What a smart Acolyte~")?;
+                set(ctx, "tu_acolyte01", n(17))?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(17)) { m1 = true; }
+        if m1 {
+            ctx.mes("Oh dear...!")?;
+            ctx.mes("All of these things were delivered to me by accident! And some of these packages were supposed to")?;
+            ctx.mes("be sent to the Prontera Sanctuary!")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Would you do another favor for me again? Please distribute the mail here and to Prontera Church since")?;
+            ctx.mes("I simply don't have the time.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("It seems that some of these are more urgent than others, so would you please deliver them in a certain order?")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The first is a package to a worker in the north. His name is ^3131FFVeiner^000000. The next delivery is for ^3131FFHedrick^000000, who's near the convent entrance.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The third one is from the Blacksmith Guild to the ^3131FFBlacksmith^000000 who makes weapons and armor for Monks. The fourth delivery goes to ^3131FFPriest Karven^000000 in the next building.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Oh, and this last delivery is a receipt for ^3131FFPriest Praupin^000000, the priest who told you about me.")?;
+            ctx.mes("Here you go, the letters and packages...")?;
+            if op(op(get(ctx, "MaxWeight")?, "-", get(ctx, "Weight")?)?, "<", n(2430))?.truthy() {
+                ctx.next()?;
+                ctx.mes("[Asthe]")?;
+                ctx.mes("Oh...!")?;
+                ctx.mes("You don't seem to")?;
+                ctx.mes("have enough space")?;
+                ctx.mes("to carry everything.")?;
+                ctx.mes("Why don't you put some of your things in Kafra Storage first?")?;
+            } else {
+                set(ctx, "tu_acolyte01", n(18))?;
+                ctx.call(Function::GetItem, vec![n(7183), n(1)])?;
+                ctx.call(Function::GetItem, vec![n(7181), n(1)])?;
+                ctx.call(Function::GetItem, vec![n(1081), n(2)])?;
+                ctx.call(Function::GetItem, vec![n(7148), n(1)])?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(18)) { m1 = true; }
+        if !m1 && eq(&sw1, &n(19)) { m1 = true; }
+        if !m1 && eq(&sw1, &n(20)) { m1 = true; }
+        if !m1 && eq(&sw1, &n(21)) { m1 = true; }
+        if !m1 && eq(&sw1, &n(22)) { m1 = true; }
+        if m1 {
+            ctx.mes("Okay, don't")?;
+            ctx.mes("forget the order")?;
+            ctx.mes("in which you need")?;
+            ctx.mes("to deliver the letters")?;
+            ctx.mes("and packages. That's")?;
+            ctx.mes("very important.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The first is a package to a worker in the north. His name is ^3131FFVeiner^000000. The next delivery is for ^3131FFHedrick^000000, who's near the convent entrance.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("The third one is from the Blacksmith Guild to the ^3131FFBlacksmith^000000 who makes weapons and armor for Monks. The fourth delivery goes to ^3131FFPriest Karven^000000 in the next building.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Oh, and this last delivery is a receipt for ^3131FFPriest Praupin^000000, the priest who told you about me. Alright, have a safe trip~")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(23)) { m1 = true; }
+        if m1 {
+            ctx.mes("Ah, you're finishing")?;
+            ctx.mes("making all of those deliveries? Thank you very much! How was it meeting Priest Praupin after such")?;
+            ctx.mes("a long time?")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("We make relationships with other people throughout our lives and our memories of them live on in our hearts, you know.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("When you feel lonely, let those memories shine through your dark gloom. Just thinking about the people you care about can heal your emotional wounds when times are rough.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Those who can cherish the present can form lasting relationships. They're the first who will embrace happiness in the future. Remember that.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("I get the feeling that you have become a good friend to Priest Praupin. I hope that Priest Praupin continues to be a good friend to you as well.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Alright then,")?;
+            ctx.mes("the next time we")?;
+            ctx.mes("meet, I will give")?;
+            ctx.mes("you my final lesson.")?;
+            set(ctx, "tu_acolyte01", n(24))?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m1 && eq(&sw1, &n(24)) { m1 = true; }
+        if m1 {
+            ctx.mes("The last skill")?;
+            ctx.mes("I will teach you")?;
+            ctx.mes("about is ^3131FFAqua Benedicta^000000.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Water is so commonplace that")?;
+            ctx.mes("we forget that it's at the center of nature. It's very basic, but essential.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Place the water into a cup like so and focus all of your holy energy like this... And then...")?;
+            ctx.next()?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_AQUA")?])?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Aqua")?;
+            ctx.mes("Benedicta!")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("This is how you create ^3131FFHoly Water^000000. Remember that your ^3131FFfeet must be touching water^000000 in order to use the Aqua Benedicta skill.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Ho ho~")?;
+            ctx.mes("Well, that's all")?;
+            ctx.mes("I have to teach you.")?;
+            ctx.mes("It may have been rough,")?;
+            ctx.mes("but you did a good job.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Oh! If you go back to the Prontera Sanctuary, I believe you can learn a secret skill. It couldn't hurt to stop by and check.")?;
+            ctx.next()?;
+            ctx.mes("[Asthe]")?;
+            ctx.mes("Well, please don't forget what I've taught you. I hope you look back with fondness at our time together amongst these beautiful flowers. May God bless you~")?;
+            set(ctx, "tu_acolyte01", n(25))?;
+            if n(0).truthy() {
+                ctx.call(Function::GetExperience, vec![n(1000), n(1000)])?;
+            } else {
+                ctx.call(Function::GetExperience, vec![n(5000), n(3000)])?;
+            }
+            ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_CONE")?])?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+    }
+    ctx.mes("If you get into an")?;
+    ctx.mes("argument with someone,")?;
+    ctx.mes("talk it over while sharing")?;
+    ctx.mes("a nice, warm meal.")?;
+    ctx.next()?;
+    ctx.mes("[Asthe]")?;
+    ctx.mes("With such warm delicious food in your body, all angry feelings will melt away like the snow.")?;
+    ctx.next()?;
+    ctx.mes("[Asthe]")?;
+    ctx.mes("I'm not joking!")?;
+    ctx.mes("If you happen to get in a fight with someone close to you, this might help. I'm speaking from life experience, you know.")?;
+    ctx.close()?;
+    return Err(END.into());
+    Ok(n(0))
+}
+
 fn npc_10149(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Priest Gardron]")?;
@@ -1314,6 +1996,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
         10147 => npc_call(npc_10147(ctx, 0, vec![])),
+        10148 => npc_call(npc_10148(ctx, 0, vec![])),
         10149 => npc_call(npc_10149(ctx, 0, vec![])),
         10150 => npc_call(npc_10150(ctx, 0, vec![])),
         10151 => npc_call(npc_10151(ctx, 0, vec![])),

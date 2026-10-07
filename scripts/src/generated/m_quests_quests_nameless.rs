@@ -1555,6 +1555,50 @@ fn npc_11449(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11450(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    if op(ctx.call(Function::CheckWeight, vec![n(7766), n(1)])?, "==", n(0))?.truthy() {
+        ctx.mes("^3355FFWait a second!")?;
+        ctx.mes("Right now, you're carrying")?;
+        ctx.mes("too many things with you.")?;
+        ctx.mes("Please come back after")?;
+        ctx.mes("using the Kafra Service")?;
+        ctx.mes("to store some of your items.^000000")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "aru_monas")?, "<", n(21))?.truthy() {
+        ctx.mes("^3355FFIt's just a bunch")?;
+        ctx.mes("of old, moldy books.^000000")?;
+        ctx.close()?;
+        return Err(END.into());
+    } else {
+        if op(get(ctx, "aru_monas")?, "==", n(21))?.truthy() {
+            ctx.mes("^3355FFThere's a book stained")?;
+            ctx.mes("with blood amongst all")?;
+            ctx.mes("these old, moldy books.^000000")?;
+            ctx.next()?;
+            if op(n(select(ctx, &["Examine Book", "Ignore"])?), "==", n(1))?.truthy() {
+                set(ctx, "aru_monas", n(22))?;
+                ctx.call(Function::GetItem, vec![n(7755), n(1)])?;
+                ctx.call(Function::ReadBook, vec![n(7755), n(1)])?;
+                ctx.close()?;
+                return Err(END.into());
+            }
+            ctx.mes("^3355FFThat book was probably")?;
+            ctx.mes("worthless to you anyway.^000000")?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            ctx.mes("^3355FFThere are old books")?;
+            ctx.mes("scattered all over here.^000000")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_11451(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONMYMOBDEAD: usize = 1;
     const LABEL_ONTIMER300000: usize = 2;
@@ -14891,6 +14935,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11447 => npc_call(npc_11447(ctx, 0, vec![])),
         11448 => npc_call(npc_11448(ctx, 0, vec![])),
         11449 => npc_call(npc_11449(ctx, 0, vec![])),
+        11450 => npc_call(npc_11450(ctx, 0, vec![])),
         11451 => npc_call(npc_11451(ctx, 0, vec![])),
         11452 => npc_call(npc_11452(ctx, 0, vec![])),
         11453 => npc_call(npc_11453(ctx, 0, vec![])),
@@ -14962,92 +15007,92 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101863 => npc_call(npc_11422(ctx, 1, vec![])),
-        101864 => npc_call(npc_11423(ctx, 1, vec![])),
-        101865 => npc_call(npc_11430(ctx, 1, vec![])),
-        101866 => npc_call(npc_11436(ctx, 1, vec![])),
-        101867 => npc_call(npc_11437(ctx, 1, vec![])),
-        101868 => npc_call(npc_11438(ctx, 1, vec![])),
-        101869 => npc_call(npc_11439(ctx, 1, vec![])),
-        101870 => npc_call(npc_11441(ctx, 1, vec![])),
-        101871 => npc_call(npc_11442(ctx, 1, vec![])),
-        101872 => npc_call(npc_11443(ctx, 1, vec![])),
-        101873 => npc_call(npc_11443(ctx, 2, vec![])),
-        101874 => npc_call(npc_11443(ctx, 3, vec![])),
-        101875 => npc_call(npc_11444(ctx, 1, vec![])),
-        101876 => npc_call(npc_11444(ctx, 2, vec![])),
-        101877 => npc_call(npc_11445(ctx, 1, vec![])),
-        101878 => npc_call(npc_11446(ctx, 1, vec![])),
-        101879 => npc_call(npc_11447(ctx, 1, vec![])),
-        101880 => npc_call(npc_11451(ctx, 1, vec![])),
-        101881 => npc_call(npc_11451(ctx, 2, vec![])),
-        101882 => npc_call(npc_11452(ctx, 1, vec![])),
-        101883 => npc_call(npc_11452(ctx, 2, vec![])),
-        101884 => npc_call(npc_11452(ctx, 3, vec![])),
-        101885 => npc_call(npc_11453(ctx, 1, vec![])),
-        101886 => npc_call(npc_11457(ctx, 1, vec![])),
-        101887 => npc_call(npc_11458(ctx, 1, vec![])),
-        101888 => npc_call(npc_11459(ctx, 1, vec![])),
-        101889 => npc_call(npc_11460(ctx, 1, vec![])),
-        101890 => npc_call(npc_11461(ctx, 1, vec![])),
-        101891 => npc_call(npc_11462(ctx, 1, vec![])),
-        101892 => npc_call(npc_11468(ctx, 1, vec![])),
-        101893 => npc_call(npc_11469(ctx, 1, vec![])),
-        101894 => npc_call(npc_11469(ctx, 2, vec![])),
-        101895 => npc_call(npc_11469(ctx, 3, vec![])),
-        101896 => npc_call(npc_11469(ctx, 4, vec![])),
-        101897 => npc_call(npc_11469(ctx, 5, vec![])),
-        101898 => npc_call(npc_11469(ctx, 6, vec![])),
-        101899 => npc_call(npc_11469(ctx, 7, vec![])),
-        101900 => npc_call(npc_11469(ctx, 8, vec![])),
-        101901 => npc_call(npc_11469(ctx, 9, vec![])),
-        101902 => npc_call(npc_11469(ctx, 10, vec![])),
-        101903 => npc_call(npc_11469(ctx, 11, vec![])),
-        101904 => npc_call(npc_11469(ctx, 12, vec![])),
-        101905 => npc_call(npc_11469(ctx, 13, vec![])),
-        101906 => npc_call(npc_11471(ctx, 1, vec![])),
-        101907 => npc_call(npc_11473(ctx, 1, vec![])),
-        101908 => npc_call(npc_11475(ctx, 1, vec![])),
-        101909 => npc_call(npc_11479(ctx, 1, vec![])),
-        101910 => npc_call(npc_11483(ctx, 1, vec![])),
-        101911 => npc_call(npc_11484(ctx, 1, vec![])),
-        101912 => npc_call(npc_11485(ctx, 1, vec![])),
-        101913 => npc_call(npc_11485(ctx, 2, vec![])),
-        101914 => npc_call(npc_11487(ctx, 1, vec![])),
-        101915 => npc_call(npc_11491(ctx, 1, vec![])),
-        101916 => npc_call(npc_11491(ctx, 2, vec![])),
-        101917 => npc_call(npc_11491(ctx, 3, vec![])),
-        101918 => npc_call(npc_11492(ctx, 1, vec![])),
-        101919 => npc_call(npc_11492(ctx, 2, vec![])),
-        101920 => npc_call(npc_11493(ctx, 1, vec![])),
-        101921 => npc_call(npc_11494(ctx, 1, vec![])),
-        101922 => npc_call(npc_11495(ctx, 1, vec![])),
-        101923 => npc_call(npc_11495(ctx, 2, vec![])),
-        101924 => npc_call(npc_11495(ctx, 3, vec![])),
-        101925 => npc_call(npc_11495(ctx, 4, vec![])),
-        101926 => npc_call(npc_11495(ctx, 5, vec![])),
-        101927 => npc_call(npc_11495(ctx, 6, vec![])),
-        101928 => npc_call(npc_11495(ctx, 7, vec![])),
-        101929 => npc_call(npc_11495(ctx, 8, vec![])),
-        101930 => npc_call(npc_11495(ctx, 9, vec![])),
-        101931 => npc_call(npc_11495(ctx, 10, vec![])),
-        101932 => npc_call(npc_11495(ctx, 11, vec![])),
-        101933 => npc_call(npc_11495(ctx, 12, vec![])),
-        101934 => npc_call(npc_11495(ctx, 13, vec![])),
-        101935 => npc_call(npc_11495(ctx, 14, vec![])),
-        101936 => npc_call(npc_11496(ctx, 1, vec![])),
-        101937 => npc_call(npc_11496(ctx, 2, vec![])),
-        101938 => npc_call(npc_11496(ctx, 3, vec![])),
-        101939 => npc_call(npc_11496(ctx, 4, vec![])),
-        101940 => npc_call(npc_11496(ctx, 5, vec![])),
-        101941 => npc_call(npc_11496(ctx, 6, vec![])),
-        101942 => npc_call(npc_11497(ctx, 1, vec![])),
-        101943 => npc_call(npc_11498(ctx, 1, vec![])),
-        101944 => npc_call(npc_11499(ctx, 1, vec![])),
-        101945 => npc_call(npc_11508(ctx, 1, vec![])),
-        101946 => npc_call(npc_11508(ctx, 2, vec![])),
-        101947 => npc_call(npc_11508(ctx, 3, vec![])),
-        101948 => npc_call(npc_11509(ctx, 1, vec![])),
+        101875 => npc_call(npc_11422(ctx, 1, vec![])),
+        101876 => npc_call(npc_11423(ctx, 1, vec![])),
+        101877 => npc_call(npc_11430(ctx, 1, vec![])),
+        101878 => npc_call(npc_11436(ctx, 1, vec![])),
+        101879 => npc_call(npc_11437(ctx, 1, vec![])),
+        101880 => npc_call(npc_11438(ctx, 1, vec![])),
+        101881 => npc_call(npc_11439(ctx, 1, vec![])),
+        101882 => npc_call(npc_11441(ctx, 1, vec![])),
+        101883 => npc_call(npc_11442(ctx, 1, vec![])),
+        101884 => npc_call(npc_11443(ctx, 1, vec![])),
+        101885 => npc_call(npc_11443(ctx, 2, vec![])),
+        101886 => npc_call(npc_11443(ctx, 3, vec![])),
+        101887 => npc_call(npc_11444(ctx, 1, vec![])),
+        101888 => npc_call(npc_11444(ctx, 2, vec![])),
+        101889 => npc_call(npc_11445(ctx, 1, vec![])),
+        101890 => npc_call(npc_11446(ctx, 1, vec![])),
+        101891 => npc_call(npc_11447(ctx, 1, vec![])),
+        101892 => npc_call(npc_11451(ctx, 1, vec![])),
+        101893 => npc_call(npc_11451(ctx, 2, vec![])),
+        101894 => npc_call(npc_11452(ctx, 1, vec![])),
+        101895 => npc_call(npc_11452(ctx, 2, vec![])),
+        101896 => npc_call(npc_11452(ctx, 3, vec![])),
+        101897 => npc_call(npc_11453(ctx, 1, vec![])),
+        101898 => npc_call(npc_11457(ctx, 1, vec![])),
+        101899 => npc_call(npc_11458(ctx, 1, vec![])),
+        101900 => npc_call(npc_11459(ctx, 1, vec![])),
+        101901 => npc_call(npc_11460(ctx, 1, vec![])),
+        101902 => npc_call(npc_11461(ctx, 1, vec![])),
+        101903 => npc_call(npc_11462(ctx, 1, vec![])),
+        101904 => npc_call(npc_11468(ctx, 1, vec![])),
+        101905 => npc_call(npc_11469(ctx, 1, vec![])),
+        101906 => npc_call(npc_11469(ctx, 2, vec![])),
+        101907 => npc_call(npc_11469(ctx, 3, vec![])),
+        101908 => npc_call(npc_11469(ctx, 4, vec![])),
+        101909 => npc_call(npc_11469(ctx, 5, vec![])),
+        101910 => npc_call(npc_11469(ctx, 6, vec![])),
+        101911 => npc_call(npc_11469(ctx, 7, vec![])),
+        101912 => npc_call(npc_11469(ctx, 8, vec![])),
+        101913 => npc_call(npc_11469(ctx, 9, vec![])),
+        101914 => npc_call(npc_11469(ctx, 10, vec![])),
+        101915 => npc_call(npc_11469(ctx, 11, vec![])),
+        101916 => npc_call(npc_11469(ctx, 12, vec![])),
+        101917 => npc_call(npc_11469(ctx, 13, vec![])),
+        101918 => npc_call(npc_11471(ctx, 1, vec![])),
+        101919 => npc_call(npc_11473(ctx, 1, vec![])),
+        101920 => npc_call(npc_11475(ctx, 1, vec![])),
+        101921 => npc_call(npc_11479(ctx, 1, vec![])),
+        101922 => npc_call(npc_11483(ctx, 1, vec![])),
+        101923 => npc_call(npc_11484(ctx, 1, vec![])),
+        101924 => npc_call(npc_11485(ctx, 1, vec![])),
+        101925 => npc_call(npc_11485(ctx, 2, vec![])),
+        101926 => npc_call(npc_11487(ctx, 1, vec![])),
+        101927 => npc_call(npc_11491(ctx, 1, vec![])),
+        101928 => npc_call(npc_11491(ctx, 2, vec![])),
+        101929 => npc_call(npc_11491(ctx, 3, vec![])),
+        101930 => npc_call(npc_11492(ctx, 1, vec![])),
+        101931 => npc_call(npc_11492(ctx, 2, vec![])),
+        101932 => npc_call(npc_11493(ctx, 1, vec![])),
+        101933 => npc_call(npc_11494(ctx, 1, vec![])),
+        101934 => npc_call(npc_11495(ctx, 1, vec![])),
+        101935 => npc_call(npc_11495(ctx, 2, vec![])),
+        101936 => npc_call(npc_11495(ctx, 3, vec![])),
+        101937 => npc_call(npc_11495(ctx, 4, vec![])),
+        101938 => npc_call(npc_11495(ctx, 5, vec![])),
+        101939 => npc_call(npc_11495(ctx, 6, vec![])),
+        101940 => npc_call(npc_11495(ctx, 7, vec![])),
+        101941 => npc_call(npc_11495(ctx, 8, vec![])),
+        101942 => npc_call(npc_11495(ctx, 9, vec![])),
+        101943 => npc_call(npc_11495(ctx, 10, vec![])),
+        101944 => npc_call(npc_11495(ctx, 11, vec![])),
+        101945 => npc_call(npc_11495(ctx, 12, vec![])),
+        101946 => npc_call(npc_11495(ctx, 13, vec![])),
+        101947 => npc_call(npc_11495(ctx, 14, vec![])),
+        101948 => npc_call(npc_11496(ctx, 1, vec![])),
+        101949 => npc_call(npc_11496(ctx, 2, vec![])),
+        101950 => npc_call(npc_11496(ctx, 3, vec![])),
+        101951 => npc_call(npc_11496(ctx, 4, vec![])),
+        101952 => npc_call(npc_11496(ctx, 5, vec![])),
+        101953 => npc_call(npc_11496(ctx, 6, vec![])),
+        101954 => npc_call(npc_11497(ctx, 1, vec![])),
+        101955 => npc_call(npc_11498(ctx, 1, vec![])),
+        101956 => npc_call(npc_11499(ctx, 1, vec![])),
+        101957 => npc_call(npc_11508(ctx, 1, vec![])),
+        101958 => npc_call(npc_11508(ctx, 2, vec![])),
+        101959 => npc_call(npc_11508(ctx, 3, vec![])),
+        101960 => npc_call(npc_11509(ctx, 1, vec![])),
         _ => None,
     }
 }

@@ -494,6 +494,542 @@ fn npc_11910(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_11911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_i = n(0);
+    let mut l_items: Vec<Value> = Vec::new();
+    let mut l_zeny_tt = n(0);
+    let _ = pc;
+    ctx.mes("[Liei]")?;
+    if op(get(ctx, "thana_tower")?, "==", n(0))?.truthy() {
+        ctx.mes("Good day, I'm")?;
+        ctx.mes("Liei Kuniziet of the")?;
+        ctx.mes("Employee Mission")?;
+        ctx.mes("Reward Department")?;
+        ctx.mes("here in Thanatos Tower.")?;
+        ctx.next()?;
+        'b1: {
+            let sw1 = n(select(ctx, &["Employee's mission reward?", "Keep up the good work."])?);
+            let mut m1 = false;
+            let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+            if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+            if m1 {
+                ctx.mes("[Liei]")?;
+                ctx.mes("Currently, Rekenber Corporation")?;
+                ctx.mes("is contracting temp employees")?;
+                ctx.mes("to develop the higher levels")?;
+                ctx.mes("of Thanatos Tower. If you'd")?;
+                ctx.mes("like to apply, please ask")?;
+                ctx.mes("Ditze right next to me.")?;
+                ctx.close()?;
+                return Err(END.into());
+            }
+            if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+            if m1 {
+                ctx.mes("[Liei]")?;
+                ctx.mes("Thank you. Ah, and I hope")?;
+                ctx.mes("that you enjoy your visit")?;
+                ctx.mes("here to Thanatos Tower.")?;
+                ctx.close()?;
+                return Err(END.into());
+            }
+        }
+    }
+    ctx.mes("Ah, hello~")?;
+    ctx.mes("How may I help you?")?;
+    ctx.next()?;
+    if op(n(select(ctx, &["Reward", "Nothing"])?), "==", n(2))?.truthy() {
+        ctx.mes("[Liei]")?;
+        ctx.mes("Alright, then.")?;
+        ctx.mes("Please do your best")?;
+        ctx.mes("to exterminate the")?;
+        ctx.mes("monsters that infest")?;
+        ctx.mes("the higher floors of")?;
+        ctx.mes("the Thanatos Tower~")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    ctx.mes("[Liei]")?;
+    ctx.mes(op(op(s("You're "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(", yes?"))?.text())?;
+    ctx.mes("Let me check our temp")?;
+    ctx.mes("employee records for--ah.")?;
+    ctx.mes("Here it is. Alright, so would")?;
+    ctx.mes("you please tell me what kind")?;
+    ctx.mes("of mission proof you brought?")?;
+    ctx.next()?;
+    let base = n(1).number_value()?;
+    local_set(&mut l_items, &n(base + 0), n(7435), false);
+    local_set(&mut l_items, &n(base + 1), n(7440), false);
+    local_set(&mut l_items, &n(base + 2), n(7441), false);
+    local_set(&mut l_items, &n(base + 3), n(7442), false);
+    l_i = n(select(ctx, &["Golden Ornament", "Red Feather", "Blue Feather", "Cursed Seal"])?);
+    ctx.mes("[Liei]")?;
+    if !ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?.truthy() {
+        ctx.mes("I'm sorry, but you are not")?;
+        ctx.mes(op(op(s("carrying any "), "+", super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?, "+", s("."))?.text())?;
+        ctx.mes("Please check your inventory")?;
+        ctx.mes("one more time, and then come")?;
+        ctx.mes("to me to redeem your items")?;
+        ctx.mes("for a reward later, alright?")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    ctx.mes("The reward for each")?;
+    ctx.mes(op(ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?, "+", s(" is..."))?.text())?;
+    ctx.mes(" ")?;
+    ctx.mes("1,000 zeny")?;
+    ctx.next()?;
+    l_zeny_tt = op(ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?, "*", n(1000))?;
+    ctx.mes("[Liei]")?;
+    ctx.mes(op(super::m_other_global_functions::fn_87_f_insertplural(ctx, 0, vec![ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?, ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?, "+", s(", then"))?.text())?;
+    ctx.mes("you will receive a total of...")?;
+    ctx.mes(" ")?;
+    ctx.mes(op(op(s(""), "+", l_zeny_tt.clone())?, "+", s(" zeny"))?.text())?;
+    ctx.next()?;
+    ctx.mes("[Liei]")?;
+    ctx.mes("Would you like to exchange")?;
+    ctx.mes(op(s("all of your "), "+", super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?.text())?;
+    ctx.mes("for your reward right now?")?;
+    ctx.next()?;
+    'b2: {
+        let sw2 = n(select(ctx, &["Yes", "No"])?);
+        let mut m2 = false;
+        let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+        if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+        if m2 {
+            ctx.mes("[Liei]")?;
+            ctx.mes("Great! Here is your")?;
+            ctx.mes(op(l_zeny_tt.clone(), "+", s(" zeny. Thank you,"))?.text())?;
+            ctx.mes("and please keep up")?;
+            ctx.mes("the good work~")?;
+            ctx.call(Function::DelItem, vec![local_get(&l_items, &l_i.clone(), false), ctx.call(Function::CountItem, vec![local_get(&l_items, &l_i.clone(), false)])?])?;
+            ctx.write("Zeny", op(get(ctx, "Zeny")?, "+", l_zeny_tt.clone())?)?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+        if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+        if m2 {
+            ctx.mes("[Liei]")?;
+            ctx.mes("Sure, no problem.")?;
+            ctx.mes("Just come back and")?;
+            ctx.mes("talk to me whenever")?;
+            ctx.mes("you want to receive")?;
+            ctx.mes("your reward, alright?")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+    }
+    Ok(n(0))
+}
+
+fn npc_11912(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_L_REQUEST: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    ctx.mes("[Burled]")?;
+                    if op(get(ctx, "thana_tower")?, "==", n(0))?.truthy() {
+                        ctx.mes("You are in front of the entrance to the 3rd Floor. Only contracted")?;
+                        ctx.mes("temp employees are authorized")?;
+                        ctx.mes("to enter that area. For Rekenber temp contract information, please")?;
+                        ctx.mes("speak to the 2nd Floor Guide.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("This is the path to the 3rd floor.")?;
+                    ctx.mes("Only the contracted staff are allowed to enter.")?;
+                    ctx.mes("How can I help you?")?;
+                    ctx.next()?;
+                    'b1: {
+                        let sw1 = n(select(ctx, &["Let me go to 3rd floor.", "Tower Information.", "Start a conversation."])?);
+                        let mut m1 = false;
+                        let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3));
+                        if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                        if m1 {
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("Oh, alright. Let me")?;
+                            ctx.mes("check and see if you're")?;
+                            ctx.mes("on our temp list. Hmmm...")?;
+                            ctx.mes(op(op(s("Ah, you're "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(", right?"))?.text())?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            if op(ctx.call(Function::GetAreaUsers, vec![s("tha_t02"), n(226), n(156), n(236), n(166)])?, "<", n(5))?.truthy() {
+                                ctx.mes("First, we need to wait until")?;
+                                ctx.mes("at least 5 temps are gathered")?;
+                                ctx.mes("to form a work group. Right")?;
+                                ctx.mes("now, there are a total of")?;
+                                ctx.mes(op(ctx.call(Function::GetAreaUsers, vec![s("tha_t02"), n(226), n(156), n(236), n(166)])?, "+", s(" temp workers waiting to"))?.text())?;
+                                ctx.mes("enter the 3rd Floor.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("If you can, try to get")?;
+                                ctx.mes("your friends to help you")?;
+                                ctx.mes("by coming near me. Please")?;
+                                ctx.mes("understand that we have this")?;
+                                ctx.mes("temp worker group requirement")?;
+                                ctx.mes("for various safety reasons.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            ctx.mes("Great, you're just")?;
+                            ctx.mes("in time. We just met")?;
+                            ctx.mes("the minimum 5 temp group")?;
+                            ctx.mes("requirement, so we'll open")?;
+                            ctx.mes("the gate to the 3rd Floor soon.")?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("The gate to the 3rd Floor")?;
+                            ctx.mes("will close shortly, so enter it")?;
+                            ctx.mes("as soon as you can. We have")?;
+                            ctx.mes("to close it quickly because we")?;
+                            ctx.mes("can't have the tower monsters")?;
+                            ctx.mes("entering the lower floors...")?;
+                            if op(get(ctx, "thana_tower")?, ">", n(3))?.truthy() {
+                                ctx.next()?;
+                                ctx.mes("^4d4dffBurled is smiling lightly so that only I notice.")?;
+                                ctx.mes("I nod, then watch him open the gate.^000000")?;
+                            }
+                            ctx.close()?;
+                            ctx.call(Function::DoNpcEvent, vec![s("3rdf_warp#tt::OnEnable")])?;
+                            return Err(END.into());
+                        }
+                        if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                        if m1 {
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("This gate is the only passage")?;
+                            ctx.mes("that connects to the 3rd Floor.")?;
+                            ctx.mes("After the 4th Floor, passages")?;
+                            ctx.mes("between floors only travel one")?;
+                            ctx.mes("way, meaning you can't exit the")?;
+                            ctx.mes("same way you that you entered.")?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("You see, there's a strange")?;
+                            ctx.mes("power that affects the 5th")?;
+                            ctx.mes("Floor, and all floors above,")?;
+                            ctx.mes("which doesn't allow people to")?;
+                            ctx.mes("backtrack through the passage in which they entered the floor.")?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("So if you ascend past the")?;
+                            ctx.mes("4th Floor, please be careful")?;
+                            ctx.mes("and make sure that you find")?;
+                            ctx.mes("a way to get back.")?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("The top is the 12th floor,")?;
+                            ctx.mes("and the monsters grow more powerful")?;
+                            ctx.mes("as you ascend the tower.")?;
+                            ctx.mes("The geographical features also change considerably.")?;
+                            ctx.next()?;
+                            ctx.mes("[Burled]")?;
+                            ctx.mes("Because the higher levels are")?;
+                            ctx.mes("too dangerous, we only open the")?;
+                            ctx.mes("3rd Floor Gate when 5 or more")?;
+                            ctx.mes("are gathered here. Therefore,")?;
+                            ctx.mes("you may need to wait if less")?;
+                            ctx.mes("than 5 temps have gathered.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        if !m1 && eq(&sw1, &n(3)) { m1 = true; }
+                        if m1 {
+                            if op(get(ctx, "thana_tower")?, "<", n(3))?.truthy() {
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("...?")?;
+                                ctx.mes("Do you have any questions?")?;
+                                ctx.next()?;
+                                if op(n(select(ctx, &["About the development.", "The relationship of Cool Event Corporation and Rekenber Corporation.", "Nope."])?), "==", n(3))?.truthy() {
+                                    ctx.mes("[Burled]")?;
+                                    ctx.mes("Take care.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("...um, you're quite curious.")?;
+                                ctx.mes("If you want to know more, would you do me a favor?")?;
+                                ctx.mes("Since you asked for our confidential info...")?;
+                                ctx.next()?;
+                                if op(n(select(ctx, &["Really? Don't make me afraid of it.", "Just tell me about it.", "I'll listen about it later."])?), "==", n(3))?.truthy() {
+                                    ctx.mes("[Burled]")?;
+                                    ctx.mes("As you wish...")?;
+                                    ctx.mes("Take care!")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("Haha. That's not a big deal.")?;
+                                ctx.mes("We, Cool Event, are the corporation that works in many areas of business.")?;
+                                ctx.mes("From simple events, guides for dungeons, and trading items.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("Though our business started as a small one, we've been getting bigger with assistance from the Rekenber Corporation.")?;
+                                ctx.mes("They suggested to develop this tower together.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("The Rekenber Corporation is only digging out the remains for studies.")?;
+                                ctx.mes("The rest would be made into sightseeing place, which Cool Event Corporation can manage well.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("It's the biggest business ever.")?;
+                                ctx.mes("Also quite profitable as tourist attractions.")?;
+                                ctx.mes("But...")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("Considerably strong monsters spawn inside the tower.")?;
+                                ctx.mes("The monsters weren't spawned there before.")?;
+                                ctx.mes("The day after that happened...")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("...anyway, there were some accidently spawned monsters and some troubles...")?;
+                                ctx.mes("We and the Rekenber Corporation are in shock.")?;
+                                ctx.mes("We were influenced economically, but the more serious thing is...")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("Many staff involved in development are")?;
+                                ctx.mes("sacrificing themselves by coming to 3rd floor.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("While we've pumped our all into the business, that accident happened...")?;
+                                ctx.mes("We eventually merged with the Rekenber Corporation.")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("The development is on hold temporarily.")?;
+                                ctx.mes("Recruiting adventurers to defeat monsters...")?;
+                                ctx.mes("Isn't this funny?")?;
+                                ctx.next()?;
+                                ctx.mes("[Burled]")?;
+                                ctx.mes("No matter what happened there, they wouldn't be hurt.")?;
+                                ctx.mes("Even if they don't get at the root of the accident....")?;
+                                ctx.next()?;
+                                'b2: {
+                                    let sw2 = n(select(ctx, &["Oh...", "What accident are you referring to?"])?);
+                                    let mut m2 = false;
+                                    let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                                    if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                                    if m2 {
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("Yes, it's not that big of a deal. Haha....")?;
+                                        ctx.mes("If we are working here like this....")?;
+                                        ctx.mes("we would know about the death of animals.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("Cool Event Corporation is considered the follower...")?;
+                                        ctx.mes("They don't clear up how many people")?;
+                                        ctx.mes("died or any reasons for it.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("Now you're curious about this case.")?;
+                                        ctx.mes("What do they sacrifice for?")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("I talked a lot.")?;
+                                        ctx.mes("Sorry, I am not supposed to talk about this case like this...")?;
+                                        ctx.mes("I've been quite concerned about it, that's all.")?;
+                                        set(ctx, "thana_tower", n(3))?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                    if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                                    if m2 {
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("If you promise me that")?;
+                                        ctx.mes("you will do me a favor...")?;
+                                        ctx.next()?;
+                                        'b3: {
+                                            let sw3 = n(select(ctx, &["Ok! I will.", "No, I won't."])?);
+                                            let mut m3 = false;
+                                            let d3 = !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                                            if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                                            if m3 {
+                                                npc_11912(ctx, LABEL_L_REQUEST, vec![])?;
+                                                ctx.next()?;
+                                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                ctx.mes("(What's the accident...?")?;
+                                                ctx.mes("He might let me know later...)")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                                            if m3 {
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("...there is no way...")?;
+                                                ctx.mes("They request you to explore the internal part.")?;
+                                                ctx.mes("You're employed for this exploration.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if op(get(ctx, "thana_tower")?, "==", n(3))?.truthy() {
+                                    npc_11912(ctx, LABEL_L_REQUEST, vec![])?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if op(get(ctx, "thana_tower")?, "==", n(4))?.truthy() {
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("Rekenber Corporation must have another intention,")?;
+                                        ctx.mes("since they don't seem interested in the tower much.")?;
+                                        ctx.mes("I want to know their intention.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("This tower is sealed and separated from the outside.")?;
+                                        ctx.mes("We need to break those seals, explore inside and develop it.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Burled]")?;
+                                        ctx.mes("We are developing the 3rd and 4th floors now...")?;
+                                        ctx.mes("There are still seals there.")?;
+                                        ctx.mes("You can find out some clues when you search around them.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        if (op(get(ctx, "thana_tower")?, ">", n(4))?.truthy() && op(get(ctx, "thana_tower")?, "<", n(9))?.truthy()) {
+                                            ctx.mes("[Burled]")?;
+                                            ctx.mes("The magical key and messages?")?;
+                                            ctx.mes("...we absolutely haven't learned all the tower's secrets...")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Burled]")?;
+                                            ctx.mes("Who made the seals?")?;
+                                            ctx.mes("...can you investigate more?")?;
+                                            ctx.mes("There must be definitive evidence...")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            if op(get(ctx, "thana_tower")?, "==", n(9))?.truthy() {
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("Any new progress?")?;
+                                                ctx.next()?;
+                                                let choice = select(ctx, &["I found Varmunt's Journal..."])?;
+                                                ctx.write("@menu", n(choice))?;
+                                                ctx.mes("- You show him Varmunt's Journal.")?;
+                                                ctx.mes("Burled reads it. -")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("...I recognize this.")?;
+                                                ctx.mes("This is the hologragh of the wise man Varmunt.")?;
+                                                ctx.mes("Regenschirm from Rekenber's huge research institute has...")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("...isn't this the one they are looking for now?!")?;
+                                                ctx.mes("Isn't their mission to find out Varmunt's research materials...?")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("For assisting uncompleted research...")?;
+                                                ctx.mes("Varmunt's research materials are needed...")?;
+                                                ctx.mes("...so their mission isn't just an investigation of the tower.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("Something to get as an advantage...")?;
+                                                ctx.mes("Even they don't know where it is...")?;
+                                                ctx.mes("...anyways, this is the one of their main objects.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("It's absolutely great. The wise man Varmunt's belongings. How unbelievable!")?;
+                                                ctx.mes("Now, what do we do with this?")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("Originally everything we found out in this tower was under control of the Rekenber Corporation.")?;
+                                                ctx.mes("This is supposed to theirs, but...")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes(op(op(s("How would you like to keep this, "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("?"))?.text())?;
+                                                ctx.mes("Definitely this should be a secret.")?;
+                                                ctx.mes("...um, this is a little revenge for them.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("I can guess that there are several secrets in this tower through this note.")?;
+                                                ctx.mes(op(op(s("This secret should be disclosed by you, "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(", before Rekenber does."))?.text())?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("No matter how much power they obtain... they won't get to know about this tower...")?;
+                                                ctx.mes("Haha...")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("...haha...")?;
+                                                ctx.mes("I feel a bit relieved.")?;
+                                                ctx.mes("Thanks.")?;
+                                                ctx.mes("This isn't much, but here's a return present.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes(op(op(s("I hope that these will be useful for you, "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("."))?.text())?;
+                                                ctx.next()?;
+                                                ctx.mes("- Burled gives you the note and an Old Violet Box. -")?;
+                                                ctx.mes(" ")?;
+                                                ctx.mes("^4d4dffYou acquire one Old Violet Box,")?;
+                                                ctx.mes("as well as a little EXP.^000000")?;
+                                                set(ctx, "thana_tower", n(10))?;
+                                                ctx.call(Function::CompleteQuest, vec![n(7053)])?;
+                                                ctx.call(Function::GetExperience, vec![n(120000), n(10000)])?;
+                                                ctx.call(Function::GetItem, vec![n(617), n(1)])?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                ctx.mes("[Burled]")?;
+                                                ctx.mes("Are you keeping the secrets well?")?;
+                                                ctx.mes("Is there a Phantom on the top of this tower?")?;
+                                                if op(ctx.call(Function::Rand, vec![n(3)])?, "==", n(1))?.truthy() {
+                                                    ctx.mes("You look tired. This isn't a big deal, but it's for you.")?;
+                                                    npc_skill(ctx, s("AL_HEAL"), n(11), n(50), n(70))?;
+                                                }
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    pc = 1;
+                }
+                1 => {
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("Ah, it's not that difficult.")?;
+                    ctx.mes("After you explore the tower, let me know in detail anything you learn.")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("...I can't believe the Rekenber Corporation. Many colleagues and friends died for them.")?;
+                    ctx.mes("But the Rekenber Corporation doesn't expose the reason they are dead.")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("The conditions were bad for us from beginning...")?;
+                    ctx.mes("All of the developed places except research materials would be turned into tourist attractions...")?;
+                    ctx.mes("Honestly, all the personnel are from Cool Event Corp.")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("They know about it as well.")?;
+                    ctx.mes("This business needs much sacrifice as well as personnel who are up for it.")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("Now I don't feel victimized anymore, but I just want to know what drives these accidents...")?;
+                    ctx.mes("^4d4dffWhat makes us victimized...?^000000")?;
+                    ctx.mes("That's what I want to know.")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("What's this tower?")?;
+                    ctx.mes("Why did they develop this dangerous place?")?;
+                    ctx.mes("And for what? Should my colleagues be dead for it?")?;
+                    ctx.next()?;
+                    ctx.mes("[Burled]")?;
+                    ctx.mes("I seriously want to know about it.")?;
+                    ctx.mes("Why they must sacrifice themselves...")?;
+                    ctx.mes("Let me know...")?;
+                    ctx.next()?;
+                    ctx.mes("He seriously wants to know about it.")?;
+                    ctx.mes("His hands are trembling now...")?;
+                    ctx.mes("I nodd without answering.")?;
+                    set(ctx, "thana_tower", n(4))?;
+                    ctx.call(Function::SetQuest, vec![n(7048)])?;
+                    return Ok(n(0));
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_11913(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
@@ -2719,6 +3255,8 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
         11909 => npc_call(npc_11909(ctx, 0, vec![])),
         11910 => npc_call(npc_11910(ctx, 0, vec![])),
+        11911 => npc_call(npc_11911(ctx, 0, vec![])),
+        11912 => npc_call(npc_11912(ctx, 0, vec![])),
         11913 => npc_call(npc_11913(ctx, 0, vec![])),
         11915 => npc_call(npc_11915(ctx, 0, vec![])),
         11916 => npc_call(npc_11916(ctx, 0, vec![])),
@@ -2752,116 +3290,116 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        102177 => npc_call(npc_11909(ctx, 1, vec![])),
-        102178 => npc_call(npc_11913(ctx, 1, vec![])),
-        102179 => npc_call(npc_11913(ctx, 2, vec![])),
-        102180 => npc_call(npc_11913(ctx, 3, vec![])),
-        102181 => npc_call(npc_11913(ctx, 4, vec![])),
-        102182 => npc_call(npc_11915(ctx, 1, vec![])),
-        102183 => npc_call(npc_11916(ctx, 1, vec![])),
-        102184 => npc_call(npc_11917(ctx, 1, vec![])),
-        102185 => npc_call(npc_11918(ctx, 1, vec![])),
-        102186 => npc_call(npc_11919(ctx, 1, vec![])),
-        102187 => npc_call(npc_11919(ctx, 2, vec![])),
-        102188 => npc_call(npc_11919(ctx, 3, vec![])),
-        102189 => npc_call(npc_11919(ctx, 4, vec![])),
-        102190 => npc_call(npc_11919(ctx, 5, vec![])),
-        102191 => npc_call(npc_11919(ctx, 6, vec![])),
-        102192 => npc_call(npc_11919(ctx, 7, vec![])),
-        102193 => npc_call(npc_11920(ctx, 1, vec![])),
-        102194 => npc_call(npc_11920(ctx, 2, vec![])),
-        102195 => npc_call(npc_11920(ctx, 3, vec![])),
-        102196 => npc_call(npc_11921(ctx, 1, vec![])),
-        102197 => npc_call(npc_11921(ctx, 2, vec![])),
-        102198 => npc_call(npc_11921(ctx, 3, vec![])),
-        102199 => npc_call(npc_11922(ctx, 1, vec![])),
-        102200 => npc_call(npc_11922(ctx, 2, vec![])),
-        102201 => npc_call(npc_11922(ctx, 3, vec![])),
-        102202 => npc_call(npc_11923(ctx, 1, vec![])),
-        102203 => npc_call(npc_11923(ctx, 2, vec![])),
-        102204 => npc_call(npc_11923(ctx, 3, vec![])),
-        102205 => npc_call(npc_11929(ctx, 1, vec![])),
-        102206 => npc_call(npc_11929(ctx, 2, vec![])),
-        102207 => npc_call(npc_11929(ctx, 3, vec![])),
-        102208 => npc_call(npc_11929(ctx, 4, vec![])),
-        102209 => npc_call(npc_11929(ctx, 5, vec![])),
-        102210 => npc_call(npc_11929(ctx, 6, vec![])),
-        102211 => npc_call(npc_11929(ctx, 7, vec![])),
-        102212 => npc_call(npc_11929(ctx, 8, vec![])),
-        102213 => npc_call(npc_11930(ctx, 1, vec![])),
-        102214 => npc_call(npc_11930(ctx, 2, vec![])),
-        102215 => npc_call(npc_11930(ctx, 3, vec![])),
-        102216 => npc_call(npc_11930(ctx, 4, vec![])),
-        102217 => npc_call(npc_11930(ctx, 5, vec![])),
-        102218 => npc_call(npc_11930(ctx, 6, vec![])),
-        102219 => npc_call(npc_11930(ctx, 7, vec![])),
-        102220 => npc_call(npc_11930(ctx, 8, vec![])),
-        102221 => npc_call(npc_11931(ctx, 1, vec![])),
-        102222 => npc_call(npc_11931(ctx, 2, vec![])),
-        102223 => npc_call(npc_11931(ctx, 3, vec![])),
-        102224 => npc_call(npc_11931(ctx, 4, vec![])),
-        102225 => npc_call(npc_11931(ctx, 5, vec![])),
-        102226 => npc_call(npc_11931(ctx, 6, vec![])),
-        102227 => npc_call(npc_11931(ctx, 7, vec![])),
-        102228 => npc_call(npc_11931(ctx, 8, vec![])),
-        102229 => npc_call(npc_11932(ctx, 1, vec![])),
-        102230 => npc_call(npc_11932(ctx, 2, vec![])),
-        102231 => npc_call(npc_11932(ctx, 3, vec![])),
-        102232 => npc_call(npc_11932(ctx, 4, vec![])),
-        102233 => npc_call(npc_11932(ctx, 5, vec![])),
-        102234 => npc_call(npc_11932(ctx, 6, vec![])),
-        102235 => npc_call(npc_11932(ctx, 7, vec![])),
-        102236 => npc_call(npc_11932(ctx, 8, vec![])),
-        102237 => npc_call(npc_11933(ctx, 1, vec![])),
-        102238 => npc_call(npc_11933(ctx, 2, vec![])),
-        102239 => npc_call(npc_11933(ctx, 3, vec![])),
-        102240 => npc_call(npc_11933(ctx, 4, vec![])),
-        102241 => npc_call(npc_11933(ctx, 5, vec![])),
-        102242 => npc_call(npc_11933(ctx, 6, vec![])),
-        102243 => npc_call(npc_11933(ctx, 7, vec![])),
-        102244 => npc_call(npc_11933(ctx, 8, vec![])),
-        102245 => npc_call(npc_11934(ctx, 1, vec![])),
-        102246 => npc_call(npc_11934(ctx, 2, vec![])),
-        102247 => npc_call(npc_11934(ctx, 3, vec![])),
-        102248 => npc_call(npc_11934(ctx, 4, vec![])),
-        102249 => npc_call(npc_11934(ctx, 5, vec![])),
-        102250 => npc_call(npc_11934(ctx, 6, vec![])),
-        102251 => npc_call(npc_11934(ctx, 7, vec![])),
-        102252 => npc_call(npc_11934(ctx, 8, vec![])),
-        102253 => npc_call(npc_11935(ctx, 1, vec![])),
-        102254 => npc_call(npc_11935(ctx, 2, vec![])),
-        102255 => npc_call(npc_11935(ctx, 3, vec![])),
-        102256 => npc_call(npc_11935(ctx, 4, vec![])),
-        102257 => npc_call(npc_11936(ctx, 1, vec![])),
-        102258 => npc_call(npc_11936(ctx, 2, vec![])),
-        102259 => npc_call(npc_11936(ctx, 3, vec![])),
-        102260 => npc_call(npc_11936(ctx, 4, vec![])),
-        102261 => npc_call(npc_11936(ctx, 5, vec![])),
-        102262 => npc_call(npc_11936(ctx, 6, vec![])),
-        102263 => npc_call(npc_11936(ctx, 7, vec![])),
-        102264 => npc_call(npc_11936(ctx, 8, vec![])),
-        102265 => npc_call(npc_11936(ctx, 9, vec![])),
-        102266 => npc_call(npc_11937(ctx, 1, vec![])),
-        102267 => npc_call(npc_11937(ctx, 2, vec![])),
-        102268 => npc_call(npc_11937(ctx, 3, vec![])),
-        102269 => npc_call(npc_11938(ctx, 1, vec![])),
-        102270 => npc_call(npc_11938(ctx, 2, vec![])),
-        102271 => npc_call(npc_11939(ctx, 1, vec![])),
-        102272 => npc_call(npc_11939(ctx, 2, vec![])),
-        102273 => npc_call(npc_11939(ctx, 3, vec![])),
-        102274 => npc_call(npc_11939(ctx, 4, vec![])),
-        102275 => npc_call(npc_11939(ctx, 5, vec![])),
-        102276 => npc_call(npc_11939(ctx, 6, vec![])),
-        102277 => npc_call(npc_11939(ctx, 7, vec![])),
-        102278 => npc_call(npc_11939(ctx, 8, vec![])),
-        102279 => npc_call(npc_11939(ctx, 9, vec![])),
-        102280 => npc_call(npc_11939(ctx, 10, vec![])),
-        102281 => npc_call(npc_11939(ctx, 11, vec![])),
-        102282 => npc_call(npc_11939(ctx, 12, vec![])),
-        102283 => npc_call(npc_11939(ctx, 13, vec![])),
-        102284 => npc_call(npc_11939(ctx, 14, vec![])),
-        102285 => npc_call(npc_11939(ctx, 15, vec![])),
-        102286 => npc_call(npc_11940(ctx, 1, vec![])),
+        102192 => npc_call(npc_11909(ctx, 1, vec![])),
+        102193 => npc_call(npc_11913(ctx, 1, vec![])),
+        102194 => npc_call(npc_11913(ctx, 2, vec![])),
+        102195 => npc_call(npc_11913(ctx, 3, vec![])),
+        102196 => npc_call(npc_11913(ctx, 4, vec![])),
+        102197 => npc_call(npc_11915(ctx, 1, vec![])),
+        102198 => npc_call(npc_11916(ctx, 1, vec![])),
+        102199 => npc_call(npc_11917(ctx, 1, vec![])),
+        102200 => npc_call(npc_11918(ctx, 1, vec![])),
+        102201 => npc_call(npc_11919(ctx, 1, vec![])),
+        102202 => npc_call(npc_11919(ctx, 2, vec![])),
+        102203 => npc_call(npc_11919(ctx, 3, vec![])),
+        102204 => npc_call(npc_11919(ctx, 4, vec![])),
+        102205 => npc_call(npc_11919(ctx, 5, vec![])),
+        102206 => npc_call(npc_11919(ctx, 6, vec![])),
+        102207 => npc_call(npc_11919(ctx, 7, vec![])),
+        102208 => npc_call(npc_11920(ctx, 1, vec![])),
+        102209 => npc_call(npc_11920(ctx, 2, vec![])),
+        102210 => npc_call(npc_11920(ctx, 3, vec![])),
+        102211 => npc_call(npc_11921(ctx, 1, vec![])),
+        102212 => npc_call(npc_11921(ctx, 2, vec![])),
+        102213 => npc_call(npc_11921(ctx, 3, vec![])),
+        102214 => npc_call(npc_11922(ctx, 1, vec![])),
+        102215 => npc_call(npc_11922(ctx, 2, vec![])),
+        102216 => npc_call(npc_11922(ctx, 3, vec![])),
+        102217 => npc_call(npc_11923(ctx, 1, vec![])),
+        102218 => npc_call(npc_11923(ctx, 2, vec![])),
+        102219 => npc_call(npc_11923(ctx, 3, vec![])),
+        102220 => npc_call(npc_11929(ctx, 1, vec![])),
+        102221 => npc_call(npc_11929(ctx, 2, vec![])),
+        102222 => npc_call(npc_11929(ctx, 3, vec![])),
+        102223 => npc_call(npc_11929(ctx, 4, vec![])),
+        102224 => npc_call(npc_11929(ctx, 5, vec![])),
+        102225 => npc_call(npc_11929(ctx, 6, vec![])),
+        102226 => npc_call(npc_11929(ctx, 7, vec![])),
+        102227 => npc_call(npc_11929(ctx, 8, vec![])),
+        102228 => npc_call(npc_11930(ctx, 1, vec![])),
+        102229 => npc_call(npc_11930(ctx, 2, vec![])),
+        102230 => npc_call(npc_11930(ctx, 3, vec![])),
+        102231 => npc_call(npc_11930(ctx, 4, vec![])),
+        102232 => npc_call(npc_11930(ctx, 5, vec![])),
+        102233 => npc_call(npc_11930(ctx, 6, vec![])),
+        102234 => npc_call(npc_11930(ctx, 7, vec![])),
+        102235 => npc_call(npc_11930(ctx, 8, vec![])),
+        102236 => npc_call(npc_11931(ctx, 1, vec![])),
+        102237 => npc_call(npc_11931(ctx, 2, vec![])),
+        102238 => npc_call(npc_11931(ctx, 3, vec![])),
+        102239 => npc_call(npc_11931(ctx, 4, vec![])),
+        102240 => npc_call(npc_11931(ctx, 5, vec![])),
+        102241 => npc_call(npc_11931(ctx, 6, vec![])),
+        102242 => npc_call(npc_11931(ctx, 7, vec![])),
+        102243 => npc_call(npc_11931(ctx, 8, vec![])),
+        102244 => npc_call(npc_11932(ctx, 1, vec![])),
+        102245 => npc_call(npc_11932(ctx, 2, vec![])),
+        102246 => npc_call(npc_11932(ctx, 3, vec![])),
+        102247 => npc_call(npc_11932(ctx, 4, vec![])),
+        102248 => npc_call(npc_11932(ctx, 5, vec![])),
+        102249 => npc_call(npc_11932(ctx, 6, vec![])),
+        102250 => npc_call(npc_11932(ctx, 7, vec![])),
+        102251 => npc_call(npc_11932(ctx, 8, vec![])),
+        102252 => npc_call(npc_11933(ctx, 1, vec![])),
+        102253 => npc_call(npc_11933(ctx, 2, vec![])),
+        102254 => npc_call(npc_11933(ctx, 3, vec![])),
+        102255 => npc_call(npc_11933(ctx, 4, vec![])),
+        102256 => npc_call(npc_11933(ctx, 5, vec![])),
+        102257 => npc_call(npc_11933(ctx, 6, vec![])),
+        102258 => npc_call(npc_11933(ctx, 7, vec![])),
+        102259 => npc_call(npc_11933(ctx, 8, vec![])),
+        102260 => npc_call(npc_11934(ctx, 1, vec![])),
+        102261 => npc_call(npc_11934(ctx, 2, vec![])),
+        102262 => npc_call(npc_11934(ctx, 3, vec![])),
+        102263 => npc_call(npc_11934(ctx, 4, vec![])),
+        102264 => npc_call(npc_11934(ctx, 5, vec![])),
+        102265 => npc_call(npc_11934(ctx, 6, vec![])),
+        102266 => npc_call(npc_11934(ctx, 7, vec![])),
+        102267 => npc_call(npc_11934(ctx, 8, vec![])),
+        102268 => npc_call(npc_11935(ctx, 1, vec![])),
+        102269 => npc_call(npc_11935(ctx, 2, vec![])),
+        102270 => npc_call(npc_11935(ctx, 3, vec![])),
+        102271 => npc_call(npc_11935(ctx, 4, vec![])),
+        102272 => npc_call(npc_11936(ctx, 1, vec![])),
+        102273 => npc_call(npc_11936(ctx, 2, vec![])),
+        102274 => npc_call(npc_11936(ctx, 3, vec![])),
+        102275 => npc_call(npc_11936(ctx, 4, vec![])),
+        102276 => npc_call(npc_11936(ctx, 5, vec![])),
+        102277 => npc_call(npc_11936(ctx, 6, vec![])),
+        102278 => npc_call(npc_11936(ctx, 7, vec![])),
+        102279 => npc_call(npc_11936(ctx, 8, vec![])),
+        102280 => npc_call(npc_11936(ctx, 9, vec![])),
+        102281 => npc_call(npc_11937(ctx, 1, vec![])),
+        102282 => npc_call(npc_11937(ctx, 2, vec![])),
+        102283 => npc_call(npc_11937(ctx, 3, vec![])),
+        102284 => npc_call(npc_11938(ctx, 1, vec![])),
+        102285 => npc_call(npc_11938(ctx, 2, vec![])),
+        102286 => npc_call(npc_11939(ctx, 1, vec![])),
+        102287 => npc_call(npc_11939(ctx, 2, vec![])),
+        102288 => npc_call(npc_11939(ctx, 3, vec![])),
+        102289 => npc_call(npc_11939(ctx, 4, vec![])),
+        102290 => npc_call(npc_11939(ctx, 5, vec![])),
+        102291 => npc_call(npc_11939(ctx, 6, vec![])),
+        102292 => npc_call(npc_11939(ctx, 7, vec![])),
+        102293 => npc_call(npc_11939(ctx, 8, vec![])),
+        102294 => npc_call(npc_11939(ctx, 9, vec![])),
+        102295 => npc_call(npc_11939(ctx, 10, vec![])),
+        102296 => npc_call(npc_11939(ctx, 11, vec![])),
+        102297 => npc_call(npc_11939(ctx, 12, vec![])),
+        102298 => npc_call(npc_11939(ctx, 13, vec![])),
+        102299 => npc_call(npc_11939(ctx, 14, vec![])),
+        102300 => npc_call(npc_11939(ctx, 15, vec![])),
+        102301 => npc_call(npc_11940(ctx, 1, vec![])),
         _ => None,
     }
 }

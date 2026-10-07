@@ -10,6 +10,94 @@ pub(crate) fn fn_73_f_sexmes(ctx: &Context, mut pc: usize, args: Vec<Value>) -> 
     Ok(n(0))
 }
 
+pub(crate) fn fn_86_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_format_s = s("");
+    let mut l_i = n(0);
+    let mut l_index = n(0);
+    let mut l_result_s = s("");
+    let mut l_size = n(0);
+    let mut l_str_s = s("");
+    let mut l_strlen = n(0);
+    let mut l_suffix_s: Vec<Value> = Vec::new();
+    let mut l_tmp_s: Vec<Value> = Vec::new();
+    let _ = pc;
+    l_str_s = arg(&args, 0, n(0));
+    if countstr(l_str_s.clone(), s(" "))?.truthy() {
+        l_tmp_s = explode(l_str_s.clone(), s(" "))?;
+        l_size = n(l_tmp_s.len() as i32);
+        if ((compare(l_str_s.clone(), s(" of "))?.truthy() || compare(l_str_s.clone(), s(" in "))?.truthy()) || compare(l_str_s.clone(), s(" on "))?.truthy()) {
+            l_i = n(1);
+            'l1: loop {
+                if !op(l_i.clone(), "<", l_size.clone())?.truthy() { break; }
+                'b1: {
+                    if (op(strlen(local_get(&l_tmp_s, &l_i.clone(), true))?, "==", n(2))?.truthy() && compare(s("of|in|on"), local_get(&l_tmp_s, &l_i.clone(), true))?.truthy()) {
+                        break 'l1;
+                    }
+                    l_index = op(l_index.clone(), "+", n(1))?;
+                }
+                l_i = op(l_i.clone(), "+", n(1))?;
+            }
+        } else {
+            l_index = op(l_size.clone(), "-", n(1))?;
+        }
+        l_str_s = local_get(&l_tmp_s, &l_index.clone(), true);
+        local_set(&mut l_tmp_s, &l_index.clone(), s("%s"), true);
+        l_format_s = implode(&l_tmp_s, s(" "))?;
+    } else {
+        l_format_s = s("%s");
+    }
+    l_strlen = strlen(l_str_s.clone())?;
+    if op(l_strlen.clone(), "<", n(3))?.truthy() {
+        return Ok((if arg(&args, 1, n(0)).truthy() { strtoupper(sprintf(l_format_s.clone(), vec![l_str_s.clone()])?)? } else { sprintf(l_format_s.clone(), vec![l_str_s.clone()])? }));
+    }
+    let base = n(0).number_value()?;
+    local_set(&mut l_suffix_s, &n(base + 0), charat(l_str_s.clone(), op(l_strlen.clone(), "-", n(1))?)?, true);
+    local_set(&mut l_suffix_s, &n(base + 1), substr(l_str_s.clone(), op(l_strlen.clone(), "-", n(2))?, op(l_strlen.clone(), "-", n(1))?)?, true);
+    if !compare(s("abcdefghijklmnopqrstuvwxyz"), local_get(&l_suffix_s, &n(0), true))?.truthy() {
+        l_result_s = l_str_s.clone();
+    } else {
+        if compare(s("fish|glasses|sunglasses|clothes|boots|shoes|greaves|sandals|wings|ears"), l_str_s.clone())?.truthy() {
+            l_result_s = l_str_s.clone();
+        } else {
+            if ((((op(local_get(&l_suffix_s, &n(0), true), "==", s("s"))?.truthy() || op(local_get(&l_suffix_s, &n(0), true), "==", s("x"))?.truthy()) || op(local_get(&l_suffix_s, &n(0), true), "==", s("z"))?.truthy()) || op(local_get(&l_suffix_s, &n(1), true), "==", s("ch"))?.truthy()) || op(local_get(&l_suffix_s, &n(1), true), "==", s("sh"))?.truthy()) {
+                l_result_s = op(l_str_s.clone(), "+", s("es"))?;
+            } else {
+                if ((op(local_get(&l_suffix_s, &n(0), true), "==", s("f"))?.truthy() || op(local_get(&l_suffix_s, &n(1), true), "==", s("fe"))?.truthy()) && op(local_get(&l_suffix_s, &n(1), true), "!=", s("ff"))?.truthy()) {
+                    if compare(s("belief|cliff|chief|dwarf|grief|gulf|proof|roof"), l_str_s.clone())?.truthy() {
+                        l_result_s = op(l_str_s.clone(), "+", s("s"))?;
+                    } else {
+                        l_result_s = op(substr(l_str_s.clone(), n(0), op(op(l_strlen.clone(), "-", n(2))?, "-", op(local_get(&l_suffix_s, &n(1), true), "==", s("fe"))?)?)?, "+", s("ves"))?;
+                    }
+                } else {
+                    if (op(local_get(&l_suffix_s, &n(0), true), "==", s("y"))?.truthy() && !compare(s("aeiou"), charat(local_get(&l_suffix_s, &n(1), true), n(0))?)?.truthy()) {
+                        l_result_s = op(delchar(l_str_s.clone(), op(l_strlen.clone(), "-", n(1))?)?, "+", s("ies"))?;
+                    } else {
+                        if (op(local_get(&l_suffix_s, &n(0), true), "==", s("o"))?.truthy() && compare(s("buffalo|domino|echo|grotto|halo|hero|mango|mosquito|potato|tomato|tornado|torpedo|veto|volcano"), l_str_s.clone())?.truthy()) {
+                            l_result_s = op(l_str_s.clone(), "+", s("es"))?;
+                        } else {
+                            l_result_s = op(l_str_s.clone(), "+", s("s"))?;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return Ok((if arg(&args, 1, n(0)).truthy() { strtoupper(sprintf(l_format_s.clone(), vec![l_result_s.clone()])?)? } else { sprintf(l_format_s.clone(), vec![l_result_s.clone()])? }));
+    Ok(n(0))
+}
+
+pub(crate) fn fn_87_f_insertplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    return Ok(sprintf(arg(&args, 3, s("%d %s")), vec![arg(&args, 0, n(0)), (if op(arg(&args, 0, n(0)), "==", n(1))?.truthy() { arg(&args, 1, n(0)) } else { super::m_other_global_functions::fn_86_f_getplural(ctx, 0, vec![arg(&args, 1, n(0)), arg(&args, 2, n(0))])? })])?);
+    Ok(n(0))
+}
+
+pub(crate) fn fn_92_f_canopenstorage(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    return Ok(n(i32::from((!n(1).truthy() || !(op(ctx.call(Function::GetSkillLv, vec![s("NV_BASIC")])?, "<", n(6))?.truthy() && op(ctx.call(Function::GetSkillLv, vec![s("SU_BASIC_SKILL")])?, "<", n(1))?.truthy())))));
+    Ok(n(0))
+}
+
 fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
     Some(finish(result))
 }

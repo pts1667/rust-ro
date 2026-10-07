@@ -7041,6 +7041,334 @@ fn npc_10880(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_10881(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_input_s = s("");
+    let _ = pc;
+    if op(ctx.call(Function::CheckWeight, vec![n(908), n(70)])?, "==", n(0))?.truthy() {
+        ctx.mes("^3355FFWait a second!")?;
+        ctx.mes("Right now, you're carrying")?;
+        ctx.mes("too many things with you.")?;
+        ctx.mes("Please come back after")?;
+        ctx.mes("using the Kafra Service")?;
+        ctx.mes("to store some of your items.^000000")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "BaseLevel")?, "<", n(60))?.truthy() {
+        ctx.mes("[Calla]")?;
+        ctx.mes("Hello adventurer.")?;
+        ctx.mes("Our city must just be")?;
+        ctx.mes("another place where")?;
+        ctx.mes("you'll stay no longer")?;
+        ctx.mes("than a few days.")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("You must have so much")?;
+        ctx.mes("freedom. I envy you. I can't")?;
+        ctx.mes("do what I want to do. I don't")?;
+        ctx.mes("even have the courage to tell")?;
+        ctx.mes("my family what I really want,")?;
+        ctx.mes("much less change things here...")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("How is it like?")?;
+        ctx.mes("Going wherever you")?;
+        ctx.mes("please, following your")?;
+        ctx.mes("heart's true desire?")?;
+        ctx.mes("What I would give to")?;
+        ctx.mes("be able to do that...")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "ein_loverq")?, "==", n(17))?.truthy() {
+        ctx.mes("[Calla]")?;
+        ctx.mes("Thank you so much!")?;
+        ctx.mes("I'll try my best to convince")?;
+        ctx.mes("my parents to accept our")?;
+        ctx.mes("relationship. It'll be hard,")?;
+        ctx.mes("but it's a good first step~")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I hope that we can all")?;
+        ctx.mes("work together to improve")?;
+        ctx.mes("relations between Einbech")?;
+        ctx.mes("and Einbroch. The hatred")?;
+        ctx.mes("between our towns must end...")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I really appreciate")?;
+        ctx.mes("what you've done for")?;
+        ctx.mes("all of us. I'll be praying")?;
+        ctx.mes("for your safety, adventurer.")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "ein_loverq")?, "==", n(16))?.truthy() {
+        ctx.mes("[Calla]")?;
+        ctx.mes("I just heard from my mother")?;
+        ctx.mes("that she's planning to have")?;
+        ctx.mes("tea with Klitzer! I'm sure that")?;
+        ctx.mes("I have you to thank for this~")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I never dreamed that")?;
+        ctx.mes("something as wonderful")?;
+        ctx.mes("as this could happen.")?;
+        ctx.mes("I'm so happy, I could cry...")?;
+        ctx.mes("I'll always be grateful")?;
+        ctx.mes("for what you've done.")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I feel like such a fool,")?;
+        ctx.mes("thinking it was all hopeless.")?;
+        ctx.mes("I'll be doing my best to have")?;
+        ctx.mes("my parents accept Klitzer and")?;
+        ctx.mes("someday we'll be married~")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("There isn't much that I can")?;
+        ctx.mes("give you, but I can show you")?;
+        ctx.mes("one of my family's secrets.")?;
+        ctx.mes("It's an invigorating massage")?;
+        ctx.mes("technique that makes you a lot")?;
+        ctx.mes("healthier in only ten seconds.")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Well, please take")?;
+        ctx.mes("off your equipment")?;
+        ctx.mes("and stand still while")?;
+        ctx.mes("I give the massage. It")?;
+        ctx.mes("might hurt a bit at first...")?;
+        ctx.call(Function::Nude, vec![])?;
+        ctx.next()?;
+        ctx.mes("^3355FF*Rub Rub Rub*")?;
+        ctx.mes("*Knead Knead Knead*")?;
+        ctx.mes("*Crrack C-c-c--c-crack*")?;
+        ctx.mes("*Crack Crack Crrrrrrack*")?;
+        ctx.mes("*Rub Crrraaaaaaaaaack*^000000")?;
+        ctx.next()?;
+        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+        ctx.mes("Ooooooooh...")?;
+        ctx.mes("I feel sooo")?;
+        ctx.mes("sore and yet")?;
+        ctx.mes("soooooo good.")?;
+        ctx.mes("Wait. Now I just")?;
+        ctx.mes("feel goooood~")?;
+        ctx.call(Function::PercentHeal, vec![n(100), n(0)])?;
+        set(ctx, "ein_loverq", n(17))?;
+        if n(0).truthy() {
+            if op(get(ctx, "BaseLevel")?, "<", n(41))?.truthy() {
+                ctx.call(Function::GetExperience, vec![n(61), n(0)])?;
+            } else {
+                if op(get(ctx, "BaseLevel")?, "<", n(61))?.truthy() {
+                    ctx.call(Function::GetExperience, vec![n(600), n(0)])?;
+                } else {
+                    if op(get(ctx, "BaseLevel")?, "<", n(81))?.truthy() {
+                        ctx.call(Function::GetExperience, vec![n(3000), n(0)])?;
+                    } else {
+                        if op(get(ctx, "BaseLevel")?, "<", n(99))?.truthy() {
+                            ctx.call(Function::GetExperience, vec![n(20000), n(0)])?;
+                        } else {
+                            ctx.call(Function::GetExperience, vec![n(30000), n(0)])?;
+                        }
+                    }
+                }
+            }
+        } else {
+            if op(get(ctx, "BaseLevel")?, "<", n(41))?.truthy() {
+                ctx.call(Function::GetExperience, vec![n(610), n(0)])?;
+            } else {
+                if op(get(ctx, "BaseLevel")?, "<", n(61))?.truthy() {
+                    ctx.call(Function::GetExperience, vec![n(6000), n(0)])?;
+                } else {
+                    if op(get(ctx, "BaseLevel")?, "<", n(81))?.truthy() {
+                        ctx.call(Function::GetExperience, vec![n(30000), n(0)])?;
+                    } else {
+                        ctx.call(Function::GetExperience, vec![n(200000), n(0)])?;
+                    }
+                }
+            }
+        }
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("So how was it?")?;
+        ctx.mes("I hope it was refreshing.")?;
+        ctx.mes("Please understand that")?;
+        ctx.mes("it's the best thing I can")?;
+        ctx.mes("give you to show my gratitude.")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Once again,")?;
+        ctx.mes("thank you so")?;
+        ctx.mes(op(op(s("much, "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("."))?.text())?;
+        ctx.mes("I'll always pray for")?;
+        ctx.mes("your safety on your")?;
+        ctx.mes("your adventures~")?;
+        ctx.call(Function::CompleteQuest, vec![n(8088)])?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if (op(get(ctx, "ein_loverq")?, "==", n(5))?.truthy() && op(ctx.call(Function::CountItem, vec![n(712)])?, ">", n(0))?.truthy()) {
+        ctx.mes("[Calla]")?;
+        ctx.mes("You've spoken")?;
+        ctx.mes("with Klitzer? How")?;
+        ctx.mes("is he? What did he say?")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Oh...?")?;
+        ctx.mes("He asked you to")?;
+        ctx.mes("deliver this flower")?;
+        ctx.mes("to me? How sweet~")?;
+        ctx.mes("Thank you very much,")?;
+        ctx.mes("kind adventurer~")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Ah, I'm so rude!")?;
+        ctx.mes("I've been calling you")?;
+        ctx.mes("''adventurer'' this whole")?;
+        ctx.mes("time you've been helping")?;
+        ctx.mes("me! Would you please")?;
+        ctx.mes("tell me your name?")?;
+        ctx.next()?;
+        let input = ctx.call(Function::InputString, vec![])?;
+        l_input_s = input;
+        if op(l_input_s.clone(), "==", ctx.call(Function::StrCharInfo, vec![n(0)])?)?.truthy() {
+            ctx.mes("[Calla]")?;
+            ctx.mes(op(op(s("Ah, "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("!"))?.text())?;
+            ctx.mes("Such a lovely name~")?;
+            ctx.mes("I promise that I won't ever")?;
+            ctx.mes("forget it. Oh, and if you pass by Einbech, would you thank Klitzer for the flower for me please?")?;
+            ctx.next()?;
+            ctx.mes("[Calla]")?;
+            ctx.mes("A-and... And...")?;
+            ctx.mes("Please tell him that")?;
+            ctx.mes("I really miss him a lot.")?;
+            ctx.mes("^333333*Sob Sob...*^000000")?;
+            ctx.call(Function::DelItem, vec![n(712), n(1)])?;
+            set(ctx, "ein_loverq", n(6))?;
+            ctx.call(Function::ChangeQuest, vec![n(8079), n(8080)])?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            ctx.mes("[Calla]")?;
+            ctx.mes("I'm sorry...")?;
+            ctx.mes("I didn't catch that.")?;
+            ctx.mes("Would you please tell")?;
+            ctx.mes("me your name again?")?;
+            ctx.close()?;
+            return Err(END.into());
+        }
+    }
+    if op(get(ctx, "ein_loverq")?, "==", n(4))?.truthy() {
+        ctx.mes("[Calla]")?;
+        ctx.mes("Oh my god...")?;
+        ctx.mes("Are you alright?")?;
+        ctx.mes("I just found out that")?;
+        ctx.mes("you ran into my father!")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("By all means,")?;
+        ctx.mes("try to avoid my dad!")?;
+        ctx.mes("He doesn't trust anyone")?;
+        ctx.mes("who's not considered part")?;
+        ctx.mes("of the upper class, even")?;
+        ctx.mes("adventurers like you!")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Would you please")?;
+        ctx.mes("take this Violin and")?;
+        ctx.mes("try to make it to Klitzer")?;
+        ctx.mes("this time? Thank you")?;
+        ctx.mes("for your help~")?;
+        set(ctx, "ein_loverq", n(3))?;
+        ctx.call(Function::ChangeQuest, vec![n(8078), n(8077)])?;
+        ctx.call(Function::GetItem, vec![n(1901), n(1)])?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if (op(get(ctx, "ein_loverq")?, "==", n(3))?.truthy() || op(get(ctx, "ein_loverq")?, "==", n(5))?.truthy()) {
+        ctx.mes("[Calla]")?;
+        ctx.mes("Oh, please send my")?;
+        ctx.mes("regards to Klitzer for me.")?;
+        ctx.mes("I wish I could comfort")?;
+        ctx.mes("him in person, but this")?;
+        ctx.mes("is the best I can do for now.")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    if op(get(ctx, "ein_loverq")?, "==", n(2))?.truthy() {
+        ctx.mes("[Calla]")?;
+        ctx.mes("You're the adventurer")?;
+        ctx.mes("from before, aren't you?")?;
+        ctx.mes("Sadly, there isn't much")?;
+        ctx.mes("to do around here. This")?;
+        ctx.mes("place is basically like")?;
+        ctx.mes("a prison to me...")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Oh, you've met Klitzer?")?;
+        ctx.mes("Isn't he so kind, and such")?;
+        ctx.mes("a perfect gentleman?")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I really wish I could")?;
+        ctx.mes("see him, but it's almost")?;
+        ctx.mes("impossible. My parents think")?;
+        ctx.mes("he's not good enough for me,")?;
+        ctx.mes("but they're wrong! What am")?;
+        ctx.mes("I going to do? Oh, Klitzer...")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("Well, maybe I can't see")?;
+        ctx.mes("him, but would you give")?;
+        ctx.mes("my violin to Klitzer for me?")?;
+        ctx.mes("I used to play this for him")?;
+        ctx.mes("all the time...")?;
+        ctx.next()?;
+        set(ctx, "ein_loverq", n(3))?;
+        ctx.call(Function::ChangeQuest, vec![n(8076), n(8077)])?;
+        ctx.call(Function::GetItem, vec![n(1901), n(1)])?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("I'm sorry to trouble you,")?;
+        ctx.mes("but please understand")?;
+        ctx.mes("that I want to comfort my")?;
+        ctx.mes("Klitzer in any way that")?;
+        ctx.mes("I possibly can. Thank")?;
+        ctx.mes("you so much, adventurer...")?;
+        ctx.close()?;
+        return Err(END.into());
+    } else {
+        ctx.mes("[Calla]")?;
+        ctx.mes("Hello adventurer.")?;
+        ctx.mes("Our city must just be")?;
+        ctx.mes("another place where")?;
+        ctx.mes("you'll stay no longer")?;
+        ctx.mes("than a few days.")?;
+        ctx.next()?;
+        ctx.mes("[Calla]")?;
+        ctx.mes("You must have so much")?;
+        ctx.mes("freedom. I envy you. I can't")?;
+        ctx.mes("do what I want to do. I don't")?;
+        ctx.mes("even have the courage to tell")?;
+        ctx.mes("my family what I really want,")?;
+        ctx.mes("much less change things here...")?;
+        ctx.next()?;
+        if op(get(ctx, "ein_loverq")?, "==", n(0))?.truthy() {
+            set(ctx, "ein_loverq", n(1))?;
+        }
+        ctx.mes("[Calla]")?;
+        ctx.mes("How is it like?")?;
+        ctx.mes("Going wherever you")?;
+        ctx.mes("please, following your")?;
+        ctx.mes("heart's true desire?")?;
+        ctx.mes("What I would give to")?;
+        ctx.mes("be able to do that...")?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    Ok(n(0))
+}
+
 fn npc_10882(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input_s = s("");
     let _ = pc;
@@ -8419,6 +8747,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10878 => npc_call(npc_10878(ctx, 0, vec![])),
         10879 => npc_call(npc_10879(ctx, 0, vec![])),
         10880 => npc_call(npc_10880(ctx, 0, vec![])),
+        10881 => npc_call(npc_10881(ctx, 0, vec![])),
         10882 => npc_call(npc_10882(ctx, 0, vec![])),
         10883 => npc_call(npc_10883(ctx, 0, vec![])),
         10884 => npc_call(npc_10884(ctx, 0, vec![])),
@@ -8435,13 +8764,13 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101042 => npc_call(npc_10860(ctx, 1, vec![])),
-        101043 => npc_call(npc_10860(ctx, 2, vec![])),
-        101044 => npc_call(npc_10860(ctx, 3, vec![])),
-        101045 => npc_call(npc_10861(ctx, 1, vec![])),
-        101046 => npc_call(npc_10878(ctx, 1, vec![])),
-        101047 => npc_call(npc_10880(ctx, 1, vec![])),
-        101048 => npc_call(npc_10883(ctx, 1, vec![])),
+        101053 => npc_call(npc_10860(ctx, 1, vec![])),
+        101054 => npc_call(npc_10860(ctx, 2, vec![])),
+        101055 => npc_call(npc_10860(ctx, 3, vec![])),
+        101056 => npc_call(npc_10861(ctx, 1, vec![])),
+        101057 => npc_call(npc_10878(ctx, 1, vec![])),
+        101058 => npc_call(npc_10880(ctx, 1, vec![])),
+        101059 => npc_call(npc_10883(ctx, 1, vec![])),
         _ => None,
     }
 }

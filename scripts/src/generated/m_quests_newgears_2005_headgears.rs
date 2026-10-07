@@ -1550,6 +1550,239 @@ fn npc_10348(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10349(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    if op(get(ctx, "zlmaskq")?, "==", n(0))?.truthy() {
+        ctx.mes("[Zealotus]")?;
+        ctx.mes("Kneel, worm!")?;
+        ctx.mes("As ruler of this")?;
+        ctx.mes("Underground Prison,")?;
+        ctx.mes("I command all who step")?;
+        ctx.mes("into my private realm!")?;
+        ctx.next()?;
+        ctx.mes("[Zealotus]")?;
+        ctx.mes("Resist, and you shall be")?;
+        ctx.mes("punished! Grovel and kiss")?;
+        ctx.mes("my feet, and perhaps you")?;
+        ctx.mes("might be spared. Hohohohoho!")?;
+        ctx.next()?;
+        'b1: {
+            let sw1 = n(select(ctx, &["Oh, your highness!", "Whatever."])?);
+            let mut m1 = false;
+            let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+            if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+            if m1 {
+                ctx.mes("[Zealotus]")?;
+                ctx.mes("The submissive woman is")?;
+                ctx.mes("nothing but an ideal dream")?;
+                ctx.mes("for the arrogant male! A true")?;
+                ctx.mes("woman revels in her power to")?;
+                ctx.mes("have her man do her bidding!")?;
+                ctx.next()?;
+                'b2: {
+                    let sw2 = n(select(ctx, &["Yes, it's so true!", "Boooo!"])?);
+                    let mut m2 = false;
+                    let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                    if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                    if m2 {
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("However, in my lust for power, I may have inadventently crushed")?;
+                        ctx.mes("the spirits of my beloved a little too harshly. His pride crumbled,")?;
+                        ctx.mes("my man even cowers in front of the humans! It pains me to see it.")?;
+                        ctx.next()?;
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("It is beneath me to ask")?;
+                        ctx.mes("this of you, but it will take")?;
+                        ctx.mes("a human like you to make")?;
+                        ctx.mes("him remember who he truly is,")?;
+                        ctx.mes("a proud creature of darkness")?;
+                        ctx.mes("who should fear only me!")?;
+                        ctx.next()?;
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("Human. I offer you a small")?;
+                        ctx.mes("share of my power if you can")?;
+                        ctx.mes("take the pathetic, weeping lump")?;
+                        ctx.mes("of monster crying in the corner")?;
+                        ctx.mes("of this prison and make him")?;
+                        ctx.mes("realize his true nature.")?;
+                        set(ctx, "zlmaskq", n(1))?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                    if m2 {
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("You dirty, dirty human...")?;
+                        ctx.mes("How dare you have an ")?;
+                        ctx.mes("opinion different than mine!")?;
+                        ctx.mes("No matter. The day will come")?;
+                        ctx.mes("when all of your race shall")?;
+                        ctx.mes("address me only as \"queen.\"")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                }
+            }
+            if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+            if m1 {
+                ctx.mes("[Zealotus]")?;
+                ctx.mes("Mortal simpleton!")?;
+                ctx.mes("Bah! The mocking of")?;
+                ctx.mes("a boorish cur is worthless")?;
+                ctx.mes("to me. I have all the time in")?;
+                ctx.mes("the world to grind your pride")?;
+                ctx.mes("to dust beneath my heels.")?;
+                ctx.close()?;
+                return Err(END.into());
+            }
+        }
+    } else {
+        if (op(get(ctx, "zlmaskq")?, ">", n(0))?.truthy() && op(get(ctx, "zlmaskq")?, "<", n(6))?.truthy()) {
+            ctx.mes("[Zealotus]")?;
+            ctx.mes("Hm. If my beloved is")?;
+            ctx.mes("acting stubborn or refuses")?;
+            ctx.mes("to listen, feel free to take")?;
+            ctx.mes("drastic measures. Just think")?;
+            ctx.mes("of what I would do in your")?;
+            ctx.mes("place. Ohohohohoho~!")?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if op(get(ctx, "zlmaskq")?, "==", n(6))?.truthy() {
+                ctx.mes("[Zealotus]")?;
+                ctx.mes("Ooh, you're back.")?;
+                ctx.mes("Phendark is certainly")?;
+                ctx.mes("back to his old self again,")?;
+                ctx.mes("thanks to your efforts, human.")?;
+                ctx.mes("Yes, his anger, his courage")?;
+                ctx.mes("and passion are all restored~")?;
+                ctx.next()?;
+                ctx.mes("[Zealotus]")?;
+                ctx.mes("As I promised, I shall")?;
+                ctx.mes("grant you a share of my")?;
+                ctx.mes("power. However, I will need")?;
+                ctx.mes("some items to form this minor")?;
+                ctx.mes("contract between you and me.")?;
+                ctx.next()?;
+                ctx.mes("[Zealotus]")?;
+                ctx.mes("I will need")?;
+                ctx.mes("^3131FF1 Cat's Eye^000000,")?;
+                ctx.mes("^3131FF1 Forbidden Red Candle^000000 and")?;
+                ctx.mes("^3131FF30 Worn-Out Magic Scrolls^000000.")?;
+                ctx.mes("Then, I can grant you a measure")?;
+                ctx.mes("of my power as I've promised.")?;
+                set(ctx, "zlmaskq", n(7))?;
+                ctx.close()?;
+                return Err(END.into());
+            } else {
+                if op(get(ctx, "zlmaskq")?, "==", n(7))?.truthy() {
+                    if ((ctx.call(Function::CountItem, vec![n(7263)])?.truthy() && ctx.call(Function::CountItem, vec![n(660)])?.truthy()) && op(ctx.call(Function::CountItem, vec![n(7099)])?, ">", n(29))?.truthy()) {
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("I see that you have")?;
+                        ctx.mes("brought what I need to")?;
+                        ctx.mes("complete the contract")?;
+                        ctx.mes("between you and me,")?;
+                        ctx.mes("human. Let's begin...")?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFZealotus takes the red")?;
+                        ctx.mes("candle you've given her and")?;
+                        ctx.mes("drips the wax into her open")?;
+                        ctx.mes("palm. The Cat's Eye begins")?;
+                        ctx.mes("to glow with an eerie light.^000000")?;
+                        ctx.next()?;
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("Now, place your index")?;
+                        ctx.mes("finger into my palm so")?;
+                        ctx.mes("that we may complete the")?;
+                        ctx.mes("final step of this contract...")?;
+                        ctx.next()?;
+                        'b3: {
+                            let sw3 = n(select(ctx, &["Don't complete the contract.", "Complete the contract."])?);
+                            let mut m3 = false;
+                            let d3 = !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                            if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                            if m3 {
+                                ctx.mes("[Zealotus]")?;
+                                ctx.mes("Hm? What are you")?;
+                                ctx.mes("afraid of? This is a")?;
+                                ctx.mes("minor contract, so")?;
+                                ctx.mes("you are not selling me")?;
+                                ctx.mes("your soul, or anything")?;
+                                ctx.mes("else for that matter.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                            if m3 {
+                                ctx.mes("[Zealotus]")?;
+                                ctx.mes("I, Zealotus, as ruler")?;
+                                ctx.mes("of this realm, seal this")?;
+                                ctx.mes("eternal contract with this")?;
+                                ctx.mes("Forbidden Red Candle.")?;
+                                ctx.next()?;
+                                ctx.mes("[Zealotus]")?;
+                                ctx.mes(op(op(s(""), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(" will"))?.text())?;
+                                ctx.mes("forever have a share")?;
+                                ctx.mes("in my power. Those that")?;
+                                ctx.mes("bow to me must also bow")?;
+                                ctx.mes(op(op(s("to "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(". It shall be done."))?.text())?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_DEVIL")?])?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_POISONHIT")?])?;
+                                ctx.next()?;
+                                ctx.mes("[Zealotus]")?;
+                                ctx.mes("Human, take this")?;
+                                ctx.mes("mask with you as an")?;
+                                ctx.mes("everlasting token of our")?;
+                                ctx.mes("contract. So long as you")?;
+                                ctx.mes("carry this, I will be at your")?;
+                                ctx.mes("side. So says Zealotus!")?;
+                                ctx.call(Function::DelItem, vec![n(7263), n(1)])?;
+                                ctx.call(Function::DelItem, vec![n(660), n(1)])?;
+                                ctx.call(Function::DelItem, vec![n(7099), n(30)])?;
+                                ctx.call(Function::GetNamedItem, vec![n(5121), ctx.call(Function::StrCharInfo, vec![n(0)])?])?;
+                                set(ctx, "zlmaskq", n(8))?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                    ctx.mes("[Zealotus]")?;
+                    ctx.mes("I will need")?;
+                    ctx.mes("^3131FF1 Cat's Eye^000000,")?;
+                    ctx.mes("^3131FF1 Forbidden Red Candle^000000 and")?;
+                    ctx.mes("^3131FF30 Worn-Out Magic Scrolls^000000.")?;
+                    ctx.mes("Then, I can grant you a measure")?;
+                    ctx.mes("of my power as I've promised.")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                } else {
+                    if op(get(ctx, "zlmaskq")?, "==", n(8))?.truthy() {
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("Ah, I greet you in")?;
+                        ctx.mes("peace, human. Behold,")?;
+                        ctx.mes("the splendor of our realm!")?;
+                        ctx.mes("Though, I do not blame you")?;
+                        ctx.mes("if you have no interest in")?;
+                        ctx.mes("commanding these Injustices...")?;
+                        ctx.next()?;
+                        ctx.mes("[Zealotus]")?;
+                        ctx.mes("Thanks to your help,")?;
+                        ctx.mes("my Phendark has returned")?;
+                        ctx.mes("to his old, monstrously")?;
+                        ctx.mes("passionate ways. Now I can")?;
+                        ctx.mes("show him the stinging love")?;
+                        ctx.mes("of my whip! Hohohohohoho!")?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_CHUP")?])?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                }
+            }
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_10350(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_phen_point = n(0);
     let _ = pc;
@@ -2312,6 +2545,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10346 => npc_call(npc_10346(ctx, 0, vec![])),
         10347 => npc_call(npc_10347(ctx, 0, vec![])),
         10348 => npc_call(npc_10348(ctx, 0, vec![])),
+        10349 => npc_call(npc_10349(ctx, 0, vec![])),
         10350 => npc_call(npc_10350(ctx, 0, vec![])),
         10351 => npc_call(npc_10351(ctx, 0, vec![])),
         10352 => npc_call(npc_10352(ctx, 0, vec![])),

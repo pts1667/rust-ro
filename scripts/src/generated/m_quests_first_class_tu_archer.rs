@@ -1603,6 +1603,262 @@ fn npc_10167(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10168(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    ctx.mes("[Acolyte]")?;
+    if op(get(ctx, "tu_archer01")?, "==", n(14))?.truthy() {
+        if (op(ctx.call(Function::GetTime, vec![constant(ctx, "DT_HOUR")?])?, ">=", n(18))?.truthy() && op(ctx.call(Function::GetTime, vec![constant(ctx, "DT_HOUR")?])?, "<", n(22))?.truthy()) {
+            ctx.mes("H-hello!")?;
+            ctx.mes("Umm, umm...")?;
+            ctx.mes("Are you R-Reidin Corse's")?;
+            ctx.mes("friend t-too?")?;
+            ctx.next()?;
+            ctx.mes("[Acolyte]")?;
+            ctx.mes("M-my name is Mafra.")?;
+            ctx.mes("Ever since he saved my life, Reidin has a-always been a good f-friend to me. He's such a great Archer")?;
+            ctx.mes("and a really nice person!")?;
+            ctx.next()?;
+            ctx.mes("[Acolyte]")?;
+            ctx.mes("Um, and...")?;
+            ctx.mes("Uh... Oh no~")?;
+            ctx.mes("What am I supposed")?;
+            ctx.mes("t-to tell you...?")?;
+            ctx.call(Function::Emotion, vec![constant(ctx, "ET_PROFUSELY_SWEAT")?])?;
+            ctx.next()?;
+            ctx.mes("[Acolyte]")?;
+            ctx.mes("Oh, since I'm training to be an Acolyte, I'm supposed to help out the people he's teaching. So...")?;
+            ctx.mes("Let's h-help each other train!")?;
+            ctx.mes("Um, is that okay?")?;
+            ctx.next()?;
+            'b1: {
+                let sw1 = n(select(ctx, &["Sure.", "No thanks.", "Reidin Corse is mine!"])?);
+                let mut m1 = false;
+                let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3));
+                if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                if m1 {
+                    ctx.mes("[Acolyte]")?;
+                    ctx.mes("Wow!")?;
+                    ctx.mes("Thank you, thank you!")?;
+                    ctx.mes("I''ll try my very best!")?;
+                    set(ctx, "tu_archer01", n(15))?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+                if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                if m1 {
+                    ctx.mes("[Acolyte]")?;
+                    ctx.mes("Oh... Oh.")?;
+                    ctx.mes("I'm so sorry.")?;
+                    ctx.mes("If you don't need")?;
+                    ctx.mes("my help, I guess")?;
+                    ctx.mes("that's alright...")?;
+                    ctx.call(Function::Emotion, vec![constant(ctx, "ET_CRY")?])?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+                if !m1 && eq(&sw1, &n(3)) { m1 = true; }
+                if m1 {
+                    ctx.mes("[Acolyte]")?;
+                    ctx.mes("Eh?!")?;
+                    ctx.mes("R-really?")?;
+                    ctx.mes("I guess he doesn't")?;
+                    ctx.mes("need to tell me if")?;
+                    ctx.mes("he already has a girlfriend...")?;
+                    ctx.next()?;
+                    ctx.mes("[Acolyte]")?;
+                    if op(get(ctx, "Sex")?, "==", constant(ctx, "SEX_MALE")?)?.truthy() {
+                        ctx.mes("W-wait!")?;
+                        ctx.mes("Y-you're a man!")?;
+                        ctx.mes("D-d-d-don't tease me")?;
+                        ctx.mes("like that! I'm serious!")?;
+                    } else {
+                        ctx.mes("And he's so brave")?;
+                        ctx.mes("and funny and smart.")?;
+                        ctx.mes("Y-you're lucky to have him.")?;
+                        ctx.mes("^333333*Sniff*^000000 I... I...")?;
+                        ctx.next()?;
+                        ctx.mes("[Acolyte]")?;
+                        ctx.mes("^333333*Sniffle*^000000")?;
+                        ctx.mes("I'll d-do my best to help you!")?;
+                        ctx.mes("I wish you both happiness! (Waaaaaah~!)")?;
+                    }
+                    set(ctx, "tu_archer01", n(15))?;
+                    ctx.close()?;
+                    return Err(END.into());
+                }
+            }
+        } else {
+            ctx.mes("^666666Zzzzz...^000000")?;
+            ctx.mes("Wh-wha...?")?;
+            ctx.mes("Who are you?")?;
+            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SLEEPATTACK")?])?;
+            ctx.next()?;
+            ctx.mes("[Acolyte]")?;
+            ctx.mes("Wait, I know...")?;
+            ctx.mes("Y-you're... ^666666*Yawn*^000000")?;
+            ctx.mes("So sleepy. Take this for now...")?;
+            'b2: {
+                let sw2 = ctx.call(Function::Rand, vec![n(4)])?;
+                let mut m2 = false;
+                let d2 = !eq(&sw2, &n(0)) && !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                if !m2 && eq(&sw2, &n(0)) { m2 = true; }
+                if m2 {
+                    npc_skill(ctx, s("AL_HEAL"), n(3), n(90), n(62))?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                if m2 {
+                    npc_skill(ctx, s("AL_HEAL"), n(9), n(90), n(62))?;
+                    break 'b2;
+                }
+                if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                if m2 {
+                    npc_skill(ctx, s("AL_HEAL"), n(8), n(90), n(62))?;
+                    break 'b2;
+                }
+            }
+            'b3: {
+                let sw3 = ctx.call(Function::Rand, vec![n(3)])?;
+                let mut m3 = false;
+                let d3 = !eq(&sw3, &n(0)) && !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                if !m3 && eq(&sw3, &n(0)) { m3 = true; }
+                if m3 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(1), n(0), n(0))?;
+                    break 'b3;
+                }
+                if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                if m3 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(5), n(0), n(0))?;
+                    break 'b3;
+                }
+                if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                if m3 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(10), n(0), n(0))?;
+                    break 'b3;
+                }
+            }
+            'b4: {
+                let sw4 = ctx.call(Function::Rand, vec![n(3)])?;
+                let mut m4 = false;
+                let d4 = !eq(&sw4, &n(0)) && !eq(&sw4, &n(1)) && !eq(&sw4, &n(2));
+                if !m4 && eq(&sw4, &n(0)) { m4 = true; }
+                if m4 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(1), n(0), n(0))?;
+                    break 'b4;
+                }
+                if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                if m4 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(5), n(0), n(0))?;
+                    break 'b4;
+                }
+                if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                if m4 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(10), n(0), n(0))?;
+                    break 'b4;
+                }
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+    } else {
+        if op(get(ctx, "tu_archer01")?, "==", n(15))?.truthy() {
+            if (op(ctx.call(Function::GetTime, vec![constant(ctx, "DT_HOUR")?])?, ">=", n(18))?.truthy() && op(ctx.call(Function::GetTime, vec![constant(ctx, "DT_HOUR")?])?, "<", n(22))?.truthy()) {
+                ctx.mes("^666666Zzzzz...^000000")?;
+                ctx.mes("Wh-wha...?")?;
+                ctx.mes("Who are you?")?;
+                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SLEEPATTACK")?])?;
+                ctx.next()?;
+                ctx.mes("[Acolyte]")?;
+                ctx.mes("Reidin Corse?")?;
+                ctx.mes("I can't believe")?;
+                ctx.mes("I feel asleep fo--")?;
+                ctx.mes("^666666Zzzzzzz...^000000")?;
+                ctx.next()?;
+                ctx.mes("[Acolyte]")?;
+                ctx.mes("^666666Zzzz^000000--Oooh!")?;
+                ctx.mes("J-just take this before")?;
+                ctx.mes("I fall asleep again~! ^666666*Yawn*^000000")?;
+            } else {
+                ctx.mes("Okay~!")?;
+                ctx.mes("Let me try")?;
+                ctx.mes("casting a spell")?;
+                ctx.mes("to help you! Yaa~p!")?;
+            }
+            'b5: {
+                let sw5 = ctx.call(Function::Rand, vec![n(4)])?;
+                let mut m5 = false;
+                let d5 = !eq(&sw5, &n(0)) && !eq(&sw5, &n(1)) && !eq(&sw5, &n(2));
+                if !m5 && eq(&sw5, &n(0)) { m5 = true; }
+                if m5 {
+                    npc_skill(ctx, s("AL_HEAL"), n(3), n(90), n(62))?;
+                    break 'b5;
+                }
+                if !m5 && eq(&sw5, &n(1)) { m5 = true; }
+                if m5 {
+                    npc_skill(ctx, s("AL_HEAL"), n(10), n(90), n(62))?;
+                    break 'b5;
+                }
+                if !m5 && eq(&sw5, &n(2)) { m5 = true; }
+                if m5 {
+                    npc_skill(ctx, s("AL_HEAL"), n(8), n(90), n(62))?;
+                    break 'b5;
+                }
+            }
+            'b6: {
+                let sw6 = ctx.call(Function::Rand, vec![n(3)])?;
+                let mut m6 = false;
+                let d6 = !eq(&sw6, &n(0)) && !eq(&sw6, &n(1)) && !eq(&sw6, &n(2));
+                if !m6 && eq(&sw6, &n(0)) { m6 = true; }
+                if m6 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(1), n(0), n(0))?;
+                    break 'b6;
+                }
+                if !m6 && eq(&sw6, &n(1)) { m6 = true; }
+                if m6 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(5), n(0), n(0))?;
+                    break 'b6;
+                }
+                if !m6 && eq(&sw6, &n(2)) { m6 = true; }
+                if m6 {
+                    npc_skill(ctx, s("AL_INCAGI"), n(10), n(0), n(0))?;
+                    break 'b6;
+                }
+            }
+            'b7: {
+                let sw7 = ctx.call(Function::Rand, vec![n(3)])?;
+                let mut m7 = false;
+                let d7 = !eq(&sw7, &n(0)) && !eq(&sw7, &n(1)) && !eq(&sw7, &n(2));
+                if !m7 && eq(&sw7, &n(0)) { m7 = true; }
+                if m7 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(1), n(0), n(0))?;
+                    break 'b7;
+                }
+                if !m7 && eq(&sw7, &n(1)) { m7 = true; }
+                if m7 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(5), n(0), n(0))?;
+                    break 'b7;
+                }
+                if !m7 && eq(&sw7, &n(2)) { m7 = true; }
+                if m7 {
+                    npc_skill(ctx, s("AL_BLESSING"), n(10), n(0), n(0))?;
+                    break 'b7;
+                }
+            }
+            ctx.close()?;
+            return Err(END.into());
+        }
+    }
+    ctx.mes("...")?;
+    ctx.mes("W-why does")?;
+    ctx.mes("traveling make")?;
+    ctx.mes("me sooo sleepy...?")?;
+    ctx.mes("^666666Zzzzzzzz...^000000")?;
+    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_SLEEPATTACK")?])?;
+    ctx.close()?;
+    return Err(END.into());
+    Ok(n(0))
+}
+
 fn npc_10169(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_alche_f = n(0);
     let mut l_alche_s = n(0);
@@ -2014,6 +2270,53 @@ fn npc_10174(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_10175(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    ctx.mes("[Bishop Maugins]")?;
+    if op(get(ctx, "tu_archer02")?, "==", n(7))?.truthy() {
+        ctx.mes("Greetings.")?;
+        ctx.mes("I doubt that you're here to change to the Monk job, but may I help you with something? Perhaps you're")?;
+        ctx.mes("here for a confession?")?;
+        ctx.next()?;
+        ctx.mes("[Bishop Maugins]")?;
+        ctx.mes("Hm? Work related to")?;
+        ctx.mes("the Palace? Yes, I'm in")?;
+        ctx.mes("charge of that area. So")?;
+        ctx.mes("how may I help you?")?;
+        ctx.next()?;
+        if op(n(select(ctx, &["Has something happened to the Kingdom?", "Nothing."])?), "==", n(1))?.truthy() {
+            ctx.mes("[Bishop Maugins]")?;
+            ctx.mes("...!!")?;
+            ctx.next()?;
+            ctx.mes("[Bishop Maugins]")?;
+            ctx.mes("...")?;
+            ctx.mes("......")?;
+            ctx.next()?;
+            ctx.mes("[Bishop Maugins]")?;
+            ctx.mes("Ho ho~")?;
+            ctx.mes("Of course not!")?;
+            ctx.mes("The king and I regularly write to each other, but I haven't heard of anything in particular. Please don't worry yourself.")?;
+            ctx.next()?;
+            set(ctx, "tu_archer02", n(8))?;
+        }
+        ctx.mes("[Bishop Maugins]")?;
+        ctx.mes("Good luck on")?;
+        ctx.mes("your journeys,")?;
+        ctx.mes("brave adventurer.")?;
+        npc_skill(ctx, s("AL_INCAGI"), n(10), n(0), n(0))?;
+        npc_skill(ctx, s("AL_BLESSING"), n(10), n(0), n(0))?;
+        ctx.close()?;
+        return Err(END.into());
+    }
+    ctx.mes("I'm sorry, but I have")?;
+    ctx.mes("some pressing matter")?;
+    ctx.mes("to think about right now.")?;
+    ctx.mes("Would you come back later?")?;
+    ctx.close()?;
+    return Err(END.into());
+    Ok(n(0))
+}
+
 fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
     Some(finish(result))
 }
@@ -2026,12 +2329,14 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10165 => npc_call(npc_10165(ctx, 0, vec![])),
         10166 => npc_call(npc_10166(ctx, 0, vec![])),
         10167 => npc_call(npc_10167(ctx, 0, vec![])),
+        10168 => npc_call(npc_10168(ctx, 0, vec![])),
         10169 => npc_call(npc_10169(ctx, 0, vec![])),
         10170 => npc_call(npc_10170(ctx, 0, vec![])),
         10171 => npc_call(npc_10171(ctx, 0, vec![])),
         10172 => npc_call(npc_10172(ctx, 0, vec![])),
         10173 => npc_call(npc_10173(ctx, 0, vec![])),
         10174 => npc_call(npc_10174(ctx, 0, vec![])),
+        10175 => npc_call(npc_10175(ctx, 0, vec![])),
         _ => None,
     }
 }

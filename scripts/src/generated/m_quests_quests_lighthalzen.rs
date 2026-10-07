@@ -8719,6 +8719,151 @@ fn npc_11202(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11203(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    if op(get(ctx, "lhz_boss")?, "<", n(11))?.truthy() {
+        ctx.mes("[Guard]")?;
+        ctx.mes("You are in the")?;
+        ctx.mes("President's House.")?;
+        ctx.mes("Arms are prohibited")?;
+        ctx.mes("without authorization in")?;
+        ctx.mes("this government building.")?;
+        ctx.mes("Thank you for your cooperation.")?;
+        ctx.close()?;
+        ctx.call(Function::Nude, vec![])?;
+        ctx.call(Function::Warp, vec![s("yuno_pre"), n(83), n(22)])?;
+        return Err(END.into());
+    } else {
+        if (op(get(ctx, "lhz_boss")?, "==", n(11))?.truthy() || op(get(ctx, "lhz_boss")?, "==", n(12))?.truthy()) {
+            if op(get(ctx, "lhz_boss")?, "==", n(12))?.truthy() {
+                set(ctx, "@visit_pre", ctx.call(Function::Rand, vec![n(1), n(10)])?)?;
+            }
+            if op(get(ctx, "@visit_pre")?, "==", n(7))?.truthy() {
+                ctx.mes("[?????]")?;
+                ctx.mes("I see.")?;
+                ctx.mes("Then...")?;
+                ctx.next()?;
+                ctx.mes("[????????]")?;
+                ctx.mes("Ummm....")?;
+                ctx.mes("Understood...")?;
+                ctx.mes("......")?;
+                ctx.next()?;
+                ctx.call(Function::EnableNpc, vec![s("A Fine Gentleman")])?;
+                ctx.next()?;
+                ctx.mes("[?????]")?;
+                ctx.mes("..........")?;
+                ctx.next()?;
+                ctx.mes("[Guard]")?;
+                ctx.mes("Ah, Mr. Keshnaar.")?;
+                ctx.mes("Are you leaving?")?;
+                ctx.next()?;
+                ctx.mes("[Keshnaar]")?;
+                ctx.mes("Yes, it's about time")?;
+                ctx.mes("for me to depart. Ah,")?;
+                ctx.mes("and may I ask who this")?;
+                if op(get(ctx, "Sex")?, "==", constant(ctx, "SEX_MALE")?)?.truthy() {
+                    ctx.mes("young gentleman here is?")?;
+                } else {
+                    ctx.mes("lovely young lady is?")?;
+                }
+                ctx.next()?;
+                ctx.mes("[Guard]")?;
+                ctx.mes("Mr. Keshnaar,")?;
+                ctx.mes(op(op(s("I present "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("."))?.text())?;
+                ctx.mes(op(op(s(""), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(", allow me"))?.text())?;
+                ctx.mes("to introduce Eridan Keshnaar.")?;
+                ctx.next()?;
+                ctx.mes("[Keshnaar]")?;
+                ctx.mes("A pleasure to meet you.")?;
+                ctx.mes("Now, if you would excuse")?;
+                ctx.mes("me, I have some business")?;
+                ctx.mes("to attend to. Good day~")?;
+                ctx.next()?;
+                ctx.mes("[Guard]")?;
+                ctx.mes("Take care,")?;
+                ctx.mes("Mr. Keshnaar.")?;
+                set(ctx, "lhz_boss", n(13))?;
+                ctx.call(Function::DisableNpc, vec![s("A Fine Gentleman")])?;
+                ctx.close()?;
+                return Err(END.into());
+            }
+            ctx.mes("[Guard]")?;
+            ctx.mes("Please wait a moment.")?;
+            ctx.mes("Currently, the president")?;
+            ctx.mes("is seeing another guest.")?;
+            ctx.mes("Thank you for your patience.")?;
+            if op(get(ctx, "lhz_boss")?, "==", n(11))?.truthy() {
+                set(ctx, "lhz_boss", n(12))?;
+            }
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if op(get(ctx, "lhz_boss")?, "==", n(13))?.truthy() {
+                ctx.mes("[Guard]")?;
+                ctx.mes("Now you may enter")?;
+                ctx.mes("and speak with the")?;
+                ctx.mes("president. Thank you")?;
+                ctx.mes("for waiting all this time.")?;
+                ctx.next()?;
+                'b1: {
+                    let sw1 = n(select(ctx, &["Thank you.", "Who was that gentleman...?"])?);
+                    let mut m1 = false;
+                    let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                    if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                    if m1 {
+                        if op(get(ctx, "Sex")?, "==", constant(ctx, "SEX_MALE")?)?.truthy() {
+                            ctx.mes(op(op(s("A Mister "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(""))?.text())?;
+                        } else {
+                            if ctx.call(Function::GetPartnerId, vec![])?.truthy() {
+                                ctx.mes(op(op(s("A Missis "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(""))?.text())?;
+                            } else {
+                                ctx.mes(op(op(s("A Miss "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(""))?.text())?;
+                            }
+                        }
+                        ctx.mes("has arrived to see you now.")?;
+                        ctx.next()?;
+                        ctx.mes(".....")?;
+                        ctx.next()?;
+                        ctx.mes("[Mr. President]")?;
+                        ctx.mes("Oh, you're early!")?;
+                        ctx.mes("I'm sorry, but would you")?;
+                        ctx.mes("please wait one minute?")?;
+                        ctx.next()?;
+                        ctx.mes("[Guard]")?;
+                        ctx.mes("Yes, sir.")?;
+                        ctx.mes("My apologies, but would")?;
+                        ctx.mes("you please wait until the")?;
+                        ctx.mes("president is ready?")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                    if m1 {
+                        ctx.mes("[Guard]")?;
+                        ctx.mes("Oh, Mr. Keshnaar is the")?;
+                        ctx.mes("government negotiator from")?;
+                        ctx.mes("the Rekenber Corporation.")?;
+                        ctx.mes("He often visits the president")?;
+                        ctx.mes("to discuss various issues.")?;
+                        set(ctx, "lhz_boss", n(14))?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                }
+            } else {
+                ctx.mes("[Guard]")?;
+                ctx.mes("Greetings.")?;
+                ctx.mes("You may enter to")?;
+                ctx.mes("see the president.")?;
+                ctx.close()?;
+                ctx.call(Function::Warp, vec![s("yuno_pre"), n(78), n(69)])?;
+                return Err(END.into());
+            }
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_11204(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
@@ -12202,6 +12347,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11200 => npc_call(npc_11200(ctx, 0, vec![])),
         11201 => npc_call(npc_11201(ctx, 0, vec![])),
         11202 => npc_call(npc_11202(ctx, 0, vec![])),
+        11203 => npc_call(npc_11203(ctx, 0, vec![])),
         11204 => npc_call(npc_11204(ctx, 0, vec![])),
         11206 => npc_call(npc_11206(ctx, 0, vec![])),
         11207 => npc_call(npc_11207(ctx, 0, vec![])),
@@ -12239,63 +12385,63 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101706 => npc_call(npc_11143(ctx, 1, vec![])),
-        101707 => npc_call(npc_11143(ctx, 2, vec![])),
-        101708 => npc_call(npc_11143(ctx, 3, vec![])),
-        101709 => npc_call(npc_11162(ctx, 1, vec![])),
-        101710 => npc_call(npc_11163(ctx, 1, vec![])),
-        101711 => npc_call(npc_11164(ctx, 1, vec![])),
-        101712 => npc_call(npc_11164(ctx, 2, vec![])),
-        101713 => npc_call(npc_11165(ctx, 1, vec![])),
-        101714 => npc_call(npc_11165(ctx, 2, vec![])),
-        101715 => npc_call(npc_11171(ctx, 1, vec![])),
-        101716 => npc_call(npc_11172(ctx, 1, vec![])),
-        101717 => npc_call(npc_11173(ctx, 1, vec![])),
-        101718 => npc_call(npc_11174(ctx, 1, vec![])),
-        101719 => npc_call(npc_11175(ctx, 1, vec![])),
-        101720 => npc_call(npc_11176(ctx, 1, vec![])),
-        101721 => npc_call(npc_11177(ctx, 1, vec![])),
-        101722 => npc_call(npc_11178(ctx, 1, vec![])),
-        101723 => npc_call(npc_11179(ctx, 1, vec![])),
-        101724 => npc_call(npc_11180(ctx, 1, vec![])),
-        101725 => npc_call(npc_11183(ctx, 1, vec![])),
-        101726 => npc_call(npc_11185(ctx, 1, vec![])),
-        101727 => npc_call(npc_11188(ctx, 1, vec![])),
-        101728 => npc_call(npc_11189(ctx, 1, vec![])),
-        101729 => npc_call(npc_11195(ctx, 1, vec![])),
-        101730 => npc_call(npc_11196(ctx, 1, vec![])),
-        101731 => npc_call(npc_11200(ctx, 1, vec![])),
-        101732 => npc_call(npc_11204(ctx, 1, vec![])),
-        101733 => npc_call(npc_11206(ctx, 1, vec![])),
-        101734 => npc_call(npc_11207(ctx, 1, vec![])),
-        101735 => npc_call(npc_11208(ctx, 1, vec![])),
-        101736 => npc_call(npc_11211(ctx, 1, vec![])),
-        101737 => npc_call(npc_11212(ctx, 1, vec![])),
-        101738 => npc_call(npc_11213(ctx, 1, vec![])),
-        101739 => npc_call(npc_11214(ctx, 1, vec![])),
-        101740 => npc_call(npc_11218(ctx, 1, vec![])),
-        101741 => npc_call(npc_11218(ctx, 2, vec![])),
-        101742 => npc_call(npc_11218(ctx, 3, vec![])),
-        101743 => npc_call(npc_11218(ctx, 4, vec![])),
-        101744 => npc_call(npc_11218(ctx, 5, vec![])),
-        101745 => npc_call(npc_11232(ctx, 1, vec![])),
-        101746 => npc_call(npc_11232(ctx, 2, vec![])),
-        101747 => npc_call(npc_11234(ctx, 1, vec![])),
-        101748 => npc_call(npc_11234(ctx, 2, vec![])),
-        101749 => npc_call(npc_11234(ctx, 3, vec![])),
-        101750 => npc_call(npc_11234(ctx, 4, vec![])),
-        101751 => npc_call(npc_11234(ctx, 5, vec![])),
-        101752 => npc_call(npc_11235(ctx, 1, vec![])),
-        101753 => npc_call(npc_11235(ctx, 2, vec![])),
-        101754 => npc_call(npc_11235(ctx, 3, vec![])),
-        101755 => npc_call(npc_11235(ctx, 4, vec![])),
-        101756 => npc_call(npc_11235(ctx, 5, vec![])),
-        101757 => npc_call(npc_11236(ctx, 1, vec![])),
-        101758 => npc_call(npc_11236(ctx, 2, vec![])),
-        101759 => npc_call(npc_11236(ctx, 3, vec![])),
-        101760 => npc_call(npc_11236(ctx, 4, vec![])),
-        101761 => npc_call(npc_11237(ctx, 1, vec![])),
-        101762 => npc_call(npc_11238(ctx, 1, vec![])),
+        101717 => npc_call(npc_11143(ctx, 1, vec![])),
+        101718 => npc_call(npc_11143(ctx, 2, vec![])),
+        101719 => npc_call(npc_11143(ctx, 3, vec![])),
+        101720 => npc_call(npc_11162(ctx, 1, vec![])),
+        101721 => npc_call(npc_11163(ctx, 1, vec![])),
+        101722 => npc_call(npc_11164(ctx, 1, vec![])),
+        101723 => npc_call(npc_11164(ctx, 2, vec![])),
+        101724 => npc_call(npc_11165(ctx, 1, vec![])),
+        101725 => npc_call(npc_11165(ctx, 2, vec![])),
+        101726 => npc_call(npc_11171(ctx, 1, vec![])),
+        101727 => npc_call(npc_11172(ctx, 1, vec![])),
+        101728 => npc_call(npc_11173(ctx, 1, vec![])),
+        101729 => npc_call(npc_11174(ctx, 1, vec![])),
+        101730 => npc_call(npc_11175(ctx, 1, vec![])),
+        101731 => npc_call(npc_11176(ctx, 1, vec![])),
+        101732 => npc_call(npc_11177(ctx, 1, vec![])),
+        101733 => npc_call(npc_11178(ctx, 1, vec![])),
+        101734 => npc_call(npc_11179(ctx, 1, vec![])),
+        101735 => npc_call(npc_11180(ctx, 1, vec![])),
+        101736 => npc_call(npc_11183(ctx, 1, vec![])),
+        101737 => npc_call(npc_11185(ctx, 1, vec![])),
+        101738 => npc_call(npc_11188(ctx, 1, vec![])),
+        101739 => npc_call(npc_11189(ctx, 1, vec![])),
+        101740 => npc_call(npc_11195(ctx, 1, vec![])),
+        101741 => npc_call(npc_11196(ctx, 1, vec![])),
+        101742 => npc_call(npc_11200(ctx, 1, vec![])),
+        101743 => npc_call(npc_11204(ctx, 1, vec![])),
+        101744 => npc_call(npc_11206(ctx, 1, vec![])),
+        101745 => npc_call(npc_11207(ctx, 1, vec![])),
+        101746 => npc_call(npc_11208(ctx, 1, vec![])),
+        101747 => npc_call(npc_11211(ctx, 1, vec![])),
+        101748 => npc_call(npc_11212(ctx, 1, vec![])),
+        101749 => npc_call(npc_11213(ctx, 1, vec![])),
+        101750 => npc_call(npc_11214(ctx, 1, vec![])),
+        101751 => npc_call(npc_11218(ctx, 1, vec![])),
+        101752 => npc_call(npc_11218(ctx, 2, vec![])),
+        101753 => npc_call(npc_11218(ctx, 3, vec![])),
+        101754 => npc_call(npc_11218(ctx, 4, vec![])),
+        101755 => npc_call(npc_11218(ctx, 5, vec![])),
+        101756 => npc_call(npc_11232(ctx, 1, vec![])),
+        101757 => npc_call(npc_11232(ctx, 2, vec![])),
+        101758 => npc_call(npc_11234(ctx, 1, vec![])),
+        101759 => npc_call(npc_11234(ctx, 2, vec![])),
+        101760 => npc_call(npc_11234(ctx, 3, vec![])),
+        101761 => npc_call(npc_11234(ctx, 4, vec![])),
+        101762 => npc_call(npc_11234(ctx, 5, vec![])),
+        101763 => npc_call(npc_11235(ctx, 1, vec![])),
+        101764 => npc_call(npc_11235(ctx, 2, vec![])),
+        101765 => npc_call(npc_11235(ctx, 3, vec![])),
+        101766 => npc_call(npc_11235(ctx, 4, vec![])),
+        101767 => npc_call(npc_11235(ctx, 5, vec![])),
+        101768 => npc_call(npc_11236(ctx, 1, vec![])),
+        101769 => npc_call(npc_11236(ctx, 2, vec![])),
+        101770 => npc_call(npc_11236(ctx, 3, vec![])),
+        101771 => npc_call(npc_11236(ctx, 4, vec![])),
+        101772 => npc_call(npc_11237(ctx, 1, vec![])),
+        101773 => npc_call(npc_11238(ctx, 1, vec![])),
         _ => None,
     }
 }

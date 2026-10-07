@@ -3083,6 +3083,367 @@ fn npc_11576(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11577(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH: usize = 1;
+    const LABEL_ONTOUCHNPC: usize = 2;
+    const LABEL_ONMYMOBDEAD: usize = 3;
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(ctx.call(Function::CheckWeight, vec![n(908), n(200)])?, "==", n(0))?.truthy() {
+                        ctx.mes("^3355FFWait a second!")?;
+                        ctx.mes("Right now, you're carrying")?;
+                        ctx.mes("too many things with you.")?;
+                        ctx.mes("Please come back after")?;
+                        ctx.mes("using the Kafra Service")?;
+                        ctx.mes("to store some of your items.^000000")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(get(ctx, "ice_necklace_q")?, "==", n(1))?.truthy() {
+                        ctx.call(Function::Cutin, vec![s("ra_magic3"), n(2)])?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                        ctx.mes("[Man Stuck in Ice]")?;
+                        ctx.mes("H-hello?")?;
+                        ctx.mes("Hey! Hey, you!")?;
+                        ctx.mes("Help me break this")?;
+                        ctx.mes("ice! I need to get")?;
+                        ctx.mes("out of here!")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("How did you get")?;
+                        ctx.mes("stuck in there?")?;
+                        ctx.next()?;
+                        ctx.mes("[Man Stuck in Ice]")?;
+                        ctx.mes("I'll explain everything")?;
+                        ctx.mes("later! Just... Just get")?;
+                        ctx.mes("this ice off of me!.")?;
+                        ctx.next()?;
+                        if op(ctx.call(Function::GetSkillLv, vec![s("MG_FIREBOLT")])?, ">", n(0))?.truthy() {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_FIREBALL")?])?;
+                            ctx.mes("^3355FFYou cast Fire Bolt at")?;
+                            ctx.mes("the ice..^000000")?;
+                        } else {
+                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_HIT2")?])?;
+                            ctx.mes("^3355FFYou hammer at the")?;
+                            ctx.mes("ice with all your might.^000000")?;
+                        }
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("......")?;
+                        ctx.mes("........")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("I can't...")?;
+                        ctx.mes("I can't even scratch it")?;
+                        ctx.mes("Do you have any ideas?")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_CRY")?])?;
+                        ctx.mes("[Man Stuck in Ice]")?;
+                        ctx.mes("This is so humiliating...")?;
+                        ctx.mes("Me, the greatest mage")?;
+                        ctx.mes("of our age, Maheo, stuck")?;
+                        ctx.mes("in this pillar of ice.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Wait...")?;
+                        ctx.mes("You're Maheo?")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic1"), n(2)])?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_KIK")?])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("It's true. You're speaking to")?;
+                        ctx.mes("Maheo, the greatest mage,")?;
+                        ctx.mes("and master of arcane spells.")?;
+                        ctx.mes("I know magic that even High")?;
+                        ctx.mes("Wizards can never hope to")?;
+                        ctx.mes("learn in their lifetimes!")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic4"), n(2)])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Despite my greatness,")?;
+                        ctx.mes("I'm a humble man. See?")?;
+                        ctx.mes("That's why I always wear")?;
+                        ctx.mes("this Mage uniform...")?;
+                        ctx.mes("To remind myself of")?;
+                        ctx.mes("the value of humility.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("So how did you get")?;
+                        ctx.mes("stuck in all of this ice?")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic3"), n(2)])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Actually, this happened")?;
+                        ctx.mes("because I was too humble")?;
+                        ctx.mes("You see, I underestimated")?;
+                        ctx.mes("myself, and the devastating")?;
+                        ctx.mes("force of my own magic.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("...Huh?")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Yes, this wouldn't have")?;
+                        ctx.mes("happened if I wasn't so")?;
+                        ctx.mes("humble... Humble and kind.")?;
+                        ctx.mes("It all started when I thought")?;
+                        ctx.mes("of this cave and how people")?;
+                        ctx.mes("sometimes come here to get ice.")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("I then decided that")?;
+                        ctx.mes("I would exterminate these")?;
+                        ctx.mes("evil monsters for the good")?;
+                        ctx.mes("of the people! The citizens")?;
+                        ctx.mes("would feel protected, and")?;
+                        ctx.mes("I'd be recognized as a hero!")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Okay... I suppose")?;
+                        ctx.mes("that sounds normal")?;
+                        ctx.mes("enough. Go on.")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("I valiantly battled")?;
+                        ctx.mes("the Snowiers. They were")?;
+                        ctx.mes("no match for my magic!")?;
+                        ctx.mes("And so, I decided to just")?;
+                        ctx.mes("destroy all of them with")?;
+                        ctx.mes("one cast of a magic spell.")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("You know Meteor Storm?")?;
+                        ctx.mes("I know another spell like")?;
+                        ctx.mes("that... But it's two hundred")?;
+                        ctx.mes("times more powerful! Yes...")?;
+                        ctx.mes("It has the power of a million")?;
+                        ctx.mes("exploding suns! But then...")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_CRY")?])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("It was too powerful!")?;
+                        ctx.mes("There were tremors, and")?;
+                        ctx.mes("flying shards of ice, and")?;
+                        ctx.mes("all the flame caused my")?;
+                        ctx.mes("clothes to catch on fire!")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_SPARK")?, n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))])?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("You...")?;
+                        ctx.mes("you set fire")?;
+                        ctx.mes("to your clothes")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic2"), n(2)])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Yes, but not to worry.")?;
+                        ctx.mes("I quickly extinguished")?;
+                        ctx.mes("those flames with my")?;
+                        ctx.mes("powerful Frost Diver spell!")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic3"), n(2)])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("In hindsight...")?;
+                        ctx.mes("That may have")?;
+                        ctx.mes("been a mistake...")?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![s("ra_magic3"), n(2)])?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Enough about myself.")?;
+                        ctx.mes("What noble pursuit brings")?;
+                        ctx.mes("you to this place, adventurer?")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("I heard that you can")?;
+                        ctx.mes("polish the gems on this")?;
+                        ctx.mes("necklace with your magic,")?;
+                        ctx.mes("so I came here to find you.")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Verily, I can shine")?;
+                        ctx.mes("those gems so that they")?;
+                        ctx.mes("shine as brightly as a")?;
+                        ctx.mes("million exploding suns!")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("That is, as soon")?;
+                        ctx.mes("as I can get out")?;
+                        ctx.mes("of this ice. Hmm...")?;
+                        ctx.mes("But I doubt normal")?;
+                        ctx.mes("magic will be able")?;
+                        ctx.mes("to melt all of this.")?;
+                        ctx.next()?;
+                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                        ctx.mes("Then how are we")?;
+                        ctx.mes("supposed to get")?;
+                        ctx.mes("you out of there?")?;
+                        ctx.next()?;
+                        ctx.mes("[Maheo]")?;
+                        ctx.mes("Fear not. I'm sure")?;
+                        ctx.mes("that my master will know")?;
+                        ctx.mes("of a way to free me from")?;
+                        ctx.mes("this prison of ice. He can")?;
+                        ctx.mes("be found near Freya's Spring:")?;
+                        ctx.mes("beseech him on my behalf!")?;
+                        set(ctx, "ice_necklace_q", n(2))?;
+                        ctx.call(Function::ChangeQuest, vec![n(2109), n(2110)])?;
+                        ctx.close()?;
+                        ctx.call(Function::Cutin, vec![s(""), n(255)])?;
+                        return Err(END.into());
+                    } else {
+                        if (op(get(ctx, "ice_necklace_q")?, "==", n(2))?.truthy() || op(get(ctx, "ice_necklace_q")?, "==", n(3))?.truthy()) {
+                            ctx.mes("[Maheo]")?;
+                            ctx.mes("My master may not have")?;
+                            ctx.mes("my sheer talent, but he")?;
+                            ctx.mes("is very knowledgable in")?;
+                            ctx.mes("the ways of magic. Please...")?;
+                            ctx.mes("Ask him for help. He should")?;
+                            ctx.mes("be reading near Freya's Spring.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "ice_necklace_q")?, "==", n(4))?.truthy() {
+                                if op(ctx.call(Function::CountItem, vec![n(7569)])?, ">", n(0))?.truthy() {
+                                    if op(ctx.call(Function::CountItem, vec![n(7572)])?, ">", n(0))?.truthy() {
+                                        ctx.mes("[Maheo]")?;
+                                        ctx.mes("Oh, you're back!")?;
+                                        ctx.mes("So did my master have")?;
+                                        ctx.mes("any ideas on breaking")?;
+                                        ctx.mes("this cold prison of ice?")?;
+                                        ctx.next()?;
+                                    } else {
+                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                        ctx.mes("Oh, shoot! I left the necklace in the city! I will be right back!")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Maheo]")?;
+                                        ctx.mes("Hey, hey! Can't you just release me first?")?;
+                                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_CRY")?])?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                } else {
+                                    ctx.mes("[Maheo]")?;
+                                    ctx.mes("My master may not have")?;
+                                    ctx.mes("my sheer talent, but he")?;
+                                    ctx.mes("is very knowledgable in")?;
+                                    ctx.mes("the ways of magic. Please...")?;
+                                    ctx.mes("Ask him for help. He should")?;
+                                    ctx.mes("be reading near Freya's Spring.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("Well, he made this")?;
+                                ctx.mes("magic hammer which is")?;
+                                ctx.mes("supposed to be able to")?;
+                                ctx.mes("break this magic ice.")?;
+                                ctx.next()?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Of course!")?;
+                                ctx.mes("Why didn't I think of")?;
+                                ctx.mes("that? Great, now get")?;
+                                ctx.mes("me out of here please!")?;
+                                ctx.next()?;
+                                ctx.mes("^3355FFYou tightly gripped")?;
+                                ctx.mes("the Wind Hammer, and")?;
+                                ctx.mes("swung it down at the ice")?;
+                                ctx.mes("with all of your strength.^000000")?;
+                                ctx.next()?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_TEIHIT3")?])?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_FREEZE")?])?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_ICECRASH")?])?;
+                                ctx.mes("^3355FF*Pzzzzz*")?;
+                                ctx.mes("*CRASH!*^000000")?;
+                                ctx.next()?;
+                                ctx.call(Function::SetNpcDisplay, vec![s("Man Stuck in Ice#cave"), n(937)])?;
+                                ctx.call(Function::Emotion, vec![constant(ctx, "ET_SURPRISE")?])?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Finally...!")?;
+                                ctx.mes("After all of this")?;
+                                ctx.mes("time! I'm free!")?;
+                                ctx.next()?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_BEGINSPELL4")?])?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Now, all of the monsters")?;
+                                ctx.mes("in this cave will taste the")?;
+                                ctx.mes("wrath of the greatest mage in")?;
+                                ctx.mes("the world! I'll have my revenge,")?;
+                                ctx.mes("and give those beasts double")?;
+                                ctx.mes("the pain that they gave me!")?;
+                                ctx.next()?;
+                                ctx.call(Function::Monster, vec![s("ice_dun02"), n(108), n(109), s("Snowier"), n(1775), n(1), s("Man Stuck in Ice#cave::OnMyMobDead")])?;
+                                ctx.call(Function::Monster, vec![s("ice_dun02"), n(114), n(112), s("Snowier"), n(1775), n(1), s("Man Stuck in Ice#cave::OnMyMobDead")])?;
+                                ctx.call(Function::Monster, vec![s("ice_dun02"), n(126), n(105), s("Snowier"), n(1775), n(1), s("Man Stuck in Ice#cave::OnMyMobDead")])?;
+                                ctx.call(Function::Monster, vec![s("ice_dun02"), n(121), n(99), s("Snowier"), n(1775), n(1), s("Man Stuck in Ice#cave::OnMyMobDead")])?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_LORD")?])?;
+                                ctx.call(Function::KillMonster, vec![s("ice_dun02"), s("Man Stuck in Ice#cave::OnMyMobDead")])?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Muhahahahahahahaha!")?;
+                                ctx.next()?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Er, but first, I need to")?;
+                                ctx.mes("use my magic to clean")?;
+                                ctx.mes("that necklace of yours.")?;
+                                ctx.next()?;
+                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                ctx.mes("Here...")?;
+                                ctx.next()?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Oh! This was made by")?;
+                                ctx.mes("the Dwarves, wasn't it?")?;
+                                ctx.mes("It looks like they've made")?;
+                                ctx.mes("yet another masterpiece.")?;
+                                ctx.mes("Shame that this is so")?;
+                                ctx.mes("tarnished, though.")?;
+                                ctx.next()?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Let's see, now...")?;
+                                ctx.next()?;
+                                ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_FROSTWEAPON")?])?;
+                                ctx.mes("^3355FF*Ting*^000000")?;
+                                ctx.next()?;
+                                ctx.mes("[Maheo]")?;
+                                ctx.mes("Well, I suppose this")?;
+                                ctx.mes("is where we part ways.")?;
+                                ctx.mes("Here, take this as a gift...")?;
+                                ctx.mes("And please don't mention")?;
+                                ctx.mes("the fact that I trapped myself")?;
+                                ctx.mes("in ice to anyone else, okay?")?;
+                                set(ctx, "ice_necklace_q", n(5))?;
+                                ctx.call(Function::ChangeQuest, vec![n(2112), n(2113)])?;
+                                ctx.call(Function::DelItem, vec![n(7569), n(1)])?;
+                                ctx.call(Function::DelItem, vec![n(7572), n(1)])?;
+                                ctx.call(Function::GetItem, vec![n(7573), n(1)])?;
+                                ctx.call(Function::GetItem, vec![n(7574), n(4)])?;
+                                ctx.close()?;
+                                ctx.call(Function::Cutin, vec![s(""), n(255)])?;
+                                ctx.call(Function::SetNpcDisplay, vec![s("Man Stuck in Ice#cave"), n(924)])?;
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                    pc = 1;
+                }
+                1 => {
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::Emotion, vec![constant(ctx, "ET_FRET")?])?;
+                    ctx.call(Function::Emotion, vec![constant(ctx, "ET_KIK")?, ctx.call(Function::GetCharacterId, vec![n(3)])?])?;
+                    return Err(END.into());
+                    pc = 3;
+                }
+                3 => {
+                    return Err(END.into());
+                    pc = 4;
+                }
+            4 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_11578(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTIMER3600000: usize = 2;
@@ -8111,6 +8472,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11574 => npc_call(npc_11574(ctx, 0, vec![])),
         11575 => npc_call(npc_11575(ctx, 0, vec![])),
         11576 => npc_call(npc_11576(ctx, 0, vec![])),
+        11577 => npc_call(npc_11577(ctx, 0, vec![])),
         11578 => npc_call(npc_11578(ctx, 0, vec![])),
         11579 => npc_call(npc_11579(ctx, 0, vec![])),
         11580 => npc_call(npc_11580(ctx, 0, vec![])),
@@ -8163,61 +8525,64 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101962 => npc_call(npc_11573(ctx, 1, vec![])),
-        101963 => npc_call(npc_11574(ctx, 1, vec![])),
-        101964 => npc_call(npc_11578(ctx, 1, vec![])),
-        101965 => npc_call(npc_11578(ctx, 2, vec![])),
-        101966 => npc_call(npc_11578(ctx, 3, vec![])),
-        101967 => npc_call(npc_11578(ctx, 4, vec![])),
-        101968 => npc_call(npc_11580(ctx, 1, vec![])),
-        101969 => npc_call(npc_11585(ctx, 1, vec![])),
-        101970 => npc_call(npc_11585(ctx, 2, vec![])),
-        101971 => npc_call(npc_11585(ctx, 3, vec![])),
-        101972 => npc_call(npc_11585(ctx, 4, vec![])),
-        101973 => npc_call(npc_11585(ctx, 5, vec![])),
-        101974 => npc_call(npc_11585(ctx, 6, vec![])),
-        101975 => npc_call(npc_11585(ctx, 7, vec![])),
-        101976 => npc_call(npc_11585(ctx, 8, vec![])),
-        101977 => npc_call(npc_11585(ctx, 9, vec![])),
-        101978 => npc_call(npc_11586(ctx, 1, vec![])),
-        101979 => npc_call(npc_11586(ctx, 2, vec![])),
-        101980 => npc_call(npc_11586(ctx, 3, vec![])),
-        101981 => npc_call(npc_11586(ctx, 4, vec![])),
-        101982 => npc_call(npc_11586(ctx, 5, vec![])),
-        101983 => npc_call(npc_11587(ctx, 1, vec![])),
-        101984 => npc_call(npc_11587(ctx, 2, vec![])),
-        101985 => npc_call(npc_11588(ctx, 1, vec![])),
-        101986 => npc_call(npc_11588(ctx, 2, vec![])),
-        101987 => npc_call(npc_11589(ctx, 1, vec![])),
-        101988 => npc_call(npc_11589(ctx, 2, vec![])),
-        101989 => npc_call(npc_11590(ctx, 1, vec![])),
-        101990 => npc_call(npc_11590(ctx, 2, vec![])),
-        101991 => npc_call(npc_11591(ctx, 1, vec![])),
-        101992 => npc_call(npc_11591(ctx, 2, vec![])),
-        101993 => npc_call(npc_11592(ctx, 1, vec![])),
-        101994 => npc_call(npc_11595(ctx, 1, vec![])),
-        101995 => npc_call(npc_11597(ctx, 1, vec![])),
-        101996 => npc_call(npc_11598(ctx, 1, vec![])),
-        101997 => npc_call(npc_11599(ctx, 1, vec![])),
-        101998 => npc_call(npc_11600(ctx, 1, vec![])),
-        101999 => npc_call(npc_11601(ctx, 1, vec![])),
-        102000 => npc_call(npc_11602(ctx, 1, vec![])),
-        102001 => npc_call(npc_11607(ctx, 1, vec![])),
-        102002 => npc_call(npc_11608(ctx, 1, vec![])),
-        102003 => npc_call(npc_11614(ctx, 1, vec![])),
-        102004 => npc_call(npc_11614(ctx, 2, vec![])),
-        102005 => npc_call(npc_11614(ctx, 3, vec![])),
-        102006 => npc_call(npc_11615(ctx, 1, vec![])),
-        102007 => npc_call(npc_11616(ctx, 1, vec![])),
-        102008 => npc_call(npc_11617(ctx, 1, vec![])),
-        102009 => npc_call(npc_11618(ctx, 1, vec![])),
-        102010 => npc_call(npc_11619(ctx, 1, vec![])),
-        102011 => npc_call(npc_11620(ctx, 1, vec![])),
-        102012 => npc_call(npc_11621(ctx, 1, vec![])),
-        102013 => npc_call(npc_11622(ctx, 1, vec![])),
-        102014 => npc_call(npc_11622(ctx, 2, vec![])),
-        102015 => npc_call(npc_11622(ctx, 3, vec![])),
-        102016 => npc_call(npc_11623(ctx, 1, vec![])),
+        101974 => npc_call(npc_11573(ctx, 1, vec![])),
+        101975 => npc_call(npc_11574(ctx, 1, vec![])),
+        101976 => npc_call(npc_11577(ctx, 1, vec![])),
+        101977 => npc_call(npc_11577(ctx, 2, vec![])),
+        101978 => npc_call(npc_11577(ctx, 3, vec![])),
+        101979 => npc_call(npc_11578(ctx, 1, vec![])),
+        101980 => npc_call(npc_11578(ctx, 2, vec![])),
+        101981 => npc_call(npc_11578(ctx, 3, vec![])),
+        101982 => npc_call(npc_11578(ctx, 4, vec![])),
+        101983 => npc_call(npc_11580(ctx, 1, vec![])),
+        101984 => npc_call(npc_11585(ctx, 1, vec![])),
+        101985 => npc_call(npc_11585(ctx, 2, vec![])),
+        101986 => npc_call(npc_11585(ctx, 3, vec![])),
+        101987 => npc_call(npc_11585(ctx, 4, vec![])),
+        101988 => npc_call(npc_11585(ctx, 5, vec![])),
+        101989 => npc_call(npc_11585(ctx, 6, vec![])),
+        101990 => npc_call(npc_11585(ctx, 7, vec![])),
+        101991 => npc_call(npc_11585(ctx, 8, vec![])),
+        101992 => npc_call(npc_11585(ctx, 9, vec![])),
+        101993 => npc_call(npc_11586(ctx, 1, vec![])),
+        101994 => npc_call(npc_11586(ctx, 2, vec![])),
+        101995 => npc_call(npc_11586(ctx, 3, vec![])),
+        101996 => npc_call(npc_11586(ctx, 4, vec![])),
+        101997 => npc_call(npc_11586(ctx, 5, vec![])),
+        101998 => npc_call(npc_11587(ctx, 1, vec![])),
+        101999 => npc_call(npc_11587(ctx, 2, vec![])),
+        102000 => npc_call(npc_11588(ctx, 1, vec![])),
+        102001 => npc_call(npc_11588(ctx, 2, vec![])),
+        102002 => npc_call(npc_11589(ctx, 1, vec![])),
+        102003 => npc_call(npc_11589(ctx, 2, vec![])),
+        102004 => npc_call(npc_11590(ctx, 1, vec![])),
+        102005 => npc_call(npc_11590(ctx, 2, vec![])),
+        102006 => npc_call(npc_11591(ctx, 1, vec![])),
+        102007 => npc_call(npc_11591(ctx, 2, vec![])),
+        102008 => npc_call(npc_11592(ctx, 1, vec![])),
+        102009 => npc_call(npc_11595(ctx, 1, vec![])),
+        102010 => npc_call(npc_11597(ctx, 1, vec![])),
+        102011 => npc_call(npc_11598(ctx, 1, vec![])),
+        102012 => npc_call(npc_11599(ctx, 1, vec![])),
+        102013 => npc_call(npc_11600(ctx, 1, vec![])),
+        102014 => npc_call(npc_11601(ctx, 1, vec![])),
+        102015 => npc_call(npc_11602(ctx, 1, vec![])),
+        102016 => npc_call(npc_11607(ctx, 1, vec![])),
+        102017 => npc_call(npc_11608(ctx, 1, vec![])),
+        102018 => npc_call(npc_11614(ctx, 1, vec![])),
+        102019 => npc_call(npc_11614(ctx, 2, vec![])),
+        102020 => npc_call(npc_11614(ctx, 3, vec![])),
+        102021 => npc_call(npc_11615(ctx, 1, vec![])),
+        102022 => npc_call(npc_11616(ctx, 1, vec![])),
+        102023 => npc_call(npc_11617(ctx, 1, vec![])),
+        102024 => npc_call(npc_11618(ctx, 1, vec![])),
+        102025 => npc_call(npc_11619(ctx, 1, vec![])),
+        102026 => npc_call(npc_11620(ctx, 1, vec![])),
+        102027 => npc_call(npc_11621(ctx, 1, vec![])),
+        102028 => npc_call(npc_11622(ctx, 1, vec![])),
+        102029 => npc_call(npc_11622(ctx, 2, vec![])),
+        102030 => npc_call(npc_11622(ctx, 3, vec![])),
+        102031 => npc_call(npc_11623(ctx, 1, vec![])),
         _ => None,
     }
 }

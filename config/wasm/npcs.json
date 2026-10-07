@@ -15797,6 +15797,18 @@
     "constructor_args": []
   },
   {
+    "map_name": "alberta",
+    "x": 26,
+    "y": 229,
+    "dir": 0,
+    "name": "Kafra Employee#bunny",
+    "sprite": "83",
+    "entry_id": 10011,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
     "map_name": "payon",
     "x": 209,
     "y": 127,
@@ -17381,6 +17393,18 @@
     "constructor_args": []
   },
   {
+    "map_name": "prt_monk",
+    "x": 230,
+    "y": 106,
+    "dir": 3,
+    "name": "Asthe#tu",
+    "sprite": "1_F_PRIEST",
+    "entry_id": 10148,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
     "map_name": "monk_in",
     "x": 18,
     "y": 38,
@@ -17640,6 +17664,18 @@
     "name": "Mage#tu",
     "sprite": "2_F_MAGICMASTER",
     "entry_id": 10172,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "monk_in",
+    "x": 19,
+    "y": 43,
+    "dir": 1,
+    "name": "Bishop Maugins",
+    "sprite": "1_M_PASTOR",
+    "entry_id": 10175,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -20034,6 +20070,18 @@
   },
   {
     "map_name": "kh_kiehl01",
+    "x": 17,
+    "y": 39,
+    "dir": 0,
+    "name": "Receiver#kh",
+    "sprite": "111",
+    "entry_id": 10281,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "kh_kiehl01",
     "x": 13,
     "y": 40,
     "dir": 0,
@@ -20150,6 +20198,18 @@
     "entry_id": 10291,
     "x_size": 1,
     "y_size": 1,
+    "constructor_args": []
+  },
+  {
+    "map_name": "kh_kiehl01",
+    "x": 15,
+    "y": 179,
+    "dir": 0,
+    "name": "Robots#kh1",
+    "sprite": "111",
+    "entry_id": 10292,
+    "x_size": 0,
+    "y_size": 0,
     "constructor_args": []
   },
   {
@@ -20790,6 +20850,18 @@
   },
   {
     "map_name": "alde_alche",
+    "x": 88,
+    "y": 180,
+    "dir": 0,
+    "name": "Muscle Man#Alarm Mask",
+    "sprite": "748",
+    "entry_id": 10332,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "alde_alche",
     "x": 86,
     "y": 184,
     "dir": 0,
@@ -20897,6 +20969,18 @@
     "constructor_args": []
   },
   {
+    "map_name": "in_orcs01",
+    "x": 162,
+    "y": 33,
+    "dir": 1,
+    "name": "Orc Hero#1",
+    "sprite": "1087",
+    "entry_id": 10342,
+    "x_size": 2,
+    "y_size": 2,
+    "constructor_args": []
+  },
+  {
     "map_name": "yuno",
     "x": 222,
     "y": 116,
@@ -20964,6 +21048,18 @@
     "name": "Relaxed-Looking Lady",
     "sprite": "91",
     "entry_id": 10348,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "gl_prison1",
+    "x": 137,
+    "y": 138,
+    "dir": 5,
+    "name": "Zealotus#LhzHat",
+    "sprite": "1200",
+    "entry_id": 10349,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -28782,12 +28878,36 @@
   },
   {
     "map_name": "mid_camp",
+    "x": 62,
+    "y": 125,
+    "dir": 4,
+    "name": "Cat Paw Agent",
+    "sprite": "421",
+    "entry_id": 10482,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "mid_camp",
     "x": 72,
     "y": 94,
     "dir": 4,
     "name": "Fluffy Gyaruk",
     "sprite": "421",
     "entry_id": 10483,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "mid_camp",
+    "x": 69,
+    "y": 144,
+    "dir": 0,
+    "name": "Ferocious Gorurug",
+    "sprite": "421",
+    "entry_id": 10484,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -29856,6 +29976,30 @@
     "name": "Disfigured Corpse#moc2",
     "sprite": "457",
     "entry_id": 10545,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "spl_fild02",
+    "x": 25,
+    "y": 211,
+    "dir": 4,
+    "name": "Cat Paw Agent#spl",
+    "sprite": "421",
+    "entry_id": 10546,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "man_fild02",
+    "x": 132,
+    "y": 47,
+    "dir": 4,
+    "name": "Cat Paw Agent#man",
+    "sprite": "421",
+    "entry_id": 10546,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -34577,6 +34721,18 @@
     "constructor_args": []
   },
   {
+    "map_name": "brasilis",
+    "x": 297,
+    "y": 307,
+    "dir": 5,
+    "name": "Angelo#br",
+    "sprite": "1_M_04",
+    "entry_id": 10802,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
     "map_name": "bra_fild01",
     "x": 98,
     "y": 96,
@@ -34758,6 +34914,18 @@
   },
   {
     "map_name": "brasilis",
+    "x": 56,
+    "y": 224,
+    "dir": 7,
+    "name": "Mage Paje#bra",
+    "sprite": "4_M_BIBI",
+    "entry_id": 10808,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "brasilis",
     "x": 59,
     "y": 226,
     "dir": 3,
@@ -34776,6 +34944,18 @@
     "name": "Toucan#bra",
     "sprite": "2073",
     "entry_id": 10810,
+    "x_size": 2,
+    "y_size": 2,
+    "constructor_args": []
+  },
+  {
+    "map_name": "bra_fild01",
+    "x": 34,
+    "y": 184,
+    "dir": 5,
+    "name": "Jaguar#bra",
+    "sprite": "2072",
+    "entry_id": 10811,
     "x_size": 2,
     "y_size": 2,
     "constructor_args": []
@@ -34838,6 +35018,30 @@
     "entry_id": 10815,
     "x_size": 0,
     "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "brasilis",
+    "x": 270,
+    "y": 145,
+    "dir": 5,
+    "name": "Brasilis Girl#bra",
+    "sprite": "4_F_BRZ_INDIAN",
+    "entry_id": 10816,
+    "x_size": 5,
+    "y_size": 5,
+    "constructor_args": []
+  },
+  {
+    "map_name": "bra_dun02",
+    "x": 67,
+    "y": 205,
+    "dir": 5,
+    "name": "Recluse#bra",
+    "sprite": "4_M_BRZ_JACI",
+    "entry_id": 10817,
+    "x_size": 3,
+    "y_size": 3,
     "constructor_args": []
   },
   {
@@ -35042,6 +35246,18 @@
     "entry_id": 10835,
     "x_size": 0,
     "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "bra_dun02",
+    "x": 157,
+    "y": 74,
+    "dir": 5,
+    "name": "Iara#nk",
+    "sprite": "4_F_BRZ_WOMAN",
+    "entry_id": 10836,
+    "x_size": 2,
+    "y_size": 2,
     "constructor_args": []
   },
   {
@@ -35582,6 +35798,18 @@
     "entry_id": 10880,
     "x_size": 1,
     "y_size": 1,
+    "constructor_args": []
+  },
+  {
+    "map_name": "ein_in01",
+    "x": 31,
+    "y": 138,
+    "dir": 3,
+    "name": "Calla#ein",
+    "sprite": "90",
+    "entry_id": 10881,
+    "x_size": 0,
+    "y_size": 0,
     "constructor_args": []
   },
   {
@@ -39222,6 +39450,18 @@
   },
   {
     "map_name": "yuno_pre",
+    "x": 95,
+    "y": 71,
+    "dir": 5,
+    "name": "Guard",
+    "sprite": "4_M_EIN_SOLDIER",
+    "entry_id": 11203,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "yuno_pre",
     "x": 96,
     "y": 69,
     "dir": 2,
@@ -40169,6 +40409,102 @@
     "constructor_args": []
   },
   {
+    "map_name": "moc_fild20",
+    "x": 354,
+    "y": 183,
+    "dir": 3,
+    "name": "Continental Guard#01",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 354,
+    "y": 174,
+    "dir": 3,
+    "name": "Continental Guard#02",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 38,
+    "y": 174,
+    "dir": 5,
+    "name": "Continental Guard#03",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 38,
+    "y": 183,
+    "dir": 5,
+    "name": "Continental Guard#04",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 189,
+    "y": 21,
+    "dir": 7,
+    "name": "Continental Guard#05",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 200,
+    "y": 21,
+    "dir": 7,
+    "name": "Continental Guard#06",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 203,
+    "y": 336,
+    "dir": 5,
+    "name": "Continental Guard#07",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moc_fild20",
+    "x": 215,
+    "y": 336,
+    "dir": 3,
+    "name": "Continental Guard#08",
+    "sprite": "707",
+    "entry_id": 11293,
+    "x_size": 3,
+    "y_size": 3,
+    "constructor_args": []
+  },
+  {
     "map_name": "prontera",
     "x": 164,
     "y": 304,
@@ -40781,6 +41117,18 @@
     "constructor_args": []
   },
   {
+    "map_name": "mosk_ship",
+    "x": 101,
+    "y": 111,
+    "dir": 4,
+    "name": "rudder#ship",
+    "sprite": "HIDDEN_NPC",
+    "entry_id": 11343,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
     "map_name": "mosk_fild01",
     "x": 86,
     "y": 104,
@@ -41076,6 +41424,18 @@
     "name": "#book_russia",
     "sprite": "HIDDEN_NPC",
     "entry_id": 11365,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "mosk_in",
+    "x": 221,
+    "y": 43,
+    "dir": 0,
+    "name": "#bowl",
+    "sprite": "HIDDEN_NPC",
+    "entry_id": 11366,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -41388,6 +41748,18 @@
     "name": "Maria Morebna#rus46",
     "sprite": "4_F_RUSCHILD",
     "entry_id": 11391,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "moscovia",
+    "x": 178,
+    "y": 127,
+    "dir": 0,
+    "name": "The Blacksmith#rus06",
+    "sprite": "1_M_SMITH",
+    "entry_id": 11392,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -42180,6 +42552,18 @@
     "name": "Larjes#Boat1",
     "sprite": "97",
     "entry_id": 11449,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "abbey02",
+    "x": 224,
+    "y": 70,
+    "dir": 0,
+    "name": "Books#Mona1",
+    "sprite": "111",
+    "entry_id": 11450,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []
@@ -43634,6 +44018,18 @@
     "entry_id": 11576,
     "x_size": 0,
     "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "ice_dun02",
+    "x": 120,
+    "y": 105,
+    "dir": 3,
+    "name": "Man Stuck in Ice#cave",
+    "sprite": "924",
+    "entry_id": 11577,
+    "x_size": 5,
+    "y_size": 5,
     "constructor_args": []
   },
   {
@@ -47969,6 +48365,30 @@
     "constructor_args": []
   },
   {
+    "map_name": "tha_t01",
+    "x": 140,
+    "y": 78,
+    "dir": 4,
+    "name": "Guide#reward",
+    "sprite": "831",
+    "entry_id": 11911,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "tha_t02",
+    "x": 231,
+    "y": 161,
+    "dir": 5,
+    "name": "Entrance Guide",
+    "sprite": "874",
+    "entry_id": 11912,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
     "map_name": "tha_t02",
     "x": 227,
     "y": 163,
@@ -49080,6 +49500,18 @@
     "name": "Alchemist#sign",
     "sprite": "749",
     "entry_id": 11988,
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": []
+  },
+  {
+    "map_name": "alberta_in",
+    "x": 114,
+    "y": 178,
+    "dir": 5,
+    "name": "Refined Steward",
+    "sprite": "109",
+    "entry_id": 11989,
     "x_size": 0,
     "y_size": 0,
     "constructor_args": []

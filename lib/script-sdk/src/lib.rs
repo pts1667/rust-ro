@@ -340,6 +340,14 @@ pub enum Function {
     GetMapXy,
     GetPartyMember,
     IsPartyLeader,
+    ConvertPcInfo,
+    Nude,
+    SetNpcDisplay,
+    ConsumeItem,
+    GetNamedItem,
+    GetItem2,
+    MakeItem,
+    ReadBook,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

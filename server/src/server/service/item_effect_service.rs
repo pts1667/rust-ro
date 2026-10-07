@@ -107,6 +107,17 @@ impl ItemService {
         Ok(())
     }
 
+    /// `consumeitem`: runs the item's use script on the character without taking the item from the inventory.
+    pub(crate) fn run_item_script(&self, server: &Server, state: &mut ServerState, character: &mut Character, item_id: u32) -> Result<(), String> {
+        if Self::script_metadata(item_id).is_some_and(|metadata| metadata.interactive) {
+            return Err("consumeitem cannot run an interactive item".into());
+        }
+        let host = self.prepare_host(server, character, item_id, true);
+        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", item_id));
+        result.map_err(|error| host.error.clone().unwrap_or(error))?;
+        self.apply_effects(server, state, server.runtime(), character, host.effects)
+    }
+
     pub(crate) fn prepare_host(&self, server: &Server, character: &Character, item_id: u32, effects_allowed: bool) -> ItemScriptHost {
         let mut status = character.status.clone();
         status.script_context = Some(std::sync::Arc::new(character.script_character_state()));
@@ -323,7 +334,7 @@ impl ItemService {
                         }
                         Function::StartStatus | Function::StartStatus2 | Function::StartStatus4 => { status_request(*function, arguments, StatusStartFlag::NoDurationReduction.as_flag())?; }
                         Function::EndStatus => { status_to_end(arguments)?; }
-                        Function::GetItem | Function::DelItem => {
+                        Function::GetItem | Function::DelItem | Function::GetNamedItem | Function::GetItem2 => {
                             let item = super::super::script::utilities::find_item(self.configuration_service, arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;
                             if number(1)? <= 0 || number(1)? > i32::from(i16::MAX) || item.id <= 0 { return Err("Invalid item amount".into()); }
                         }
@@ -392,6 +403,22 @@ impl ItemService {
                         Function::GetItem => {
                             let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
                             grants.push(ScriptItemGrant { item_id: item.id, amount: arguments[1].number_value()? as i16, identified: true, refine: 0, cards: [0; 4], unique_id: None, damaged: false });
+                        }
+                        Function::GetNamedItem => {
+                            let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
+                            let owner = match &arguments[1] {
+                                Value::Number(id) => *id as u32,
+                                name if name.text() == character.name => character.char_id,
+                                _ => return Err("A named item can only carry the name of the attached player".into()),
+                            };
+                            let cards = [255, 0, (owner & 0xffff) as u16 as i16, (owner >> 16) as u16 as i16];
+                            grants.push(ScriptItemGrant { item_id: item.id, amount: 1, identified: true, refine: 0, cards, unique_id: None, damaged: false });
+                        }
+                        Function::GetItem2 => {
+                            let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
+                            let number = |index: usize| arguments.get(index).map(Value::number_value).transpose().map(|value| value.unwrap_or(0));
+                            let cards = [number(5)? as i16, number(6)? as i16, number(7)? as i16, number(8)? as i16];
+                            grants.push(ScriptItemGrant { item_id: item.id, amount: number(1)? as i16, identified: number(2)? != 0, refine: number(3)? as i16, cards, unique_id: None, damaged: number(4)? != 0 });
                         }
                         Function::DelItem => {
                             let item = super::super::script::utilities::find_item(self.configuration_service, &arguments[0]).ok_or("Unknown item")?;
@@ -467,7 +494,7 @@ impl ItemService {
             match effect {
                 ItemEffect::Heal { .. } => {},
                 ItemEffect::GuildStorageOpen(_) => {},
-                ItemEffect::Call { function, arguments } if function != Function::GetItem && function != Function::DelItem && function != Function::ResetSkills && function != Function::GetExperience && !persistent_world_operation(function) => {
+                ItemEffect::Call { function, arguments } if function != Function::GetItem && function != Function::GetNamedItem && function != Function::GetItem2 && function != Function::DelItem && function != Function::ResetSkills && function != Function::GetExperience && !persistent_world_operation(function) => {
                     self.apply_game_call(server, state, character, function, arguments, tick)?;
                 }
                 ItemEffect::Write { .. } | ItemEffect::Grant { .. } | ItemEffect::Call { .. } | ItemEffect::PoolDraw(_) => {},

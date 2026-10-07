@@ -524,6 +524,16 @@ impl ItemScriptHost {
                 let item = super::utilities::find_item(configuration, arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;
                 self.grant(item.id, number(1)?, true)
             }
+            Function::GetNamedItem | Function::GetItem2 if self.effects_allowed => {
+                let configuration = crate::server::service::global_config_service::GlobalConfigService::instance();
+                let item = super::utilities::find_item(configuration, arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;
+                let amount = if function == Function::GetItem2 { number(1)? } else { 1 };
+                let amount_i16 = i16::try_from(amount).ok().filter(|amount| *amount > 0).ok_or("Item grant must be positive")?;
+                let count = self.context.inventory.entry(item.id).or_default();
+                *count = count.checked_add(i32::from(amount_i16)).ok_or("Inventory count is out of bounds")?;
+                self.effects.push(ItemEffect::Call { function, arguments });
+                Ok(Value::default())
+            }
             Function::DelItem if self.effects_allowed => {
                 let configuration = crate::server::service::global_config_service::GlobalConfigService::instance();
                 let item = super::utilities::find_item(configuration, arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;

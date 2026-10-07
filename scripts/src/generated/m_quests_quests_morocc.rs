@@ -203,6 +203,304 @@ fn npc_11292(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11293(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH: usize = 1;
+    let mut l_i = n(0);
+    let mut l_onlinemembers = n(0);
+    let mut l_partymembercid: Vec<Value> = Vec::new();
+    let mut l_partymembercount = n(0);
+    'sm: loop {
+        match pc {
+                0 => {
+                    if (op(get(ctx, "rebirth_moc_edq")?, "==", n(0))?.truthy() && op(get(ctx, "rebirth_moc_edq")?, "<", n(4))?.truthy()) {
+                        ctx.mes("[Continental Guard]")?;
+                        ctx.mes("No commoners are allowed in the area beyond this point.")?;
+                        ctx.mes("This place is extremely dangerous so you are restricted from entering.")?;
+                        ctx.next()?;
+                        'b1: {
+                            let sw1 = n(select(ctx, &["Cancel Conversation", "Ask What Happened"])?);
+                            let mut m1 = false;
+                            let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                            if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                            if m1 {
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                            if m1 {
+                                ctx.mes("[Continental Guard]")?;
+                                ctx.mes("Didn't you know? Satan Morocc has resurrected and broke out of Morocc Village where he was confined.")?;
+                                ctx.next()?;
+                                ctx.mes("[Continental Guard]")?;
+                                ctx.mes("His resurrection has caused irreparable damage to the village and to the desert around it, and now he has moved to the Sograt Desert.")?;
+                                ctx.next()?;
+                                ctx.mes("[Continental Guard]")?;
+                                ctx.mes("We are here to carry out the orders of the Prontera Kingdom by preventing commoners, aside from the members of the Morocc Subjugation, from accessing the area.")?;
+                                ctx.next()?;
+                                ctx.mes("[Continental Guard]")?;
+                                ctx.mes("If you'd like to know more information, I suggest that you speak to the Continental Guard in charge of the accident site in Morocc Village.")?;
+                                ctx.next()?;
+                                'b2: {
+                                    let sw2 = n(select(ctx, &["End Conversation", "Ask About Guard's Location"])?);
+                                    let mut m2 = false;
+                                    let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                                    if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                                    if m2 {
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                    if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                                    if m2 {
+                                        ctx.mes("[Continental Guard]")?;
+                                        ctx.mes("The guard that you want to talk to is at a camp built in the center of Morocc Village.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Continental Guard]")?;
+                                        ctx.mes("If you'd like, I can send you there directly.")?;
+                                        ctx.next()?;
+                                        'b3: {
+                                            let sw3 = n(select(ctx, &["No, thanks.", "Please do."])?);
+                                            let mut m3 = false;
+                                            let d3 = !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                                            if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                                            if m3 {
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("I see. Well then, for your safety, please leave this dangerous area as soon as possible.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                                            if m3 {
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("Great. I'll send you to Morocc Village's accident site shortly.")?;
+                                                ctx.close()?;
+                                                ctx.call(Function::Warp, vec![s("morocc"), n(160), n(61)])?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (op(get(ctx, "rebirth_moc_edq")?, ">", n(3))?.truthy() && op(get(ctx, "rebirth_moc_edq")?, "<", n(8))?.truthy()) {
+                            ctx.mes("[Continental Guard]")?;
+                            ctx.mes("No commoners are allowed in the area beyond this point.")?;
+                            ctx.mes("This place is extremely dangerous so you are restricted from entering.")?;
+                            ctx.next()?;
+                            'b4: {
+                                let sw4 = n(select(ctx, &["Cancel Conversation", "Enter the Field to Investigate", "Move to Morocc's Accident Site"])?);
+                                let mut m4 = false;
+                                let d4 = !eq(&sw4, &n(1)) && !eq(&sw4, &n(2)) && !eq(&sw4, &n(3));
+                                if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                                if m4 {
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                                if m4 {
+                                    if op(get(ctx, "$@re_moc")?, "<", n(3))?.truthy() {
+                                        party_members(ctx, ctx.call(Function::GetCharacterId, vec![n(1)])?, n(1))?;
+                                        l_partymembercount = get(ctx, "$@partymembercount")?;
+                                        l_i = n(0);
+                                        'l5: loop {
+                                            if !op(l_i.clone(), "<", l_partymembercount.clone())?.truthy() { break; }
+                                            'b5: {
+                                                if ctx.call(Function::ConvertPcInfo, vec![local_get(&l_partymembercid, &l_i.clone(), false), constant(ctx, "CPC_ACCOUNT")?])?.truthy() {
+                                                    l_onlinemembers = op(l_onlinemembers.clone(), "+", n(1))?;
+                                                }
+                                            }
+                                            l_i = op(l_i.clone(), "+", n(1))?;
+                                        }
+                                        if (op(l_onlinemembers.clone(), ">", n(1))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("......")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area.")?;
+                                            ctx.close()?;
+                                            ctx.call(Function::Warp, vec![s("moc_fild21"), n(38), n(193)])?;
+                                            return Err(END.into());
+                                        } else {
+                                            if (op(l_onlinemembers.clone(), "<", n(2))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                if op(ctx.call(Function::CountItem, vec![n(7826)])?, "<", n(1))?.truthy() {
+                                                    ctx.mes("[Continental Guard]")?;
+                                                    ctx.mes("Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        ctx.mes("[Continental Guard]")?;
+                                        ctx.mes("We've received orders from Headquarters to block access to this area since an unusual space-time phenomenon has been detected from the Morocc field.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Continental Guard]")?;
+                                        ctx.mes("We need to wait until the phenomenon is over, and then we'll let you proceed with your investigation.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                }
+                                if !m4 && eq(&sw4, &n(3)) { m4 = true; }
+                                if m4 {
+                                    ctx.mes("[Continental Guard]")?;
+                                    ctx.mes("Great. I'll send you to Morocc Village's accident site shortly.")?;
+                                    ctx.close()?;
+                                    ctx.call(Function::Warp, vec![s("morocc"), n(160), n(61)])?;
+                                    return Err(END.into());
+                                }
+                            }
+                        } else {
+                            if op(get(ctx, "rebirth_moc_edq")?, "==", n(8))?.truthy() {
+                                ctx.mes("[Continental Guard]")?;
+                                ctx.mes("Ah, you're an adventurer working for the Continental Guard. Nice to meet you. Feel free to ask me if you need my assistance.")?;
+                                ctx.next()?;
+                                party_members(ctx, ctx.call(Function::GetCharacterId, vec![n(1)])?, n(1))?;
+                                l_partymembercount = get(ctx, "$@partymembercount")?;
+                                l_i = n(0);
+                                'l6: loop {
+                                    if !op(l_i.clone(), "<", l_partymembercount.clone())?.truthy() { break; }
+                                    'b6: {
+                                        if ctx.call(Function::ConvertPcInfo, vec![local_get(&l_partymembercid, &l_i.clone(), false), constant(ctx, "CPC_ACCOUNT")?])?.truthy() {
+                                            l_onlinemembers = op(l_onlinemembers.clone(), "+", n(1))?;
+                                        }
+                                    }
+                                    l_i = op(l_i.clone(), "+", n(1))?;
+                                }
+                                'b7: {
+                                    let sw7 = n(select(ctx, &["Enter the First Field to Investigate", "Enter the Second Field to Investigate", "Return to Morocc's Accident Site", "Cancel Conversation"])?);
+                                    let mut m7 = false;
+                                    let d7 = !eq(&sw7, &n(1)) && !eq(&sw7, &n(2)) && !eq(&sw7, &n(3)) && !eq(&sw7, &n(4));
+                                    if !m7 && eq(&sw7, &n(1)) { m7 = true; }
+                                    if m7 {
+                                        if (op(l_onlinemembers.clone(), ">", n(1))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("......")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area.")?;
+                                            ctx.close()?;
+                                            ctx.call(Function::Warp, vec![s("moc_fild21"), n(38), n(193)])?;
+                                            return Err(END.into());
+                                        } else {
+                                            if (op(l_onlinemembers.clone(), "<", n(2))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                if op(ctx.call(Function::CountItem, vec![n(7826)])?, "<", n(1))?.truthy() {
+                                                    ctx.mes("[Continental Guard]")?;
+                                                    ctx.mes("Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if !m7 && eq(&sw7, &n(2)) { m7 = true; }
+                                    if m7 {
+                                        if (op(l_onlinemembers.clone(), ">", n(1))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("......")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Continental Guard]")?;
+                                            ctx.mes("I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area.")?;
+                                            ctx.close()?;
+                                            ctx.call(Function::Warp, vec![s("moc_fild22"), n(38), n(193)])?;
+                                            return Err(END.into());
+                                        } else {
+                                            if (op(l_onlinemembers.clone(), "<", n(2))?.truthy() && op(ctx.call(Function::CountItem, vec![n(7826)])?, ">", n(0))?.truthy()) {
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Continental Guard]")?;
+                                                ctx.mes("...So please go back to the site, and come back in a party of at least 2 members. Thank you.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                if op(ctx.call(Function::CountItem, vec![n(7826)])?, "<", n(1))?.truthy() {
+                                                    ctx.mes("[Continental Guard]")?;
+                                                    ctx.mes("Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if !m7 && eq(&sw7, &n(3)) { m7 = true; }
+                                    if m7 {
+                                        ctx.mes("[Continental Guard]")?;
+                                        ctx.mes("Great. I'll send you to Morocc Village's accident site shortly.")?;
+                                        ctx.close()?;
+                                        ctx.call(Function::Warp, vec![s("morocc"), n(160), n(61)])?;
+                                        return Err(END.into());
+                                    }
+                                    if !m7 && eq(&sw7, &n(4)) { m7 = true; }
+                                    if m7 {
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                }
+                            } else {
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                    pc = 1;
+                }
+                1 => {
+                    ctx.mes("[Continental Guard]")?;
+                    ctx.mes("No commoners are allowed in the area beyond this point.")?;
+                    ctx.mes("This place is extremely dangerous so you are restricted from entering.")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_11294(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     let mut l_area_s = s("");
@@ -3910,6 +4208,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11290 => npc_call(npc_11290(ctx, 0, vec![])),
         11291 => npc_call(npc_11291(ctx, 0, vec![])),
         11292 => npc_call(npc_11292(ctx, 0, vec![])),
+        11293 => npc_call(npc_11293(ctx, 0, vec![])),
         11294 => npc_call(npc_11294(ctx, 0, vec![])),
         11295 => npc_call(npc_11295(ctx, 0, vec![])),
         11296 => npc_call(npc_11296(ctx, 0, vec![])),
@@ -3960,36 +4259,37 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        101773 => npc_call(npc_11294(ctx, 1, vec![])),
-        101774 => npc_call(npc_11297(ctx, 1, vec![])),
-        101775 => npc_call(npc_11298(ctx, 1, vec![])),
-        101776 => npc_call(npc_11298(ctx, 2, vec![])),
-        101777 => npc_call(npc_11298(ctx, 3, vec![])),
-        101778 => npc_call(npc_11298(ctx, 4, vec![])),
-        101779 => npc_call(npc_11298(ctx, 5, vec![])),
-        101780 => npc_call(npc_11298(ctx, 6, vec![])),
-        101781 => npc_call(npc_11299(ctx, 1, vec![])),
-        101782 => npc_call(npc_11300(ctx, 1, vec![])),
-        101783 => npc_call(npc_11300(ctx, 2, vec![])),
-        101784 => npc_call(npc_11300(ctx, 3, vec![])),
-        101785 => npc_call(npc_11300(ctx, 4, vec![])),
-        101786 => npc_call(npc_11300(ctx, 5, vec![])),
-        101787 => npc_call(npc_11301(ctx, 1, vec![])),
-        101788 => npc_call(npc_11301(ctx, 2, vec![])),
-        101789 => npc_call(npc_11301(ctx, 3, vec![])),
-        101790 => npc_call(npc_11301(ctx, 4, vec![])),
-        101791 => npc_call(npc_11301(ctx, 5, vec![])),
-        101792 => npc_call(npc_11301(ctx, 6, vec![])),
-        101793 => npc_call(npc_11306(ctx, 1, vec![])),
-        101794 => npc_call(npc_11311(ctx, 1, vec![])),
-        101795 => npc_call(npc_11315(ctx, 1, vec![])),
-        101796 => npc_call(npc_11319(ctx, 1, vec![])),
-        101797 => npc_call(npc_11322(ctx, 1, vec![])),
-        101798 => npc_call(npc_11325(ctx, 1, vec![])),
-        101799 => npc_call(npc_11327(ctx, 1, vec![])),
-        101800 => npc_call(npc_11329(ctx, 1, vec![])),
-        101801 => npc_call(npc_11330(ctx, 1, vec![])),
-        101802 => npc_call(npc_11331(ctx, 1, vec![])),
+        101784 => npc_call(npc_11293(ctx, 1, vec![])),
+        101785 => npc_call(npc_11294(ctx, 1, vec![])),
+        101786 => npc_call(npc_11297(ctx, 1, vec![])),
+        101787 => npc_call(npc_11298(ctx, 1, vec![])),
+        101788 => npc_call(npc_11298(ctx, 2, vec![])),
+        101789 => npc_call(npc_11298(ctx, 3, vec![])),
+        101790 => npc_call(npc_11298(ctx, 4, vec![])),
+        101791 => npc_call(npc_11298(ctx, 5, vec![])),
+        101792 => npc_call(npc_11298(ctx, 6, vec![])),
+        101793 => npc_call(npc_11299(ctx, 1, vec![])),
+        101794 => npc_call(npc_11300(ctx, 1, vec![])),
+        101795 => npc_call(npc_11300(ctx, 2, vec![])),
+        101796 => npc_call(npc_11300(ctx, 3, vec![])),
+        101797 => npc_call(npc_11300(ctx, 4, vec![])),
+        101798 => npc_call(npc_11300(ctx, 5, vec![])),
+        101799 => npc_call(npc_11301(ctx, 1, vec![])),
+        101800 => npc_call(npc_11301(ctx, 2, vec![])),
+        101801 => npc_call(npc_11301(ctx, 3, vec![])),
+        101802 => npc_call(npc_11301(ctx, 4, vec![])),
+        101803 => npc_call(npc_11301(ctx, 5, vec![])),
+        101804 => npc_call(npc_11301(ctx, 6, vec![])),
+        101805 => npc_call(npc_11306(ctx, 1, vec![])),
+        101806 => npc_call(npc_11311(ctx, 1, vec![])),
+        101807 => npc_call(npc_11315(ctx, 1, vec![])),
+        101808 => npc_call(npc_11319(ctx, 1, vec![])),
+        101809 => npc_call(npc_11322(ctx, 1, vec![])),
+        101810 => npc_call(npc_11325(ctx, 1, vec![])),
+        101811 => npc_call(npc_11327(ctx, 1, vec![])),
+        101812 => npc_call(npc_11329(ctx, 1, vec![])),
+        101813 => npc_call(npc_11330(ctx, 1, vec![])),
+        101814 => npc_call(npc_11331(ctx, 1, vec![])),
         _ => None,
     }
 }

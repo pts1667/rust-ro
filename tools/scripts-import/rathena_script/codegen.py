@@ -290,6 +290,17 @@ class BodyGenerator:
             return "n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))"
         if name == "checkre":
             return "n(0)"
+        if name == "getattachedrid":
+            return "ctx.call(Function::GetCharacterId, vec![n(3)])?"
+        if name == "basicskillcheck":
+            return "n(1)"
+        if name == "getargcount":
+            return "n(args.len() as i32)"
+        if name == "sprintf" and args:
+            return f"sprintf({self.value(args[0])}, vec![{self.arguments(args[1:])}])?"
+        if name == "implode" and len(args) in (1, 2) and isinstance(args[0], (Name, Index)) and args[0].name.startswith(".@"):
+            delimiter = self.value(args[1]) if len(args) > 1 else 's("")'
+            return f"implode(&{self.declare_local(args[0].name, True)}, {delimiter})?"
         if name == "getarraysize":
             if len(args) == 1 and isinstance(args[0], (Name, Index)) and args[0].name.startswith(".@"):
                 identifier = self.declare_local(args[0].name, True)
@@ -556,7 +567,17 @@ class BodyGenerator:
     def command(self, node):
         name = node.name.lower()
         args = node.args
-        if name in ("enable_items", "disable_items"):
+        if name in ("enable_items", "disable_items", "logmes"):
+            return
+        if name == "npcskill" and len(args) == 4:
+            self.emit(f"npc_skill(ctx, {self.value(args[0])}, {self.value(args[1])}, {self.value(args[2])}, {self.value(args[3])})?;")
+            return
+        if name == "unitwarp" and len(args) == 4 and isinstance(args[0], Num) and args[0].value == 0:
+            self.emit(f"ctx.call(Function::Warp, vec![{self.arguments(args[1:])}])?;")
+            return
+        if name == "explode" and len(args) == 3 and isinstance(args[0], (Name, Index)) and args[0].name.startswith(".@"):
+            identifier = self.declare_local(args[0].name, True)
+            self.emit(f"{identifier} = explode({self.value(args[1])}, {self.value(args[2])})?;")
             return
         if name in self.local_functions and name not in ("callfunc", "callsub", "select"):
             self.emit(f"{self.function_call(Call(node.name, args, node.line))};")
@@ -705,7 +726,7 @@ for _name in ("getcastledata", "setcastledata"):
     SDK_CALLS.pop(_name, None)
 
 STRING_FUNCTIONS = {"getstrlen": "strlen", "substr": "substr", "charat": "charat", "atoi": "atoi", "compare": "compare",
-                    "strtolower": "strtolower", "strtoupper": "strtoupper"}
+                    "strtolower": "strtolower", "strtoupper": "strtoupper", "countstr": "countstr", "delchar": "delchar"}
 
 
 def expand_local_functions(statements):
@@ -789,11 +810,11 @@ def find_array_locals(statements):
             return
         if isinstance(node, Index) and node.name.startswith(".@"):
             found.add(local_identifier(node.name))
-        if isinstance(node, Command) and node.name.lower() in ("setarray", "deletearray", "copyarray") and node.args:
+        if isinstance(node, Command) and node.name.lower() in ("setarray", "deletearray", "copyarray", "explode") and node.args:
             first = node.args[0]
             if isinstance(first, (Name, Index)) and first.name.startswith(".@"):
                 found.add(local_identifier(first.name))
-        if isinstance(node, Call) and node.name.lower() == "getarraysize" and node.args and isinstance(node.args[0], (Name, Index)) and node.args[0].name.startswith(".@"):
+        if isinstance(node, Call) and node.name.lower() in ("getarraysize", "implode") and node.args and isinstance(node.args[0], (Name, Index)) and node.args[0].name.startswith(".@"):
             found.add(local_identifier(node.args[0].name))
         for field in node.__dataclass_fields__:
             visit(getattr(node, field))

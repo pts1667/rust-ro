@@ -29,12 +29,20 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::GetMapXy
             | Function::GetPartyMember
             | Function::IsPartyLeader
+            | Function::ConvertPcInfo
+            | Function::Nude
+            | Function::SetNpcDisplay
+            | Function::ConsumeItem
+            | Function::MakeItem
+            | Function::ReadBook
     )
 }
 
 const EMOTION_PACKET: u16 = 0x00c0;
 const SOUND_PACKET: u16 = 0x01d3;
 const COMPASS_PACKET: u16 = 0x0144;
+const READ_BOOK_PACKET: u16 = 0x0294;
+const NPC_SPRITE_PACKET: u16 = 0x01b0;
 const SOUND_NAME_BYTES: usize = 24;
 
 const EMOTIONS: [&str; 62] = [
@@ -57,6 +65,12 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
     }
     if let Some(cell) = name.strip_prefix("CELL_") {
         return CELLS.iter().position(|known| *known == cell).map(|index| Value::Number(index as i32));
+    }
+    match name {
+        "CPC_NAME" => return Some(Value::Number(0)),
+        "CPC_CHAR" => return Some(Value::Number(1)),
+        "CPC_ACCOUNT" => return Some(Value::Number(2)),
+        _ => {}
     }
     if name == "EAJL_THIRD" {
         return Some(Value::Number(0x4000));
@@ -104,6 +118,14 @@ fn sound_packet(name: &str, kind: u8, source_id: u32) -> Result<Vec<u8>, String>
     packet.extend_from_slice(&0u32.to_le_bytes());
     packet.extend_from_slice(&source_id.to_le_bytes());
     Ok(packet)
+}
+
+fn npc_sprite_packet(npc_id: u32, sprite: u32) -> Vec<u8> {
+    let mut packet = NPC_SPRITE_PACKET.to_le_bytes().to_vec();
+    packet.extend_from_slice(&npc_id.to_le_bytes());
+    packet.push(0);
+    packet.extend_from_slice(&sprite.to_le_bytes());
+    packet
 }
 
 fn compass_packet(npc_id: u32, action: u32, x: u32, y: u32, number: u8, color: u32) -> Vec<u8> {
@@ -309,6 +331,78 @@ impl Server {
                 let character = state.characters().get(&context.char_id).ok_or("checkweight needs an attached player")?;
                 let limit = u64::from(self.character_service().max_weight(character));
                 Ok(Value::Number(i32::from(u64::from(character.weight()) + added <= limit)))
+            }
+            Function::ConvertPcInfo => {
+                let target = &arguments.first().ok_or("Missing player")?;
+                let character = match target {
+                    Value::Number(id) => {
+                        let id = *id as u32;
+                        state.characters().values().find(|character| character.char_id == id).or_else(|| state.characters().values().find(|character| character.account_id == id))
+                    }
+                    name => state.characters().values().find(|character| character.name == name.text()),
+                };
+                Ok(match (number(1)?, character) {
+                    (0, Some(character)) => Value::String(character.name.clone()),
+                    (1, Some(character)) => Value::Number(character.char_id as i32),
+                    (2, Some(character)) => Value::Number(character.account_id as i32),
+                    (0, None) => Value::String(String::new()),
+                    _ => Value::Number(0),
+                })
+            }
+            Function::Nude => {
+                let mut character = state.characters_mut().remove(&context.char_id).ok_or("nude needs an attached player")?;
+                let equipped: Vec<usize> = character.inventory_wearable().into_iter().filter(|(_, item)| item.equip != 0).map(|(index, _)| index).collect();
+                for index in equipped {
+                    self.inventory_service().takeoff_equip_item(&mut character, index);
+                }
+                state.insert_character(character);
+                Ok(Value::default())
+            }
+            Function::SetNpcDisplay => {
+                let (npc, _) = crate::server::service::npc_event_service::named_npc(state, context, &text(0)?)?.ok_or("setnpcdisplay: unknown NPC")?;
+                let sprite = match &arguments[1] {
+                    Value::Number(sprite) => *sprite,
+                    name => crate::server::script::constant::load_constant(&name.text()).ok_or("setnpcdisplay: unknown sprite")?.number_value()?,
+                };
+                let range = AreaNotificationRangeType::Fov { x: npc.x, y: npc.y, exclude_id: None };
+                let packet = npc_sprite_packet(npc.id, u32::try_from(sprite).map_err(|_| "Invalid NPC sprite")?);
+                let _ = self.server_service().notification_sender().try_send(Notification::Area(AreaNotification::new(npc.map.clone(), npc.instance, range, packet)));
+                Ok(Value::default())
+            }
+            Function::ConsumeItem => {
+                let item = crate::server::script::utilities::find_item(GlobalConfigService::instance(), arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;
+                let mut character = state.characters_mut().remove(&context.char_id).ok_or("consumeitem needs an attached player")?;
+                let result = self.item_service().run_item_script(self, state, &mut character, item.id as u32);
+                state.insert_character(character);
+                result.map(|_| Value::default())
+            }
+            Function::MakeItem => {
+                use crate::server::model::events::map_event::{MapEvent, ScriptDropItem};
+                let item = crate::server::script::utilities::find_item(GlobalConfigService::instance(), arguments.first().ok_or("Missing item")?).ok_or("Unknown item")?;
+                let amount = i16::try_from(number(1)?).ok().filter(|amount| *amount > 0).ok_or("makeitem amount must be positive")?;
+                let (x, y) = (u16::try_from(number(3)?).map_err(|_| "Invalid makeitem x")?, u16::try_from(number(4)?).map_err(|_| "Invalid makeitem y")?);
+                let caller = crate::server::script::unit_data::script_actor(state, context)?;
+                let (map_name, instance) = match (text(2)?, caller) {
+                    (name, Some(npc)) if name.eq_ignore_ascii_case("this") => (npc.map.clone(), npc.instance),
+                    (name, Some(npc)) => (name, npc.instance),
+                    (name, None) => {
+                        let character = state.characters().get(&context.char_id).ok_or("makeitem needs an NPC or a player")?;
+                        if name.eq_ignore_ascii_case("this") { (character.current_map_name().clone(), character.current_map_instance()) } else { (name, character.current_map_instance()) }
+                    }
+                };
+                let map = state.get_map_instance(&map_name, instance).ok_or("makeitem: map is unavailable")?;
+                map.add_to_next_tick(MapEvent::ScriptDropItem(ScriptDropItem { owner_id: context.char_id, item_id: item.id, amount, x, y }));
+                Ok(Value::default())
+            }
+            Function::ReadBook => {
+                let mut packet = READ_BOOK_PACKET.to_le_bytes().to_vec();
+                packet.extend_from_slice(&number(0)?.to_le_bytes());
+                packet.extend_from_slice(&number(1)?.to_le_bytes());
+                if context.char_id == 0 {
+                    return Err("readbook needs an attached player".into());
+                }
+                let _ = self.server_service().notification_sender().try_send(Notification::Char(CharNotification::new(context.char_id, packet)));
+                Ok(Value::default())
             }
             _ => Err(format!("{function:?} is not an NPC command")),
         }

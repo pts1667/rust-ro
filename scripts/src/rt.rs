@@ -205,3 +205,85 @@ pub fn party_members(ctx: &Context, party: Value, kind: Value) -> Result<(), Str
     }
     Ok(())
 }
+
+/// `sprintf` with `%d`, `%i`, `%s` and `%%`, honouring the `-`, `0` flags and a width.
+pub fn sprintf(format: Value, arguments: Vec<Value>) -> Result<Value, String> {
+    let format = format.text();
+    let mut remaining = arguments.into_iter();
+    let mut output = String::new();
+    let mut characters = format.chars().peekable();
+    while let Some(character) = characters.next() {
+        if character != '%' {
+            output.push(character);
+            continue;
+        }
+        let (mut left, mut zero, mut width) = (false, false, 0usize);
+        while let Some(&flag) = characters.peek() {
+            match flag {
+                '-' => left = true,
+                '0' => zero = true,
+                _ => break,
+            }
+            characters.next();
+        }
+        while let Some(digit) = characters.peek().and_then(|digit| digit.to_digit(10)) {
+            width = width * 10 + digit as usize;
+            characters.next();
+        }
+        let text = match characters.next() {
+            Some('%') => {
+                output.push('%');
+                continue;
+            }
+            Some('d' | 'i') => remaining.next().map(|value| value.number_value()).transpose()?.unwrap_or(0).to_string(),
+            Some('s') => remaining.next().map(|value| value.text()).unwrap_or_default(),
+            _ => return Err("Unsupported sprintf format".into()),
+        };
+        let padding = width.saturating_sub(text.chars().count());
+        match (left, zero) {
+            (true, _) => output.extend([text.as_str(), &" ".repeat(padding)]),
+            (false, true) => output.extend([&"0".repeat(padding), text.as_str()]),
+            (false, false) => output.extend([&" ".repeat(padding), text.as_str()]),
+        }
+    }
+    Ok(Value::String(output))
+}
+
+pub fn implode(array: &[Value], delimiter: Value) -> Result<Value, String> {
+    Ok(Value::String(array.iter().map(Value::text).collect::<Vec<_>>().join(&delimiter.text())))
+}
+
+pub fn explode(value: Value, delimiter: Value) -> Result<Vec<Value>, String> {
+    let (text, delimiter) = (value.text(), delimiter.text());
+    if delimiter.is_empty() {
+        return Ok(vec![Value::String(text)]);
+    }
+    Ok(text.split(delimiter.as_str()).map(s).collect())
+}
+
+pub fn countstr(value: Value, needle: Value) -> Result<Value, String> {
+    let needle = needle.text();
+    Ok(n(if needle.is_empty() { 0 } else { value.text().matches(needle.as_str()).count() as i32 }))
+}
+
+pub fn delchar(value: Value, characters: Value) -> Result<Value, String> {
+    let removed = characters.text();
+    Ok(Value::String(value.text().chars().filter(|character| !removed.contains(*character)).collect()))
+}
+
+/// `npcskill`: the NPC casts a support skill on the attached player with its own level and intelligence.
+pub fn npc_skill(ctx: &Context, skill: Value, level: Value, stat: Value, npc_level: Value) -> Result<(), String> {
+    let (level, stat, npc_level) = (level.number_value()?, stat.number_value()?, npc_level.number_value()?);
+    match skill.text().to_ascii_uppercase().as_str() {
+        "AL_HEAL" => {
+            let hp = (npc_level + stat) / 8 * (4 + 8 * level);
+            ctx.call(Function::Heal, vec![n(hp), n(0)])?;
+        }
+        buff @ ("AL_BLESSING" | "AL_INCAGI") => {
+            let status = if buff == "AL_BLESSING" { "SC_BLESSING" } else { "SC_INCREASEAGI" };
+            ctx.call(Function::StartStatus, vec![ctx.constant(status)?, n(40_000 + 20_000 * level), n(level)])?;
+        }
+        other => return Err(format!("npcskill does not support {other}")),
+    }
+    Ok(())
+}

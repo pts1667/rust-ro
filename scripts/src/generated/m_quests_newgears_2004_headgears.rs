@@ -2003,6 +2003,169 @@ fn npc_10331(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_10332(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTIMER4000: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?, "==", n(0))?.truthy() {
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Hmmm...")?;
+                        ctx.mes("It's seems you're carrying too much stuff for me to give anything to you.")?;
+                        ctx.next()?;
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Talk to me again after you've freed up some of your inventory space by putting some of your things into the Kafra Storage.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("Oooh yeah!")?;
+                    ctx.mes("Sometimes, even I can't believe how much this body of mine ripples with sexy love muscles~! I can barely hold them all in...")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("It's...")?;
+                    ctx.mes("It's sexy time!")?;
+                    ctx.next()?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_FLASHER")?])?;
+                    ctx.call(Function::SetNpcDisplay, vec![s("Muscle Man#Alarm Mask"), n(1193)])?;
+                    ctx.call(Function::EnableNpc, vec![s(" #Alarm Mask Man1")])?;
+                    ctx.call(Function::EnableNpc, vec![s(" #Alarm Mask Man2")])?;
+                    ctx.call(Function::EnableNpc, vec![s(" #Alarm Mask Man3")])?;
+                    ctx.call(Function::EnableNpc, vec![s(" #Alarm Mask Man4")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man1")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man2")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man3")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man4")])?;
+                    ctx.call(Function::InitNpcTimer, vec![])?;
+                    if (op(ctx.call(Function::CountItem, vec![n(1095)])?, ">", n(2999))?.truthy() && op(ctx.call(Function::CountItem, vec![n(2288)])?, ">", n(0))?.truthy()) {
+                        if op(n(select(ctx, &["Give him items", "Cancel"])?), "==", n(1))?.truthy() {
+                            ctx.mes("[Muscle Man]")?;
+                            ctx.mes("Ooh... Finally!")?;
+                            ctx.mes("You brought them!")?;
+                            ctx.mes("Excellent, excellent!")?;
+                            ctx.next()?;
+                            ctx.mes("[Muscle Man]")?;
+                            ctx.mes("Alright...")?;
+                            ctx.mes("Now I can use this Mr.Scream and all these clock hands to continue my testing.")?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![n(1095), n(3000)])?;
+                            ctx.call(Function::DelItem, vec![n(2288), n(1)])?;
+                            ctx.call(Function::GetItem, vec![n(5086), n(1)])?;
+                            ctx.mes("[Muscle Man]")?;
+                            ctx.mes("And, this is yours. All yours.")?;
+                            ctx.next()?;
+                            ctx.mes("[Muscle Man]")?;
+                            ctx.mes("Well then... Farewell!")?;
+                            ctx.mes("Don't forget to bring me more Mr.Screams and clock hands if you find more of them!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        }
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Hmmm...?")?;
+                        ctx.mes("That's funny, I thought you would have that Mr. Scream mask and all those clock hands by now...")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("But...")?;
+                    ctx.mes("Not everyone is fortunate to have a magnificent, flawless physique. There are people in this world that have tragically lost appendages in accidents.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("When I realized this, I decided to help these people and began to research technology for artificial limbs. My studies have lead me to Alarms and their own mechanical limbs known as 'Ruimento.'")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("The Alarms, and their 'Ruimento,' are made from an ancient mysterious technology. You can only find these in the Clock Tower.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("So I am trying to research a method to reproduce Ruimetto, except in a smaller form for the human body. If I'm successful, it would be a medical miracle!")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("However, I need help in completing my research. Hence, the reason I've told you my story, adventurer.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("I desperately need materials to continuing testing so that I can develop a prototype. I'll need ^0000FFClock Hand^000000 from Alarms and ^0000FFMr. Scream^000000 in order to continue my research.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("I would collect these things myself but everytime I go up to the Clock Tower, I can't bear to break the Alarms, and just stare in awe at their mechanical, masculine physiques.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("So...")?;
+                    ctx.mes("If you help me out, I promise to give you, um...")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("...this Alarm Mask!")?;
+                    ctx.mes(".....")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("I'd wear it myself, if it weren't for the fact that people never look at my face anyway. Everyone I meet seems to be fixated on my chiseled form. But trust me, this mask is pretty cool.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("Please adventurer...")?;
+                    ctx.mes("Help me give muscles to the world.")?;
+                    ctx.next()?;
+                    if op(n(select(ctx, &["Alright.", "........."])?), "==", n(1))?.truthy() {
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Oh~~! You know how I feel about Alarm's beautiful mechanic muscle! I am glad to have met someone who shares my good sense of taste.")?;
+                        ctx.next()?;
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Okay, here's the deal.")?;
+                        ctx.mes("Bring me...")?;
+                        ctx.mes("^0000FF3000 Clock Hand^000000 and")?;
+                        ctx.mes("^0000FF1 Mr. Scream^000000.")?;
+                        ctx.next()?;
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("With those, I will be able to continue my research, at least for a while. As I told you, I will give you this awesome ^0000FFAlarm Mask^000000 for those items!")?;
+                        ctx.next()?;
+                        ctx.mes("[Muscle Man]")?;
+                        ctx.mes("Now! Go for it!")?;
+                        ctx.mes("Let's spread our love for muscle around the globe!")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("Oh~! I'm sorry!!")?;
+                    ctx.mes("I guess I must have pumped one of these glorious biceps on accident.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("I forget how breathtaking the sheer majesty of my body can be. It's alright, take your time, savor the visual pleasure...")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("But listen, I'll need:")?;
+                    ctx.mes("^0000FF3000 Clock Hand^000000 and")?;
+                    ctx.mes("^0000FF1 Mr. Scream^000000")?;
+                    ctx.mes("in order to continue my research.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("As I told you, I will give you this really nifty ^0000FFAlarm Mask^000000 for those items, as well as do any sort of pose for you.")?;
+                    ctx.next()?;
+                    ctx.mes("[Muscle Man]")?;
+                    ctx.mes("Now! Go for it!")?;
+                    ctx.mes("Let's spread our love for muscle around the globe!")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_FLASHER")?])?;
+                    ctx.call(Function::SetNpcDisplay, vec![s("Muscle Man#Alarm Mask"), n(748)])?;
+                    ctx.call(Function::DisableNpc, vec![s(" #Alarm Mask Man1")])?;
+                    ctx.call(Function::DisableNpc, vec![s(" #Alarm Mask Man2")])?;
+                    ctx.call(Function::DisableNpc, vec![s(" #Alarm Mask Man3")])?;
+                    ctx.call(Function::DisableNpc, vec![s(" #Alarm Mask Man4")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man1")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man2")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man3")])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_CLAYMORE")?, constant(ctx, "AREA")?, s(" #Alarm Mask Man4")])?;
+                    ctx.call(Function::StopNpcTimer, vec![])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_10333(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
@@ -3903,6 +4066,159 @@ fn npc_10341(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_10342(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    pc = 1;
+                }
+                1 => {
+                    if op(ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?, "==", n(0))?.truthy() {
+                        ctx.mes("- Wait a minute !! -")?;
+                        ctx.mes("- Currently you're carrying -")?;
+                        ctx.mes("- too many items with you. -")?;
+                        ctx.mes("- Please try again -")?;
+                        ctx.mes("- after you lose some weight. -")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(get(ctx, "orcs_hero_hat")?, "<", n(16))?.truthy() {
+                        ctx.mes("[Orc Hero]")?;
+                        ctx.mes("Stop bugging me")?;
+                        ctx.mes("and get outta here!")?;
+                        ctx.next()?;
+                        ctx.mes("[Orc Hero]")?;
+                        ctx.mes("If you wish to challenge me, wait inside the forest at the west. I'm not in the mood to deal with humans right now.")?;
+                        ctx.next()?;
+                        ctx.mes("[Orc Hero]")?;
+                        ctx.mes("Now, hurry")?;
+                        ctx.mes("up and scram!!")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if op(get(ctx, "orcs_hero_hat")?, "==", n(16))?.truthy() {
+                            if (op(ctx.call(Function::CountItem, vec![n(968)])?, "==", n(1))?.truthy() && (op(ctx.call(Function::CountItem, vec![n(1124)])?, ">", n(0))?.truthy() || op(ctx.call(Function::IsEquipped, vec![n(1124)])?, "==", n(1))?.truthy())) {
+                                if op(ctx.call(Function::Rand, vec![n(1), n(10)])?, "==", n(1))?.truthy() {
+                                    ctx.mes("[Orc Hero]")?;
+                                    ctx.mes("Hm, are you the human who was granted status as an Orc Hero?")?;
+                                    ctx.next()?;
+                                    ctx.mes("[Orc Hero]")?;
+                                    ctx.mes("I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield.")?;
+                                    if op(ctx.call(Function::CountItem, vec![n(2299)])?, ">", n(0))?.truthy() {
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Wait...")?;
+                                        ctx.mes("Isn't that an Orc Warrior's Helm...?")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Wait a second...")?;
+                                        ctx.mes("It's not! Ha...!")?;
+                                        ctx.mes("Interesting!")?;
+                                        ctx.mes("That's very")?;
+                                        ctx.mes("interesting.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("I guess you don't know what's so special about this particular helm...")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("It actually belonged to one of our Orc Lords who was defeated by a human. He was so furious about losing that he broke the middle horn and threw it away!")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("I was told that it somehow ended in the hands of a human, but I didn't know it was you, the human Orc Hero.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Alright, that belongs to the Orc Lord. I mean, even though it's now yours, it was given to you by mistake.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Would you mind giving the item back to its owner, my human Orc Hero?")?;
+                                        ctx.next()?;
+                                        if op(n(select(ctx, &["Yes, I mind.", "No, I don't mind."])?), "==", n(1))?.truthy() {
+                                            ctx.mes("[Orc Hero]")?;
+                                            ctx.mes("Wow, you're so stubborn! Just treat the helm with care, and wear it with respect. Recognize that it has a long history...")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Good, that's a good decision. I will give this back to him. Muhahahahaha... I didn't expect to see this thing again.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Okay...")?;
+                                        ctx.mes("Let me give you")?;
+                                        ctx.mes("something useful!")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("Although you're a human, you're an Orc Hero amongst us now, so you should have a helm suitable for your position...")?;
+                                        ctx.next()?;
+                                        ctx.call(Function::DelItem, vec![n(2299), n(1)])?;
+                                        set(ctx, "orcs_hero_hat", n(17))?;
+                                        ctx.call(Function::GetNamedItem, vec![n(5094), ctx.call(Function::StrCharInfo, vec![n(0)])?])?;
+                                        ctx.mes("[Orc Hero]")?;
+                                        ctx.mes("There you go. I marked a small indication on it. So wear this helm from now on. Do you understand? My human Orc Hero.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    }
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                                ctx.mes("[Orc Hero]")?;
+                                ctx.mes("Hm, are you the human who was granted status as an Orc Hero?")?;
+                                ctx.next()?;
+                                ctx.mes("[Orc Hero]")?;
+                                ctx.mes(" I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            ctx.mes("[Orc Hero]")?;
+                            ctx.mes("Hm, are you the human that was granted status as an Orc Hero?")?;
+                            ctx.next()?;
+                            ctx.mes("[Orc Hero]")?;
+                            ctx.mes("Hmpf, I'm not convinced. Are you really the one who gave us our Emblems back? I don't think I can trust you...")?;
+                            ctx.next()?;
+                            ctx.mes("[Orc Hero]")?;
+                            ctx.mes("Yeh, you would think I'd remember getting whupped by an ugly human, but I tend not to remember faces when I'm too busy getting whomped on.")?;
+                            ctx.next()?;
+                            ctx.mes("[Orc Hero]")?;
+                            ctx.mes("I refuse to")?;
+                            ctx.mes("acknowledge someone")?;
+                            ctx.mes("like you who forgets")?;
+                            ctx.mes("our most basic customs!")?;
+                            ctx.next()?;
+                            ctx.mes("[Orc Hero]")?;
+                            ctx.mes("Grrrr...")?;
+                            ctx.mes("Come on!")?;
+                            ctx.mes("Let's meet outside west of the forest, and I'll test your strength again!")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "orcs_hero_hat")?, "==", n(17))?.truthy() {
+                                ctx.mes("[Orc Hero]")?;
+                                ctx.mes("Muhahahaha~")?;
+                                ctx.mes("You're the")?;
+                                ctx.mes("strangest human")?;
+                                ctx.mes("I've ever met.")?;
+                                ctx.mes("Hahahahaha...")?;
+                                ctx.next()?;
+                                ctx.mes("[Orc Hero]")?;
+                                ctx.mes("I like you,")?;
+                                ctx.mes("human, I like you.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                    ctx.mes("[Orc Hero]")?;
+                    ctx.mes("....................")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
     Some(finish(result))
 }
@@ -3922,6 +4238,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10329 => npc_call(npc_10329(ctx, 0, vec![])),
         10330 => npc_call(npc_10330(ctx, 0, vec![])),
         10331 => npc_call(npc_10331(ctx, 0, vec![])),
+        10332 => npc_call(npc_10332(ctx, 0, vec![])),
         10333 => npc_call(npc_10333(ctx, 0, vec![])),
         10334 => npc_call(npc_10334(ctx, 0, vec![])),
         10335 => npc_call(npc_10335(ctx, 0, vec![])),
@@ -3931,23 +4248,26 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10339 => npc_call(npc_10339(ctx, 0, vec![])),
         10340 => npc_call(npc_10340(ctx, 0, vec![])),
         10341 => npc_call(npc_10341(ctx, 0, vec![])),
+        10342 => npc_call(npc_10342(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        100354 => npc_call(npc_10333(ctx, 1, vec![])),
-        100355 => npc_call(npc_10334(ctx, 1, vec![])),
-        100356 => npc_call(npc_10335(ctx, 1, vec![])),
-        100357 => npc_call(npc_10336(ctx, 1, vec![])),
-        100358 => npc_call(npc_10338(ctx, 1, vec![])),
-        100359 => npc_call(npc_10338(ctx, 2, vec![])),
-        100360 => npc_call(npc_10339(ctx, 1, vec![])),
-        100361 => npc_call(npc_10340(ctx, 1, vec![])),
-        100362 => npc_call(npc_10340(ctx, 2, vec![])),
-        100363 => npc_call(npc_10340(ctx, 3, vec![])),
-        100364 => npc_call(npc_10341(ctx, 1, vec![])),
+        100356 => npc_call(npc_10332(ctx, 1, vec![])),
+        100357 => npc_call(npc_10333(ctx, 1, vec![])),
+        100358 => npc_call(npc_10334(ctx, 1, vec![])),
+        100359 => npc_call(npc_10335(ctx, 1, vec![])),
+        100360 => npc_call(npc_10336(ctx, 1, vec![])),
+        100361 => npc_call(npc_10338(ctx, 1, vec![])),
+        100362 => npc_call(npc_10338(ctx, 2, vec![])),
+        100363 => npc_call(npc_10339(ctx, 1, vec![])),
+        100364 => npc_call(npc_10340(ctx, 1, vec![])),
+        100365 => npc_call(npc_10340(ctx, 2, vec![])),
+        100366 => npc_call(npc_10340(ctx, 3, vec![])),
+        100367 => npc_call(npc_10341(ctx, 1, vec![])),
+        100368 => npc_call(npc_10342(ctx, 1, vec![])),
         _ => None,
     }
 }

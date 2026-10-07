@@ -1032,7 +1032,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        100365 => npc_call(npc_10360(ctx, 1, vec![])),
+        100369 => npc_call(npc_10360(ctx, 1, vec![])),
         _ => None,
     }
 }
