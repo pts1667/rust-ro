@@ -43,6 +43,10 @@
     "basic_skill_check": true,
     "friend_auto_add": true,
     "quest_skill_learn": false,
+    "instance_block_leave": true,
+    "instance_block_leaderchange": true,
+    "instance_block_invite": true,
+    "instance_block_expulsion": true,
     "mail": {
       "zeny_fee_percent": 2,
       "attachment_price": 2500,

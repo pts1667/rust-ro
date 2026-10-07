@@ -3,6 +3,7 @@ use models::enums::EnumWithMaskValueU32;
 
 use super::{ScriptWorldService, install_state, protocol, world_data};
 use crate::server::Server;
+use crate::server::model::instance::InstanceMode;
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::game_systems::{GuildInvitation, GuildMenu, GuildPermission, GuildPosition, GuildRecord};
 use crate::server::state::character::Character;
@@ -173,6 +174,9 @@ impl ScriptWorldService {
                 self.area(character, guild_actor_packet(character.char_id, guild.id))
             }
             GuildRequest::InviteGuild(target_id) => {
+                if self.configuration.config().game.instance_block_invite && server.owned_instance(InstanceMode::Guild, character.game_systems.guild_id).is_some() {
+                    return Err("The guild has an open memorial dungeon, nobody can be invited".into());
+                }
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)
@@ -212,6 +216,9 @@ impl ScriptWorldService {
                 let invitation = character.game_systems.guild_invitation.take().unwrap();
                 if !accept || character.game_systems.guild_id != 0 {
                     return self.send(invitation.inviter_id, vec![0x69, 0x01, 1]);
+                }
+                if self.configuration.config().game.instance_block_invite && server.owned_instance(InstanceMode::Guild, guild_id).is_some() {
+                    return Err("The guild has an open memorial dungeon, nobody can join it".into());
                 }
                 let inviter = state
                     .characters()
@@ -642,7 +649,7 @@ impl ScriptWorldService {
 
     fn guild_remove_member(
         &self,
-        _server: &Server,
+        server: &Server,
         state: &mut ServerState,
         character: &mut Character,
         guild_id: u32,
@@ -652,6 +659,11 @@ impl ScriptWorldService {
     ) -> Result<(), String> {
         if character.game_systems.guild_id != guild_id || reason.len() > 40 || reason.chars().any(char::is_control) {
             return Err("Invalid guild departure request".into());
+        }
+        let dungeon = server.owned_instance(InstanceMode::Guild, guild_id);
+        let game = &self.configuration.config().game;
+        if dungeon.is_some() && (if expelled { game.instance_block_expulsion } else { game.instance_block_leave }) {
+            return Err("The guild has an open memorial dungeon, its members cannot leave or be expelled".into());
         }
         let old = self
             .repository
@@ -687,6 +699,16 @@ impl ScriptWorldService {
             other.guild_name.clear();
             self.send(member, belong_packet(other, None))?;
             self.area(other, guild_actor_packet(member, 0))?;
+        }
+        if let Some(instance_id) = dungeon {
+            if expelled {
+                if let Some(other) = state.characters().get(&member) {
+                    server.instance_eject(other, instance_id);
+                }
+            } else {
+                server.instance_eject(character, instance_id);
+                server.instance_destroy(state, instance_id);
+            }
         }
         self.broadcast_guild_summary(state, character, &guild)
     }

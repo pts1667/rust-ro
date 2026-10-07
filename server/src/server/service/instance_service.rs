@@ -151,6 +151,18 @@ impl Server {
         (map, instance)
     }
 
+    /// Memorial dungeon a party or guild owns, if any.
+    pub(crate) fn owned_instance(&self, mode: InstanceMode, owner_id: u32) -> Option<u8> {
+        if owner_id == 0 { None } else { self.instances().of_owner(mode, owner_id) }
+    }
+
+    /// Sends a character who lost access to a dungeon back to their save point.
+    pub(crate) fn instance_eject(&self, character: &crate::server::state::character::Character, instance_id: u8) {
+        if character.map_instance_key.map_instance() == instance_id {
+            self.server_service().schedule_warp_to_walkable_cell_by_character(&Map::name_without_ext(&character.save_map), character.save_x, character.save_y, character.char_id);
+        }
+    }
+
     fn free_instance_id(&self, state: &ServerState) -> Option<u8> {
         (1..=u8::MAX).find(|id| !self.instances().contains(*id) && !state.map_instances().values().flatten().any(|map| map.id() == *id))
     }

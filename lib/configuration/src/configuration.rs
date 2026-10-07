@@ -125,6 +125,10 @@ fn default_friend_auto_add() -> bool {
     true
 }
 
+fn default_true() -> bool {
+    true
+}
+
 fn default_basic_skill_check() -> bool {
     true
 }
@@ -193,6 +197,18 @@ pub struct GameConfig {
     /// `quest_skill_learn` of rathena: quest skills can be raised with skill points instead of needing a quest grant.
     #[serde(default)]
     pub quest_skill_learn: bool,
+    /// `instance_block_leave` of rathena: a party or guild with a memorial dungeon cannot be left.
+    #[serde(default = "default_true")]
+    pub instance_block_leave: bool,
+    /// `instance_block_leaderchange` of rathena: the leader of a party with a memorial dungeon cannot change.
+    #[serde(default = "default_true")]
+    pub instance_block_leaderchange: bool,
+    /// `instance_block_invite` of rathena: nobody can be invited to, or join, a party or guild with a memorial dungeon.
+    #[serde(default = "default_true")]
+    pub instance_block_invite: bool,
+    /// `instance_block_expulsion` of rathena: members of a party or guild with a memorial dungeon cannot be expelled.
+    #[serde(default = "default_true")]
+    pub instance_block_expulsion: bool,
     #[serde(default)]
     pub mail: MailConfig,
     #[serde(default = "default_channels")]

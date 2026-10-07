@@ -4,6 +4,7 @@ use models::enums::skill::UseSkillFailure;
 use super::{ScriptWorldService, install_state, protocol};
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, ScriptWorld};
+use crate::server::model::instance::InstanceMode;
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::permission_groups::Permission;
 use crate::server::model::game_systems::{PartyChange, PartyInvitation, PartyRecord, ScriptWorldRequest};
@@ -380,7 +381,7 @@ impl ScriptWorldService {
                     .values()
                     .find(|other| other.account_id == account_id && other.loaded_from_client_side)
                     .map(|other| other.char_id);
-                self.invite_party(state, character, target)
+                self.invite_party(server, state, character, target)
             }
             PartyRequest::InvitePartyByName(name) => {
                 let target = state
@@ -388,7 +389,7 @@ impl ScriptWorldService {
                     .values()
                     .find(|other| other.name == name && other.loaded_from_client_side)
                     .map(|other| other.char_id);
-                self.invite_party(state, character, target)
+                self.invite_party(server, state, character, target)
             }
             PartyRequest::AnswerPartyInvite { party_id, accept } => {
                 let invitation = character
@@ -402,6 +403,9 @@ impl ScriptWorldService {
                 }
                 if !accept {
                     return self.send(invitation.inviter_id, invitation_result(&character.name, 1));
+                }
+                if self.configuration.config().game.instance_block_invite && server.owned_instance(InstanceMode::Party, party_id).is_some() {
+                    return Err("The party has an open memorial dungeon, nobody can join it".into());
                 }
                 let inviter = state
                     .characters()
@@ -428,11 +432,19 @@ impl ScriptWorldService {
                 self.refresh_party(server, state, character)
             }
             PartyRequest::LeaveParty => {
+                let dungeon = server.owned_instance(InstanceMode::Party, character.game_systems.party_id);
+                if dungeon.is_some() && self.configuration.config().game.instance_block_leave {
+                    return Err("The party has an open memorial dungeon, it cannot be left".into());
+                }
                 let change = self
                     .repository
                     .leave_party(character.char_id, None)
                     .map_err(|error| error.to_string())?;
-                self.install_party_change(server, state, character, change, false)
+                let result = self.install_party_change(server, state, character, change, false);
+                if let Some(instance_id) = dungeon {
+                    server.instance_eject(character, instance_id);
+                }
+                result
             }
             PartyRequest::ExpelParty { account_id, name } => {
                 let party = self
@@ -443,19 +455,31 @@ impl ScriptWorldService {
                 if party.leader_char_id != character.char_id {
                     return Err("Only the party leader can expel members".into());
                 }
+                let dungeon = server.owned_instance(InstanceMode::Party, party.id);
+                if dungeon.is_some() && self.configuration.config().game.instance_block_expulsion {
+                    return Err("The party has an open memorial dungeon, nobody can be expelled".into());
+                }
                 let records = self.repository.party_member_records(party.id).map_err(|error| error.to_string())?;
                 let target = records
                     .iter()
                     .find(|member| member.account_id as u32 == account_id && member.name == name)
                     .ok_or("Party member identity does not match")?;
+                let target_id = target.char_id as u32;
                 let change = self
                     .repository
-                    .leave_party(target.char_id as u32, Some(character.char_id))
+                    .leave_party(target_id, Some(character.char_id))
                     .map_err(|error| error.to_string())?;
-                self.install_party_change(server, state, character, change, true)
+                let result = self.install_party_change(server, state, character, change, true);
+                if let (Some(instance_id), Some(expelled)) = (dungeon, state.characters().get(&target_id)) {
+                    server.instance_eject(expelled, instance_id);
+                }
+                result
             }
             PartyRequest::ChangePartyLeader(account_id) => {
                 let party = cached_party(character).ok_or("Character has no party")?.clone();
+                if self.configuration.config().game.instance_block_leaderchange && server.owned_instance(InstanceMode::Party, party.id).is_some() {
+                    return Err("The party has an open memorial dungeon, its leader cannot change".into());
+                }
                 let target = state
                     .characters()
                     .values()
@@ -532,10 +556,13 @@ impl ScriptWorldService {
         }
     }
 
-    fn invite_party(&self, state: &mut ServerState, character: &Character, target_id: Option<u32>) -> Result<(), String> {
+    fn invite_party(&self, server: &Server, state: &mut ServerState, character: &Character, target_id: Option<u32>) -> Result<(), String> {
         let party = cached_party(character).ok_or("Inviter does not belong to a party")?;
         if party.leader_char_id != character.char_id {
             return Err("Only the party leader can invite members".into());
+        }
+        if self.configuration.config().game.instance_block_invite && server.owned_instance(InstanceMode::Party, party.id).is_some() {
+            return Err("The party has an open memorial dungeon, nobody can be invited".into());
         }
         let Some(target_id) = target_id else {
             return self.send(character.char_id, invitation_result("", 7));
