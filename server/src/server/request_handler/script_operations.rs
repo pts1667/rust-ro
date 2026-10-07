@@ -2,11 +2,12 @@ use std::sync::Arc;
 
 use crate::server::Server;
 use crate::server::model::events::game_event::{
-    CharacterUseGroundSkill, CharacterUseGroundSkillText, GameEvent, ScriptIdentify, ScriptTeleportSelection,
+    CharacterUseGroundSkill, CharacterUseGroundSkillText, GameEvent, ScriptIdentify, ScriptTeleportSelection, SkillMenuSelection,
 };
 use crate::server::model::request::Request;
 use crate::server::request_handler::framing::FrameLength;
 use crate::server::service::script_crafting_service::CraftSelection;
+use crate::server::service::skill_menu_service::SkillMenuChoice;
 
 pub fn frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
     if let Some(layout) = super::talkie_box::layout(id, packetver) {
@@ -18,6 +19,9 @@ pub fn frame_length(id: u16, packetver: u32) -> Option<FrameLength> {
         0x018E => Some(FrameLength::Fixed(10)),
         0x025B => Some(FrameLength::Fixed(6)),
         0x0178 => Some(FrameLength::Fixed(4)),
+        0x01AE => Some(FrameLength::Fixed(4)),
+        0x01FD => Some(FrameLength::Fixed(15)),
+        0x0222 => Some(FrameLength::Fixed(6)),
         0x0369 if (20111102..20120307).contains(&packetver) => Some(FrameLength::Fixed(10)),
         0x0438 if packetver >= 20120307 => Some(FrameLength::Fixed(10)),
         0x0116 if packetver < 20040705 => Some(FrameLength::Fixed(10)),
@@ -101,6 +105,12 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
         0x0178 => GameEvent::ScriptIdentify(ScriptIdentify {
             char_id,
             index: usize::from(read(2).checked_sub(2).ok_or("Invalid identification inventory index")?),
+        }),
+        0x01AE => GameEvent::SkillMenuSelection(SkillMenuSelection { char_id, choice: SkillMenuChoice::Arrow(read(2)) }),
+        0x01FD => GameEvent::SkillMenuSelection(SkillMenuSelection { char_id, choice: SkillMenuChoice::Repair(read(2)) }),
+        0x0222 => GameEvent::SkillMenuSelection(SkillMenuSelection {
+            char_id,
+            choice: SkillMenuChoice::WeaponRefine(u32::from_le_bytes([bytes[2], bytes[3], bytes[4], bytes[5]])),
         }),
         _ => GameEvent::CharacterUseGroundSkill(CharacterUseGroundSkill {
             char_id,

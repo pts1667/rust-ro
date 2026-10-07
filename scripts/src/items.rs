@@ -2581,6 +2581,105 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> { match id {
 18100 => item_18100(ctx),
 18101 => item_18101(ctx),
 18102 => item_18102(ctx),
+1000000 => item_1000000(ctx),
+1000001 => item_1000001(ctx),
+1000002 => item_1000002(ctx),
+1000003 => item_1000003(ctx),
+1000004 => item_1000004(ctx),
+1000005 => item_1000005(ctx),
+1000006 => item_1000006(ctx),
+1000007 => item_1000007(ctx),
+1000008 => item_1000008(ctx),
+1000009 => item_1000009(ctx),
+1000010 => item_1000010(ctx),
+1000011 => item_1000011(ctx),
+1000012 => item_1000012(ctx),
+1000013 => item_1000013(ctx),
+1000014 => item_1000014(ctx),
+1000015 => item_1000015(ctx),
+1000016 => item_1000016(ctx),
+1000017 => item_1000017(ctx),
+1000018 => item_1000018(ctx),
+1000019 => item_1000019(ctx),
+1000020 => item_1000020(ctx),
+1000021 => item_1000021(ctx),
+1000022 => item_1000022(ctx),
+1000023 => item_1000023(ctx),
+1000024 => item_1000024(ctx),
+1000025 => item_1000025(ctx),
+1000026 => item_1000026(ctx),
+1000027 => item_1000027(ctx),
+1000028 => item_1000028(ctx),
+1000029 => item_1000029(ctx),
+1000030 => item_1000030(ctx),
+1000031 => item_1000031(ctx),
+1000032 => item_1000032(ctx),
+1000033 => item_1000033(ctx),
+1000034 => item_1000034(ctx),
+1000035 => item_1000035(ctx),
+1000036 => item_1000036(ctx),
+1000037 => item_1000037(ctx),
+1000038 => item_1000038(ctx),
+1000039 => item_1000039(ctx),
+1000040 => item_1000040(ctx),
+1000041 => item_1000041(ctx),
+1000042 => item_1000042(ctx),
+1000043 => item_1000043(ctx),
+1000044 => item_1000044(ctx),
+1000045 => item_1000045(ctx),
+1000046 => item_1000046(ctx),
+1000047 => item_1000047(ctx),
+1000048 => item_1000048(ctx),
+1000049 => item_1000049(ctx),
+1000050 => item_1000050(ctx),
+1000051 => item_1000051(ctx),
+1000052 => item_1000052(ctx),
+1000053 => item_1000053(ctx),
+1000054 => item_1000054(ctx),
+1000055 => item_1000055(ctx),
+1000056 => item_1000056(ctx),
+1000057 => item_1000057(ctx),
+1000058 => item_1000058(ctx),
+1000059 => item_1000059(ctx),
+1000060 => item_1000060(ctx),
+1000061 => item_1000061(ctx),
+1000062 => item_1000062(ctx),
+1000063 => item_1000063(ctx),
+1000064 => item_1000064(ctx),
+1000065 => item_1000065(ctx),
+1000066 => item_1000066(ctx),
+1000067 => item_1000067(ctx),
+1000068 => item_1000068(ctx),
+1000069 => item_1000069(ctx),
+1000070 => item_1000070(ctx),
+1000071 => item_1000071(ctx),
+1000072 => item_1000072(ctx),
+1000073 => item_1000073(ctx),
+1000074 => item_1000074(ctx),
+1000075 => item_1000075(ctx),
+1000076 => item_1000076(ctx),
+1000077 => item_1000077(ctx),
+1000078 => item_1000078(ctx),
+1000079 => item_1000079(ctx),
+1000080 => item_1000080(ctx),
+1000081 => item_1000081(ctx),
+1000082 => item_1000082(ctx),
+1000083 => item_1000083(ctx),
+1000084 => item_1000084(ctx),
+1000085 => item_1000085(ctx),
+1000086 => item_1000086(ctx),
+1000087 => item_1000087(ctx),
+1000088 => item_1000088(ctx),
+1000089 => item_1000089(ctx),
+1000090 => item_1000090(ctx),
+1000091 => item_1000091(ctx),
+1000092 => item_1000092(ctx),
+1000093 => item_1000093(ctx),
+1000094 => item_1000094(ctx),
+1000095 => item_1000095(ctx),
+1000096 => item_1000096(ctx),
+1000097 => item_1000097(ctx),
+1000098 => item_1000098(ctx),
 _ => Err(format!("Unknown item script {id}")),
 } }
 #[inline(never)]
@@ -16193,6 +16292,647 @@ let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("
 let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Confusion")?, Value::Number(5000)])?;
 let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Blind")?, Value::Number(5000)])?;
 Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000000(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddRace")?, ctx.constant("RC_Dragon")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000001(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpellWhenHit")?, Value::String("HP_ASSUMPTIO".into()), Value::Number(2), Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000002(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddClass")?, ctx.constant("Class_All")?, Value::Number(4)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000003(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(6)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HEAD_TOP")?])?).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000004(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(6)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000005(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Confusion")?, Value::Number(9500)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000006(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBreakArmorRate")?, Value::Number(900)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBreakWeaponRate")?, Value::Number(900)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000007(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(700)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000008(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(8)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(4)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000009(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSpeedRate")?, Value::Number(25)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000010(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, ctx.call(Function::Min, vec![Value::Number(5), (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).binary("-", Value::Number(5))?])?])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Neutral")?, ctx.call(Function::Min, vec![Value::Number(30), (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_GARMENT")?])?).binary("*", Value::Number(3))?])?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000011(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Neutral")?, Value::Number(25)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000012(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).binary("-", Value::Number(5))?])?;
+if ((ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_GARMENT")?])?).binary(">", Value::Number(10))?).truthy() { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Neutral")?, Value::Number(30)])?;
+} } else { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Neutral")?, (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_GARMENT")?])?).binary("*", Value::Number(3))?])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000013(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000014(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("PR_MAGNUS".into()), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpellWhenHit")?, Value::String("PR_TURNUNDEAD".into()), Value::Number(1), Value::Number(20)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000015(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSP")?, Value::Number(50)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000016(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkRate")?, Value::Number(25)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000017(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkRate")?, Value::Number(25)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEff")?, ctx.constant("Eff_Stone")?, Value::Number(1000)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000018(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkRate")?, Value::Number(25)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("NJ_HUUJIN".into()), Value::Number(5), Value::Number(100)])?;
+if ((ctx.call(Function::ReadParam, vec![ctx.constant("bInt")?])?).binary(">", Value::Number(39))?).truthy() { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("NJ_HUUJIN".into()), Value::Number(5), Value::Number(200)])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000019(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkRate")?, Value::Number(50)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000020(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtk")?, Value::Number(25)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAddEff")?, ctx.constant("Eff_Curse")?, Value::Number(200), ((ctx.constant("ATF_WEAPON")?).binary("|", ctx.constant("ATF_LONG")?)?).binary("|", ctx.constant("ATF_TARGET")?)?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000021(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Demon")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Undead")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000022(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHPrecovRate")?, Value::Number(15)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(15)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(7)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000023(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(5)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Swordman")?)?).truthy() { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(6)])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000024(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, ((Value::Number(2)).binary("-", ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_L")?])?)?).binary("-", ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HEAD_TOP")?])?)?])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, ((Value::Number(5)).binary("+", ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_L")?])?)?).binary("+", ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HEAD_TOP")?])?)?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000025(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(900)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSP")?, Value::Number(100)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpellWhenHit")?, Value::String("HP_ASSUMPTIO".into()), Value::Number(1), Value::Number(30)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000026(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000027(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bShortWeaponDamageReturn")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000028(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEff")?, ctx.constant("Eff_Blind")?, Value::Number(500)])?;
+let _ = ctx.call(Function::AutoBonus, vec![Value::Number(83), Value::Number(200), Value::Number(10000), ctx.constant("BF_WEAPON")?, Value::Number(84)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000029(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(150)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000030(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPrate")?, Value::Number((Value::Number(20)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(300)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000031(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000032(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000033(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHPrecovRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000034(ctx: &Context) -> Result<(),String> { if ((ctx.call(Function::ReadParam, vec![ctx.constant("bDex")?])?).binary(">", Value::Number(69))?).truthy() { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000035(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(15)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(15)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Water")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Earth")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Fire")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Wind")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000036(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAllStats")?, Value::Number(1)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000037(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLuk")?, Value::Number(6)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000038(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Freeze")?, Value::Number(10000)])?;
+let _ = ctx.call(Function::Skill, vec![Value::String("WZ_FROSTNOVA".into()), Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000039(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddClass")?, ctx.constant("Class_All")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000040(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHealpower2")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAddItemHealRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::AutoBonus2, vec![Value::Number(85), Value::Number(5), Value::Number(10000), ctx.constant("BF_WEAPON")?, Value::Number(86)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000041(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MC_MAMMONITE".into()), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal")?, Value::String("AM_POTIONPITCHER".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal2")?, Value::String("AM_POTIONPITCHER".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal2")?, Value::String("AL_HEAL".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUnbreakableArmor")?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000042(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCritical")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::AutoBonus, vec![Value::Number(87), Value::Number(10), Value::Number(10000), ctx.constant("BF_WEAPON")?, Value::Number(88)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000043(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Stun")?, Value::Number(2000)])?;
+let _ = ctx.call(Function::AutoBonus2, vec![Value::Number(89), Value::Number(30), Value::Number(10000), ctx.constant("BF_WEAPON")?, Value::Number(90)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000044(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bCastrate")?, Value::String("AL_HOLYLIGHT".into()), Value::Number((Value::Number(50)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHealPower")?, Value::Number(6)])?;
+let _ = ctx.call(Function::AutoBonus2, vec![Value::Number(91), Value::Number(30), Value::Number(10000), ctx.constant("BF_WEAPON")?, Value::Number(92)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000045(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_All")?, Value::Number((Value::Number(300)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Player_Human")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(12)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkDef")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDelayRate")?, Value::Number((Value::Number(25)).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000046(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(7)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(7)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(3)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDelayrate")?, Value::Number((Value::Number(15)).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000047(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee2")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000048(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddClass")?, ctx.constant("Class_All")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bResEff")?, ctx.constant("Eff_Freeze")?, Value::Number(10000)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal2")?, Value::String("AM_POTIONPITCHER".into()), Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal2")?, Value::String("AL_HEAL".into()), Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillHeal2")?, Value::String("PR_SANCTUARY".into()), Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000049(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(15)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000050(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBaseAtk")?, Value::Number(50)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddDefMonster")?, Value::Number(1196), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddDefMonster")?, Value::Number(1197), Value::Number(20)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000051(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHPrecovRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000052(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000053(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(6)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000054(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000055(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(11)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bNoCastCancel")?])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number(25)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000056(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLuk")?, Value::Number(9)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCritical")?, Value::Number(13)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBaseAtk")?, Value::Number(18)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee2")?, Value::Number(13)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000057(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("AL_HEAL".into()), Value::Number(50)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("PR_MAGNUS".into()), Value::Number(30)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(9)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000058(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddSize")?, ctx.constant("Size_Medium")?, Value::Number(8)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).binary("/", Value::Number(2))?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000059(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddSize")?, ctx.constant("Size_Large")?, Value::Number(8)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHit")?, (ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).binary("/", Value::Number(2))?])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, (Value::Number((ctx.call(Function::GetEquipRefineryCnt, vec![ctx.constant("EQI_HAND_R")?])?).number_value()?.wrapping_neg())).binary("/", Value::Number(2))?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000060(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus4, vec![ctx.constant("bAutoSpell")?, Value::String("MO_EXTREMITYFIST".into()), Value::Number(1), Value::Number(3), Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("PR_LEXAETERNA".into()), Value::Number(1), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("AS_SONICBLOW".into()), Value::Number(5), Value::Number(50)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("MO_INVESTIGATE".into()), Value::Number(5), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("ASC_METEORASSAULT".into()), Value::Number(2), Value::Number(50)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000061(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddClass")?, ctx.constant("Class_All")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHealPower")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000062(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPrate")?, Value::Number((Value::Number(25)).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000063(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubEle")?, ctx.constant("Ele_Neutral")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000064(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Angel")?, Value::Number(10)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000065(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(18)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000066(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEffWhenHit")?, ctx.constant("Eff_Sleep")?, Value::Number(600)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000067(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000068(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000069(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(4)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(7)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(7)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MC_MAMMONITE".into()), Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPDrainValue")?, Value::Number(1)])?;
+if ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Alchemist")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("BS_ADRENALINE".into()), Value::Number(1), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(7139), Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(905), Value::Number(10)])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000070(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(6)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(4)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("RG_BACKSTAP".into()), Value::Number(10)])?;
+if ((ctx.call(Function::GetSkillLv, vec![Value::String("RG_STRIPARMOR".into())])?).binary("==", Value::Number(5))?).truthy() { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("RG_STRIPARMOR".into()), Value::Number(5), Value::Number(50)])?; }
+if ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Rogue")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPrate")?, Value::Number((Value::Number(20)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("RG_INTIMIDATE".into()), Value::Number(1), Value::Number((Value::Number(20)).number_value()?.wrapping_neg())])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000071(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEffWhenHit")?, ctx.constant("Eff_Blind")?, Value::Number(600)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000072(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bPerfectHitAddRate")?, Value::Number(20)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000073(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEffWhenHit")?, ctx.constant("Eff_Curse")?, Value::Number(600)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000074(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(544), ctx.constant("RC_Fish")?, Value::Number(3000)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEle")?, ctx.constant("Ele_Water")?, Value::Number(30)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000075(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSPrate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000076(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSpeedRate")?, Value::Number(25)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPDrainValue")?, Value::Number(1)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Thief")?)?).truthy() { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bNoGemStone")?])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000077(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLongAtkRate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bPerfectHitAddRate")?, Value::Number(20)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Archer")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bExpAddRace")?, ctx.constant("RC_Brute")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bComaRace")?, ctx.constant("RC_Brute")?, Value::Number(100)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bComaRace")?, ctx.constant("RC_Player_Doram")?, Value::Number(100)])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000078(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("CG_ARROWVULCAN".into()), Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("DC_THROWARROW".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("BA_MUSICALSTRIKE".into()), Value::Number(10)])?;
+if (Value::Number(i32::from(((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Bard")?)?).truthy() || ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Dancer")?)?).truthy()))).truthy() { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpellWhenHit")?, Value::String("CG_TAROTCARD".into()), Value::Number(2), Value::Number(50)])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000079(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPRate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Acolyte")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bExpAddRace")?, ctx.constant("RC_Undead")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bExpAddRace")?, ctx.constant("RC_Demon")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Undead")?, Value::Number(30)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSubRace")?, ctx.constant("RC_Demon")?, Value::Number(30)])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000080(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSP")?, Value::Number(80)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBaseAtk")?, Value::Number(25)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("AL_CRUCIS".into()), Value::Number(5), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MO_EXTREMITYFIST".into()), Value::Number(10)])?;
+if ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Monk")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUseSPrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bNoCastCancel")?])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000081(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLuk")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPDrainValue")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MC_MAMMONITE".into()), Value::Number(20)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Merchant")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(617), Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMagicDamageReturn")?, Value::Number(20)])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000082(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(500)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MG_COLDBOLT".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MG_FIREBOLT".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MG_LIGHTNINGBOLT".into()), Value::Number(10)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Mage")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(15)).number_value()?.wrapping_neg())])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000083(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHP")?, Value::Number(300)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSP")?, Value::Number(60)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000084(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("WZ_HEAVENDRIVE".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("MG_THUNDERSTORM".into()), Value::Number(10)])?;
+if ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Sage")?)?).truthy() { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMagicDamageReturn")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(716), Value::Number(100)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(715), Value::Number(100)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(20)).number_value()?.wrapping_neg())])?;
+} }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000085(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHPrecovRate")?, Value::Number(30)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(30)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bVit")?, Value::Number(4)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(4)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000086(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPrate")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHPrecovRate")?, Value::Number(50)])?;
+let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("BS_WEAPONPERFECT".into()), Value::Number(1), Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddMonsterDropItem")?, Value::Number(501), Value::Number(500)])?;
+if ((ctx.read("BaseClass")?).binary("==", ctx.constant("Job_Swordman")?)?).truthy() { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddItemGroupHealRate")?, ctx.constant("IG_Potion")?, Value::Number(50)])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000087(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMdef")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000088(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("MG_LIGHTNINGBOLT".into()), Value::Number(5), Value::Number(20)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000089(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bBaseAtk")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bLuk")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000090(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDef")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bSPrecovRate")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("PA_SHIELDCHAIN".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSkillAtk")?, Value::String("PA_SACRIFICE".into()), Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number((Value::Number(10)).number_value()?.wrapping_neg())])?;
+if ((ctx.read("BaseJob")?).binary("==", ctx.constant("Job_Crusader")?)?).truthy() { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDefEle")?, ctx.constant("Ele_Holy")?])?; }
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000091(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus3, vec![ctx.constant("bAutoSpell")?, Value::String("MG_FROSTDIVER".into()), Value::Number(3), Value::Number(250)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000092(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSPGainRace")?, ctx.constant("RC_DemiHuman")?, Value::Number(2)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bSPGainRace")?, ctx.constant("RC_Player_Human")?, Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000093(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(3)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bCastrate")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000094(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkRate")?, Value::Number(5)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000095(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bStr")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000096(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAgi")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(3)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000097(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bInt")?, Value::Number(1)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMatkRate")?, Value::Number(2)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_1000098(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxSP")?, Value::Number(20)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bMaxHPRate")?, Value::Number(5)])?;
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bHit")?, Value::Number(10)])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddSize")?, ctx.constant("Size_Large")?, Value::Number(30)])?;
+let _ = ctx.call(Function::AutoBonus, vec![Value::Number(93), Value::Number(1), Value::Number(7000), ctx.constant("BF_WEAPON")?, Value::Number(94)])?;
+Ok(()) }
 pub fn run_bonus(ctx: &Context, id: u32) -> Result<(), String> { match id {
 1 => bonus_1(ctx),
 2 => bonus_2(ctx),
@@ -16276,6 +17016,18 @@ pub fn run_bonus(ctx: &Context, id: u32) -> Result<(), String> { match id {
 80 => bonus_80(ctx),
 81 => bonus_81(ctx),
 82 => bonus_82(ctx),
+83 => bonus_83(ctx),
+84 => bonus_84(ctx),
+85 => bonus_85(ctx),
+86 => bonus_86(ctx),
+87 => bonus_87(ctx),
+88 => bonus_88(ctx),
+89 => bonus_89(ctx),
+90 => bonus_90(ctx),
+91 => bonus_91(ctx),
+92 => bonus_92(ctx),
+93 => bonus_93(ctx),
+94 => bonus_94(ctx),
 _ => Err(format!("Unknown compiled bonus program {id}")),
 } }
 #[inline(never)]
@@ -16782,4 +17534,76 @@ fn bonus_82(ctx: &Context) -> Result<(), String> { {
 let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENHANCE")?])?;
 }
 Ok(()) }
-pub const CATALOG_HASH: u64 = 17908565436313337341;
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_83(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bFlee")?, Value::Number(20)])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_84(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_INCAGILITY")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_85(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bHPRegenRate")?, Value::Number(600), Value::Number(1000)])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_86(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HEAL")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_87(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bHPRegenRate")?, Value::Number(300), Value::Number(1000)])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_88(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HEAL")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_89(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDefEle")?, ctx.constant("Ele_Ghost")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_90(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENERGYCOAT")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_91(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDefEle")?, ctx.constant("Ele_Ghost")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_92(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENERGYCOAT")?])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_93(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAspdRate")?, Value::Number(100)])?;
+}
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn bonus_94(ctx: &Context) -> Result<(), String> { {
+let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_POTION_BERSERK")?])?;
+}
+Ok(()) }
+pub const CATALOG_HASH: u64 = 8804703369827307706;

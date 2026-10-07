@@ -91,6 +91,8 @@ mod m_instances_endlesstower;
 mod m_instances_nydhoggsnest;
 mod m_instances_orcsmemory;
 mod m_instances_sealedshrine;
+mod m_merchants_refine;
+mod m_merchants_advanced_refiner;
 mod m_airports_airships;
 mod m_other_global_functions;
 
@@ -189,6 +191,8 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         .or_else(|| m_instances_nydhoggsnest::run_npc(ctx, id))
         .or_else(|| m_instances_orcsmemory::run_npc(ctx, id))
         .or_else(|| m_instances_sealedshrine::run_npc(ctx, id))
+        .or_else(|| m_merchants_refine::run_npc(ctx, id))
+        .or_else(|| m_merchants_advanced_refiner::run_npc(ctx, id))
         .or_else(|| m_airports_airships::run_npc(ctx, id))
         .or_else(|| m_other_global_functions::run_npc(ctx, id))
 }
@@ -286,6 +290,8 @@ pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         .or_else(|| m_instances_nydhoggsnest::run_event(ctx, id))
         .or_else(|| m_instances_orcsmemory::run_event(ctx, id))
         .or_else(|| m_instances_sealedshrine::run_event(ctx, id))
+        .or_else(|| m_merchants_refine::run_event(ctx, id))
+        .or_else(|| m_merchants_advanced_refiner::run_event(ctx, id))
         .or_else(|| m_airports_airships::run_event(ctx, id))
         .or_else(|| m_other_global_functions::run_event(ctx, id))
 }

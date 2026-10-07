@@ -111,6 +111,23 @@ pub fn constant(name: &str) -> Reply {
         .ok_or_else(|| format!("Unknown script constant {name}"))
 }
 
+/// `EQI_*` slot name of an equipment command.
+pub fn equipment_slot(slot: &str) -> Result<EquipmentLocation, String> {
+    Ok(match slot {
+        "EQI_HAND_R" => EquipmentLocation::HandRight,
+        "EQI_HAND_L" => EquipmentLocation::HandLeft,
+        "EQI_GARMENT" => EquipmentLocation::Garment,
+        "EQI_ARMOR" => EquipmentLocation::Armor,
+        "EQI_SHOES" => EquipmentLocation::Shoes,
+        "EQI_HEAD_TOP" => EquipmentLocation::HeadTop,
+        "EQI_HEAD_MID" => EquipmentLocation::HeadMid,
+        "EQI_HEAD_LOW" => EquipmentLocation::HeadLow,
+        "EQI_ACC_L" => EquipmentLocation::AccessoryLeft,
+        "EQI_ACC_R" => EquipmentLocation::AccessoryRight,
+        _ => return Err(format!("Unknown equipment slot {slot}")),
+    })
+}
+
 pub fn status_variable(status: &Status, name: &str) -> Option<Value> {
     let value = match name.to_ascii_lowercase().as_str() {
         "zeny" => status.zeny,
@@ -318,20 +335,7 @@ impl ItemScriptHost {
             }
             Function::GetEquipRefineryCnt | Function::GetEquipId => {
                 let slot = arguments.first().ok_or("Missing equipment slot")?.text();
-                let location = match slot.as_str() {
-                    "EQI_HAND_R" => EquipmentLocation::HandRight,
-                    "EQI_HAND_L" => EquipmentLocation::HandLeft,
-                    "EQI_GARMENT" => EquipmentLocation::Garment,
-                    "EQI_ARMOR" => EquipmentLocation::Armor,
-                    "EQI_SHOES" => EquipmentLocation::Shoes,
-                    "EQI_HEAD_TOP" => EquipmentLocation::HeadTop,
-                    "EQI_HEAD_MID" => EquipmentLocation::HeadMid,
-                    "EQI_HEAD_LOW" => EquipmentLocation::HeadLow,
-                    "EQI_ACC_L" => EquipmentLocation::AccessoryLeft,
-                    "EQI_ACC_R" => EquipmentLocation::AccessoryRight,
-                    _ => return Err(format!("Unknown equipment slot {slot}")),
-                }
-                .as_flag();
+                let location = equipment_slot(&slot)?.as_flag();
                 let weapon = self
                     .status
                     .weapons

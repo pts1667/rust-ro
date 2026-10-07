@@ -14,6 +14,7 @@ use crate::server::model::events::game_event::{CharacterChangeJob, CharacterChan
 use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::autoloot::{AUTOLOOT_ITEM_SLOTS, AutoLoot};
 use crate::server::model::permission_groups::CommandKind;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::state::server::ServerState;
@@ -184,6 +185,17 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
                 character.game_systems.no_ask
             });
             packet_zc_notify_playerchat.set_msg(if enabled { "Autorejecting is activated." } else { "Autorejecting is deactivated." }.to_string());
+        }
+        "autoloot" => {
+            let reply = state.characters_mut().get_mut(&char_id).map(|character| handle_autoloot(&mut character.game_systems.autoloot, &args));
+            packet_zc_notify_playerchat.set_msg(reply.unwrap_or_default());
+        }
+        "autolootitem" => {
+            let reply = state.characters_mut().get_mut(&char_id).map(|character| handle_autolootitem(&mut character.game_systems.autoloot, &args));
+            for line in reply.unwrap_or_default().lines() {
+                server.tell(char_id, line);
+            }
+            return;
         }
         "reloadmotd" => {
             server.motd().reload(&server.configuration.server.motd_path);
@@ -475,6 +487,60 @@ pub fn handle_speed_change(server: &Server, char_id: u32, args: Vec<&str>) -> St
     }
     server.add_to_next_tick(GameEvent::CharacterUpdateSpeed(CharacterUpdateSpeed { char_id: char_id, speed }));
     format!("Speed has been set at {}.", speed)
+}
+
+/// `@autoloot [percent]`: no argument toggles between off and everything.
+fn handle_autoloot(autoloot: &mut AutoLoot, args: &[&str]) -> String {
+    let requested = args.first().filter(|arg| !arg.is_empty()).map(|arg| arg.parse::<f64>().map_or(0, |percent| (percent * 100.0) as i32));
+    let rate = requested.unwrap_or(if autoloot.rate > 0 { 0 } else { 10_000 }).clamp(0, 10_000) as u16;
+    autoloot.rate = rate;
+    if rate == 0 {
+        "Autoloot is now off.".to_string()
+    } else if rate == 10_000 {
+        "Autoloot is now on.".to_string()
+    } else {
+        format!("Autolooting items with drop rates of {:.2}% and below.", f64::from(rate) / 100.0)
+    }
+}
+
+/// `@autolootitem <item>` adds, `-<item>` removes, `reset` clears and no argument lists.
+fn handle_autolootitem(autoloot: &mut AutoLoot, args: &[&str]) -> String {
+    let argument = args.join(" ").trim().to_string();
+    let configuration = GlobalConfigService::instance();
+    let describe = |id: i32| configuration.find_item(id).map_or_else(|| id.to_string(), |item| format!("{} {{{}}}", item.name_english, id));
+    if argument == "reset" {
+        autoloot.items = [0; AUTOLOOT_ITEM_SLOTS];
+        return "Your autolootitem list has been reset.".to_string();
+    }
+    if argument.is_empty() {
+        let listed: Vec<String> = autoloot.items.iter().filter(|id| **id != 0).map(|id| describe(*id)).collect();
+        if listed.is_empty() {
+            return "Your autolootitem list is empty.".to_string();
+        }
+        return format!("Items on your autolootitem list:\n{}", listed.join("\n"));
+    }
+    let (removing, name) = argument.strip_prefix('-').map_or((false, argument.as_str()), |name| (true, name.trim()));
+    let name = name.strip_prefix('+').unwrap_or(name).trim();
+    let item = name.parse::<i32>().ok().and_then(|id| configuration.find_item(id)).or_else(|| configuration.find_item_by_name(name));
+    let Some(item) = item else {
+        return format!("Item '{name}' not found.");
+    };
+    let slot = autoloot.items.iter().position(|id| *id == item.id);
+    match (removing, slot) {
+        (true, Some(slot)) => {
+            autoloot.items[slot] = 0;
+            format!("Removed item: '{}' from your autolootitem list.", describe(item.id))
+        }
+        (true, None) => "You're currently not autolooting this item.".to_string(),
+        (false, Some(_)) => "You're already autolooting this item.".to_string(),
+        (false, None) => match autoloot.items.iter().position(|id| *id == 0) {
+            Some(free) => {
+                autoloot.items[free] = item.id;
+                format!("Autolooting item: '{}'.", describe(item.id))
+            }
+            None => format!("Your autolootitem list is full. Remove some items first with @autolootitem -<item name or ID>."),
+        },
+    }
 }
 
 pub fn handle_heal(server: &Server, char_id: u32, args: Vec<&str>) -> String {

@@ -657,5 +657,101 @@
     "calls": [
       "specialeffect2"
     ]
+  },
+  {
+    "id": 83,
+    "item_id": 1000028,
+    "kind": "bonus",
+    "calls": [
+      "bonus"
+    ]
+  },
+  {
+    "id": 84,
+    "item_id": 1000028,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
+  },
+  {
+    "id": 85,
+    "item_id": 1000040,
+    "kind": "bonus",
+    "calls": [
+      "bonus2"
+    ]
+  },
+  {
+    "id": 86,
+    "item_id": 1000040,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
+  },
+  {
+    "id": 87,
+    "item_id": 1000042,
+    "kind": "bonus",
+    "calls": [
+      "bonus2"
+    ]
+  },
+  {
+    "id": 88,
+    "item_id": 1000042,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
+  },
+  {
+    "id": 89,
+    "item_id": 1000043,
+    "kind": "bonus",
+    "calls": [
+      "bonus"
+    ]
+  },
+  {
+    "id": 90,
+    "item_id": 1000043,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
+  },
+  {
+    "id": 91,
+    "item_id": 1000044,
+    "kind": "bonus",
+    "calls": [
+      "bonus"
+    ]
+  },
+  {
+    "id": 92,
+    "item_id": 1000044,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
+  },
+  {
+    "id": 93,
+    "item_id": 1000098,
+    "kind": "bonus",
+    "calls": [
+      "bonus"
+    ]
+  },
+  {
+    "id": 94,
+    "item_id": 1000098,
+    "kind": "visual",
+    "calls": [
+      "specialeffect2"
+    ]
   }
 ]

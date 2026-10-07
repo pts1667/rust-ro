@@ -11,8 +11,22 @@ pub struct ScriptGameData {
     pub groups: Vec<ItemGroup>,
     pub summons: Vec<SummonGroup>,
     pub recipes: Vec<Recipe>,
+    /// `create_arrow_db.yml`: what Arrow Crafting turns an item into.
+    pub arrows: Vec<ArrowRecipe>,
     pub item_use_groups: HashMap<String, Vec<i32>>,
     pub item_aliases: HashMap<String, i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ArrowRecipe {
+    pub source: i32,
+    pub make: Vec<ArrowProduct>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ArrowProduct {
+    pub item_id: i32,
+    pub amount: i16,
 }
 
 #[derive(Debug, Deserialize)]

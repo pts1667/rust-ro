@@ -795,6 +795,11 @@ pub fn source_is_equipped(status: &Status, item_id: u32) -> bool {
 }
 
 pub fn source_is_equipped_at(status: &Status, item_id: u32, location: u64) -> bool {
+    if let Some(set) = crate::server::model::item_combos::set_of_script(item_id) {
+        let worn = crate::server::model::item_combos::worn_items(status);
+        let configuration = crate::server::service::global_config_service::GlobalConfigService::instance();
+        return set.active_count(&worn, &|id| configuration.find_item(id).is_some_and(|item| item.item_type == models::enums::item::ItemType::Card)) > 0;
+    }
     let id = item_id as i32;
     status.weapons.iter().any(|item| {
         (location == 0 || item.location == location)

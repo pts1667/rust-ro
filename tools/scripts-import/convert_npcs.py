@@ -21,7 +21,7 @@ from rathena_script.names import load_names  # noqa: E402
 from rathena_script.parser import parse_file  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-DEFAULT_SOURCES = ["npc/quests", "npc/instances"]
+DEFAULT_SOURCES = ["npc/quests", "npc/instances", "npc/merchants/refine.txt", "npc/merchants/advanced_refiner.txt"]
 LIBRARY_SOURCES = ["npc"]
 LIBRARY_EXCLUDED = ("npc/re/", "npc/test/", "npc/custom/", "npc/quests/")
 FIRST_NPC_ENTRY = 10_000

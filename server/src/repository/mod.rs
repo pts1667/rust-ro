@@ -283,6 +283,10 @@ pub trait InventoryRepository: Send + Sync {
     async fn character_identify_item(&self, _char_id: u32, _item: InventoryItemModel) -> Result<(), Error> {
         Err(Error::InvalidInput("Item identification is unavailable".into()))
     }
+    /// Sets the refine level and broken state of an item, which must still match `item` (id, item id, unique id and current state).
+    async fn character_set_item_condition(&self, _char_id: u32, _item: InventoryItemModel, _refine: i16, _damaged: bool) -> Result<(), Error> {
+        Err(Error::InvalidInput("Item refining is unavailable".into()))
+    }
     async fn character_inventory_update_add(
         &self,
         _inventory_update_items: &[InventoryItemUpdate],

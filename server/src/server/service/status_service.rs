@@ -2,7 +2,7 @@ use std::sync::{Arc, Once};
 
 use models::enums::bonus::BonusType;
 use models::enums::class::JobName;
-use models::enums::item::EquipmentLocation;
+use models::enums::item::{EquipmentLocation, ItemType};
 use models::enums::{EnumStackable, EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
 use models::item::Wearable;
 use models::status::{Status, StatusSnapshot};
@@ -10,7 +10,9 @@ use models::status_bonus::StatusBonus;
 use script_runtime::WasmRuntime;
 
 use crate::repository::model::item_model::ItemModel;
+use crate::server::model::item_combos;
 use crate::server::script::item_script_handler::ItemScriptHost;
+use crate::server::service::item_service::ItemService;
 use crate::server::service::global_config_service::GlobalConfigService;
 
 static mut SERVICE_INSTANCE: Option<StatusService> = None;
@@ -135,7 +137,7 @@ impl StatusService {
 
         self.collect_pet_bonuses(status, &mut bonuses);
 
-        // TODO card and item combo
+        self.collect_combo_bonuses(status, &mut bonuses);
 
         // Apply skills bonuses
         for temporary_bonus in status.temporary_bonuses.iter() {
@@ -350,6 +352,48 @@ impl StatusService {
             if let BonusType::AutoBonus(definition, _) = bonus {
                 definition.source_location = owner_location;
             }
+        }
+    }
+
+    /// Every worn combo applies the script of its set once.
+    fn collect_combo_bonuses(&self, status: &Status, bonuses: &mut Vec<BonusType>) {
+        let worn = item_combos::worn_items(status);
+        if worn.is_empty() {
+            return;
+        }
+        let is_card = |id: i32| self.configuration_service.find_item(id).is_some_and(|item| item.item_type == ItemType::Card);
+        for set in item_combos::catalog() {
+            let count = set.active_count(&worn, &is_card);
+            if count == 0 {
+                continue;
+            }
+            let dynamic = ItemService::script_metadata(set.id).is_some_and(|script| script.dynamic);
+            if dynamic {
+                for _ in 0..count {
+                    self.run_combo_script(status, bonuses, set.id);
+                }
+            } else {
+                let fixed = set.static_bonuses.get_or_init(|| {
+                    let mut fixed = vec![];
+                    self.run_combo_script(&Status::default(), &mut fixed, set.id);
+                    fixed
+                });
+                for _ in 0..count {
+                    bonuses.extend(fixed.iter().copied());
+                }
+            }
+        }
+    }
+
+    fn run_combo_script(&self, status: &Status, bonuses: &mut Vec<BonusType>, script_id: u32) {
+        let mut script_status = status.clone();
+        script_status.equipment_bonuses = models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(StatusBonus::new).collect());
+        let host = ItemScriptHost::bonuses(script_status, script_id);
+        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", script_id));
+        if let Err(error) = result {
+            error!("Failed to execute Wasm combo script {}: {}", script_id, error);
+        } else {
+            bonuses.extend(host.bonuses.drain());
         }
     }
 

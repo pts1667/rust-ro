@@ -49,7 +49,7 @@ fn npc_10011(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                             ctx.mes("Ooh, I'm sorry")?;
                                             ctx.mes("but you need to")?;
                                             ctx.mes("bring at least")?;
-                                            ctx.mes(op(super::m_other_global_functions::fn_89_f_insertplural(ctx, 0, vec![local_get(&l_items, &op(l_i.clone(), "+", n(1))?, false), ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?, "+", s("."))?.text())?;
+                                            ctx.mes(op(super::m_other_global_functions::fn_93_f_insertplural(ctx, 0, vec![local_get(&l_items, &op(l_i.clone(), "+", n(1))?, false), ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?, "+", s("."))?.text())?;
                                             ctx.close()?;
                                             return Err(END.into());
                                         }
@@ -73,7 +73,7 @@ fn npc_10011(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                             ctx.mes("Hm? I'm sorry,")?;
                                             ctx.mes("but I actually can't")?;
                                             ctx.mes("make this right now. You")?;
-                                            ctx.mes(op(s("need "), "+", super::m_other_global_functions::fn_89_f_insertplural(ctx, 0, vec![local_get(&l_items, &op(l_i.clone(), "+", n(1))?, false), ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?.text())?;
+                                            ctx.mes(op(s("need "), "+", super::m_other_global_functions::fn_93_f_insertplural(ctx, 0, vec![local_get(&l_items, &op(l_i.clone(), "+", n(1))?, false), ctx.call(Function::GetItemName, vec![local_get(&l_items, &l_i.clone(), false)])?])?)?.text())?;
                                             ctx.mes("in order for me to put this")?;
                                             ctx.mes("Bunny Band together...")?;
                                             ctx.close()?;

@@ -25,7 +25,7 @@ pub struct ItemService {
 #[derive(Deserialize)]
 pub(crate) struct ItemScript {
     id: u32,
-    dynamic: bool,
+    pub(crate) dynamic: bool,
     source_hash: String,
     #[serde(default)]
     pub reads: Vec<String>,

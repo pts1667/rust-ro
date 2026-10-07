@@ -1,6 +1,8 @@
 //! Script functions that NPC dialogue scripts converted from rathena rely on: NPC effects, sounds, map-wide
 //! announcements, counters and weight checks.
 
+use models::enums::EnumWithNumberValue;
+use models::enums::item::ItemType;
 use script_sdk::{Function, Reply, Value};
 
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
@@ -78,6 +80,11 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
         "IIT_ENTER_Y" => return Some(Value::Number(5)),
         "IIT_MAPCOUNT" => return Some(Value::Number(6)),
         "IIT_MAP" => return Some(Value::Number(7)),
+        "REFINE_COST_NORMAL" | "REFINE_MATERIAL_ID" => return Some(Value::Number(0)),
+        "REFINE_COST_HD" | "REFINE_ZENY_COST" => return Some(Value::Number(1)),
+        "REFINE_COST_ENRICHED" => return Some(Value::Number(2)),
+        "IT_ARMOR" => return Some(Value::Number(ItemType::Armor.value() as i32)),
+        "IT_WEAPON" => return Some(Value::Number(ItemType::Weapon.value() as i32)),
         "FW_THIN" => return Some(Value::Number(100)),
         "FW_NORMAL" => return Some(Value::Number(400)),
         "FW_BOLD" => return Some(Value::Number(700)),

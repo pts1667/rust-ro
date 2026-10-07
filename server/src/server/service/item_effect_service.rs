@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use models::enums::class::{EquipClassFlag, JobName};
 use models::enums::item::{ItemFlag, ItemType};
 use models::enums::status::StatusTypes;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue};
@@ -16,6 +17,7 @@ use crate::server::model::events::game_event::{CharacterUseItem, GameEvent, Scri
 use crate::server::model::events::map_event::ScriptSpawn;
 use crate::server::model::map::{Map, RANDOM_CELL};
 use crate::server::model::map_flags::{MapFlag, MapFlags};
+use crate::server::model::permission_groups::Permission;
 use crate::server::model::movement::Movable;
 use crate::server::script::item_script_handler::{ItemEffect, ItemScriptHost};
 use crate::server::service::item_service::ItemService;
@@ -65,6 +67,9 @@ pub(crate) fn status_to_end(arguments: &[Value]) -> Result<(Option<u32>, Option<
     Ok((target, kind))
 }
 
+/// `item_use_interval` of `battle/items.conf`.
+const ITEM_USE_INTERVAL_MS: u128 = 100;
+
 pub(crate) fn validate_item_map_flags(flags: &MapFlags, item: &ItemModel) -> Result<(), String> {
     if flags.enabled(MapFlag::NoItemConsumption) {
         return Err("Items cannot be used on this map".into());
@@ -97,6 +102,40 @@ impl ItemService {
                 && member.map_instance_key == character.map_instance_key && !member.is_dead() && member.status.hp > 0)
             { return Err("Giant Fly Wing requires another living party member on this map".into()); }
         }
+        Ok(())
+    }
+
+    /// What `pc_isUseitem` and `pc_useitem` check before running an item, then starts the use interval and the item `Delay`.
+    fn start_item_use(&self, state: &ServerState, character: &mut Character, item: &InventoryItemModel) -> Result<(), String> {
+        if state.has_permission(character.account_id, Permission::ItemUnconditional) {
+            return Ok(());
+        }
+        let model = self.configuration_service.get_item(item.item_id);
+        let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
+        if character.game_systems.item_next_use_at > now {
+            return Err("Items cannot be used that fast".into());
+        }
+        if model.nouse_sitting == Some(1) && character.is_sitting() {
+            return Err("This item cannot be used while sitting".into());
+        }
+        if character.status.has_status_change(StatusChangeKind::Stone) || character.status.has_status_change(StatusChangeKind::Freeze)
+            || character.status.has_status_change(StatusChangeKind::Stun) || character.status.has_status_change(StatusChangeKind::Sleep) {
+            return Err("A status change prevents using items".into());
+        }
+        let level = character.status.base_level;
+        let usable_by_gender = match model.gender.as_deref() { Some("Female" | "F") => character.sex == 0, Some("Male" | "M") => character.sex == 1, _ => true };
+        let usable_by_job = model.job_flags & EquipClassFlag::flag_from_job_name(JobName::from_value(character.status.job as usize)) != 0;
+        if !usable_by_gender || !usable_by_job || level < model.equip_level_min.unwrap_or(0) as u32 || model.equip_level_max.is_some_and(|max| max > 0 && level > max as u32) {
+            return Err("The character does not meet the requirements of this item".into());
+        }
+        let delay = model.delay_duration.filter(|duration| *duration > 0).map(|duration| (model.delay_status.clone().unwrap_or_else(|| model.id.to_string()), duration));
+        if let Some((key, duration)) = delay {
+            if character.game_systems.item_delays.get(&key).is_some_and(|until| *until > now) {
+                return Err("This item cannot be used again yet".into());
+            }
+            character.game_systems.item_delays.insert(key, now + duration as u128);
+        }
+        character.game_systems.item_next_use_at = now + ITEM_USE_INTERVAL_MS;
         Ok(())
     }
 
@@ -138,7 +177,7 @@ impl ItemService {
     #[metrics::elapsed]
     pub(crate) fn use_item_in_state(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, action: CharacterUseItem, character: &mut Character) {
         let Some(item) = character.get_item_from_inventory(action.index).cloned().filter(|item| item.item_type().is_consumable() && item.amount > 0) else { return; };
-        if character.is_dead() || self.validate_item_in_state(server, state, character, &item).is_err() { self.notify_use(character, &action, item.amount, false); return; }
+        if character.is_dead() || self.validate_item_in_state(server, state, character, &item).is_err() || self.start_item_use(state, character, &item).is_err() { self.notify_use(character, &action, item.amount, false); return; }
         let mut host = self.prepare_host(server, character, item.item_id as u32, true);
         if Self::script_metadata(item.item_id as u32).is_some_and(|metadata| metadata.calls.iter().any(|call| call == "getcharid")) {
             for character in state.characters().values().chain(std::iter::once(&*character)) {
@@ -540,7 +579,7 @@ impl ItemService {
         packet.set_index(index as u16); packet.set_count(amount); packet.fill_raw(); self.send(char_id, packet.raw);
     }
 
-    fn notify_grant(&self, char_id: u32, index: usize, item: &InventoryItemModel, amount: i16) {
+    pub(crate) fn notify_grant(&self, char_id: u32, index: usize, item: &InventoryItemModel, amount: i16) {
         let mut packet = PacketZcItemPickupAck3::new(self.configuration_service.packetver());
         packet.set_itid(item.item_id as u16); packet.set_count(amount as u16); packet.set_index(index as u16);
         packet.set_is_identified(item.is_identified); packet.set_atype(item.item_type().to_client_type() as u8);

@@ -467,6 +467,7 @@ impl InventoryService {
             // TODO check if can carry (< 90% weight)
             if self.check_base_level_requirement(character, item_to_equip_model)
                 && self.check_job_requirement(character, item_to_equip_model)
+                && self.check_gender_requirement(character, item_to_equip_model)
                 && location != 0
                 && !inventory_item.is_damaged
                 && StatusEffectService::permits_equipment(&character.status, item_to_equip_model.item_type, item_to_equip_model.location)
@@ -685,6 +686,15 @@ impl InventoryService {
 
     pub fn check_base_level_requirement(&self, character: &Character, equip_item: &ItemModel) -> bool {
         character.status.base_level >= (equip_item.equip_level_min.unwrap_or(0) as u32)
+            && equip_item.equip_level_max.is_none_or(|max| max <= 0 || character.status.base_level <= max as u32)
+    }
+
+    pub fn check_gender_requirement(&self, character: &Character, equip_item: &ItemModel) -> bool {
+        match equip_item.gender.as_deref() {
+            Some("Female" | "F") => character.sex == 0,
+            Some("Male" | "M") => character.sex == 1,
+            _ => true,
+        }
     }
 
     pub fn check_job_requirement(&self, character: &Character, equip_item: &ItemModel) -> bool {

@@ -1450,6 +1450,8 @@ pub fn get_battle_flag(flag_name: &String) -> Value {
         "max_hair_color" => Value::new_number(8),
         "min_cloth_color" => Value::new_number(0),
         "max_cloth_color" => Value::new_number(4),
+        // The 20120307 client has no refine window.
+        "feature.refineui" => Value::new_number(0),
         &_ => panic!("unknown battle flag {flag_name}"),
     }
 }

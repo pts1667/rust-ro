@@ -369,6 +369,9 @@ impl Server {
                 }));
                 return Ok(());
             }
+            if crate::server::service::skill_menu_service::is_menu_skill(skill.name()) {
+                return self.open_skill_menu(state, &mut character, skill.name(), event.skill_id, event.skill_level, event.target_id, tick);
+            }
             self.script_skill_service().validate_skill(skill, u32::from(event.skill_level))?;
             if !self.player_skill_target_allowed(state, &character, event.target_id, event.skill_id, false) {
                 return Err("Skill target is hidden or unavailable".into());
@@ -1229,12 +1232,13 @@ impl Server {
             .get_map_instance(kill.map_instance_key.map_name(), kill.map_instance_key.map_instance())
             .ok_or("Loot map is unavailable")?;
         instance.add_to_delayed_tick(
-            MapEvent::MobDropItems(crate::server::model::events::map_event::MobDropItems {
+            crate::server::model::events::map_event::MobDropItems {
                 owner_id: kill.char_id,
                 mob_id: kill.mob_id,
                 mob_x: kill.mob_x,
                 mob_y: kill.mob_y,
-            }),
+            }
+            .into_event(state.get_character(kill.char_id).map(|character| character.game_systems.autoloot).unwrap_or_default()),
             400,
         );
         self.transfer_castle_on_emperium_break(state, &kill);

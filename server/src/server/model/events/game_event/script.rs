@@ -281,6 +281,22 @@ impl GameEventHandler for ScriptIdentify {
     }
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub struct SkillMenuSelection {
+    pub char_id: u32,
+    pub choice: crate::server::service::skill_menu_service::SkillMenuChoice,
+}
+
+impl GameEventHandler for SkillMenuSelection {
+    fn handle(self, server: &Server, state: &mut ServerState, tick: u128) -> Result<(), String> {
+        server.choose_in_skill_menu(state, self.char_id, self.choice, tick)
+    }
+
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+}
+
 impl GameEventHandler for FameChanged {
     fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let update = self;

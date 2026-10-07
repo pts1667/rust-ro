@@ -1,4 +1,5 @@
 pub mod action;
+pub mod autoloot;
 pub mod battleground;
 pub mod battleground_queue;
 pub mod chat_room;
@@ -18,7 +19,9 @@ pub mod game_systems;
 pub(crate) mod ground_unit;
 pub mod hotkey;
 pub mod instance;
+pub mod refine;
 pub mod item;
+pub mod item_combos;
 pub mod map;
 pub mod map_flags;
 pub mod map_instance;

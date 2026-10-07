@@ -260,19 +260,21 @@ def main():
     metadata = []
     programs = []
     errors = []
-    for item in items:
-        source = item.get("script")
-        if not source:
-            continue
-        converter = Parser(source, programs, item["id"])
+    scripts = [(item["id"], item["script"]) for item in items if item.get("script")]
+    combos = ROOT / "config/item_combos.json"
+    if combos.exists():
+        # combo sets run like an item script under a virtual id, see import_item_combos.py
+        scripts += [(combo["id"], combo["script"]) for combo in json.loads(combos.read_text(encoding="utf-8"))]
+    for script_id, source in scripts:
+        converter = Parser(source, programs, script_id)
         try:
             body = converter.compile()
         except ValueError as error:
-            errors.append((item["id"], str(error)))
+            errors.append((script_id, str(error)))
             continue
-        functions.append(f"{item['id']} => item_{item['id']}(ctx),")
-        bodies.append(f"#[inline(never)]\n#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]\nfn item_{item['id']}(ctx: &Context) -> Result<(),String> {{ {body}\nOk(()) }}")
-        metadata.append({"id": item["id"], "dynamic": converter.dynamic, "source_hash": hashlib.md5(source.encode()).hexdigest(), "calls": sorted(converter.calls),
+        functions.append(f"{script_id} => item_{script_id}(ctx),")
+        bodies.append(f"#[inline(never)]\n#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]\nfn item_{script_id}(ctx: &Context) -> Result<(),String> {{ {body}\nOk(()) }}")
+        metadata.append({"id": script_id, "dynamic": converter.dynamic, "source_hash": hashlib.md5(source.encode()).hexdigest(), "calls": sorted(converter.calls),
                          "reads": sorted(converter.reads), "writes": sorted(converter.writes),
                          "interactive": bool(converter.calls & {"callfunc", "input", "mes", "close", "next", "select", "cutin"})})
     if errors:

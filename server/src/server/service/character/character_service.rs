@@ -27,7 +27,7 @@ use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::PLAYER_FOV;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, GameEvent, CharacterUpdateClientSideStats};
-use crate::server::model::events::map_event::{MapEvent, MobDropItems};
+use crate::server::model::events::map_event::MobDropItems;
 use crate::server::model::events::persistence_event::PersistenceEvent::SaveCharacterPosition;
 use crate::server::model::events::persistence_event::{
     PersistenceEvent, SavePositionUpdate, StatusUpdate,
@@ -1735,20 +1735,16 @@ impl CharacterService {
     ) {
         self.gain_base_exp(character, character_kill_monster.mob_base_exp);
         self.gain_job_exp(character, character_kill_monster.mob_job_exp);
-        // TODO check autoloot
-        let autoloot = false;
-        if autoloot {
-        } else {
-            map_instance.add_to_delayed_tick(
-                MapEvent::MobDropItems(MobDropItems {
-                    owner_id: character_kill_monster.char_id,
-                    mob_id: character_kill_monster.mob_id,
-                    mob_x: character_kill_monster.mob_x,
-                    mob_y: character_kill_monster.mob_y,
-                }),
-                400,
-            );
-        }
+        map_instance.add_to_delayed_tick(
+            MobDropItems {
+                owner_id: character_kill_monster.char_id,
+                mob_id: character_kill_monster.mob_id,
+                mob_x: character_kill_monster.mob_x,
+                mob_y: character_kill_monster.mob_y,
+            }
+            .into_event(character.game_systems.autoloot),
+            400,
+        );
     }
 
     pub fn character_join_map_effect(&self, character: &Character) {

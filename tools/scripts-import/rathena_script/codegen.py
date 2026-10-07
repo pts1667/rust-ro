@@ -566,7 +566,7 @@ class BodyGenerator:
     def command(self, node):
         name = node.name.lower()
         args = node.args
-        if name in ("enable_items", "disable_items", "logmes"):
+        if name in ("enable_items", "disable_items", "logmes", "refineui"):
             return
         if name == "npcskill" and len(args) == 4:
             self.emit(f"npc_skill(ctx, {self.value(args[0])}, {self.value(args[1])}, {self.value(args[2])}, {self.value(args[3])})?;")
@@ -724,6 +724,8 @@ NEW_CALLS = {
     "instance_enter": "InstanceEnter", "instance_npcname": "InstanceNpcName", "instance_mapname": "InstanceMapName", "instance_id": "InstanceId",
     "instance_warpall": "InstanceWarpAll", "instance_announce": "InstanceAnnounce", "instance_check_party": "InstanceCheckParty",
     "instance_check_guild": "InstanceCheckGuild", "instance_info": "InstanceInfo", "instance_live_info": "InstanceLiveInfo", "instance_list": "InstanceList",
+    "getequiparmorlv": "GetEquipArmorLevel", "getequiprefinecost": "GetEquipRefineCost", "downrefitem": "DownRefineItem", "repair": "Repair",
+    "getbattleflag": "GetBattleFlag",
 }
 for _name in ("getcastledata", "setcastledata"):
     SDK_CALLS.pop(_name, None)

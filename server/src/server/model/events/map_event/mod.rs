@@ -85,6 +85,7 @@ map_events! {
     FinalizePetLootDrop(PetLootDropFinalize),
     MobDeathClientNotification(MobLocation),
     MobDropItems(MobDropItems),
+    MobAutoLootDrops(MobAutoLootDrops),
     MobAttackCharacter(MobAttackCharacter),
     AdminKillAllMobs(AdminKillAllMobs),
     AdminTogglePauseMobMovement(AdminTogglePauseMobMovement),

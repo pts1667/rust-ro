@@ -488,6 +488,9 @@ impl ScriptService {
                 if crate::server::service::script_npc_commands::handles(function) {
                     return server.script_npc_call(state, context, function, &arguments);
                 }
+                if crate::server::service::script_refine_service::handles(function) {
+                    return server.script_refine_call(state, context, function, &arguments);
+                }
                 if crate::server::service::instance_service::handles(function) {
                     return server.script_instance_call(state, context, function, &arguments);
                 }
@@ -573,6 +576,7 @@ impl ScriptService {
                                 | "max_hair_color"
                                 | "min_cloth_color"
                                 | "max_cloth_color"
+                                | "feature.refineui"
                         ) {
                             return Err("Unknown battle flag".into());
                         }

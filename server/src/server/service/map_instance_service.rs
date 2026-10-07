@@ -24,6 +24,8 @@ use crate::server::map_instance_loop::MAP_LOOP_TICK_RATE;
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::{CharacterKillMonster, GameEvent, ScriptEvent, CharacterDamage, MapNotifyItemRemoved, ReleaseScriptCapture};
+use crate::server::model::autoloot::AutoLoot;
+use crate::server::model::events::game_event::CharacterAutoLoot;
 use crate::server::model::events::map_event::{CharacterDropItems, MapEvent, MobAttackCharacter, MobDropItems, MobLocation, ScriptSpawn, MobDamage};
 use crate::server::model::map::Map;
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, ToMapItemSnapshot};
@@ -1799,6 +1801,16 @@ impl MapInstanceService {
         self.notify_drop_items(map_instance_state, mob_drop_items.mob_x, mob_drop_items.mob_y, item_to_drop);
     }
 
+    /// The drops fall as usual and the game loop makes the killer pick up the ones its autoloot takes, wherever they landed.
+    pub fn mob_drop_items_for_autoloot(&self, map_instance_state: &mut MapInstanceState, mob_drop_items: MobDropItems, autoloot: AutoLoot) {
+        let drops = self.mob_drop_items_with_rates(map_instance_state, mob_drop_items);
+        let looted: Vec<u32> = drops.iter().filter(|(item, rate)| autoloot.takes(item.item_id, *rate)).map(|(item, _)| item.map_item_id).collect();
+        self.notify_drop_items(map_instance_state, mob_drop_items.mob_x, mob_drop_items.mob_y, drops.into_iter().map(|(item, _)| item).collect());
+        for map_item_id in looted {
+            self.server_task_queue.add_to_first_index(GameEvent::CharacterAutoLoot(CharacterAutoLoot { char_id: mob_drop_items.owner_id, map_item_id }));
+        }
+    }
+
     pub fn character_drop_items_and_send_packet(&self, map_instance_state: &mut MapInstanceState, char_drop_items: CharacterDropItems) {
         let mut rng = fastrand::Rng::new();
         let mut item_to_drop: Vec<DroppedItem> = vec![];
@@ -1852,6 +1864,11 @@ impl MapInstanceService {
     }
 
     pub fn mob_drop_items(&self, map_instance_state: &mut MapInstanceState, mob_drop_items: MobDropItems) -> Vec<DroppedItem> {
+        self.mob_drop_items_with_rates(map_instance_state, mob_drop_items).into_iter().map(|(item, _)| item).collect()
+    }
+
+    /// Each drop comes with the rate of the monster database, the one `@autoloot` compares to.
+    fn mob_drop_items_with_rates(&self, map_instance_state: &mut MapInstanceState, mob_drop_items: MobDropItems) -> Vec<(DroppedItem, u16)> {
         if map_instance_state
             .flags
             .enabled(crate::server::model::map_flags::MapFlag::NoMobLoot)
@@ -1860,7 +1877,7 @@ impl MapInstanceService {
         }
         let mut rng = fastrand::Rng::new();
         let mob = self.configuration_service.get_mob(mob_drop_items.mob_id as i32);
-        let mut item_to_drop: Vec<DroppedItem> = vec![];
+        let mut item_to_drop: Vec<(DroppedItem, u16)> = vec![];
         let treasure_chest = mob.race_groups.iter().any(|group| group.eq_ignore_ascii_case("Treasure"));
         for drop in mob.drops.iter() {
             let drop_rate = if treasure_chest {
@@ -1884,7 +1901,7 @@ impl MapInstanceService {
                     Default::default(),
                     false,
                 ) {
-                    item_to_drop.push(dropped);
+                    item_to_drop.push((dropped, drop.rate as u16));
                 }
             }
         }

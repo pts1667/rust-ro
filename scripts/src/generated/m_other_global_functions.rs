@@ -4,13 +4,160 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-pub(crate) fn fn_75_f_sexmes(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_100_f_getpositionname(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    'b1: {
+        let sw1 = arg(&args, 0, n(999));
+        let mut m1 = false;
+        let d1 = !eq(&sw1, &constant(ctx, "EQI_ACC_L")?) && !eq(&sw1, &constant(ctx, "EQI_ACC_R")?) && !eq(&sw1, &constant(ctx, "EQI_SHOES")?) && !eq(&sw1, &constant(ctx, "EQI_GARMENT")?) && !eq(&sw1, &constant(ctx, "EQI_HEAD_LOW")?) && !eq(&sw1, &constant(ctx, "EQI_HEAD_MID")?) && !eq(&sw1, &constant(ctx, "EQI_HEAD_TOP")?) && !eq(&sw1, &constant(ctx, "EQI_ARMOR")?) && !eq(&sw1, &constant(ctx, "EQI_HAND_L")?) && !eq(&sw1, &constant(ctx, "EQI_HAND_R")?) && !eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_TOP")?) && !eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_MID")?) && !eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_LOW")?) && !eq(&sw1, &constant(ctx, "EQI_COSTUME_GARMENT")?) && !eq(&sw1, &constant(ctx, "EQI_AMMO")?) && !eq(&sw1, &get(ctx, "eqi_shadow_armor")?) && !eq(&sw1, &constant(ctx, "EQI_SHADOW_WEAPON")?) && !eq(&sw1, &constant(ctx, "EQI_SHADOW_SHIELD")?) && !eq(&sw1, &constant(ctx, "EQI_SHADOW_SHOES")?) && !eq(&sw1, &constant(ctx, "EQI_SHADOW_ACC_R")?) && !eq(&sw1, &constant(ctx, "EQI_SHADOW_ACC_L")?);
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_ACC_L")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Accessory 1"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_ACC_R")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Accessory 2"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHOES")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shoes"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_GARMENT")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Robe"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_HEAD_LOW")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Head 3"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_HEAD_MID")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Head 2"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_HEAD_TOP")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Head"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_ARMOR")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Body"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_HAND_L")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Left hand"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_HAND_R")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Right hand"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_TOP")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Upper Costume Headgear"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_MID")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Middle Costume Headgear"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_COSTUME_HEAD_LOW")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Lower Costume Headgear"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_COSTUME_GARMENT")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Costume Garment"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_AMMO")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Arrow/Ammunition"));
+        }
+        if !m1 && eq(&sw1, &get(ctx, "eqi_shadow_armor")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Armor"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHADOW_WEAPON")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Weapon"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHADOW_SHIELD")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Shield"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHADOW_SHOES")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Shoes"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHADOW_ACC_R")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Accessory 2"));
+        }
+        if !m1 && eq(&sw1, &constant(ctx, "EQI_SHADOW_ACC_L")?) { m1 = true; }
+        if m1 {
+            return Ok(s("Shadow Accessory 1"));
+        }
+        if !m1 && d1 { m1 = true; }
+        if m1 {
+            return Ok(s("Unknown"));
+        }
+    }
+    Ok(n(0))
+}
+
+pub(crate) fn fn_79_f_sexmes(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     return Ok(arg(&args, get(ctx, "Sex")?.number_value()?, n(0)));
     Ok(n(0))
 }
 
-pub(crate) fn fn_88_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_89_f_isequipidhack(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_id = n(0);
+    let mut l_id_chk = n(0);
+    let _ = pc;
+    l_id_chk = ctx.call(Function::GetEquipId, vec![arg(&args, 0, n(0))])?;
+    l_id = arg(&args, 1, n(0));
+    if op(l_id.clone(), "!=", l_id_chk.clone())?.truthy() {
+        return Ok(n(1));
+    }
+    return Ok(n(0));
+    Ok(n(0))
+}
+
+pub(crate) fn fn_90_f_isequiprefinehack(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_refine = n(0);
+    let mut l_refine_chk = n(0);
+    let _ = pc;
+    l_refine_chk = ctx.call(Function::GetEquipRefineryCnt, vec![arg(&args, 0, n(0))])?;
+    l_refine = arg(&args, 1, n(0));
+    if op(l_refine.clone(), "!=", l_refine_chk.clone())?.truthy() {
+        return Ok(n(1));
+    }
+    return Ok(n(0));
+    Ok(n(0))
+}
+
+pub(crate) fn fn_91_f_isequipcardhack(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_card = n(0);
+    let mut l_card_chk = n(0);
+    let mut l_i = n(0);
+    let mut l_pos = n(0);
+    let _ = pc;
+    l_pos = arg(&args, 0, n(0));
+    l_i = n(0);
+    'l1: loop {
+        if !op(l_i.clone(), "<", n(4))?.truthy() { break; }
+        'b1: {
+            l_card = arg(&args, op(l_i.clone(), "+", n(1))?.number_value()?, n(0));
+            l_card_chk = ctx.call(Function::GetEquipCardId, vec![l_pos.clone(), l_i.clone()])?;
+            if op(l_card.clone(), "!=", l_card_chk.clone())?.truthy() {
+                return Ok(n(1));
+            }
+        }
+        l_i = op(l_i.clone(), "+", n(1))?;
+    }
+    return Ok(n(0));
+    Ok(n(0))
+}
+
+pub(crate) fn fn_92_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_format_s = s("");
     let mut l_i = n(0);
     let mut l_index = n(0);
@@ -86,13 +233,13 @@ pub(crate) fn fn_88_f_getplural(ctx: &Context, mut pc: usize, args: Vec<Value>) 
     Ok(n(0))
 }
 
-pub(crate) fn fn_89_f_insertplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_93_f_insertplural(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
-    return Ok(sprintf(arg(&args, 3, s("%d %s")), vec![arg(&args, 0, n(0)), (if op(arg(&args, 0, n(0)), "==", n(1))?.truthy() { arg(&args, 1, n(0)) } else { super::m_other_global_functions::fn_88_f_getplural(ctx, 0, vec![arg(&args, 1, n(0)), arg(&args, 2, n(0))])? })])?);
+    return Ok(sprintf(arg(&args, 3, s("%d %s")), vec![arg(&args, 0, n(0)), (if op(arg(&args, 0, n(0)), "==", n(1))?.truthy() { arg(&args, 1, n(0)) } else { super::m_other_global_functions::fn_92_f_getplural(ctx, 0, vec![arg(&args, 1, n(0)), arg(&args, 2, n(0))])? })])?);
     Ok(n(0))
 }
 
-pub(crate) fn fn_93_f_getnumsuffix(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_97_f_getnumsuffix(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_mod = n(0);
     let mut l_n = n(0);
     let _ = pc;
@@ -114,7 +261,7 @@ pub(crate) fn fn_93_f_getnumsuffix(ctx: &Context, mut pc: usize, args: Vec<Value
     Ok(n(0))
 }
 
-pub(crate) fn fn_94_f_canopenstorage(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_98_f_canopenstorage(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     return Ok(n(i32::from((!n(1).truthy() || !(op(ctx.call(Function::GetSkillLv, vec![s("NV_BASIC")])?, "<", n(6))?.truthy() && op(ctx.call(Function::GetSkillLv, vec![s("SU_BASIC_SKILL")])?, "<", n(1))?.truthy())))));
     Ok(n(0))

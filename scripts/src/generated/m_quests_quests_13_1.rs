@@ -8604,7 +8604,7 @@ fn npc_10482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                             }
                                             if !m4 && eq(&sw4, &n(2)) { m4 = true; }
                                             if m4 {
-                                                if !super::m_other_global_functions::fn_94_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                if !super::m_other_global_functions::fn_98_f_canopenstorage(ctx, 0, vec![])?.truthy() {
                                                     ctx.mes("[Cat Paw Agent]")?;
                                                     ctx.mes("I'm sorry, but you")?;
                                                     ctx.mes("need the Novice's")?;
@@ -8664,7 +8664,7 @@ fn npc_10482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                 }
                                                 if !m5 && eq(&sw5, &n(2)) { m5 = true; }
                                                 if m5 {
-                                                    if !super::m_other_global_functions::fn_94_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                    if !super::m_other_global_functions::fn_98_f_canopenstorage(ctx, 0, vec![])?.truthy() {
                                                         ctx.mes("[Cat Paw Agent]")?;
                                                         ctx.mes("I'm sorry, but you")?;
                                                         ctx.mes("need the Novice's")?;
@@ -8933,7 +8933,7 @@ fn npc_10482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                     }
                                                     if !m13 && eq(&sw13, &n(2)) { m13 = true; }
                                                     if m13 {
-                                                        if !super::m_other_global_functions::fn_94_f_canopenstorage(ctx, 0, vec![])?.truthy() {
+                                                        if !super::m_other_global_functions::fn_98_f_canopenstorage(ctx, 0, vec![])?.truthy() {
                                                             ctx.mes("[Cat Paw Agent]")?;
                                                             ctx.mes("I'm sorry, but you")?;
                                                             ctx.mes("need the Novice's")?;

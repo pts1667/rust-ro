@@ -560,6 +560,30 @@ impl GameEventHandler for CharacterKillMonster {
     }
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub struct CharacterAutoLoot {
+    pub char_id: u32,
+    pub map_item_id: u32,
+}
+
+impl GameEventHandler for CharacterAutoLoot {
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        if let Some(mut character) = state.characters_mut().remove(&self.char_id) {
+            if let Some(map_instance) = state.get_map_instance_from_character(&character) {
+                if let Err(error) = server.server_service.character_autoloot_item(server, state, &mut character, self.map_item_id, map_instance.as_ref()) {
+                    warn!("Autoloot failed: {error}");
+                }
+            }
+            state.insert_character(character);
+        }
+        Ok(())
+    }
+}
+
 impl GameEventHandler for CharacterPickUpItem {
     fn required_character(&self) -> Option<u32> {
         Some(self.char_id)

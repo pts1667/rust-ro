@@ -366,6 +366,20 @@ pub enum Function {
     SetInstanceVar,
     GetPartyName,
     AreaMonster,
+    GetEquipName,
+    GetEquipWeaponLevel,
+    GetEquipArmorLevel,
+    GetEquipCardId,
+    GetEquipIsEquipped,
+    GetEquipIsEnableRefine,
+    GetEquipPercentRefinery,
+    GetEquipRefineCost,
+    SuccessRefineItem,
+    FailedRefineItem,
+    DownRefineItem,
+    GetBrokenId,
+    Repair,
+    RepairAll,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

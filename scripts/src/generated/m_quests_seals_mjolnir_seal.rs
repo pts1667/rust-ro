@@ -2276,6 +2276,627 @@ fn npc_11811(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_11812(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let mut l_card: Vec<Value> = Vec::new();
+    let mut l_equip_id = n(0);
+    let mut l_equip_refine = n(0);
+    let mut l_i = n(0);
+    let mut l_indices: Vec<Value> = Vec::new();
+    let mut l_itemtype = n(0);
+    let mut l_menu_s = s("");
+    let mut l_part = n(0);
+    let _ = pc;
+    if op(get(ctx, "$god3")?, "<", get(ctx, "$@god_check1")?)?.truthy() {
+        ctx.mes("[Vestri]")?;
+        ctx.mes("If you want something, you should earn it through your own efforts.")?;
+        ctx.next()?;
+        ctx.mes("[Vestri]")?;
+        ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+        ctx.next()?;
+        ctx.mes("[Vestri]")?;
+        ctx.mes("What do you think?")?;
+        ctx.mes("Kids these days...")?;
+        ctx.close()?;
+        return Err(END.into());
+    } else {
+        if op(get(ctx, "$god4")?, ">=", get(ctx, "$@god_check2")?)?.truthy() {
+            ctx.mes("[Vestri]")?;
+            ctx.mes("I don't feel")?;
+            ctx.mes("like doing anything")?;
+            ctx.mes("today. Anything at all...")?;
+            ctx.next()?;
+            ctx.mes("[Vestri]")?;
+            ctx.mes("Someone must have forged something really monstrous, otherwise I wouldn't be feeling so worthless!")?;
+            ctx.next()?;
+            ctx.mes("[Vestri]")?;
+            ctx.mes("Yeah, I think I need a break! Don't you think I need a break, human?")?;
+            ctx.close()?;
+            return Err(END.into());
+        } else {
+            if op(get(ctx, "god_mjo_0")?, "==", n(11))?.truthy() {
+                ctx.mes("[Vestri]")?;
+                ctx.mes("There's nothing like taking a relaxing break after putting your heart into your work.")?;
+                ctx.next()?;
+                ctx.mes("[Vestri]")?;
+                ctx.mes("What do you think,")?;
+                ctx.mes("human? Isn't that one")?;
+                ctx.mes("of life's simple pleasures?")?;
+                ctx.close()?;
+                return Err(END.into());
+            } else {
+                if op(get(ctx, "god_mjo_0")?, "==", n(10))?.truthy() {
+                    ctx.mes("[Vestri]")?;
+                    ctx.mes("If you want something, you should earn it through your own efforts.")?;
+                    ctx.next()?;
+                    ctx.mes("[Vestri]")?;
+                    ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+                    ctx.next()?;
+                    ctx.mes("[Vestri]")?;
+                    ctx.mes("What do you think?")?;
+                    ctx.mes("Kids these days...")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                } else {
+                    if op(get(ctx, "god_mjo_0")?, "==", n(1))?.truthy() {
+                        if (((op(get(ctx, "god_mjo_1")?, "==", n(3))?.truthy() || op(get(ctx, "god_mjo_2")?, "==", n(3))?.truthy()) || op(get(ctx, "god_mjo_3")?, "==", n(3))?.truthy()) || op(get(ctx, "god_mjo_4")?, "==", n(3))?.truthy()) {
+                            ctx.mes("[Vestri]")?;
+                            ctx.mes("I really hope I meet a decent human being next time. So far, I haven't met one useful human.")?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "god_mjo_3")?, "==", n(2))?.truthy() {
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("Perfect preparation does not always result in success. There's a point when you've got to just go out and do it.")?;
+                                ctx.next()?;
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("I don't know how")?;
+                                ctx.mes("big your goals are,")?;
+                                ctx.mes("but put your heart into")?;
+                                ctx.mes("whatever it is that you")?;
+                                ctx.mes("plan to accomplish in life.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if ((((op(get(ctx, "god_mjo_1")?, "==", n(0))?.truthy() || op(get(ctx, "god_mjo_1")?, "==", n(1))?.truthy()) || op(get(ctx, "god_mjo_2")?, "==", n(0))?.truthy()) || op(get(ctx, "god_mjo_2")?, "==", n(1))?.truthy()) || op(get(ctx, "god_mjo_4")?, "!=", n(0))?.truthy()) {
+                                    ctx.mes("[Vestri]")?;
+                                    ctx.mes("What do you want?")?;
+                                    ctx.next()?;
+                                    'b1: {
+                                        let sw1 = n(select(ctx, &["Nothing.", "Excuse me."])?);
+                                        let mut m1 = false;
+                                        let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                                        if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                                        if m1 {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("If you want something, you should earn it through your own efforts.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                                        if m1 {
+                                            set(ctx, "god_mjo_3", n(3))?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("You didn't answer the question! Now, you've probably got the wrong Dwarf here...")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Get out of here, and go to your human Blacksmiths if you want equipment upgrades!")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                    }
+                                } else {
+                                    if op(get(ctx, "god_mjo_3")?, "==", n(1))?.truthy() {
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("Great...!")?;
+                                        ctx.mes("Which one should I upgrade first, huh? My heart is pounding with anticipation...")?;
+                                        ctx.next()?;
+                                        let base = n(1).number_value()?;
+                                        local_set(&mut l_indices, &n(base + 0), constant(ctx, "EQI_HEAD_TOP")?, false);
+                                        local_set(&mut l_indices, &n(base + 1), constant(ctx, "EQI_ARMOR")?, false);
+                                        local_set(&mut l_indices, &n(base + 2), constant(ctx, "EQI_HAND_L")?, false);
+                                        local_set(&mut l_indices, &n(base + 3), constant(ctx, "EQI_HAND_R")?, false);
+                                        local_set(&mut l_indices, &n(base + 4), constant(ctx, "EQI_GARMENT")?, false);
+                                        local_set(&mut l_indices, &n(base + 5), constant(ctx, "EQI_SHOES")?, false);
+                                        local_set(&mut l_indices, &n(base + 6), constant(ctx, "EQI_ACC_L")?, false);
+                                        local_set(&mut l_indices, &n(base + 7), constant(ctx, "EQI_ACC_R")?, false);
+                                        local_set(&mut l_indices, &n(base + 8), constant(ctx, "EQI_HEAD_MID")?, false);
+                                        local_set(&mut l_indices, &n(base + 9), constant(ctx, "EQI_HEAD_LOW")?, false);
+                                        l_i = n(1);
+                                        'l2: loop {
+                                            if !op(l_i.clone(), "<=", n(10))?.truthy() { break; }
+                                            'b2: {
+                                                if ctx.call(Function::GetEquipIsEquipped, vec![local_get(&l_indices, &l_i.clone(), false)])?.truthy() {
+                                                    l_menu_s = op(op(op(op(l_menu_s.clone(), "+", super::m_other_global_functions::fn_100_f_getpositionname(ctx, 0, vec![local_get(&l_indices, &l_i.clone(), false)])?)?, "+", s("-["))?, "+", ctx.call(Function::GetEquipName, vec![local_get(&l_indices, &l_i.clone(), false)])?)?, "+", s("]"))?;
+                                                }
+                                                l_menu_s = op(l_menu_s.clone(), "+", s(":"))?;
+                                            }
+                                            l_i = op(l_i.clone(), "+", n(1))?;
+                                        }
+                                        l_part = local_get(&l_indices, &n(select_text(ctx, &[l_menu_s.clone()])?), false);
+                                        if op(ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])?, "==", n(0))?.truthy() {
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])?, "==", n(0))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("What...?!")?;
+                                            ctx.mes("This isn't upgradable!")?;
+                                            ctx.mes("What the hell do you want")?;
+                                            ctx.mes("me to do with this?")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
+                                        l_itemtype = ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), constant(ctx, "ITEMINFO_TYPE")?])?;
+                                        l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
+                                        let base = n(0).number_value()?;
+                                        local_set(&mut l_card, &n(base + 0), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(0)])?, false);
+                                        local_set(&mut l_card, &n(base + 1), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(1)])?, false);
+                                        local_set(&mut l_card, &n(base + 2), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(2)])?, false);
+                                        local_set(&mut l_card, &n(base + 3), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(3)])?, false);
+                                        if op(l_equip_refine.clone(), ">=", n(10))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?, "==", n(100))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Come on...")?;
+                                            ctx.mes("Bring me something")?;
+                                            ctx.mes("that presents an")?;
+                                            ctx.mes("element of risk!")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(l_itemtype.clone(), "!=", constant(ctx, "IT_WEAPON")?)?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Armor?!")?;
+                                            ctx.mes("Didn't I tell")?;
+                                            ctx.mes("you that I only work")?;
+                                            ctx.mes("on Level 4 weapons?")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("You can have a human")?;
+                                            ctx.mes("Blacksmith work on that kind of stuff! Now, a Dwarf like me needs something that's more of a challenge!")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])?, "!=", n(4))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Hey...")?;
+                                            ctx.mes("Don't insult me by expecting me to work on anything less than a Level 4 weapon.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Bring me a Level 4 weapon for me to work on next time, got it?")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("If you understand,")?;
+                                        ctx.mes("then let's get on with it!")?;
+                                        ctx.next()?;
+                                        if op(n(select(ctx, &["Sure, let's do it!", "N-no, I changed my mind!"])?), "==", n(2))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Bah...!")?;
+                                            ctx.mes("How do you survive")?;
+                                            ctx.mes("in this world with that")?;
+                                            ctx.mes("kind of cowardice?!")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Oh, forget it.")?;
+                                            ctx.mes("I know you're just being careful. Damn, I was just so eager to get")?;
+                                            ctx.mes("to work!")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(ctx.call(Function::CountItem, vec![n(984)])?, ">", n(0))?.truthy() {
+                                            ctx.call(Function::DelItem, vec![n(984), n(1)])?;
+                                        } else {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Huh...")?;
+                                            ctx.mes("You forgot to")?;
+                                            ctx.mes("bring an Oridecon.")?;
+                                            ctx.mes("Hurry up and get one.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if ((super::m_other_global_functions::fn_89_f_isequipidhack(ctx, 0, vec![l_part.clone(), l_equip_id.clone()])?.truthy() || super::m_other_global_functions::fn_91_f_isequipcardhack(ctx, 0, vec![l_part.clone(), local_get(&l_card, &n(0), false), local_get(&l_card, &n(1), false), local_get(&l_card, &n(2), false), local_get(&l_card, &n(3), false)])?.truthy()) || super::m_other_global_functions::fn_90_f_isequiprefinehack(ctx, 0, vec![l_part.clone(), l_equip_refine.clone()])?.truthy()) {
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                        if op(ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?, ">", ctx.call(Function::Rand, vec![n(100)])?)?.truthy() {
+                                            ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                            ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
+                                            ctx.next()?;
+                                            ctx.call(Function::Emotion, vec![constant(ctx, "ET_SMILE")?])?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Mwahahaha~")?;
+                                            ctx.mes("I've still got it!")?;
+                                            ctx.mes("So aren't you happy")?;
+                                            ctx.mes("with an even more")?;
+                                            ctx.mes("powerful weapon?")?;
+                                            ctx.next()?;
+                                        } else {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                            ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
+                                            ctx.next()?;
+                                            ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Waaahhhhh!")?;
+                                            ctx.mes("Dear God, no!")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("I-It's alright!")?;
+                                            ctx.mes("Bad things happen")?;
+                                            ctx.mes("sometimes. Let's just")?;
+                                            ctx.mes("think of it as both us")?;
+                                            ctx.mes("of us having a bad day.")?;
+                                            ctx.mes("Yeah, no regrets!")?;
+                                            ctx.next()?;
+                                        }
+                                        set(ctx, "god_mjo_3", n(2))?;
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("Well, my friend,")?;
+                                        ctx.mes("if you ever visit my brothers, please give them my regards.")?;
+                                        ctx.mes("Take care.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        if op(get(ctx, "god_mjo_3")?, "==", n(0))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("What do you want?")?;
+                                            ctx.next()?;
+                                            'b3: {
+                                                let sw3 = n(select(ctx, &["Nothing.", "Excuse me."])?);
+                                                let mut m3 = false;
+                                                let d3 = !eq(&sw3, &n(1)) && !eq(&sw3, &n(2));
+                                                if !m3 && eq(&sw3, &n(1)) { m3 = true; }
+                                                if m3 {
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("If you want something, you should earn it through your own efforts.")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                                if !m3 && eq(&sw3, &n(2)) { m3 = true; }
+                                                if m3 {
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("Huh...")?;
+                                                    ctx.mes("I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith...")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking.")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material.")?;
+                                                    ctx.next()?;
+                                                    set(ctx, "god_mjo_3", n(1))?;
+                                                    ctx.mes("[Vestri]")?;
+                                                    ctx.mes("Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        } else {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Zzzz Zzzz Zzzz...")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if op(get(ctx, "god_mjo_0")?, "==", n(2))?.truthy() {
+                            if (((op(get(ctx, "god_mjo_1")?, "==", n(3))?.truthy() || op(get(ctx, "god_mjo_2")?, "==", n(3))?.truthy()) || op(get(ctx, "god_mjo_3")?, "==", n(3))?.truthy()) || op(get(ctx, "god_mjo_4")?, "==", n(3))?.truthy()) {
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("I really hope I meet a decent human being next time. So far, I haven't met one useful human.")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if op(get(ctx, "god_mjo_2")?, "==", n(2))?.truthy() {
+                                    ctx.mes("[Vestri]")?;
+                                    ctx.mes("Perfect preparation does not always result in success. There's a point when you've got to just go out and do it.")?;
+                                    ctx.next()?;
+                                    ctx.mes("[Vestri]")?;
+                                    ctx.mes("I don't know how")?;
+                                    ctx.mes("big your goals are,")?;
+                                    ctx.mes("but put your heart into")?;
+                                    ctx.mes("whatever it is that you")?;
+                                    ctx.mes("plan to accomplish in life.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if (((op(get(ctx, "god_mjo_1")?, "==", n(0))?.truthy() || op(get(ctx, "god_mjo_1")?, "==", n(1))?.truthy()) || op(get(ctx, "god_mjo_3")?, "!=", n(0))?.truthy()) || op(get(ctx, "god_mjo_4")?, "!=", n(0))?.truthy()) {
+                                        ctx.mes("[Vestri]")?;
+                                        ctx.mes("What do you want?")?;
+                                        ctx.next()?;
+                                        'b4: {
+                                            let sw4 = n(select(ctx, &["Nothing.", "Excuse me."])?);
+                                            let mut m4 = false;
+                                            let d4 = !eq(&sw4, &n(1)) && !eq(&sw4, &n(2));
+                                            if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                                            if m4 {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("If you want something, you should earn it through your own efforts.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                                            if m4 {
+                                                set(ctx, "god_mjo_2", n(3))?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("You didn't answer the question! Now, you've probably got the wrong Dwarf here...")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Get out of here, and go to your human Blacksmiths if you want equipment upgrades!")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    } else {
+                                        if op(get(ctx, "god_mjo_2")?, "==", n(1))?.truthy() {
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Great...!")?;
+                                            ctx.mes("Which one should I upgrade first, huh? My heart is pounding with anticipation...")?;
+                                            ctx.next()?;
+                                            let base = n(1).number_value()?;
+                                            local_set(&mut l_indices, &n(base + 0), constant(ctx, "EQI_HEAD_TOP")?, false);
+                                            local_set(&mut l_indices, &n(base + 1), constant(ctx, "EQI_ARMOR")?, false);
+                                            local_set(&mut l_indices, &n(base + 2), constant(ctx, "EQI_HAND_L")?, false);
+                                            local_set(&mut l_indices, &n(base + 3), constant(ctx, "EQI_HAND_R")?, false);
+                                            local_set(&mut l_indices, &n(base + 4), constant(ctx, "EQI_GARMENT")?, false);
+                                            local_set(&mut l_indices, &n(base + 5), constant(ctx, "EQI_SHOES")?, false);
+                                            local_set(&mut l_indices, &n(base + 6), constant(ctx, "EQI_ACC_L")?, false);
+                                            local_set(&mut l_indices, &n(base + 7), constant(ctx, "EQI_ACC_R")?, false);
+                                            local_set(&mut l_indices, &n(base + 8), constant(ctx, "EQI_HEAD_MID")?, false);
+                                            local_set(&mut l_indices, &n(base + 9), constant(ctx, "EQI_HEAD_LOW")?, false);
+                                            l_i = n(1);
+                                            'l5: loop {
+                                                if !op(l_i.clone(), "<=", n(10))?.truthy() { break; }
+                                                'b5: {
+                                                    if ctx.call(Function::GetEquipIsEquipped, vec![local_get(&l_indices, &l_i.clone(), false)])?.truthy() {
+                                                        l_menu_s = op(op(op(op(l_menu_s.clone(), "+", super::m_other_global_functions::fn_100_f_getpositionname(ctx, 0, vec![local_get(&l_indices, &l_i.clone(), false)])?)?, "+", s("-["))?, "+", ctx.call(Function::GetEquipName, vec![local_get(&l_indices, &l_i.clone(), false)])?)?, "+", s("]"))?;
+                                                    }
+                                                    l_menu_s = op(l_menu_s.clone(), "+", s(":"))?;
+                                                }
+                                                l_i = op(l_i.clone(), "+", n(1))?;
+                                            }
+                                            l_part = local_get(&l_indices, &n(select_text(ctx, &[l_menu_s.clone()])?), false);
+                                            if op(ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])?, "==", n(0))?.truthy() {
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])?, "==", n(0))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("What...?!")?;
+                                                ctx.mes("This isn't upgradable!")?;
+                                                ctx.mes("What the hell do you want")?;
+                                                ctx.mes("me to do with this?")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
+                                            l_itemtype = ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), constant(ctx, "ITEMINFO_TYPE")?])?;
+                                            l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
+                                            let base = n(0).number_value()?;
+                                            local_set(&mut l_card, &n(base + 0), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(0)])?, false);
+                                            local_set(&mut l_card, &n(base + 1), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(1)])?, false);
+                                            local_set(&mut l_card, &n(base + 2), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(2)])?, false);
+                                            local_set(&mut l_card, &n(base + 3), ctx.call(Function::GetEquipCardId, vec![l_part.clone(), n(3)])?, false);
+                                            if op(l_equip_refine.clone(), ">=", n(10))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?, "==", n(100))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Come on...")?;
+                                                ctx.mes("Bring me something")?;
+                                                ctx.mes("that presents an")?;
+                                                ctx.mes("element of risk!")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(l_itemtype.clone(), "!=", constant(ctx, "IT_WEAPON")?)?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Armor?!")?;
+                                                ctx.mes("Didn't I tell")?;
+                                                ctx.mes("you that I only work")?;
+                                                ctx.mes("on Level 4 weapons?")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])?, "!=", n(4))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Hey...")?;
+                                                ctx.mes("Don't insult me by expecting me to work on anything less than a Level 4 weapon.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Bring me a Level 4 weapon for me to work on next time, got it?")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("If you understand,")?;
+                                            ctx.mes("then let's get on with it!")?;
+                                            ctx.next()?;
+                                            if op(n(select(ctx, &["Sure, let's do it!", "...no, I am out."])?), "==", n(2))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Bah...!")?;
+                                                ctx.mes("How do you survive")?;
+                                                ctx.mes("in this world with that")?;
+                                                ctx.mes("kind of cowardice?!")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Oh, forget it.")?;
+                                                ctx.mes("I know you're just being careful. Damn, I was just so eager to get")?;
+                                                ctx.mes("to work!")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(ctx.call(Function::CountItem, vec![n(984)])?, ">", n(0))?.truthy() {
+                                                ctx.call(Function::DelItem, vec![n(984), n(1)])?;
+                                            } else {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Huh...")?;
+                                                ctx.mes("You forgot to")?;
+                                                ctx.mes("bring an Oridecon.")?;
+                                                ctx.mes("Hurry up and get one.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if ((super::m_other_global_functions::fn_89_f_isequipidhack(ctx, 0, vec![l_part.clone(), l_equip_id.clone()])?.truthy() || super::m_other_global_functions::fn_91_f_isequipcardhack(ctx, 0, vec![l_part.clone(), local_get(&l_card, &n(0), false), local_get(&l_card, &n(1), false), local_get(&l_card, &n(2), false), local_get(&l_card, &n(3), false)])?.truthy()) || super::m_other_global_functions::fn_90_f_isequiprefinehack(ctx, 0, vec![l_part.clone(), l_equip_refine.clone()])?.truthy()) {
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            if op(ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?, ">", ctx.call(Function::Rand, vec![n(100)])?)?.truthy() {
+                                                ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                                ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Emotion, vec![constant(ctx, "ET_SMILE")?])?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Mwahahaha~")?;
+                                                ctx.mes("I've still got it!")?;
+                                                ctx.mes("So aren't you happy")?;
+                                                ctx.mes("with an even more")?;
+                                                ctx.mes("powerful weapon?")?;
+                                                ctx.next()?;
+                                            } else {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                                ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Waaahhhhh!")?;
+                                                ctx.mes("Dear God, no!")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("I-It's alright!")?;
+                                                ctx.mes("Bad things happen")?;
+                                                ctx.mes("sometimes. Let's just")?;
+                                                ctx.mes("think of it as both us")?;
+                                                ctx.mes("of us having a bad day.")?;
+                                                ctx.mes("Yeah, no regrets!")?;
+                                                ctx.next()?;
+                                            }
+                                            set(ctx, "god_mjo_2", n(2))?;
+                                            ctx.mes("[Vestri]")?;
+                                            ctx.mes("Well, my friend,")?;
+                                            ctx.mes("if you ever visit my brothers, please give them my regards.")?;
+                                            ctx.mes("Take care.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            if op(get(ctx, "god_mjo_2")?, "==", n(0))?.truthy() {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("What do you want?")?;
+                                                ctx.next()?;
+                                                'b6: {
+                                                    let sw6 = n(select(ctx, &["Nothing.", "Excuse me."])?);
+                                                    let mut m6 = false;
+                                                    let d6 = !eq(&sw6, &n(1)) && !eq(&sw6, &n(2));
+                                                    if !m6 && eq(&sw6, &n(1)) { m6 = true; }
+                                                    if m6 {
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("If you want something, you should earn it through your own efforts.")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results.")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                    if !m6 && eq(&sw6, &n(2)) { m6 = true; }
+                                                    if m6 {
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("Huh...")?;
+                                                        ctx.mes("I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith...")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking.")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material.")?;
+                                                        ctx.next()?;
+                                                        set(ctx, "god_mjo_2", n(1))?;
+                                                        ctx.mes("[Vestri]")?;
+                                                        ctx.mes("Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!")?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                }
+                                            } else {
+                                                ctx.mes("[Vestri]")?;
+                                                ctx.mes("Zzzz Zzzz Zzzz...")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if op(get(ctx, "god_mjo_0")?, "==", n(0))?.truthy() {
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("It's always a pleasure to engage myself in hard work, especially smithing.")?;
+                                ctx.next()?;
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("Upgrading is always enjoyable!")?;
+                                ctx.mes("I have no regrets when failure, and I'm always pleased when I'm successful. I'll upgrade everyday to make the best of my life~")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                ctx.mes("[Vestri]")?;
+                                ctx.mes("Zzzz Zzzz Zzzz...")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(n(0))
+}
+
 fn npc_11813(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_talk_not = n(0);
     let mut l_talk_to = n(0);
@@ -2835,6 +3456,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         11809 => npc_call(npc_11809(ctx, 0, vec![])),
         11810 => npc_call(npc_11810(ctx, 0, vec![])),
         11811 => npc_call(npc_11811(ctx, 0, vec![])),
+        11812 => npc_call(npc_11812(ctx, 0, vec![])),
         11813 => npc_call(npc_11813(ctx, 0, vec![])),
         _ => None,
     }

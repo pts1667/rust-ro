@@ -134,6 +134,14 @@ pub struct CharacterGameSystems {
     #[serde(skip)]
     pub potion_success_counter: u8,
     #[serde(skip)]
+    pub autoloot: crate::server::model::autoloot::AutoLoot,
+    /// Earliest tick for the next item use (`item_use_interval`).
+    #[serde(skip)]
+    pub item_next_use_at: u128,
+    /// Item `Delay` cooldowns by status name (items sharing a status share the cooldown), as end ticks.
+    #[serde(skip)]
+    pub item_delays: BTreeMap<String, u128>,
+    #[serde(skip)]
     pub guild_invitation: Option<GuildInvitation>,
     #[serde(skip)]
     pub party_invitation: Option<PartyInvitation>,

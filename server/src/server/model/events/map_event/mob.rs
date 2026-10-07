@@ -51,6 +51,23 @@ pub struct MobDropItems {
     pub mob_y: u16,
 }
 
+impl MobDropItems {
+    /// The drops of a kill whose killer may loot automatically.
+    pub fn into_event(self, autoloot: crate::server::model::autoloot::AutoLoot) -> super::MapEvent {
+        if autoloot.is_off() {
+            super::MapEvent::MobDropItems(self)
+        } else {
+            super::MapEvent::MobAutoLootDrops(MobAutoLootDrops { drops: self, autoloot })
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct MobAutoLootDrops {
+    pub drops: MobDropItems,
+    pub autoloot: crate::server::model::autoloot::AutoLoot,
+}
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct MobAttackCharacter {
     pub mob_id: u32,
@@ -292,6 +309,13 @@ impl MapEventHandler for MobDropItems {
         let mob_drop_items = self;
         ctx.service
             .mob_drop_items_and_send_packet(ctx.map_instance.state_mut().as_mut(), mob_drop_items);
+    }
+}
+
+impl MapEventHandler for MobAutoLootDrops {
+    fn handle(self, ctx: &MapEventContext) {
+        ctx.service
+            .mob_drop_items_for_autoloot(ctx.map_instance.state_mut().as_mut(), self.drops, self.autoloot);
     }
 }
 

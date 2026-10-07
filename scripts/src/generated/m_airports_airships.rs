@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-pub(crate) fn fn_14_applegamble(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+pub(crate) fn fn_18_applegamble(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_amount = n(0);
     let mut l_giveapple = n(0);
     let mut l_npc_name_s = s("");

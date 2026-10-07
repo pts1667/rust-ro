@@ -702,14 +702,38 @@ impl ServerService {
         map_item_id: u32,
         map_instance: &MapInstance,
     ) -> Result<bool, String> {
+        self.pickup_item(server, server_state, character, map_item_id, map_instance, false)
+    }
+
+    /// Autoloot picks up from anywhere on the map, the other rules of picking up still apply.
+    pub fn character_autoloot_item(
+        &self,
+        server: &Server,
+        server_state: &mut ServerState,
+        character: &mut Character,
+        map_item_id: u32,
+        map_instance: &MapInstance,
+    ) -> Result<bool, String> {
+        self.pickup_item(server, server_state, character, map_item_id, map_instance, true)
+    }
+
+    fn pickup_item(
+        &self,
+        server: &Server,
+        server_state: &mut ServerState,
+        character: &mut Character,
+        map_item_id: u32,
+        map_instance: &MapInstance,
+        remote: bool,
+    ) -> Result<bool, String> {
         use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
         use super::script_world_service::{party_can_pick_up, party_loot_candidates};
         if server_state.contains_locked_map_item(map_item_id) || character.is_dead() || character.status.hp == 0 || character.timing.skill_menu_blocked()
-            || character.map_instance_key != *map_instance.key() || !character.is_map_item_in_fov(map_item_id) {
+            || character.map_instance_key != *map_instance.key() || !remote && !character.is_map_item_in_fov(map_item_id) {
             return Ok(false);
         }
         let Some(dropped_item) = map_instance.state().get_dropped_item(map_item_id).copied() else { return Ok(false); };
-        if character.x.abs_diff(dropped_item.x()).max(character.y.abs_diff(dropped_item.y())) > 2 {
+        if !remote && character.x.abs_diff(dropped_item.x()).max(character.y.abs_diff(dropped_item.y())) > 2 {
             return Ok(false);
         }
         let config = &self.configuration_service.config().game;

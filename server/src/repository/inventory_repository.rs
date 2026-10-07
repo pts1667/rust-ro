@@ -37,6 +37,23 @@ mod damaged_equipment_tests {
         assert_eq!((saved[0].unique_id,saved[0].card0,saved[0].card1,saved[0].card2,saved[0].card3),(400,255,15*256+3,1,2));
         assert_eq!(database::required::<i32>(&repository.database.inventory_owners,&10_i32.to_be_bytes()).unwrap(),150000);
     }
+
+    #[test]
+    fn refining_and_repairing_require_the_current_state_of_the_item() {
+        let repository=SledRepository::temporary().unwrap();
+        let record=InventoryRecord {id:10,item_id:1201,amount:1,unique_id:400,refine:4,is_damaged:true,..Default::default()};
+        repository.database.seed(&SeedData {accounts:vec![AccountRecord {account_id:2000000,username:"Player".into(),password:"password".into(), ..Default::default() }],
+            characters:vec![CharacterRecord {char_id:150000,account_id:2000000,name:"Player".into(),inventory_slots:100,..Default::default()}],
+            inventories:vec![CharacterInventory {char_id:150000,items:vec![record.clone()]}],..Default::default()},false).unwrap();
+        let item:ItemModel=serde_json::from_value(serde_json::json!({"id":1201,"name_aegis":"Knife","name_english":"Knife","weight":10,"item_type":"Weapon","job_flags":0,"class_flags":0,"location":0,"flags":0,"trade_flags":0})).unwrap();
+        let model=InventoryItemModel::from_record(&record,&item);
+        assert!(futures::executor::block_on(repository.character_set_item_condition(150001,model.clone(),5,false)).is_err());
+        let mut stale=model.clone(); stale.refine=3;
+        assert!(futures::executor::block_on(repository.character_set_item_condition(150000,stale,5,false)).is_err());
+        futures::executor::block_on(repository.character_set_item_condition(150000,model,5,false)).unwrap();
+        let saved:Vec<InventoryRecord>=database::required(&repository.database.inventories,&150000_i32.to_be_bytes()).unwrap();
+        assert_eq!((saved[0].refine,saved[0].is_damaged,saved[0].unique_id),(5,false,400));
+    }
 }
 
 #[async_trait]
@@ -50,6 +67,21 @@ impl InventoryRepository for SledRepository {
                 .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
             record.is_damaged = true;
             record.equip = 0;
+            tx_write(inventories, &owner.to_be_bytes(), &records)?;
+            Ok(())
+        })?;
+        Ok(())
+    }
+    async fn character_set_item_condition(&self, char_id: u32, item: InventoryItemModel, refine: i16, damaged: bool) -> Result<(), Error> {
+        (&self.database.inventories, &self.database.inventory_owners).transaction(|(inventories, owners)| {
+            let owner: i32 = tx_required(owners, &item.id.to_be_bytes())?;
+            if owner != char_id as i32 { return abort("Item belongs to another character"); }
+            let mut records: Vec<InventoryRecord> = tx_required(inventories, &owner.to_be_bytes())?;
+            let record = records.iter_mut().find(|record| record.id == item.id && record.item_id == item.item_id && record.unique_id == item.unique_id
+                && record.refine == item.refine && record.is_damaged == item.is_damaged)
+                .ok_or(sled::transaction::ConflictableTransactionError::Abort(Error::NotFound))?;
+            record.refine = refine;
+            record.is_damaged = damaged;
             tx_write(inventories, &owner.to_be_bytes(), &records)?;
             Ok(())
         })?;

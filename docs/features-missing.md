@@ -138,11 +138,13 @@ Full table with ids and rathena handler names: [Appendix A](#appendix-a-client-p
 - [x] `CZ_STANDING_RESURRECTION` (0x0292, `clif_parse_AutoRevive`): Token of Siegfried auto revive.
  Consumes a Token of Siegfried (7621, 6293, 6316) and revives with full HP and SP. Missing: Light of Regeneration.
 - [ ] `CZ_SELECT_AUTOSPELL` (0x01CE, `clif_parse_AutoSpell`): Auto Spell menu (see [Section 7](#7-skills)).
-- [ ] `CZ_REQ_MAKINGARROW` (0x01AE, `clif_parse_SelectArrow`): arrow crafting menu.
+- [x] `CZ_REQ_MAKINGARROW` (0x01AE, `clif_parse_SelectArrow`): arrow crafting menu.
+ Framed as 4 bytes in `request_handler/script_operations.rs` and routed to `SkillMenuSelection` (`service/skill_menu_service.rs`).
 - [ ] `CZ_AGREE_STARPLACE` (0x0254, `clif_parse_FeelSaveOk`): Star Gladiator Sun/Moon/Star place confirmation.
 - [ ] `CZ_DORIDORI` (0x01E7) and `CZ_CHOPOKGI` (0x01ED): Novice "Doridori" and Spirit explosion actions.
  `CZ_CHOPOKGI` is done (Super Novice prayer at every 10% of the next level starts Explosion Spirits with the level 5 duration). `CZ_DORIDORI` is framed and ignored: its effect doubles the skill SP regeneration, which the fork does not have yet ([Section 8](#8-battle-system-and-server-configuration)).
-- [ ] `CZ_REQ_WEAPONREFINE` (0x0222, `clif_parse_WeaponRefine`): Whitesmith weapon refine selection (see [Section 6](#6-items-crafting-and-economy)).
+- [x] `CZ_REQ_WEAPONREFINE` (0x0222, `clif_parse_WeaponRefine`): Whitesmith weapon refine selection (see [Section 6](#6-items-crafting-and-economy)).
+ Framed as 6 bytes, the value is the inventory index plus 2; `0x01FD` (repair selection, 15 bytes) is handled the same way.
 - [x] `CZ_ACK_STORE_PASSWORD` (0x023B/0x0281, `clif_parse_StoragePassword`): storage password dialogs.
  Accepted and ignored, as rathena does (`@TODO` handler).
 - [ ] `CZ_REQ_ACCOUNTNAME`, `CZ_REQ_STATUS_GM` (0x0213, `clif_parse_Check`) and the other GM packets listed in [Section 14](#14-gm-and-administration).
@@ -205,24 +207,24 @@ The fork already had numbered map instances (`MapInstance`, `create_map_instance
 
 Reference: `src/map/itemdb.cpp`, `src/map/pc.cpp`, `db/pre-re/item_db_*.yml`, `db/pre-re/item_combos.yml`, `db/pre-re/refine.yml`, `db/pre-re/produce_db.txt`, `db/create_arrow_db.yml`, `db/abra_db.yml`, `db/magicmushroom_db.yml`, `db/item_cash.yml`.
 
-- [ ] **Refining:** refiner NPC flow (Hollgrehenn and the other refiners in `npc/merchants/refine.txt`, 37 scripts, plus `npc/merchants/advanced_refiner.txt`), SDK `getequipisenableref`, `getequiprefinecost`, `getequippercentrefinery`, `successrefitem`, `failedrefitem`, `downrefitem`, `getequipweaponlv`/`getequiparmorlv`, refine rate and bonus tables from `refine.yml`, safe limit and break rules, refine effect packets, `Whitesmith` `WS_WEAPONREFINE` selection (0x0222) with `ZC_ACK_WEAPONREFINING`.
-- [ ] **Repair:** `RepairItem` list/selection packets (`ZC_REQ_ITEMREPAIR_LIST`, `CZ_REQ_ITEMREPAIR`), repair NPC, `repair`/`repairall` script commands, `BS_REPAIRWEAPON`, Mado repair kits are out of scope.
-- [ ] **Item combos** (`item_combos.yml`, 106 sets): not present anywhere in the fork. Needs a combo index, equip/unequip recalculation and the combined script.
-- [ ] **Arrow crafting** (`AC_MAKINGARROW`, `create_arrow_db.yml`) and its selection packet 0x01AE.
+- [x] **Refining:** the refiner scripts of `npc/merchants/refine.txt` and `advanced_refiner.txt` (38 scripts) are converted (`convert_npcs.py` default sources), with the SDK commands `getequipname`, `getequipweaponlv`, `getequiparmorlv`, `getequipcardid`, `getequipisequiped`, `getequipisenableref`, `getequippercentrefinery`, `getequiprefinecost`, `successrefitem`, `failedrefitem` and `downrefitem` (`service/script_refine_service.rs`). Rates, prices and ores come from `refine.yml` through `python tools/scripts-import/import_refine.py --rathena ../rathena` (`model/refine.json`, `model/refine.rs`). Refining takes the item off, persists the new refine through `InventoryRepository::character_set_item_condition` (which checks the item still has the state the script saw), shows it again with `ZC_ACK_ITEMREFINING` (0x0188) and the success or failure effect, then puts it back on; failure destroys the item, cards included. Refining a weapon you forged to +10 gives the fame of `fame_refine_lv1` to `lv3`. The Whitesmith skill `WS_WEAPONREFINE` lists the unequipped, identified weapons whose refine is below the skill level and for which the player holds the ore (0x0221), and the choice (0x0222) follows `skill_weaponrefine` (chance `rate/100 + (job level - 50)/2`, the ore is always used, `ZC_ACK_WEAPONREFINE` 0x0223 messages). Not done: the `Bonus` column of `refine.yml` is imported but battle keeps its own refine bonuses (not compared); `refineui` is ignored and `getbattleflag("feature.refineui")` answers 0 because the 20120307 client has no refine window; the `ET_HUK` emotion on failure; none of this has been run against a client.
+- [x] **Repair:** `repair`, `repairall`, `getbrokenid` for the repair NPCs, and the Blacksmith skill `BS_REPAIRWEAPON` (list 0x01FC of the target's broken items, selection 0x01FD, result 0x01FE): the caster pays the skill SP and one Iron Ore, Iron or Steel (Oridecon Stone for level 4 weapons, Steel for level 1 armor), must be within range of another target, and the target's item is repaired and its inventory sent again. Mado repair kits are out of scope.
+- [x] **Item combos** (`item_combos.yml`): `python tools/scripts-import/import_item_combos.py --rathena ../rathena` writes `config/item_combos.json` (99 sets; a combo naming an item missing from the catalog is dropped, like rathena). Each set gets a virtual script id from 1,000,000 that `import_items.py` compiles next to the item scripts. `model/item_combos.rs` matches the worn weapons, gear, ammo and cards (every element needs its own item or card slot; forged and named items carry metadata instead of cards), and `StatusService::collect_combo_bonuses` runs the set script once per worn combo (static scripts are computed once). Combo auto-bonuses stay active only while a combo of the set is worn.
+- [x] **Arrow crafting** (`AC_MAKINGARROW`): `create_arrow_db.yml` is imported by `import_game_data.py` into `game_data.json` (`arrows`). The skill sends the list of owned, identified, unequipped sources (0x01AD), the choice (0x01AE) consumes one source and grants every product (`Server::open_skill_menu` and `choose_in_skill_menu`, `Character::pending_skill_menu`, valid for 120 s). SP is paid when the choice is made. Too heavy to receive the arrows fails the choice (rathena drops them on the floor).
 - [ ] **Crafting databases:** `produce_db.txt` is partially consumed by `Produce`/`Cooking`; check pharmacy (`AM_PHARMACY`), forging/weapon (`BS_*`), `cooking` and `makerune` (renewal, skip) against the file and add missing recipe types (`CR_SYNTHESISPOTION`, `AM_CP_*`, `WS_CREATECOIN`, `WS_CREATENUGGET`, `ASC_...`).
 - [ ] **Abra/Hocus-pocus** (`abra_db.yml`) and **Magic Mushroom** (`magicmushroom_db.yml`) random skill tables.
 - [ ] **Cash shop:** `item_cash.yml`, cash point balance (`#CASHPOINTS`, `#KAFRAPOINTS`), buy packet 0x0288, tab request 0x0846, `cashshop` NPC type, `CashShop_Functions.txt` (`npc/other/CashShop_Functions.txt`, loaded by `scripts_main.conf`), `@cash`.
 - [ ] **Rental items** (`rentitem*`, `rentalcountitem*`, expiry packets `ZC_CASH_TIME_COUNTER`, `ZC_CASH_ITEM_DELETE`) and `bound` items (`getitembound*`, `itembound`, `countbound`, bound trade rules).
-- [ ] **Item use rules:** `enable_items`/`disable_items`, `consumeitem`, `@itemreset`, usage delay between uses of the same item class.
+- [ ] **Item use rules:** done: the `item_use_interval` of 100 ms between two uses, the item `Delay` (items sharing a `Delay.Status` share the cooldown, kept in memory), `NoUse.Sitting`, gender, base level (min and max) and job at use time, and no use while stoned, frozen, stunned or asleep; the `item_unconditional` permission skips all of it (`ItemEffectService::start_item_use`). Still open: `enable_items`/`disable_items` are ignored by the converter, `@itemreset`, `cashfood_use_interval`, the sitting messages (the client messages are not sent), `Nauthiz`.
 - [ ] **Identify and compose edge cases:** `identifyall`, `successremovecards`/`failedremovecards` (Ancient Cards), `mergeitem` (renewal; skip), unique ids (`getequipuniqueid`).
 - [ ] **Missing items:** 1,167 of 6,169 pre-renewal items are absent from `config/items.json`: ids 12000-12999 (170), 13000-13999 (527), 14000-14999 (415), plus 54 above 15000. They are mostly boxes, cash and event consumables. Regenerate `config/items.json` from `db/pre-re/item_db_*.yml` and rerun `tools/scripts-import/import_items.py`, then drop anything the 20120307 client does not know.
-- [ ] **Item db flags and rules (verify each is read from `config/items.json`):** trade restrictions, `Stack` limits, `Flags` such as `BuyingStore`, `DeadBranch`, `Container`, `NoConsume`, `DropAnnounce`, `TreasureAnnounce`, `NoUse`, expiry, `Delay`/`Group` usage cooldowns, and `Buy`/`Sell` pricing with Overcharge/Discount.
+- [ ] **Item db flags and rules (verify each is read from `config/items.json`):** audited: trade flags, `Stack` and the storage and cart flags are read; `Delay` and `NoUse` were not read anywhere and are now (see above). Not audited: `DropAnnounce`, `TreasureAnnounce`, expiry, `Buy`/`Sell` pricing with Overcharge/Discount.
 - [ ] **Shops:** `callshop`, dynamic shops (`npcshopitem`, `npcshopadditem`, `npcshopdelitem`, `npcshopattach`), `shop` with item count limits, `cashshop` item currency, quest-item shops, `setiteminfo`, `setitemscript`.
 - [ ] **Storage:** storage password (0x023B/0x0281), `storagecountitem`/`storagedelitem`, cart/guild storage count/delete commands, storage size from `battle/items.conf`.
 - [ ] **Vending/buying-store polish:** `autotrade` (no `@autotrade`, no persistent shop), `checkvending`, `vending_*` limits in `battle/items.conf`, vend zeny cap check.
-- [ ] **Autoloot** (`@autoloot`, `@autolootitem`): `character_service.rs` has a `// TODO check autoloot` stub with a hard-coded `false`.
+- [x] **Autoloot:** `@autoloot [percent]` and `@autolootitem [+|-]<item>|reset` (10 slots). The killer's setting travels with the drops (`MapEvent::MobAutoLootDrops`); the drops fall as usual and a `CharacterAutoLoot` event makes the killer pick up the ones that qualify from anywhere on the map (an item qualifies when its database rate is at most the autoloot rate, or it is on the list). Loot lock and party sharing rules still apply and a failure (weight, full inventory) leaves the item on the floor. The settings live in memory only, as in rathena; `@autoloottype` is not implemented.
 - [ ] **Item usage side effects** not yet audited: `item_check_equip`, `use_item` restrictions by map flag (`noitem`), `item_use_interval`, `itemheal` variants, `pet` food/lure items, scroll items that cast skills (`itemskill` partially present).
-- [ ] **Equipment edge rules:** `unequip` on map change (`noreturn`, `job_noenter_map.txt`), two-handed/shield rules, `item_noequip.txt`, gender/class restrictions at equip time, headgear view overrides.
+- [ ] **Equipment edge rules:** done: gender and maximum base level are checked when equipping (the minimum level and job already were). Still open: `unequip` on map change (`noreturn`, `job_noenter_map.txt`), two-handed/shield rules, `item_noequip.txt`, headgear view overrides.
 
 ## 7. Skills
 
@@ -443,10 +445,10 @@ Generated from `clif_packetdb.hpp` at `PACKETVER=20120307`. Wire ids are the one
 | `clif_parse_GM_Item_Monster` | 0x013F | `PacketCzItemCreate` | 14 |
 | `clif_parse_ItemListWindowSelected` | 0x07E4, 0x0870 | `PacketCzItemlistwinRes` | out of scope |
 | `clif_parse_MemorialDungeonCommand` | 0x02CF | `PacketCzMemorialdungeonCommand` | 5 |
-| `clif_parse_RepairItem` | n/a |  | 6 |
-| `clif_parse_SelectArrow` | 0x01AE | `PacketCzReqMakingarrow` | 6/7 |
+| `clif_parse_RepairItem` | 0x01FD |  | done, [Section 6](#6-items-crafting-and-economy) |
+| `clif_parse_SelectArrow` | 0x01AE | `PacketCzReqMakingarrow` | done, 6 |
 | `clif_parse_SkillSelectMenu` | 0x0443 | `PacketCzSkillSelectResponse` | out of scope |
-| `clif_parse_WeaponRefine` | 0x0222 | `PacketCzReqWeaponrefine` | 6 |
+| `clif_parse_WeaponRefine` | 0x0222 | `PacketCzReqWeaponrefine` | done, 6 |
 | `clif_parse_npccashshop_buy` | 0x0288 | `PacketCzPcBuyCashPointItem` | 6 |
 | `clif_parse_ranklist_killer` | 0x0237 |  | out of scope (not in 20120307 pre-re) |
 
