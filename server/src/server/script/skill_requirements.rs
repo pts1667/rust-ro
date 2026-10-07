@@ -243,7 +243,8 @@ impl ScriptSkillService {
         let no_gemstone = snapshot
             .bonuses_raw()
             .iter()
-            .any(|bonus| matches!(bonus, BonusType::EnableNoGemstoneRequired));
+            .any(|bonus| matches!(bonus, BonusType::EnableNoGemstoneRequired))
+            || (character.status.has_status_change(StatusChangeKind::IntoAbyss) && metadata.name != "HW_GANBANTEIN");
         if metadata.name != "AM_CALLHOMUN" {
             for requirement in requirements
                 .get("ItemCost")

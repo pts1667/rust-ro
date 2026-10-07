@@ -13,6 +13,8 @@ use crate::server::state::character::Character;
 use crate::server::Server;
 
 const NPC_DEFENDER_DIVISOR: u32 = 8;
+const KAIZEL_KYRIE_MS: i32 = 2000;
+const KAIZEL_KYRIE_LEVEL: i32 = 10;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct StatusChangeOutcome {
@@ -54,6 +56,11 @@ impl StatusEffectService {
             let total = snapshot.bonuses_raw().iter().filter_map(|bonus| if let models::enums::bonus::BonusType::ResistanceToStatusPercentage(effect, amount) = bonus { applies(*effect).then_some(*amount) } else { None }).sum::<f32>();
             let active = status.active_statuses.iter().flat_map(|change| change.bonuses()).filter_map(|bonus| if let models::enums::bonus::BonusType::ResistanceToStatusPercentage(effect, amount) = bonus { applies(effect).then_some(amount) } else { None }).sum::<f32>();
             request.rate = (request.rate as f32 * (1.0 - (total - active) / 100.0).max(0.0)).clamp(0.0, u16::MAX as f32) as u16;
+            if let Some(siegfried) = status.status_change(StatusChangeKind::Siegfried) {
+                if matches!(request.kind, StatusChangeKind::Blind | StatusChangeKind::Stone | StatusChangeKind::Freeze | StatusChangeKind::Stun | StatusChangeKind::Curse | StatusChangeKind::Sleep | StatusChangeKind::Silence) {
+                    request.rate = (i32::from(request.rate) * (100 - siegfried.values[2]).max(0) / 100).clamp(0, i32::from(u16::MAX)) as u16;
+                }
+            }
             if matches!(request.kind, StatusChangeKind::Freeze | StatusChangeKind::Stone | StatusChangeKind::StoneWait) {
                 request.rate = (request.rate as i32 * (100 - snapshot.mdef().max(0) as i32).max(0) / 100).clamp(0, u16::MAX as i32) as u16;
             }
@@ -146,6 +153,7 @@ impl StatusEffectService {
             IncreaseAgi => &[DecreaseAgi], DecreaseAgi => &[IncreaseAgi],
             Kyrie => &[Assumptio], Assumptio => &[Kyrie],
             Quagmire => &[IncreaseAgi, TwoHandQuicken, Adrenaline, WindWalk, Concentrate],
+            Freeze | Stun | Stone => &[Dancing],
             Aspersio | FireWeapon | WaterWeapon | WindWeapon | EarthWeapon | ShadowWeapon | GhostWeapon | EnchantPoison | EnchantArms =>
                 &[Aspersio, FireWeapon, WaterWeapon, WindWeapon, EarthWeapon, ShadowWeapon, GhostWeapon, EnchantPoison, EnchantArms],
             _ => &[],
@@ -187,9 +195,20 @@ impl StatusEffectService {
                 ExplosionSpirits => values[1] = 75 + 25 * values[0],
                 AutoGuard => values[1] = (0..values[0].max(0).min(10)).map(|level| (5 - level / 2).max(1)).sum(),
                 SignumCrucis => { values[1] = 10 + 4 * values[0]; duration = -1; }
+                Volcano => { let level = values[0].clamp(1, 5) as usize - 1; values[1] = if values[1] != 0 { 10 * values[0] } else { 0 }; values[2] = [10, 14, 17, 19, 20][level]; }
+                ViolentGale => { let level = values[0].clamp(1, 5) as usize - 1; values[1] = if values[1] != 0 { 3 * values[0] } else { 0 }; values[2] = [10, 14, 17, 19, 20][level]; }
                 Deluge => { let level = values[0].clamp(1, 5) as usize - 1; values[1] = if values[1] != 0 { [5, 9, 12, 14, 15][level] } else { 0 }; values[2] = [10, 14, 17, 19, 20][level]; }
                 CriticalWound => values[1] = 20 * values[0],
                 HomAvoid => values[1] = if values[3] == 1 { 40 } else { 10 } * values[0],
+                Longing => values[1] = 500 - 100 * values[0],
+                Kaizel => values[1] = 10 * values[0],
+                Kaahi => { values[1] = 200 * values[0]; values[2] = 5 * values[0]; }
+                Kaite => values[1] = 1 + values[0] / 5,
+                Kaupe => match values[0] {
+                    1 | 2 => { values[1] = 33 * values[0]; values[2] = 1; }
+                    3 => { values[1] = 100; values[2] = 1; }
+                    level => { values[1] = 100; values[2] = level - 2; }
+                },
                 HomDefence => values[1] = 2 * values[0],
                 HomChange => { values[1] = 30 * values[0]; values[2] = 20 * values[0]; }
                 Fleet => { values[1] = 30 * values[0]; values[2] = 5 + 5 * values[0]; }
@@ -232,7 +251,7 @@ impl StatusEffectService {
         }
         if matches!(request.kind, StripWeapon | StripShield | StripArmor | StripHelm) && values[3] == 1 { values[1] = 0; }
         let expires_at = if duration == -1 || request.kind == TrickDead { None } else { Some(tick.saturating_add(duration as u128)) };
-        let interval = match request.kind { Sight | Ruwach => 20, Hiding => 1000, Cloaking | ChaseWalk | MaximizePower => values[1].max(1) as u128, _ => Self::periodic_interval(request.kind) };
+        let interval = match request.kind { Sight | Ruwach => 20, Hiding | Dancing => 1000, Cloaking | ChaseWalk | MaximizePower => values[1].max(1) as u128, _ => Self::periodic_interval(request.kind) };
         let change = StatusChange { kind: request.kind, values, started_at: tick, expires_at, next_periodic_at: tick.saturating_add(interval), flags: request.flags, inherited_from: None };
         if let Some(existing) = status.active_statuses.iter_mut().find(|change| change.kind == request.kind) { *existing = change; } else { status.active_statuses.push(change); }
         if let Some(effect) = request.kind.ailment() { if !status.effects.contains(&effect) { status.effects.push(effect); } }
@@ -399,13 +418,16 @@ impl StatusEffectService {
         let mut ended = vec![];
         let mut chase_strength = None;
         for change in &mut status.active_statuses {
-            let interval = match change.kind { Hiding => 1000, Cloaking | ChaseWalk | MaximizePower => change.values[1].max(1) as u128, _ => continue };
+            let interval = match change.kind { Hiding | Dancing => 1000, Cloaking | ChaseWalk | MaximizePower => change.values[1].max(1) as u128, _ => continue };
             if tick < change.next_periodic_at || change.expired(tick) { continue; }
             let periods = (1 + (tick - change.next_periodic_at) / interval).min(100);
             for _ in 0..periods {
                 let due = change.next_periodic_at;
                 change.next_periodic_at = due.saturating_add(interval);
-                let cost = if change.kind == Hiding {
+                let cost = if change.kind == Dancing {
+                    change.values[2] += 1;
+                    Self::dance_upkeep(change.values[0] & 0xFFFF, change.values[2])
+                } else if change.kind == Hiding {
                     change.values[1] = change.values[1].saturating_sub(1);
                     if change.values[1] <= 0 { ended.push(change.kind); break; }
                     u32::from(change.values[1] % change.values[3].max(1) == 0)
@@ -421,6 +443,19 @@ impl StatusEffectService {
         for kind in &ended { Self::end_status_at(status, Some(*kind), tick); }
         if !status.has_status_change(ChaseWalkStrength) { if let Some((due, request)) = chase_strength { let _ = Self::apply_status(status, request, due, 0); } }
         ended
+    }
+
+    /// SP the performer pays for the given second of a performance, one point every few seconds depending on the skill.
+    fn dance_upkeep(skill_id: i32, second: i32) -> u32 {
+        use models::enums::skill_enums::SkillEnum::*;
+        let every = [
+            (BdRichmankim, 3), (BdDrumbattlefield, 3), (BdRingnibelungen, 3), (BdSiegfried, 3), (BaDissonance, 3), (BaAssassincross, 3), (DcUglydance, 3),
+            (BdLullaby, 4), (BdEternalchaos, 4), (BdRokisweil, 4), (DcFortunekiss, 4),
+            (CgHermode, 5), (BdIntoabyss, 5), (BaWhistle, 5), (DcHumming, 5), (BaPoembragi, 5), (DcServiceforyou, 5),
+            (BaAppleidun, 6), (DcDontforgetme, 10), (CgMoonlit, 10),
+        ];
+        let every = every.iter().find(|(skill, _)| skill.id() as i32 == skill_id).map_or(0, |(_, seconds)| *seconds);
+        u32::from(every > 0 && second % every == 0)
     }
 
     pub fn maximum_pool(base: u32, flat: i32, rate: i32, minimum: u32) -> u32 {
@@ -455,6 +490,27 @@ impl StatusEffectService {
         }
     }
 
+    /// A weapon hit on a Kaahi holder converts SP into HP before the damage lands.
+    fn kaahi_recovery(status: &mut Status) {
+        let Some(change) = status.status_change(StatusChangeKind::Kaahi) else { return };
+        let (heal, cost) = (change.values[1].max(0) as u32, change.values[2].max(0) as u32);
+        if status.hp >= status.max_hp || status.sp < cost { return; }
+        status.sp -= cost;
+        status.hp = status.hp.saturating_add(heal.min(status.max_hp - status.hp));
+    }
+
+    /// Consumes the Kaizel of a character that just died and returns the HP they come back with.
+    pub fn consume_kaizel(status: &mut Status, tick: u128) -> Option<u32> {
+        let percent = status.status_change(StatusChangeKind::Kaizel)?.values[1].max(1) as u32;
+        let revived = (u64::from(status.max_hp) * u64::from(percent) / 100).max(1) as u32;
+        Self::clear_buffs(status);
+        Self::end_status(status, Some(StatusChangeKind::Kaizel));
+        let kyrie = StatusChangeRequest::guaranteed(StatusChangeKind::Kyrie, KAIZEL_KYRIE_MS, KAIZEL_KYRIE_LEVEL);
+        let _ = Self::apply_status(status, kyrie, tick, 0);
+        status.hp = revived;
+        Some(revived)
+    }
+
     pub fn apply_incoming_damage(status: &mut Status, damage: u32, physical: bool) -> u32 {
         use models::status_bonus::BattleFlag;
         let flags = if physical { BattleFlag::Weapon.as_flag() } else { BattleFlag::Magic.as_flag() };
@@ -486,6 +542,14 @@ impl StatusEffectService {
         if status.has_status_change(StatusChangeKind::Invincible) { return 0; }
         if status.has_status_change(StatusChangeKind::Barrier) { return 1; }
         if status.has_status_change(StatusChangeKind::TrickDead) { return 0; }
+        if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::Kaupe) {
+            if (guard_roll as i32) < change.values[1] {
+                change.values[2] -= 1;
+                if change.values[2] <= 0 { Self::end_status(status, Some(StatusChangeKind::Kaupe)); }
+                return 0;
+            }
+        }
+        if physical { Self::kaahi_recovery(status); }
         if flags & BattleFlag::Short.as_flag() != 0 && !magical {
             if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::SafetyWall) {
                 change.values[1] -= 1;
@@ -552,7 +616,10 @@ impl StatusEffectService {
             if stripped_indices.is_empty() { return Ok(false); }
             request.values[3] = 1;
         }
-        if kind == StatusChangeKind::Deluge && !request.has_flag(StatusStartFlag::Loaded) { request.values[1] = i32::from(*snapshot.element() == models::enums::element::Element::Water); }
+        if matches!(kind, StatusChangeKind::Deluge | StatusChangeKind::Volcano | StatusChangeKind::ViolentGale) && !request.has_flag(StatusStartFlag::Loaded) {
+            let element = match kind { StatusChangeKind::Deluge => models::enums::element::Element::Water, StatusChangeKind::Volcano => models::enums::element::Element::Fire, _ => models::enums::element::Element::Wind };
+            request.values[1] = i32::from(*snapshot.element() == element);
+        }
         request = Self::normalize_request_for_target(request, &snapshot, true);
         request = Self::request_with_resistance(&character.status, &snapshot, request);
         character.status.max_hp = snapshot.max_hp();
@@ -736,6 +803,13 @@ impl StatusEffectService {
                 Wedding => slow = slow.max(100), SlowDown => slow = slow.max(value),
                 AspdPotion0 | AspdPotion1 | AspdPotion2 | AspdPotion3 => potion_haste = potion_haste.max(second),
                 TwoHandQuicken | MercQuicken => quicken = quicken.max(second), Adrenaline => quicken = quicken.max(third),
+                AssnCros => quicken = quicken.max(second),
+                DontForgetMe => { attack_delay_penalty += second; slow = slow.max(third); }
+                Longing => { attack_delay_penalty += second; slow = slow.max(50 - 10 * value); }
+                EternalChaos => snapshot.set_def(0),
+                Nibelungen if !player || status.right_hand_weapon().is_some_and(|weapon| weapon.level == 4) => {
+                    snapshot.set_atk_right_side(snapshot.atk_right_side().saturating_add(second));
+                }
                 Freeze | Stone => { snapshot.set_def(snapshot.def() / 2); snapshot.set_mdef((snapshot.mdef() as i32 * 5 / 4).clamp(-32768, 32767) as i16); snapshot.set_element(if change.kind == Freeze { models::enums::element::Element::Water } else { models::enums::element::Element::Earth }); snapshot.set_element_level(1); }
                 Poison | DeadlyPoison => snapshot.set_def(snapshot.def() * 3 / 4),
                 Blind => { snapshot.set_hit(snapshot.hit() * 3 / 4); snapshot.set_flee(snapshot.flee() * 3 / 4); }

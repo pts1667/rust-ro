@@ -344,6 +344,7 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         Self::validate_stealth_cast(state, character, skill_id)?;
+        self.validate_combo(character, skill_id, tick)?;
         let issued = character
             .pending_item_skill
             .as_ref()

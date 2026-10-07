@@ -3525,7 +3525,7 @@ impl BattleService {
         context: Option<MagicAttackContext>,
     ) -> Result<i32, String> {
         match kind {
-            MagicReflectionKind::Mirror => Ok(damage.min(i32::MAX as u32) as i32),
+            MagicReflectionKind::Mirror | MagicReflectionKind::Kaite => Ok(damage.min(i32::MAX as u32) as i32),
             MagicReflectionKind::Equipment => {
                 let context = context.ok_or("Reflected magic has no original attack calculation")?;
                 Ok(self.magic_damage_from_context(caster, caster, context))

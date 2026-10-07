@@ -574,7 +574,7 @@ impl ScriptSkillService {
         }
         if matches!(
             ground.kind,
-            GroundKind::Pneuma | GroundKind::SafetyWall | GroundKind::Sanctuary | GroundKind::VenomDust | GroundKind::SpiderWeb | GroundKind::Quagmire | GroundKind::Deluge | GroundKind::LandProtector
+            GroundKind::Pneuma | GroundKind::SafetyWall | GroundKind::Sanctuary | GroundKind::VenomDust | GroundKind::SpiderWeb | GroundKind::Quagmire | GroundKind::Deluge | GroundKind::Volcano | GroundKind::ViolentGale | GroundKind::LandProtector
         ) {
             return;
         }

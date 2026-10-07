@@ -83,8 +83,16 @@ status_changes! {
     NoRecovery = 627 => "NORECOVER_STATE", DefSet = 556 => "DEFSET", MdefSet = 557 => "MDEFSET",
     AutoGuard = 76 => "AUTOGUARD", MagicMirror = 254 => "MAGICMIRROR", PartyFlee = 528 => "PARTYFLEE",
     HellPower = 294 => "HELLPOWER", SignumCrucis = 31 => "SIGNUMCRUCIS", AuraBlade = 108 => "AURABLADE",
-    ExplosionSpirits = 92 => "EXPLOSIONSPIRITS", Deluge = 101 => "DELUGE",
+    ExplosionSpirits = 92 => "EXPLOSIONSPIRITS", Deluge = 101 => "DELUGE", AutoSpell = 83 => "AUTOSPELL", Volcano = 100 => "VOLCANO", ViolentGale = 102 => "VIOLENTGALE",
     WeaponAttackElement = 103 => "WATK_ELEMENT", Nen = 237 => "NEN",
+    MindBreaker = 130 => "MINDBREAKER", Kaizel = 147 => "KAIZEL", Kaahi = 148 => "KAAHI", Kaupe = 149 => "KAUPE",
+    Ske = 222 => "SKE", Kaite = 223 => "KAITE", Swoo = 224 => "SWOO", Ska = 225 => "SKA",
+    ReadyStorm = 138 => "READYSTORM", ReadyDown = 139 => "READYDOWN", ReadyTurn = 140 => "READYTURN", ReadyCounter = 141 => "READYCOUNTER",
+    Dodge = 142 => "DODGE", SevenWind = 274 => "SEVENWIND",
+    Dancing = 164 => "DANCING", Longing = 157 => "LONGING", EternalChaos = 167 => "ETERNALCHAOS", DrumBattle = 168 => "DRUMBATTLE",
+    Nibelungen = 169 => "NIBELUNGEN", Siegfried = 172 => "SIEGFRIED", Whistle = 173 => "WHISTLE", AssnCros = 174 => "ASSNCROS",
+    PoemBragi = 175 => "POEMBRAGI", AppleIdun = 176 => "APPLEIDUN", Humming = 178 => "HUMMING", DontForgetMe = 179 => "DONTFORGETME",
+    Fortune = 180 => "FORTUNE", Service4U = 181 => "SERVICE4U", RokisWeil = 170 => "ROKISWEIL", IntoAbyss = 171 => "INTOABYSS",
     Run = 143 => "RUN", Spurt = 183 => "SPURT", Ankle = 65 => "ANKLE",
     StripWeapon = 68 => "STRIPWEAPON", StripShield = 69 => "STRIPSHIELD", StripArmor = 70 => "STRIPARMOR", StripHelm = 71 => "STRIPHELM",
     ProtectWeapon = 72 => "CP_WEAPON", ProtectShield = 73 => "CP_SHIELD", ProtectArmor = 74 => "CP_ARMOR", ProtectHelm = 75 => "CP_HELM", MagicRod = 81 => "MAGICROD",
@@ -300,6 +308,29 @@ impl StatusChange {
             Powerup => vec![BonusType::AtkPercentage(stat)],
             Invincible => vec![BonusType::AtkPercentage(100)],
             Nen => vec![BonusType::Str(stat), BonusType::Int(stat)],
+            AutoSpell => {
+                use crate::status_bonus::{AutoSpellFlag, BattleFlag, CombatProc, CombatProcKind, CombatTrigger};
+                let mut proc = CombatProc::new(CombatTrigger::Attack, CombatProcKind::Spell, fourth.saturating_mul(100));
+                proc.value = second.max(0) as u32;
+                proc.level = third.clamp(1, i16::MAX as i32) as i16;
+                proc.flags = AutoSpellFlag::OtherTarget.as_flag() | AutoSpellFlag::SkillSelected.as_flag();
+                proc.battle_flags = BattleFlag::normalize(0, true);
+                vec![BonusType::CombatProc(proc, 1)]
+            }
+            Dancing => vec![BonusType::DisableSpRegen],
+            Whistle => vec![BonusType::Flee(second.clamp(-32768, 32767) as i16), BonusType::PerfectDodge(third.clamp(-127, 127) as i8)],
+            Humming => vec![BonusType::Hit(second.clamp(-32768, 32767) as i16)],
+            PoemBragi => vec![BonusType::CastTimePercentage((-second).clamp(-127, 127) as i8), BonusType::AfterCastDelayPercentage((-third).clamp(-127, 127) as i8)],
+            Fortune => vec![BonusType::Crit(second as f32 / 10.0)],
+            Service4U => vec![BonusType::MaxspPercentage(second.clamp(-127, 127) as i8), BonusType::SpConsumption((-third).clamp(-127, 127) as i8)],
+            AppleIdun => vec![BonusType::MaxhpPercentage(second.clamp(-127, 127) as i8)],
+            DrumBattle => vec![BonusType::Atk(second.clamp(-32768, 32767) as i16), BonusType::Def(third.clamp(-32768, 32767) as i16)],
+            Siegfried => [Element::Water, Element::Earth, Element::Fire, Element::Wind, Element::Poison, Element::Holy, Element::Dark, Element::Ghost, Element::Undead]
+                .into_iter()
+                .map(|element| BonusType::ResistanceDamageFromElementPercentage(element, second.clamp(-127, 127) as i8))
+                .collect(),
+            Volcano => vec![BonusType::Atk(second.clamp(-32768, 32767) as i16), BonusType::DamageUsingElementPercentage(Element::Fire, third.clamp(-127, 127) as i8)],
+            ViolentGale => vec![BonusType::Flee(second.clamp(-32768, 32767) as i16), BonusType::DamageUsingElementPercentage(Element::Wind, third.clamp(-127, 127) as i8)],
             Deluge => vec![BonusType::MaxhpPercentage(second.clamp(-127, 127) as i8), BonusType::DamageUsingElementPercentage(Element::Water, third.clamp(-127, 127) as i8)],
             HitFood | IncHit => vec![BonusType::Hit(amount)], IncHitRate => vec![BonusType::HitPercentage(stat)],
             FleeFood | IncFlee => vec![BonusType::Flee(amount)],
@@ -339,6 +370,8 @@ impl StatusChange {
             AutoGuard => vec![],
             PartyFlee => vec![BonusType::Flee((value * 10).clamp(-32768, 32767) as i16)],
             ExplosionSpirits => vec![BonusType::Crit(second as f32 / 10.0)],
+            MindBreaker => vec![BonusType::MatkPercentage((20 * value).clamp(0, 127) as i8)],
+            Ske => vec![BonusType::AtkPercentage(100), BonusType::AtkPercentage(100), BonusType::AtkPercentage(100), BonusType::DefPercentage(-50)],
             MercFleeUp => vec![BonusType::Flee(second.clamp(-32768, 32767) as i16)],
             MercAttackUp => vec![BonusType::Atk(second.clamp(-32768, 32767) as i16)],
             MercHitUp => vec![BonusType::Hit(second.clamp(-32768, 32767) as i16)],

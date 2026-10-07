@@ -177,6 +177,7 @@ impl GameEventHandler for crate::server::script::skill::ScriptSkillEffect {
                 | ScriptSkillAction::FinalStrike { .. }
                 | ScriptSkillAction::DelayedWeaponHit { .. }
                 | ScriptSkillAction::SnatchWarp { .. }
+                | ScriptSkillAction::ConsumeCharge { .. }
         );
         let target_id = match effect.action {
             ScriptSkillAction::MagicAttack { target_id, .. } => target_id,

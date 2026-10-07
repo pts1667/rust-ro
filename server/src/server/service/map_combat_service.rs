@@ -67,6 +67,9 @@ pub struct MagicReflectionRequest {
 
 pub fn reflect_magic(server: &Server, state: &ServerState, request: MagicReflectionRequest, tick: u128) -> Result<(), String> {
     let source_id = request.damage.attacker_id;
+    if request.kind == MagicReflectionKind::Kaite {
+        server.script_skill_service().consume_status_charge(server, request.reflector_id, models::status_change::StatusChangeKind::Kaite);
+    }
     let player = state
         .get_character(source_id)
         .filter(|character| character.map_instance_key == request.map_key)

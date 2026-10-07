@@ -164,6 +164,19 @@ fn apply_effect(
             state.insert_character(character);
             result
         }
+        CombatEffect::AutoSpell { skill_id, level } => {
+            let cost = {
+                let owner = state.characters().get(&request.source_id).ok_or("Auto Spell owner is unavailable")?;
+                let level = u8::try_from(level).map_err(|_| "Auto Spell level is out of range")?;
+                server.script_skill_service().requirements_plan(owner, skill_id, level, tick).map_or(0, |plan| plan.sp) * 2 / 3
+            };
+            let owner = state.characters_mut().get_mut(&request.source_id).ok_or("Auto Spell owner is unavailable")?;
+            if owner.status.sp < cost {
+                return Ok(());
+            }
+            server.character_service().update_hp_sp(owner, owner.status.hp, owner.status.sp - cost);
+            apply_effect(server, state, request, other, CombatEffect::CastSkill { skill_id, level, target: CombatEffectTarget::Other }, tick, rng)
+        }
         CombatEffect::CastSkill { skill_id, level, target } => {
             let automatic_self = GlobalConfigService::instance()
                 .find_skill_config(&Value::Number(skill_id as i32))

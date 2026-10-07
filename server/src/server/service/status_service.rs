@@ -166,6 +166,10 @@ impl StatusService {
             bonuses.retain(|bonus| !matches!(bonus, BonusType::DoubleAttackChancePercentage(_)));
             bonuses.push(BonusType::DoubleAttackChancePercentage(chance.max(0)));
         }
+        let kaina = crate::server::service::script_character_service::learned_level(status, models::enums::skill_enums::SkillEnum::SlKaina.id());
+        if kaina > 0 {
+            bonuses.push(BonusType::Maxsp(30 * i32::from(kaina)));
+        }
         bonuses = BonusType::merge_enums(&bonuses);
         snapshot.set_bonuses(bonuses.iter().map(|bonus| StatusBonus::new(*bonus)).collect());
         let mut known_skills = snapshot.known_skills().clone();

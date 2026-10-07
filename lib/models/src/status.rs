@@ -543,8 +543,14 @@ impl Status {
         self.active_statuses.iter().find(|change| change.kind == kind)
     }
 
+    /// A solo performer walks and an ensemble performer stands, Longing for Freedom lifts the ensemble restriction.
+    fn performance_restricts(&self) -> bool {
+        self.status_change(StatusChangeKind::Dancing).is_some_and(|dance| dance.values[3] != 0 && !self.has_status_change(StatusChangeKind::Longing))
+    }
+
     pub fn blocks_movement(&self) -> bool {
-        self.active_statuses.iter().any(|change| change.kind.blocks_movement())
+        self.active_statuses.iter().any(|change| change.kind.blocks_movement() && change.kind != StatusChangeKind::Dancing)
+            || self.performance_restricts()
             || self.has_status_change(StatusChangeKind::Hiding)
                 && !self
                     .known_skills
@@ -554,6 +560,7 @@ impl Status {
 
     pub fn blocks_attack(&self) -> bool {
         self.active_statuses.iter().any(|change| change.kind.blocks_attack())
+            || self.has_status_change(StatusChangeKind::Dancing) && (self.performance_restricts() || self.status_change(StatusChangeKind::Dancing).is_some_and(|dance| dance.values[3] == 0))
     }
 
     pub fn blocks_casting(&self) -> bool {

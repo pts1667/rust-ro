@@ -45,7 +45,9 @@ use crate::server::service::script_world_service::{
     buying_store_sign_packet, companion_health, companion_snapshots, companion_status_snapshot, companion_visual_packet,
     guild_actor_packet, pet_accessory_packet, vending_store_sign_packet,
 };
+use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
+use models::status_change::StatusChangeKind;
 use crate::server::state::character::Character;
 use crate::server::state::map_instance::MapInstanceState;
 use crate::server::state::server::ServerState;
@@ -316,8 +318,15 @@ impl CharacterService {
         let current_hp = character.status.hp();
         // TODO this is very simplistic, we should use status snapshot to calculate
         // actual damage
-        let new_hp = if damage >= current_hp { 0 } else { current_hp - damage };
+        let mut new_hp = if damage >= current_hp { 0 } else { current_hp - damage };
+        let tick = crate::util::tick::get_tick();
+        let revived = new_hp == 0 && StatusEffectService::consume_kaizel(&mut character.status, tick).inspect(|hp| new_hp = *hp).is_some();
         character.status.set_hp(new_hp);
+        if revived {
+            StatusEffectService::send_icon(character, StatusChangeKind::Kaizel, false, tick, &self.client_notification_sender);
+            StatusEffectService::send_icon(character, StatusChangeKind::Kyrie, true, tick, &self.client_notification_sender);
+            self.reload_client_side_status(character);
+        }
         if new_hp == 0 {
             character.transition_to_dead();
         }

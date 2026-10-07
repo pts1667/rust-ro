@@ -328,7 +328,12 @@ impl ServerService {
                     let source = self.get_status_snapshot(&character.status, tick);
                     let attack_motion = self.status_service.attack_motion(&source) as u128;
                     if tick < character.attack().last_attack_tick.saturating_add(attack_motion) || tick < character.timing.get_canact_tick() { return; }
+                    if ScriptSkillService::attack_blocked_by_combo(character, tick) { return; }
                     if !self.script_skill_service.admit_normal_attack(server, character, tick) { character.clear_attack(); return; }
+                    if self.script_skill_service.try_triple_attack(server, server_state, character, map_item.id(), tick) {
+                        character.update_last_attack_tick(tick);
+                        return;
+                    }
                     let Some(target_status) = self.get_target_status(server_state, character, Some(map_item.id()), tick) else { character.clear_attack(); return; };
                     maybe_damage = self.battle_service.basic_attack(
                         character,
@@ -339,6 +344,9 @@ impl ServerService {
                     );
                 }
                 if let Some(damage) = maybe_damage {
+                    if damage.landed {
+                        self.script_skill_service.try_stance_combo(character, map_item.id(), tick);
+                    }
                     if self.configuration_service.config().game.pet_support.attack_support && character.game_systems.pet.as_ref().is_some_and(|pet|!pet.incubating&&pet.intimacy>0) {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                             char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::Pet(crate::server::model::game_systems::PetRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false}),
@@ -453,7 +461,11 @@ impl ServerService {
         character_use_skill: CharacterUseSkill,
         tick: u128,
     ) {
-        if character.status.hp == 0 || character.is_using_skill() || character.status.blocks_casting() || character.timing.get_canact_tick() > tick {
+        let combo_ready = self.script_skill_service.combo_ready(character, character_use_skill.skill_id, tick);
+        if combo_ready && character.is_using_skill() && character.skill_has_been_used() {
+            character.clear_skill_in_use();
+        }
+        if character.status.hp == 0 || character.is_using_skill() || character.status.blocks_casting() || (character.timing.get_canact_tick() > tick && !combo_ready) {
             return;
         }
         if !server.player_skill_target_allowed(server_state, character, character_use_skill.target_id, character_use_skill.skill_id, false) { return; }
@@ -624,6 +636,8 @@ impl ServerService {
                 tick,
             );
             if let Some(skill_use_response) = skill_use_response {
+                let after_cast_delay = character.skill_in_use().skill.after_cast_act_delay();
+                self.script_skill_service.advance_combo(character, skill_use_response.skill_id, skill_use_response.target_id, after_cast_delay, tick);
                 if skill_use_response.skill_type == SkillType::Offensive {
                     let maybe_map_instance = server_state.get_map_instance(character.current_map_name(), character.current_map_instance());
                     let map_instance = maybe_map_instance.as_ref().unwrap();

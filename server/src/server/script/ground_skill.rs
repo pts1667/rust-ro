@@ -34,6 +34,8 @@ pub enum GroundKind {
     Pneuma,
     Quagmire,
     Deluge,
+    Volcano,
+    ViolentGale,
     LandProtector,
     Thunderstorm,
     HeavenDrive,
@@ -79,6 +81,8 @@ impl GroundKind {
             "AM_DEMONSTRATION" => Self::Demonstration,
             "WZ_QUAGMIRE" => Self::Quagmire,
             "SA_DELUGE" => Self::Deluge,
+            "SA_VOLCANO" => Self::Volcano,
+            "SA_VIOLENTGALE" => Self::ViolentGale,
             "SA_LANDPROTECTOR" => Self::LandProtector,
             "MG_THUNDERSTORM" => Self::Thunderstorm,
             "WZ_HEAVENDRIVE" => Self::HeavenDrive,
@@ -114,7 +118,9 @@ impl GroundKind {
             Self::VenomDust => 146,
             Self::SpiderWeb => 183,
             Self::Quagmire => 142,
+            Self::Volcano => 154,
             Self::Deluge => 155,
+            Self::ViolentGale => 156,
             Self::LandProtector => 157,
             Self::SkidTrap => 144,
             Self::AnkleSnare => 145,
@@ -140,6 +146,8 @@ impl GroundKind {
             Self::SafetyWall => Some(StatusChangeKind::SafetyWall),
             Self::Quagmire => Some(StatusChangeKind::Quagmire),
             Self::Deluge => Some(StatusChangeKind::Deluge),
+            Self::Volcano => Some(StatusChangeKind::Volcano),
+            Self::ViolentGale => Some(StatusChangeKind::ViolentGale),
             _ => None,
         }
     }
@@ -160,6 +168,8 @@ impl GroundKind {
                 | Self::Demonstration
                 | Self::Quagmire
                 | Self::Deluge
+                | Self::Volcano
+                | Self::ViolentGale
                 | Self::LandProtector
                 | Self::SkidTrap
                 | Self::AnkleSnare
@@ -181,6 +191,11 @@ impl GroundKind {
         )
     }
 
+    /// Sage fields: one per caster, a new one replaces the previous.
+    pub(super) fn element_field(self) -> bool {
+        matches!(self, Self::Deluge | Self::Volcano | Self::ViolentGale | Self::LandProtector)
+    }
+
     fn damaging(self) -> bool {
         !matches!(
             self,
@@ -196,6 +211,8 @@ impl GroundKind {
                 | Self::GrandDarkness
                 | Self::Quagmire
                 | Self::Deluge
+                | Self::Volcano
+                | Self::ViolentGale
                 | Self::LandProtector
         )
     }
@@ -633,7 +650,10 @@ impl ScriptSkillService {
                 );
             }
         }
-        let base_duration = metadata.duration(level, false).unwrap_or(100);
+        let mut base_duration = metadata.duration(level, false).unwrap_or(100);
+        if kind == GroundKind::Firewall && character.status.has_status_change(StatusChangeKind::ViolentGale) {
+            base_duration = base_duration * 3 / 2;
+        }
         let duration = if kind == GroundKind::Meteor {
             base_duration.max(0) as u128
         } else {
@@ -662,10 +682,8 @@ impl ScriptSkillService {
             vec![(x, y, 0)]
         };
         let mut active = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
-        if matches!(kind, GroundKind::Deluge | GroundKind::LandProtector) {
-            for ground in active.iter_mut().filter(|ground| {
-                ground.source_id == character.char_id && matches!(ground.kind, GroundKind::Deluge | GroundKind::LandProtector)
-            }) {
+        if kind.element_field() {
+            for ground in active.iter_mut().filter(|ground| ground.source_id == character.char_id && ground.kind.element_field()) {
                 ground.expires_at = active_from;
             }
         }
@@ -791,6 +809,7 @@ impl ScriptSkillService {
 
     pub fn tick_ground_skills(&self, server: &Server, state: &ServerState, tick: u128) {
         self.retry_pending_notifications();
+        self.tick_performances(server, state, tick);
         if let Ok(mut sequences) = self.water_ball_sequences.lock() {
             sequences.retain(|source_id, sequence| {
                 sequence.expires_at > tick

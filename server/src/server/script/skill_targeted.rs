@@ -304,6 +304,15 @@ impl ScriptSkillService {
                 let source = state.get_character(effect.source_char_id).ok_or("Water Ball source disconnected")?;
                 self.water_ball_shot(server, state, source, effect, sequence, cell, Some(character), tick)?;
             }
+            ScriptSkillAction::ConsumeCharge { kind } => {
+                let remaining = character.status.active_statuses.iter_mut().find(|change| change.kind == kind).map(|change| {
+                    change.values[1] -= 1;
+                    change.values[1]
+                });
+                if remaining.is_some_and(|remaining| remaining <= 0) {
+                    StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
+                }
+            }
             ScriptSkillAction::Heal { hp, sp } => {
                 if character.status.hp == 0
                     || character.status.has_status_change(StatusChangeKind::NoRecovery)
@@ -374,7 +383,7 @@ impl ScriptSkillService {
         Ok(true)
     }
 
-    fn followup_action(&self, server: &Server, effect: &ScriptSkillEffect, target_id: u32, action: ScriptSkillAction) {
+    pub(super) fn followup_action(&self, server: &Server, effect: &ScriptSkillEffect, target_id: u32, action: ScriptSkillAction) {
         let mut followup = effect.clone();
         followup.target_id = target_id;
         followup.action = action;
@@ -613,6 +622,9 @@ impl ScriptSkillService {
         }
         if skill.name() == "WZ_ESTIMATION" {
             return self.show_monster_estimation(server, state, character, effect.target_id, effect.level);
+        }
+        if self.apply_class_mob_skill(server, character, effect, &instance, target)?.is_some() {
+            return Ok(());
         }
         if skill.name() == "PR_LEXDIVINA" {
             if target.status.has_status_change(StatusChangeKind::Silence) {

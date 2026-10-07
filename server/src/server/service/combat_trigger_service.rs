@@ -26,6 +26,7 @@ pub enum CombatEffectTarget {
 pub enum MagicReflectionKind {
     Equipment,
     Mirror,
+    Kaite,
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -159,6 +160,9 @@ pub fn magic_reflection(owner: &StatusSnapshot, battle_flags: u32, skill_id: u32
     {
         return Some(MagicReflectionKind::Mirror);
     }
+    if owner.status_change(StatusChangeKind::Kaite).is_some_and(|change| change.values[1] > 0) {
+        return Some(MagicReflectionKind::Kaite);
+    }
     None
 }
 
@@ -168,6 +172,11 @@ pub enum CombatEffect {
         skill_id: u32,
         level: u16,
         target: CombatEffectTarget,
+    },
+    /// A cast of the Auto Spell skill, paid with SP.
+    AutoSpell {
+        skill_id: u32,
+        level: u16,
     },
     ApplyStatus {
         effect: StatusEffect,
@@ -465,6 +474,19 @@ fn resolve_proc(effects: &mut Vec<CombatEffect>, proc: CombatProc, count: u16, e
     }
     match proc.kind {
         CombatProcKind::Spell => {
+            if proc.flags != u32::MAX && proc.flags & AutoSpellFlag::SkillSelected.as_flag() != 0 {
+                let mut level = proc.level.max(1) as u16;
+                if level > 1 {
+                    let roll = rng.u16(0..100);
+                    if roll >= 50 {
+                        level /= 2;
+                    } else if roll >= 15 {
+                        level -= 1;
+                    }
+                }
+                effects.push(CombatEffect::AutoSpell { skill_id: proc.value, level: level.max(1) });
+                return;
+            }
             let level = if proc.flags != u32::MAX && proc.flags & AutoSpellFlag::RandomLevel.as_flag() != 0 {
                 rng.u16(1..=proc.level.max(1) as u16)
             } else {

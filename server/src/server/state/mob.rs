@@ -160,6 +160,7 @@ pub struct Mob {
     pub trickcasting_speed_lost: u16,
     pub bg_id: u32,
     pub damage_immune: bool,
+    pub steal_flags: u8,
 }
 
 pub struct MobMovement {
@@ -237,8 +238,9 @@ impl Mob {
             request.values[3] |= models::status_change::CloakingFlag::AdjacentWall.as_flag() as i32
                 | models::status_change::CloakingFlag::AllowSkills.as_flag() as i32;
         }
-        if request.kind == StatusChangeKind::Deluge && !request.has_flag(models::status_change::StatusStartFlag::Loaded) {
-            request.values[1] = i32::from(*self.status.element() == Element::Water);
+        if matches!(request.kind, StatusChangeKind::Deluge | StatusChangeKind::Volcano | StatusChangeKind::ViolentGale) && !request.has_flag(models::status_change::StatusStartFlag::Loaded) {
+            let element = match request.kind { StatusChangeKind::Deluge => Element::Water, StatusChangeKind::Volcano => Element::Fire, _ => Element::Wind };
+            request.values[1] = i32::from(*self.status.element() == element);
         }
         request = crate::server::service::status_effect_service::StatusEffectService::normalize_request_for_target(request, &self.status, false);
         request = crate::server::service::status_effect_service::StatusEffectService::request_with_resistance(
@@ -642,6 +644,7 @@ impl Mob {
             trickcasting_speed_lost: 0,
             bg_id: 0,
             damage_immune: false,
+            steal_flags: 0,
         }
     }
 

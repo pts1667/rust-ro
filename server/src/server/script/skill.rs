@@ -44,6 +44,16 @@ mod area_damage;
 mod autocast;
 #[path = "skill_callbacks.rs"]
 pub mod callbacks;
+#[path = "skill_class.rs"]
+mod class;
+#[path = "skill_class_effects.rs"]
+mod class_effects;
+#[path = "skill_combo.rs"]
+mod combo;
+#[path = "skill_taekwon.rs"]
+mod taekwon;
+#[path = "skill_performance.rs"]
+mod performance;
 #[path = "companion_skill.rs"]
 pub mod companion;
 #[path = "skill_delayed.rs"]
@@ -107,6 +117,8 @@ pub struct ScriptSkillState {
     pub casting_skill_id: u32,
     pub casting_skill_level: u8,
     pub cast_cancel_override: Option<bool>,
+    pub combo: Option<combo::SkillCombo>,
+    pub last_performance: Option<(u32, u8)>,
     pub deferred_requirements: Option<requirements::DeferredSkillPayment>,
     pub native_requirements: Option<requirements::DeferredSkillPayment>,
     pub pending_teleport: Option<PendingTeleportMenu>,
@@ -217,6 +229,10 @@ pub enum ScriptSkillAction {
         map: String,
         instance: u8,
     },
+    /// Uses up one charge (`values[1]`) of a status such as Kaite, which ends with the last one.
+    ConsumeCharge {
+        kind: StatusChangeKind,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -239,6 +255,7 @@ pub struct ScriptSkillService {
     storm_gust_hits: Mutex<std::collections::HashMap<(String, u8, u32), u8>>,
     deferred_notifications: Mutex<std::collections::VecDeque<Notification>>,
     water_ball_sequences: Mutex<std::collections::HashMap<u32, area_damage::WaterBallSequence>>,
+    performance_clocks: Mutex<std::collections::HashMap<u32, performance::PerformanceClock>>,
 }
 
 impl ScriptSkillService {
@@ -256,6 +273,7 @@ impl ScriptSkillService {
             storm_gust_hits: Mutex::new(std::collections::HashMap::new()),
             deferred_notifications: Mutex::new(std::collections::VecDeque::new()),
             water_ball_sequences: Mutex::new(std::collections::HashMap::new()),
+            performance_clocks: Mutex::new(std::collections::HashMap::new()),
         }
     }
 
@@ -1003,6 +1021,10 @@ impl ScriptSkillService {
         if self.apply_utility_skill(server, state, character, effect, tick)? {
             return Ok(());
         }
+        if self.apply_class_skill(server, state, character, effect, tick)? {
+            self.notify_support_skill(character, effect);
+            return Ok(());
+        }
         if let Some(kind) = Self::status_for_skill(skill.name()) {
             let toggled = metadata::SkillMetadata::find(effect.skill_id)
                 .is_some_and(|metadata| metadata.flags.get("Toggleable").copied().unwrap_or(false))
@@ -1330,7 +1352,7 @@ impl ScriptSkillService {
                 | "ITEM_ENCHANTARMS"
                 | "TF_PICKSTONE"
                 | "SA_ABRACADABRA"
-        )
+        ) || Self::is_class_skill(name)
     }
 
     fn skill_status_request(skill: &SkillConfig, kind: StatusChangeKind, level: u8) -> StatusChangeRequest {

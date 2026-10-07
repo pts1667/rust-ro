@@ -1,6 +1,15 @@
-use enum_macro::{WithMaskValueU32, WithNumberValue, WithStringValue};
+use enum_macro::{WithMaskValueU32, WithMaskValueU8, WithNumberValue, WithStringValue};
 
-use crate::enums::{EnumWithMaskValueU32, EnumWithNumberValue, EnumWithStringValue};
+use crate::enums::{EnumWithMaskValueU32, EnumWithMaskValueU8, EnumWithNumberValue, EnumWithStringValue};
+
+/// What a monster already lost to a thief, each can only happen once per monster.
+#[derive(WithMaskValueU8, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum MobStealFlag {
+    #[mask_value = 1]
+    Item,
+    Coin,
+    SoulChange,
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum MobDamageMode {

@@ -101,6 +101,12 @@ pub struct MobEndStatus {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub struct MobMarkStolen {
+    pub mob_id: u32,
+    pub flag: models::enums::mob::MobStealFlag,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct MobHeal {
     pub mob_id: u32,
     pub hp: u32,
@@ -203,6 +209,15 @@ impl MapEventHandler for MobEndStatus {
     fn handle(self, ctx: &MapEventContext) {
         let MobEndStatus { mob_id, kind } = self;
         ctx.service.end_mob_status(ctx.map_instance.state_mut().as_mut(), mob_id, kind);
+    }
+}
+
+impl MapEventHandler for MobMarkStolen {
+    fn handle(self, ctx: &MapEventContext) {
+        use models::enums::EnumWithMaskValueU8;
+        if let Some(mob) = ctx.map_instance.state_mut().mobs_mut().get_mut(&self.mob_id) {
+            mob.steal_flags |= self.flag.as_flag();
+        }
     }
 }
 

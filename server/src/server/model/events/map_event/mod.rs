@@ -64,6 +64,7 @@ map_events! {
     MobDispel(MobDispel),
     MobEndStatus(MobEndStatus),
     MobHeal(MobHeal),
+    MobMarkStolen(MobMarkStolen),
     MobRandomWarp(MobRandomWarp),
     MobFace(MobFace),
     MobWarpTo(MobWarpTo),

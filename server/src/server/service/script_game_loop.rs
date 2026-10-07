@@ -301,6 +301,7 @@ impl Server {
             {
                 return Err("Character cannot use skills now".into());
             }
+            self.script_skill_service().validate_performing(state, &character, event.skill_id)?;
             if (8001..=8016).contains(&event.skill_id) || (8201..=8240).contains(&event.skill_id) {
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                     char_id: character.char_id,
@@ -351,6 +352,9 @@ impl Server {
             let skill = configuration
                 .find_skill_config(&(event.skill_id as i32).into())
                 .ok_or("Unknown skill")?;
+            if skill.name() == "SA_CASTCANCEL" {
+                return self.script_skill_service().cast_cancel(self, &mut character, event.skill_id, event.skill_level, tick);
+            }
             if skill.name() == "MC_VENDING" || skill.name() == "MC_PUSHCART" {
                 self.script_skill_service()
                     .validate_native_environment(state, &character, event.skill_id, event.skill_level, tick)?;
@@ -919,6 +923,9 @@ impl Server {
             } else {
                 damage.damage
             };
+        }
+        if ScriptSkillService::try_dodge(&character, damage.battle_flags) {
+            damage.damage = 0;
         }
         let statuses: Vec<_> = character.status.active_statuses.iter().map(|change| change.kind).collect();
         let map_flags = state.map_flags(&character.map_instance_key);

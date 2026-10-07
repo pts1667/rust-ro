@@ -106,6 +106,8 @@ pub enum AutoSpellFlag {
     #[mask_value = 1]
     OtherTarget,
     RandomLevel,
+    /// Auto Spell: the level drops by half or one at random, and the cast costs two thirds of the SP.
+    SkillSelected,
 }
 
 #[derive(WithMaskValueU32, Debug, Copy, Clone, PartialEq, Eq)]

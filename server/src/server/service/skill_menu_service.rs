@@ -2,6 +2,7 @@
 
 use models::enums::cell::CellType;
 use models::enums::item::ItemType;
+use models::enums::skill_enums::SkillEnum;
 use models::enums::EnumWithMaskValueU16;
 
 use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
@@ -18,6 +19,7 @@ const ARROW_LIST_PACKET: u16 = 0x01ad;
 const REPAIR_LIST_PACKET: u16 = 0x01fc;
 const REPAIR_ACK_PACKET: u16 = 0x01fe;
 const WEAPON_LIST_PACKET: u16 = 0x0221;
+const AUTO_SPELL_LIST_PACKET: u16 = 0x01cd;
 const WEAPON_REFINE_MESSAGE_PACKET: u16 = 0x0223;
 const MENU_LIFETIME_MS: u128 = 120_000;
 const MENU_CANCELLED: u16 = 0xffff;
@@ -40,6 +42,7 @@ pub enum SkillMenuKind {
     MakingArrow,
     ElementalConverter,
     WeaponRefine,
+    AutoSpell,
     RepairWeapon { target: u32 },
 }
 
@@ -57,10 +60,11 @@ pub enum SkillMenuChoice {
     Arrow(u16),
     WeaponRefine(u32),
     Repair(u16),
+    AutoSpell(u32),
 }
 
 pub fn is_menu_skill(name: &str) -> bool {
-    matches!(name, "AC_MAKINGARROW" | "WS_WEAPONREFINE" | "BS_REPAIRWEAPON") || is_crafting_skill(name)
+    matches!(name, "AC_MAKINGARROW" | "WS_WEAPONREFINE" | "BS_REPAIRWEAPON" | "SA_AUTOSPELL") || is_crafting_skill(name)
 }
 
 /// Skills that make an item from the recipes of `produce_db.txt`.
@@ -138,6 +142,25 @@ fn repair_material(model: &ItemModel) -> Option<i32> {
     }
 }
 
+/// Skills the Auto Spell menu offers, in the order of the client list, with the Auto Spell level above which each is available.
+const AUTO_SPELLS: [(SkillEnum, u8); 7] = [
+    (SkillEnum::MgNapalmbeat, 0),
+    (SkillEnum::MgColdbolt, 1),
+    (SkillEnum::MgFirebolt, 1),
+    (SkillEnum::MgLightningbolt, 1),
+    (SkillEnum::MgSoulstrike, 4),
+    (SkillEnum::MgFireball, 7),
+    (SkillEnum::MgFrostdiver, 9),
+];
+
+fn learned_level(character: &Character, skill: SkillEnum) -> u8 {
+    StatusService::instance().to_snapshot(&character.status).known_skills().iter().find(|known| known.value == skill).map_or(0, |known| known.level)
+}
+
+fn auto_spell_choices(character: &Character, auto_spell_level: u8) -> Vec<SkillEnum> {
+    AUTO_SPELLS.iter().filter(|(skill, required)| auto_spell_level > *required && learned_level(character, *skill) > 0).map(|(skill, _)| *skill).collect()
+}
+
 fn broken_items(character: &Character) -> Vec<usize> {
     character.inventory.iter().enumerate().filter(|(_, item)| item.as_ref().is_some_and(|item| item.is_damaged)).map(|(index, _)| index).collect()
 }
@@ -182,6 +205,17 @@ impl Server {
                     return Err("No weapon can be refined".into());
                 }
                 (SkillMenuKind::WeaponRefine, list_packet(WEAPON_LIST_PACKET, &entries)?)
+            }
+            "SA_AUTOSPELL" => {
+                let spells = auto_spell_choices(character, level);
+                if spells.is_empty() {
+                    return Err("No skill can be turned into an Auto Spell".into());
+                }
+                let mut packet = AUTO_SPELL_LIST_PACKET.to_le_bytes().to_vec();
+                for slot in AUTO_SPELLS.iter().map(|(skill, _)| *skill) {
+                    packet.extend_from_slice(&if spells.contains(&slot) { slot.id() } else { 0 }.to_le_bytes());
+                }
+                (SkillMenuKind::AutoSpell, packet)
             }
             "BS_REPAIRWEAPON" => {
                 let target = self.repair_target(state, character, skill_id, level, target_id)?;
@@ -275,6 +309,12 @@ impl Server {
                 self.pay_menu_skill(character, &menu, tick)?;
                 self.item_service().make_with_skill(self, character, i32::from(item_id), ELEMENTAL_CONVERTER_LEVEL, tick).map(|_| ())
             }
+            (SkillMenuKind::AutoSpell, SkillMenuChoice::AutoSpell(spell)) if spell != 0 => {
+                let spell = auto_spell_choices(character, menu.level).into_iter().find(|skill| skill.id() == spell).ok_or("This skill cannot be an Auto Spell")?;
+                self.pay_menu_skill(character, &menu, tick)?;
+                let learned = learned_level(character, spell);
+                self.script_skill_service().start_auto_spell(self, character, menu.level, spell, learned, tick)
+            }
             (SkillMenuKind::WeaponRefine, SkillMenuChoice::WeaponRefine(index)) => {
                 let index = index.checked_sub(CLIENT_INDEX_OFFSET).and_then(|index| usize::try_from(index).ok());
                 index.map_or(Ok(()), |index| self.refine_weapon(character, &menu, index, tick))
@@ -282,7 +322,7 @@ impl Server {
             (SkillMenuKind::RepairWeapon { target }, SkillMenuChoice::Repair(index)) if index != MENU_CANCELLED => {
                 self.repair_weapon(state, character, &menu, *target, usize::from(index), tick)
             }
-            (_, SkillMenuChoice::Arrow(_) | SkillMenuChoice::WeaponRefine(_) | SkillMenuChoice::Repair(_)) => Ok(()),
+            (_, SkillMenuChoice::Arrow(_) | SkillMenuChoice::WeaponRefine(_) | SkillMenuChoice::Repair(_) | SkillMenuChoice::AutoSpell(_)) => Ok(()),
         }
     }
 
