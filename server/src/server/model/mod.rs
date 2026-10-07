@@ -8,6 +8,7 @@ pub mod damage_notification;
 pub mod duel;
 pub mod guild_alliance_requests;
 pub mod map_flag_overrides;
+pub mod day_night;
 pub mod motd;
 pub mod notification_backlog;
 pub mod permission_groups;

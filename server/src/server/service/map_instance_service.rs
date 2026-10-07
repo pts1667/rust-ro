@@ -62,6 +62,42 @@ pub struct MapInstanceService {
     mob_service: MobService,
     battle_service: BattleService,
     pub(super) server_task_queue: Arc<TasksQueue<GameEvent>>,
+    drop_rates: std::sync::OnceLock<DropRateTable>,
+}
+
+/// `item_rate_*` and `item_drop_*` options of `drops.conf`, read once: drops are rolled for every kill.
+struct DropRateTable {
+    /// Every rate is the default, so the database rates are used as they are.
+    unchanged: bool,
+    /// Per item kind (heal, use, equip, card, common): rate of normal, boss and mvp monsters.
+    rates: [[i64; 3]; 5],
+    /// Per item kind then mvp: minimum and maximum drop chance.
+    ranges: [(i64, i64); 6],
+    treasure: (i64, i64, i64),
+    allow_zero: bool,
+}
+
+impl DropRateTable {
+    fn read(battle: &configuration::battle_config::BattleConfig) -> Self {
+        const KINDS: [&str; 5] = ["heal", "use", "equip", "card", "common"];
+        let mut rates = [[100; 3]; 5];
+        let mut ranges = [(1, 10000); 6];
+        for (index, kind) in KINDS.iter().enumerate() {
+            rates[index] = [
+                battle.get(&format!("item_rate_{kind}")),
+                battle.get(&format!("item_rate_{kind}_boss")),
+                battle.get(&format!("item_rate_{kind}_mvp")),
+            ];
+            ranges[index] = (battle.get(&format!("item_drop_{kind}_min")), battle.get(&format!("item_drop_{kind}_max")));
+        }
+        ranges[5] = (battle.get("item_drop_mvp_min"), battle.get("item_drop_mvp_max"));
+        let treasure = (battle.get("item_rate_treasure"), battle.get("item_drop_treasure_min"), battle.get("item_drop_treasure_max"));
+        let unchanged = rates.iter().flatten().all(|rate| *rate == 100)
+            && ranges.iter().all(|range| *range == (1, 10000))
+            && treasure == (100, 1, 10000)
+            && !battle.flag("drop_rate0item");
+        Self { unchanged, rates, ranges, treasure, allow_zero: battle.flag("drop_rate0item") }
+    }
 }
 
 pub(crate) const CASTLE_FLAG_ENTRY: u32 = 19;
@@ -100,6 +136,7 @@ impl MapInstanceService {
             configuration_service,
             mob_service,
             server_task_queue,
+            drop_rates: std::sync::OnceLock::new(),
         }
     }
 
@@ -110,11 +147,15 @@ impl MapInstanceService {
                 if mob_spawn_track.spawned_amount >= mob_spawn.to_spawn_amount {
                     continue;
                 }
-                if mob_spawn.has_delay() {
-                    // TODO check when respawn is planned
-                }
-                mob_spawn.to_spawn_amount - mob_spawn_track.spawned_amount
+                let missing = (mob_spawn.to_spawn_amount - mob_spawn_track.spawned_amount) as usize;
+                missing.saturating_sub(mob_spawn_track.waiting_to_respawn(crate::util::tick::get_tick()))
             };
+            if spawned == 0 {
+                continue;
+            }
+            if let Some(track) = map_instance_state.mob_spawns_tracks_mut().get_mut(&mob_spawn.id) {
+                track.consume_ready_respawns(crate::util::tick::get_tick());
+            }
             let mut cell: (u16, u16);
             for _ in 0..spawned {
                 if mob_spawn.is_fixed_position() {
@@ -1880,13 +1921,7 @@ impl MapInstanceService {
         let mut item_to_drop: Vec<(DroppedItem, u16)> = vec![];
         let treasure_chest = mob.race_groups.iter().any(|group| group.eq_ignore_ascii_case("Treasure"));
         for drop in mob.drops.iter() {
-            let drop_rate = if treasure_chest {
-                drop.rate as u16
-            } else if drop.is_card {
-                (drop.rate as f32 * self.configuration_service.config().game.drop_rate_card).round() as u16
-            } else {
-                (drop.rate as f32 * self.configuration_service.config().game.drop_rate).round() as u16
-            };
+            let drop_rate = self.adjusted_drop_rate(mob, drop, treasure_chest);
             if drop_rate >= 10000 || rng.u16(1..=10000) > 10000 - drop_rate {
                 let item = self.configuration_service.get_item(drop.item_id);
                 if let Some(dropped) = self.drop_items(
@@ -1906,6 +1941,42 @@ impl MapInstanceService {
             }
         }
         item_to_drop
+    }
+
+    /// Drop chance (out of 10000) after the rates of `config.json` and the `item_rate_*`/`item_drop_*` options of rathena's `drops.conf`.
+    fn adjusted_drop_rate(&self, mob: &crate::repository::model::mob_model::MobModel, drop: &crate::repository::model::mob_model::Drop, treasure_chest: bool) -> u16 {
+        use models::enums::item::ItemType;
+        use models::enums::mob::MobClass;
+        let config = self.configuration_service.config();
+        let table = self.drop_rates.get_or_init(|| DropRateTable::read(&config.battle));
+        let factor = if treasure_chest {
+            1.0
+        } else if drop.is_card {
+            config.game.drop_rate_card
+        } else {
+            config.game.drop_rate
+        };
+        if table.unchanged || drop.rate == 0 {
+            return (f64::from(drop.rate) * f64::from(factor)).round() as u16;
+        }
+        let kind = match self.configuration_service.find_item(drop.item_id).map(|item| item.item_type) {
+            Some(ItemType::Healing) => 0,
+            Some(ItemType::Usable | ItemType::Cash) => 1,
+            Some(ItemType::Weapon | ItemType::Armor | ItemType::PetArmor) => 2,
+            Some(ItemType::Card) => 3,
+            _ => 4,
+        };
+        let (adjust, min, max) = if treasure_chest {
+            table.treasure
+        } else {
+            let is_mvp = mob.is_mvp();
+            let group = if is_mvp { 2 } else { usize::from(mob.battle_class() == MobClass::Boss) };
+            let range = table.ranges[if is_mvp { 5 } else { kind }];
+            (table.rates[kind][group], range.0, range.1)
+        };
+        let rate = f64::from(drop.rate) * f64::from(factor) * adjust as f64 / 100.0;
+        let minimum = if table.allow_zero { 0 } else { min.max(1) };
+        (rate.round() as i64).clamp(minimum, max.max(minimum)) as u16
     }
 
     fn drop_items(

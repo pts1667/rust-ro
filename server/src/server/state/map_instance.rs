@@ -72,7 +72,10 @@ pub struct CompletedPetLootDrop {
 pub struct MobSpawnTrack {
     pub spawn_id: u32,
     pub spawned_amount: i16,
+    /// When each dead monster of this spawn comes back.
     pub mob_respawn_at: Vec<u128>,
+    /// Base and random part of the respawn delay, already scaled by the `*_spawn_delay` options.
+    pub respawn_delay_ms: (u32, u32),
 }
 
 impl MobSpawnTrack {
@@ -81,7 +84,22 @@ impl MobSpawnTrack {
             spawn_id,
             spawned_amount: 0,
             mob_respawn_at: Default::default(),
+            respawn_delay_ms: (0, 0),
         }
+    }
+
+    pub fn with_respawn_delay(mut self, base_ms: u32, variance_ms: u32) -> MobSpawnTrack {
+        self.respawn_delay_ms = (base_ms, variance_ms);
+        self
+    }
+
+    /// Monsters waiting for their delay at `tick` are not counted as missing.
+    pub fn waiting_to_respawn(&self, tick: u128) -> usize {
+        self.mob_respawn_at.iter().filter(|at| **at > tick).count()
+    }
+
+    pub fn consume_ready_respawns(&mut self, tick: u128) {
+        self.mob_respawn_at.retain(|at| *at > tick);
     }
 
     pub fn increment_spawn(&mut self) {
@@ -90,6 +108,9 @@ impl MobSpawnTrack {
 
     pub fn decrement_spawn(&mut self) {
         self.spawned_amount -= 1;
+        let (base, variance) = self.respawn_delay_ms;
+        let delay = base + if variance > 0 { fastrand::u32(0..variance) } else { 0 };
+        self.mob_respawn_at.push(crate::util::tick::get_tick() + u128::from(delay.max(1000)));
     }
 }
 

@@ -320,6 +320,9 @@ impl StatusService {
             .set_max_hp(crate::server::service::status_effect_service::StatusEffectService::maximum_pool(hp_before_rate, 0, hp_rate, 1));
         snapshot
             .set_max_sp(crate::server::service::status_effect_service::StatusEffectService::maximum_pool(sp_before_rate, 0, sp_rate, 1));
+        let battle = &self.configuration_service.config().battle;
+        snapshot.set_max_hp(snapshot.max_hp().min(battle.get("max_hp") as u32));
+        snapshot.set_max_sp(snapshot.max_sp().min(battle.get("max_sp") as u32));
         let attack_rate = bonuses
             .iter()
             .filter_map(|bonus| {
@@ -440,7 +443,11 @@ impl StatusService {
 
     #[inline]
     pub fn attack_per_seconds(&self, aspd: f32) -> f32 {
-        50_f32 / (200_f32 - aspd.min(199.0))
+        50_f32 / (200_f32 - aspd.min(self.max_aspd()))
+    }
+
+    fn max_aspd(&self) -> f32 {
+        self.configuration_service.config().battle.get("max_aspd") as f32
     }
 
     #[inline]
@@ -455,7 +462,7 @@ impl StatusService {
     }
 
     pub fn client_aspd(&self, aspd: f32) -> i32 {
-        ((200_f32 - aspd.min(199.0)) * 10.0).round() as i32
+        ((200_f32 - aspd.min(self.max_aspd())) * 10.0).round() as i32
     }
 
     pub fn cast_time_reduction(&self, status: &StatusSnapshot) -> f32 {

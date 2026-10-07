@@ -1098,4 +1098,5 @@ mod tests {
             assert_eq!(markdown_rows_failed.len(), 0);
         }
     }
+
 }

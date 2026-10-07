@@ -18,6 +18,7 @@ use models::status_bonus::StatusBonusFlag;
 use serde::{Deserialize, Deserializer, Serialize};
 
 pub use crate::account_config::{CharServerConfig, LoginConfig};
+use crate::battle_config::BattleConfig;
 use crate::bonus_type_wrapper::BonusTypeWrapper;
 use crate::serde_helper::*;
 
@@ -36,6 +37,9 @@ pub struct Config {
     pub login: LoginConfig,
     #[serde(default)]
     pub char_server: CharServerConfig,
+    /// rathena battle options: `config/battle/*.conf` files are read first, then this object overrides them.
+    #[serde(default)]
+    pub battle: BattleConfig,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -1178,8 +1182,25 @@ impl Config {
         Self::set_config_status_point_raising_cost(&mut config, file_path).unwrap();
         let file_path = "./config/exp.json";
         Self::set_exp_requirements(&mut config, file_path).unwrap();
+        Self::load_battle_conf(&mut config);
 
         Ok(config)
+    }
+
+    /// Reads `config/battle/*.conf` under the options given in `config.json`.
+    fn load_battle_conf(config: &mut Config) {
+        let directory = Path::new("./config/battle");
+        if !directory.is_dir() {
+            return;
+        }
+        let configured = config.battle.clone();
+        let mut battle = BattleConfig::default();
+        match battle.load_dir(directory) {
+            Ok(problems) => problems.iter().for_each(|problem| println!("battle conf: {problem}")),
+            Err(error) => println!("battle conf: {error}"),
+        }
+        config.battle = battle;
+        config.battle.merge_changed_from(&configured);
     }
 
     pub fn set_config_status_point_rewards(config: &mut Config, file_path: &str) -> Result<(), String> {

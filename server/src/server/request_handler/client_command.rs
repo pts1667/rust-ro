@@ -24,11 +24,10 @@ pub fn handle(server: &Server, context: &Request) -> bool {
         session.close_dialog();
         return true;
     }
-    // Accepted without effect: no progress bar command, storage passwords are a rathena TODO, and /doridori needs skill regeneration.
+    // Accepted without effect: no progress bar command and storage passwords are a rathena TODO.
     if packet.downcast_ref::<PacketCzClientVersion>().is_some()
         || packet.downcast_ref::<PacketCzProgress>().is_some()
         || packet.downcast_ref::<PacketCzAckStorePassword>().is_some()
-        || packet.downcast_ref::<PacketCzDoridori>().is_some()
     {
         return true;
     }
@@ -64,6 +63,8 @@ pub fn handle(server: &Server, context: &Request) -> bool {
         ClientCommand::AutoRevive
     } else if packet.downcast_ref::<PacketCzChopokgi>().is_some() {
         ClientCommand::ExplosionSpirits
+    } else if packet.downcast_ref::<PacketCzDoridori>().is_some() {
+        ClientCommand::Doridori
     } else if let Some(packet) = packet.downcast_ref::<PacketCzMovetoMap>() {
         ClientCommand::AtCommand(format!(
             "@mapmove {} {} {}",

@@ -392,12 +392,15 @@ impl CharacterService {
 
     pub fn regen_hp(&self, character: &mut Character, tick: u128) {
         let character_status = self.status_service.to_snapshot_cached(&character.status, tick);
-        let delay = if character.is_sitting() { 3000 } else { 6000 };
+        let battle = &self.configuration_service.config().battle;
+        let interval = battle.get("natural_healhp_interval") as u128;
+        let delay = if character.is_sitting() { interval / 2 } else { interval };
         if character.status.hp > 0
             && tick > character.last_moved_at
             && tick - character.last_moved_at >= delay
             && tick > character.last_regen_hp_at
             && tick - character.last_regen_hp_at >= delay
+            && !self.blocks_natural_regen(character)
             && character_status.hp() < character_status.max_hp()
         {
             let hp_regen = self.status_service.character_regen_hp(&character_status);
@@ -419,7 +422,8 @@ impl CharacterService {
 
     pub fn regen_sp(&self, character: &mut Character, tick: u128) {
         let character_status = self.status_service.to_snapshot_cached(&character.status, tick);
-        let delay = if character.is_sitting() { 4000 } else { 8000 };
+        let interval = self.configuration_service.config().battle.get("natural_healsp_interval") as u128;
+        let delay = if character.is_sitting() { interval / 2 } else { interval };
         let delay = if character
             .status
             .has_status_change(models::status_change::StatusChangeKind::Magnificat)
@@ -433,6 +437,7 @@ impl CharacterService {
             && tick - character.last_moved_at >= delay
             && tick > character.last_regen_sp_at
             && tick - character.last_regen_sp_at >= delay
+            && !self.blocks_natural_regen(character)
             && character_status.sp() < character_status.max_sp()
         {
             let sp_regen = self.status_service.character_regen_sp(&character_status);
@@ -450,6 +455,78 @@ impl CharacterService {
                 )))
                 .unwrap_or_else(|_| error!("Failed to send notification packet_status_change(sp regen) to client"));
         }
+    }
+
+    /// Carrying `major_overweight_rate` percent of the weight limit forbids attacking and using skills.
+    pub fn is_overweight_for_combat(&self, character: &Character) -> bool {
+        let rate = self.configuration_service.config().battle.get("major_overweight_rate") as u64;
+        let max = u64::from(self.max_weight(character));
+        max > 0 && u64::from(character.weight()) * 100 >= max * rate
+    }
+
+    /// Carrying `natural_heal_weight_rate` percent of the weight limit stops natural and skill regeneration.
+    fn blocks_natural_regen(&self, character: &Character) -> bool {
+        let rate = self.configuration_service.config().battle.get("natural_heal_weight_rate") as u64;
+        let max = u64::from(self.max_weight(character));
+        max > 0 && u64::from(character.weight()) * 100 >= max * rate
+    }
+
+    /// Skill regeneration (Recovery, SP Recovery, Ninja Arts, Spirit's Recovery, Enjoyable Rest) every `natural_heal_skill_interval`.
+    pub fn regen_skills(&self, character: &mut Character, tick: u128) {
+        if character.status.hp == 0 || !character.movements().is_empty() {
+            character.last_skill_regen_at = tick;
+            return;
+        }
+        let interval = self.configuration_service.config().battle.get("natural_heal_skill_interval") as u128;
+        if tick.saturating_sub(character.last_skill_regen_at) < interval || self.blocks_natural_regen(character) {
+            return;
+        }
+        character.last_skill_regen_at = tick;
+        let snapshot = self.status_service.to_snapshot_cached(&character.status, tick);
+        let level = |skill: SkillEnum| u32::from(crate::server::service::script_character_service::learned_level(&character.status, skill.id()));
+        let (max_hp, max_sp) = (snapshot.max_hp(), snapshot.max_sp());
+        let mut hp = level(SkillEnum::SmRecovery) * (5 + max_hp / 500);
+        let mut sp = level(SkillEnum::MgSrecovery) * (3 + max_sp / 500) + level(SkillEnum::NjNinpou) * (3 + max_sp / 500);
+        if character.is_sitting() {
+            let spirits = level(SkillEnum::MoSpiritsrecovery);
+            let tk_hp = level(SkillEnum::TkHptime);
+            let tk_sp = level(SkillEnum::TkSptime);
+            hp += spirits * (4 + max_hp / 500);
+            if tk_hp > 0 {
+                hp += tk_hp * (30 + max_hp / 500);
+            }
+            if tk_sp > 0 {
+                let mut rest = tk_sp * (3 + max_sp / 500);
+                let kaina = level(SkillEnum::SlKaina);
+                rest += (30 + 10 * kaina) * rest / 100 * u32::from(kaina > 0);
+                sp += rest;
+            }
+            sp += spirits * (2 + max_sp / 500);
+        }
+        let hp = hp.min(max_hp.saturating_sub(snapshot.hp()));
+        if sp > 0 && snapshot.sp() < max_sp && character.doridori {
+            sp *= 2;
+            character.doridori = false;
+        }
+        let sp = sp.min(max_sp.saturating_sub(snapshot.sp()));
+        if hp > 0 {
+            character.status.set_hp(snapshot.hp() + hp);
+            self.notify_resource(character.char_id, StatusTypes::Hp, snapshot.hp() + hp);
+        }
+        if sp > 0 {
+            character.status.set_sp(snapshot.sp() + sp);
+            self.notify_resource(character.char_id, StatusTypes::Sp, snapshot.sp() + sp);
+        }
+    }
+
+    fn notify_resource(&self, char_id: u32, kind: StatusTypes, value: u32) {
+        let mut packet = PacketZcParChange::new(self.configuration_service.packetver());
+        packet.set_var_id(kind.value() as u16);
+        packet.set_count(value as i32);
+        packet.fill_raw();
+        self.client_notification_sender
+            .send(Notification::Char(CharNotification::new(char_id, chain_packets(vec![&packet]))))
+            .unwrap_or_else(|_| error!("Failed to send notification packet_status_change(skill regen) to client"));
     }
 
     pub async fn save_characters_state(&self, characters: Vec<&Character>, tick: u128) {
@@ -1710,6 +1787,18 @@ impl CharacterService {
         self.client_notification_sender
             .send(Notification::Char(CharNotification::new(char_id, packet_status_change.raw)))
             .unwrap_or_else(|_| error!("Failed to send notification packet_status_change(status update) to client"));
+    }
+
+    /// GM `@str`-style change: moves a base stat without spending status points, within `1..=max_stat_level`.
+    pub fn add_stat_without_cost(&self, character: &mut Character, status_type: StatusTypes, delta: i32) -> u16 {
+        let max = self.configuration_service.config().game.max_stat_level;
+        let stat = self.stat_mut(&mut character.status, &status_type);
+        *stat = (i32::from(*stat) + delta).clamp(1, i32::from(max)) as u16;
+        let value = u32::from(*stat);
+        self.send_status_update_and_defer_db_update(character.char_id, status_type, value);
+        self.server_task_queue
+            .add_to_first_index(GameEvent::CharacterUpdateClientSideStats(CharacterUpdateClientSideStats { char_id: character.char_id }));
+        value as u16
     }
 
     pub fn character_increase_stat(&self, character: &mut Character, character_update_stat: CharacterUpdateStat) {

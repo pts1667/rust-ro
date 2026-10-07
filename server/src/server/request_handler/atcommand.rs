@@ -10,7 +10,7 @@ use regex_lite::Regex;
 
 use crate::load_scripts;
 use crate::server::Server;
-use crate::server::model::events::game_event::{CharacterRemoveItem, CharacterRemoveItems, CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent, CharacterResetSkills, CharacterResetStats, CharacterRestoreAllHpAndSP, CharacterUpdateSpeed};
+use crate::server::model::events::game_event::{CharacterRemoveItem, CharacterRemoveItems, CharacterChangeJob, CharacterChangeJobLevel, CharacterChangeLevel, GameEvent, CharacterResetSkills, CharacterResetStats, CharacterUpdateSpeed};
 use crate::server::model::duel::{DuelAction, DuelCommand};
 use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::map_flags::MapFlag;
@@ -205,13 +205,15 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
             server.motd().reload(&server.configuration.server.motd_path);
             packet_zc_notify_playerchat.set_msg("Reloaded the Message of the Day.".to_string());
         }
-        "heal" => {
-            let result = handle_heal(server, char_id, args);
-            packet_zc_notify_playerchat.set_msg(result);
-        }
-        _ => {
-            packet_zc_notify_playerchat.set_msg(format!("{symbol}{command} is an Unknown Command."));
-        }
+        _ => match super::atcommand_extra::handle(server, state, char_id, canonical.as_str(), &args) {
+            Some(replies) => {
+                for line in replies {
+                    server.tell(char_id, &line);
+                }
+                return;
+            }
+            None => packet_zc_notify_playerchat.set_msg(format!("{symbol}{command} is an Unknown Command.")),
+        },
     }
     send_chat_reply(server, char_id, packet_zc_notify_playerchat);
 }
@@ -306,7 +308,7 @@ pub fn handle_go(server: &Server, state: &mut ServerState, char_id: u32, args: V
     format!("Warping at {} {},{}", city.name.clone(), city.x, city.y)
 }
 
-fn admin_travel_blocked(state: &ServerState, char_id: u32, destination: &str) -> Option<String> {
+pub(super) fn admin_travel_blocked(state: &ServerState, char_id: u32, destination: &str) -> Option<String> {
     let character = state.get_character_unsafe(char_id);
     if state.map_flags(&character.map_instance_key).enabled(MapFlag::NoWarp) {
         return Some("You are not authorized to warp from your current map.".into());
@@ -565,12 +567,4 @@ fn handle_autolootitem(autoloot: &mut AutoLoot, args: &[&str]) -> String {
             None => format!("Your autolootitem list is full. Remove some items first with @autolootitem -<item name or ID>."),
         },
     }
-}
-
-pub fn handle_heal(server: &Server, char_id: u32, args: Vec<&str>) -> String {
-    if args.is_empty() {
-        return "@speed command accept 1 parameters but received none".to_string();
-    }
-    server.add_to_next_tick(GameEvent::CharacterRestoreAllHpAndSP(CharacterRestoreAllHpAndSP { char_id: char_id }));
-    "Restored all HP and SP".to_string()
 }

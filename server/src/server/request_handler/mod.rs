@@ -39,6 +39,7 @@ use crate::util::tick::{get_tick, get_tick_client};
 pub mod action;
 pub mod atcommand;
 pub mod atcommand_admin;
+pub mod atcommand_extra;
 /**
  * This module implement client requests handler.
  */

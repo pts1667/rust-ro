@@ -70,7 +70,8 @@ impl StatusFromDb {
 
     pub fn from_mob_model(mob_model: &MobModel) -> StatusSnapshot {
         // The pre-renewal mob database leaves treasure chests without HP; rathena defaults them to 1.
-        let hp = mob_model.hp.max(1) as u32;
+        let hp_rate = crate::server::service::global_config_service::GlobalConfigService::battle_option(if mob_model.is_mvp() { "mvp_hp_rate" } else { "monster_hp_rate" });
+        let hp = ((mob_model.hp.max(1) as i64 * hp_rate / 100).max(1)).min(i64::from(u32::MAX)) as u32;
         let mut snapshot = StatusSnapshot::new_for_mob(
             mob_model.id as u32,
             hp,

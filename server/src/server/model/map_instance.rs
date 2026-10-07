@@ -170,7 +170,10 @@ impl MapInstance {
                 map_items,
                 map.mob_spawns()
                     .iter()
-                    .map(|spawn| (spawn.id, MobSpawnTrack::default(spawn.id)))
+                    .map(|spawn| {
+                        let (base, variance) = scaled_respawn_delay(spawn);
+                        (spawn.id, MobSpawnTrack::default(spawn.id).with_respawn_delay(base, variance))
+                    })
                     .collect::<HashMap<u32, MobSpawnTrack>>(),
             )),
             shutdown: AtomicBool::new(false),
@@ -320,4 +323,20 @@ impl MapInstance {
                 .unwrap_or_else(|| panic!("Timed out locking state of map {}", self.key.map_name())),
         )
     }
+}
+
+/// Respawn delay of a spawn after the `boss_spawn_delay`, `plant_spawn_delay` and `mob_spawn_delay` options of rathena.
+fn scaled_respawn_delay(spawn: &crate::server::model::mob_spawn::MobSpawn) -> (u32, u32) {
+    use models::enums::mob::{MobClass, MobDamageMode, MobMode};
+    use models::enums::EnumWithMaskValueU32;
+    let option = |name| crate::server::service::global_config_service::GlobalConfigService::battle_option(name) as u32;
+    let mode = spawn.info.mode as u32;
+    let rate = if spawn.info.battle_class() == MobClass::Boss {
+        option("boss_spawn_delay")
+    } else if mode & MobMode::Plant.as_flag() != 0 || spawn.info.damage_modes.contains(&MobDamageMode::IgnoreMelee) {
+        option("plant_spawn_delay")
+    } else {
+        option("mob_spawn_delay")
+    };
+    (spawn.fixed_delay_in_ms / 100 * rate, spawn.random_variance_delay_in_ms / 100 * rate)
 }

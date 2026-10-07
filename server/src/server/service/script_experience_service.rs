@@ -4,8 +4,10 @@ use crate::server::model::events::game_event::CharacterKillMonster;
 use crate::server::model::map_flags::{MapFlag, MapFlags};
 use crate::server::state::server::ServerState;
 
-const ADDITIONAL_ATTACKER_BONUS: u64 = 25;
-const MAX_BONUS_ATTACKERS: usize = 12;
+fn attacker_bonus_options() -> (u64, usize) {
+    let battle = &crate::server::service::global_config_service::GlobalConfigService::instance().config().battle;
+    (battle.get("exp_bonus_attacker") as u64, battle.get("exp_bonus_max_attacker") as usize)
+}
 
 #[cfg(test)]
 pub fn monster_experience_awards(state: &ServerState, kill: &CharacterKillMonster, party_bonus: u16) -> BTreeMap<u32, (u32, u32)> {
@@ -144,8 +146,8 @@ fn actor_experience_share_scaled(kill: &CharacterKillMonster, actor_id: u32, fla
         .iter()
         .filter(|entry| entry.damage > 0)
         .count()
-        .min(MAX_BONUS_ATTACKERS);
-    let bonus = 100 + attackers.saturating_sub(1) as u64 * ADDITIONAL_ATTACKER_BONUS;
+        .min(attacker_bonus_options().1);
+    let bonus = 100 + attackers.saturating_sub(1) as u64 * attacker_bonus_options().0;
     let share = |experience: u32, rate: Option<u32>| {
         if experience == 0 || rate.is_none() {
             0

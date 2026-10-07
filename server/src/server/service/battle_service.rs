@@ -1902,7 +1902,7 @@ impl BattleService {
                     | models::status_change::StatusChangeKind::Sleep
             )
         });
-        if !immobilized && !roll_percent(perfect_hit as f32, rng) && !roll_percent(hit_rate.clamp(5, 95) as f32, rng) {
+        if !immobilized && !roll_percent(perfect_hit as f32, rng) && !roll_percent(hit_rate.clamp(GlobalConfigService::battle_option("min_hitrate") as i32, GlobalConfigService::battle_option("max_hitrate") as i32) as f32, rng) {
             return NormalAttackRoll::Miss;
         }
         if double_attack {
@@ -4627,11 +4627,13 @@ impl BattleService {
                     if matches!(element, Element::Dark) {
                         -0.5
                     } else if matches!(element, Element::Holy) {
-                        1.5
+                        1.75
                     } else if matches!(element, Element::Poison) || matches!(element, Element::Undead) {
                         0.0
                     } else if matches!(element, Element::Ghost) {
                         0.25
+                    } else if matches!(element, Element::Neutral) {
+                        1.0
                     } else {
                         0.5
                     }

@@ -163,6 +163,11 @@ pub struct Character {
     pub position_revision: std::sync::atomic::AtomicU64,
     pub last_regen_hp_at: u128,
     pub last_regen_sp_at: u128,
+    pub last_skill_regen_at: u128,
+    /// Set by /doridori, doubles the SP of the next skill regeneration.
+    pub doridori: bool,
+    /// Whether the client currently shows night.
+    pub night_shown: bool,
 
     pub hotkeys: Vec<Hotkey>,
     // 1 male, 0 female
@@ -240,6 +245,9 @@ impl Character {
             position_revision: std::sync::atomic::AtomicU64::new(0),
             last_regen_hp_at: 0,
             last_regen_sp_at: 0,
+            last_skill_regen_at: 0,
+            doridori: false,
+            night_shown: false,
             hotkeys,
             sex,
             timing: CharacterTiming::new(),

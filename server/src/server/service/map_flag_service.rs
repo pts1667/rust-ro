@@ -180,14 +180,12 @@ const WEATHER_EFFECTS: [(MapFlag, &[u32]); 7] = [
     (MapFlag::Fireworks, &[297, 299, 301]),
     (MapFlag::Leaves, &[333]),
 ];
-const NIGHT_EFFECT: u32 = 511;
 
 pub fn weather_packets(flags: &MapFlags, actor_id: u32) -> Vec<Vec<u8>> {
     WEATHER_EFFECTS
         .iter()
         .filter(|(flag, _)| flags.enabled(*flag))
         .flat_map(|(_, effects)| effects.iter().copied())
-        .chain(flags.enabled(MapFlag::NightEnabled).then_some(NIGHT_EFFECT))
         .map(|effect| [0x01F3_u16.to_le_bytes().to_vec(), actor_id.to_le_bytes().to_vec(), effect.to_le_bytes().to_vec()].concat())
         .collect()
 }
@@ -264,6 +262,44 @@ impl Server {
             self.map_notifications.push(Notification::Char(CharNotification::new(char_id, data)));
         }
         self.drain_map_notifications();
+    }
+
+    /// Moves the day/night timers and announces a change to everybody.
+    pub(crate) fn tick_day_night(&self, state: &ServerState, tick: u128) {
+        let battle = &self.configuration.battle;
+        let (day, night) = (battle.get("day_duration") as u64, battle.get("night_duration") as u64);
+        self.day_night().start(battle.flag("night_at_start"), tick, day);
+        if let Some(night) = self.day_night().advance(tick, day, night) {
+            self.announce_day_night(state, night, false);
+        }
+    }
+
+    pub(crate) fn announce_day_night(&self, state: &ServerState, night: bool, by_command: bool) {
+        let text = match (night, by_command) {
+            (true, true) => "Night has fallen.",
+            (true, false) => "The night has fallen...",
+            (false, true) => "Day has arrived.",
+            (false, false) => "The day has arrived!",
+        };
+        let packet = crate::server::service::social_packets::broadcast(text);
+        for character in state.characters().values().filter(|character| character.loaded_from_client_side) {
+            self.map_notifications.push(Notification::Char(CharNotification::new(character.char_id, packet.clone())));
+        }
+        self.drain_map_notifications();
+    }
+
+    /// Shows or clears the night display of a character on a `nightenabled` map.
+    pub(crate) fn sync_night(&self, state: &ServerState, character: &mut crate::server::state::character::Character) {
+        if !character.loaded_from_client_side {
+            return;
+        }
+        let show = self.day_night().is_night() && state.map_flags(&character.map_instance_key).enabled(MapFlag::NightEnabled);
+        if show != character.night_shown {
+            character.night_shown = show;
+            let packet = crate::server::model::day_night::night_packet(character.char_id, show);
+            self.map_notifications.push(Notification::Char(CharNotification::new(character.char_id, packet)));
+            self.drain_map_notifications();
+        }
     }
 
     pub(crate) fn notify_weather(&self, state: &ServerState, char_id: u32) {
@@ -461,12 +497,11 @@ mod tests {
     }
 
     #[test]
-    fn weather_and_night_flags_produce_one_self_effect_each() {
+    fn weather_flags_produce_one_self_effect_each() {
         let mut flags = MapFlags::default();
         assert!(weather_packets(&flags, 7).is_empty());
         flags.set(MapFlag::Snow, true, &[]).unwrap();
         flags.set(MapFlag::Fireworks, true, &[]).unwrap();
-        flags.set(MapFlag::NightEnabled, true, &[]).unwrap();
         let effects: Vec<u32> = weather_packets(&flags, 7)
             .iter()
             .map(|packet| {
@@ -475,6 +510,6 @@ mod tests {
                 u32::from_le_bytes(packet[6..10].try_into().unwrap())
             })
             .collect();
-        assert_eq!(effects, [162, 297, 299, 301, 511]);
+        assert_eq!(effects, [162, 297, 299, 301]);
     }
 }

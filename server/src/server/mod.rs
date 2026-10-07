@@ -102,6 +102,7 @@ pub struct Server {
     script_world_service: ScriptWorldService,
     login_service: LoginService,
     motd: Motd,
+    day_night: crate::server::model::day_night::DayNight,
 }
 
 impl Server {
@@ -132,6 +133,10 @@ impl Server {
     /// Character positions for threads that must not read `ServerState`.
     pub fn directory(&self) -> &CharacterDirectory {
         &self.directory
+    }
+
+    pub fn day_night(&self) -> &crate::server::model::day_night::DayNight {
+        &self.day_night
     }
 
     pub fn motd(&self) -> &Motd {
@@ -301,6 +306,7 @@ impl Server {
             script_world_service,
             login_service: LoginService::new(),
             motd: Motd::load(&configuration.server.motd_path),
+            day_night: Default::default(),
             runtime,
         }
     }
@@ -346,6 +352,7 @@ impl Server {
             script_world_service,
             login_service: LoginService::new(),
             motd: Motd::default(),
+            day_night: Default::default(),
             runtime,
         }
     }

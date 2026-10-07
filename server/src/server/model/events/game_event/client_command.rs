@@ -16,6 +16,7 @@ pub enum ClientCommand {
     CloseStorage,
     AutoRevive,
     ExplosionSpirits,
+    Doridori,
     AtCommand(String),
 }
 

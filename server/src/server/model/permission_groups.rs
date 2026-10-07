@@ -226,6 +226,20 @@ impl PermissionGroups {
         self.canonical_commands.get(&word).cloned().unwrap_or(word)
     }
 
+    /// Canonical names of the commands a group may use, sorted.
+    pub fn usable_commands(&self, group_id: u32, kind: CommandKind) -> Vec<String> {
+        let group = self.group(group_id);
+        let mut names: Vec<String> = self
+            .canonical_commands
+            .values()
+            .filter(|name| group.can_use_command(name, kind))
+            .cloned()
+            .collect();
+        names.sort();
+        names.dedup();
+        names
+    }
+
     pub fn can_use_command(&self, group_id: u32, word: &str, kind: CommandKind) -> bool {
         self.group(group_id).can_use_command(&self.canonical_command(word), kind)
     }

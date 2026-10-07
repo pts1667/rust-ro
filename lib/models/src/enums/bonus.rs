@@ -284,12 +284,8 @@ impl BonusType {
                 status_snapshot.set_matk_max((status_snapshot.matk_max() as i32 + *matk as i32).clamp(0, u16::MAX as i32) as u16);
             }
             BonusType::ElementDefense(element) => status_snapshot.set_element(*element),
-            BonusType::SpeedPercentage(speed_percentage) => {
-                let speed = (status_snapshot.base_speed() as f32 * (*speed_percentage as f32 / 100.0)).ceil() as u16;
-                if status_snapshot.speed() > speed {
-                    status_snapshot.set_speed(status_snapshot.speed() - speed)
-                }
-            }
+            // Item speed bonuses do not stack with other haste, they are one of the sources `adjust_snapshot` takes the best of.
+            BonusType::SpeedPercentage(_) => {}
             _ => { /* TODO */ }
         }
     }

@@ -132,6 +132,7 @@ impl Server {
             .script_skill_service()
             .sync_ground_unit_snapshots(&mut server_state_mut, tick);
         server_ref.apply_guild_auras(&mut server_state_mut, tick);
+        server_ref.tick_day_night(&server_state_mut, tick);
         server_ref.castle_clock();
         server_ref.tick_battlegrounds(&mut server_state_mut, tick);
         server_ref.tick_cell_statuses(&mut server_state_mut, tick);
@@ -155,6 +156,7 @@ impl Server {
                     );
                 if target_visible
                     && !character.status.blocks_attack()
+                    && !server_ref.character_service().is_overweight_for_combat(&character)
                     && character.game_systems.buying_store.is_none()
                     && character.game_systems.vending_store.is_none()
                 {
@@ -172,6 +174,8 @@ impl Server {
                     .character_use_skill(server_ref, &mut server_state_mut, tick, &mut character);
                 server_ref.character_service().regen_hp(&mut character, tick);
                 server_ref.character_service().regen_sp(&mut character, tick);
+                server_ref.character_service().regen_skills(&mut character, tick);
+                server_ref.sync_night(&server_state_mut, &mut character);
                 character.refresh_script_context();
                 server_state_mut.insert_character(character);
             }

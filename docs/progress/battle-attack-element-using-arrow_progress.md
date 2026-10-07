@@ -515,22 +515,22 @@ fixture file was [src/tests/common/fixtures/data/attack-element-using-arrow.json
 |gg0hby|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Poison_Arrow</li></ul>|Basic Attack|Injustice|**true**|**19/19**|**22/22**|
 |xpdz6p|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Incisive_Arrow</li></ul>|Basic Attack|Injustice|**true**|**79/79**|**100/100**|
 |dx358y|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Holy_Arrow</li></ul>|Basic Attack|Injustice|**true**|**118/118**|**210/210**|
-|tx6mtj|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/1**|**0/1**|
+|tx6mtj|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |tzl3c7|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Silver_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |22w6wi|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Fire_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
-|cafbb1|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Iron_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/1**|**0/1**|
+|cafbb1|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Iron_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |3rhjp5|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Stone_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
 |qrqtiv|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Crystal_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
 |21bpij|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow_Of_Wind</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
 |0conhb|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow_Of_Shadow</li></ul>|Basic Attack|Incubus|**true**|**-1/-1**|**-1/0**|
 |cg094p|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Immatrial_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
 |99x6xa|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Rusty_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
-|mdmrir|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Steel_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/1**|**0/1**|
-|r7jeg0|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Oridecon_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/1**|**0/1**|
+|mdmrir|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Steel_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
+|r7jeg0|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Oridecon_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |rp1txs|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow_Of_Counter_Evil</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |lklupl|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Freezing_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
 |y22gbd|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Poison_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/0**|**0/0**|
-|yqiz94|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Incisive_Arrow</li></ul>|Basic Attack|Incubus|**true**|**0/1**|**0/1**|
+|yqiz94|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Incisive_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |qea6lr|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Holy_Arrow</li></ul>|Basic Attack|Incubus|**true**|**1/1**|**1/1**|
 |ekxz5p|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Arrow</li></ul>|Basic Attack|Abysmal Knight|**true**|**1/1**|**1/1**|
 |d972fl|Hunter(95/50)|<ul><li>Bow<ul></ul></li><li>Silver_Arrow</li></ul>|Basic Attack|Abysmal Knight|**true**|**2/2**|**4/4**|

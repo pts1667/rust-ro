@@ -301,6 +301,9 @@ impl Server {
             {
                 return Err("Character cannot use skills now".into());
             }
+            if self.character_service().is_overweight_for_combat(&character) {
+                return Err("Too heavy to use skills".into());
+            }
             self.script_skill_service().validate_performing(state, &character, event.skill_id)?;
             if (8001..=8016).contains(&event.skill_id) || (8201..=8240).contains(&event.skill_id) {
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
@@ -1031,7 +1034,8 @@ impl Server {
                 if character.is_moving() {
                     self.character_service().cancel_movement(&mut character, tick);
                 }
-                character.timing.set_canmove_tick(tick + u128::from(damage.damage_motion));
+                let walk_delay = u128::from(damage.damage_motion) * GlobalConfigService::battle_option("pc_damage_walk_delay_rate") as u128 / 100;
+                character.timing.set_canmove_tick(tick + walk_delay.max(1));
             }
             let no_cast_cancel = ScriptSkillService::cast_interruption_protected(&target_snapshot, &map_flags);
             if damage.battle_flags != 0
@@ -1251,6 +1255,8 @@ impl Server {
         self.transfer_castle_on_emperium_break(state, &kill);
         self.reward_mvp(state, &kill);
         let config = &GlobalConfigService::instance().config().game;
+        let battle = &GlobalConfigService::instance().config().battle;
+        let (base_rate, job_rate) = (config.base_exp_rate * battle.get("base_exp_rate") as f32 / 100.0, config.job_exp_rate * battle.get("job_exp_rate") as f32 / 100.0);
         let flags = state.map_flags(&kill.map_instance_key);
         let shares = if flags.enabled(crate::server::model::map_flags::MapFlag::Pvp) && !config.pvp_exp {
             Default::default()
@@ -1269,7 +1275,7 @@ impl Server {
             .filter(|(_, (base, job))| *base != 0 || *job != 0)
             .map(|(id, (base, job))| {
                 let character = state.characters().get(&id).ok_or("Experience recipient is unavailable")?;
-                let scaled_base = (base as f32 * config.base_exp_rate).ceil() as u32;
+                let scaled_base = (base as f32 * base_rate).ceil() as u32;
                 let tax = self.guild_experience_tax(character, scaled_base);
                 if tax > 0 {
                     guild_payouts.push((id, u64::from(tax)));
@@ -1280,7 +1286,7 @@ impl Server {
                     plan: super::script_character_service::plan_raw_experience(
                         character,
                         scaled_base - tax,
-                        (job as f32 * config.job_exp_rate).ceil() as u32,
+                        (job as f32 * job_rate).ceil() as u32,
                     )?,
                 })
             })

@@ -70,11 +70,11 @@ impl NpcLoaderTrait<MobSpawn> for MobSpawnLoader {
             }
             mob_spawn.set_mob_id(result.unwrap());
             mob_spawn.set_to_spawn_amount((spawn_info[1].parse::<i16>().unwrap() as f32 * config.game.mob_density) as i16);
-            if mob_info.len() >= 3 {
-                mob_spawn.set_fixed_delay_in_ms(spawn_info[2].parse::<u32>().unwrap());
+            if spawn_info.len() >= 3 {
+                mob_spawn.set_fixed_delay_in_ms(spawn_info[2].trim().parse::<u32>().unwrap_or(0));
             }
-            if mob_info.len() >= 4 {
-                mob_spawn.set_random_variance_delay_in_ms(spawn_info[3].parse::<u32>().unwrap());
+            if spawn_info.len() >= 4 {
+                mob_spawn.set_random_variance_delay_in_ms(spawn_info[3].trim().parse::<u32>().unwrap_or(0));
             }
             mob_spawn.set_id(i);
             mob_spawns.push(mob_spawn);

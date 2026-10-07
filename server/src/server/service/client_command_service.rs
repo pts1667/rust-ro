@@ -137,6 +137,12 @@ impl Server {
             }
             ClientCommand::AutoRevive => self.revive_with_token(state, char_id),
             ClientCommand::ExplosionSpirits => self.pray_to_guardian_angel(state, char_id, tick)?,
+            ClientCommand::Doridori => {
+                let character = state.characters_mut().get_mut(&char_id).ok_or("Character is not in game")?;
+                let job = JobName::try_from_value(character.status.job as usize).ok();
+                character.doridori = character.doridori
+                    || job.is_some_and(|job| job.is_supernovice() || (job.is_taekwon() && character.is_sitting()));
+            }
             ClientCommand::AtCommand(text) => {
                 crate::server::request_handler::atcommand::handle_atcommand(self, state, char_id, &format!("gm : {text}"));
             }

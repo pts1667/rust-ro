@@ -31,6 +31,14 @@ impl GlobalConfigService {
         unsafe { (*&raw const SERVICE_INSTANCE).as_ref().unwrap() }
     }
 
+    /// Battle option read from code that has no service at hand; falls back to the rathena default before `init`.
+    pub fn battle_option(name: &str) -> i64 {
+        match unsafe { (*&raw const SERVICE_INSTANCE).as_ref() } {
+            Some(service) => service.configuration.battle.get(name),
+            None => configuration::battle_config::BattleConfig::default_value(name),
+        }
+    }
+
     pub unsafe fn instance_mut() -> &'static mut GlobalConfigService {
         (*&raw mut SERVICE_INSTANCE).as_mut().unwrap()
     }
@@ -174,6 +182,20 @@ impl GlobalConfigService {
         self.mobs
             .get(id)
             .unwrap_or_else(|| panic!("Expected to find mob for id {id} but found none"))
+    }
+
+    /// A monster by numeric id, Aegis name or English name (case-insensitive), for GM commands.
+    pub fn find_mob(&self, query: &str) -> Option<&MobModel> {
+        if let Ok(id) = query.parse::<i32>() {
+            return self.get_mob_safe(id);
+        }
+        self.mobs
+            .values()
+            .find(|mob| mob.name.eq_ignore_ascii_case(query) || mob.name_english.eq_ignore_ascii_case(query))
+    }
+
+    pub fn mobs(&self) -> impl Iterator<Item = &MobModel> {
+        self.mobs.values()
     }
 
     pub fn get_mob_id_from_name(&self, name: &str) -> u32 {

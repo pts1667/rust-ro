@@ -822,6 +822,15 @@ impl StatusEffectService {
                 _ => {}
             }
         }
+        let item_speed = snapshot.bonuses_raw().iter().map(|bonus| if let models::enums::bonus::BonusType::SpeedPercentage(value) = bonus { i32::from(*value) } else { 0 }).sum::<i32>();
+        if item_speed > 0 {
+            haste = haste.max(item_speed);
+        } else {
+            slow = slow.max(-item_speed);
+        }
+        if player && matches!(models::enums::class::JobName::try_from_value(status.job as usize), Ok(models::enums::class::JobName::Assassin | models::enums::class::JobName::AssassinCross | models::enums::class::JobName::BabyAssassin)) {
+            haste = haste.max(i32::from(snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::TfMiss)));
+        }
         if player && snapshot.state() & models::enums::skill::SkillState::Riding.as_flag() != 0 {
             haste = haste.max(25);
             let cavalier_mastery = i32::from(snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::KnCavaliermastery));
@@ -832,6 +841,10 @@ impl StatusEffectService {
         if status.has_status_change(Defender) || status.has_status_change(Armor) { snapshot.set_speed(snapshot.speed().max(200)); }
         if status.has_status_change(SteelBody) { snapshot.set_speed(200); }
         if let Some(change) = status.status_change(WalkSpeed).filter(|change| change.values[0] > 0) { snapshot.set_speed((snapshot.speed() as u32 * 100 / change.values[0] as u32).clamp(10, u16::MAX as u32) as u16); }
+        if player {
+            let fastest = (15_000 / GlobalConfigService::battle_option("max_walk_speed").max(1)) as u16;
+            snapshot.set_speed(snapshot.speed().max(fastest));
+        }
         let bonus_haste = snapshot.bonuses_raw().iter().filter_map(|bonus| {
             if let models::enums::bonus::BonusType::AspdPercentage(value) = bonus { Some(*value * 10.0) } else { None }
         }).sum::<f32>();
