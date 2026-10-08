@@ -33,9 +33,59 @@ impl LeveledValue {
     }
 }
 
+/// First-level dispatch of a skill: the handler family that runs it when a player or an actor casts it.
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+pub enum SkillRoute {
+    // Script path, one variant per `SkillOperation`.
+    Damage,
+    Status,
+    AreaStatus,
+    Ground,
+    Recovery,
+    Inventory,
+    Movement,
+    Spirit,
+    Dispel,
+    Tarot,
+    Estimate,
+    /// Opens an item selection menu (`skill_menu_service`).
+    Menu,
+    /// Active guild skill (`guild_skill_service`).
+    Guild,
+    /// `lib/skills` native offensive skill.
+    Native,
+    /// Passive: the effect is read from the learned level where it applies.
+    Passive,
+    /// Monster, homunculus, mercenary and other actor-only skills.
+    Actor,
+    /// No handler yet; casting does nothing. Listed so the gap stays visible.
+    Unrouted,
+}
+
+impl SkillRoute {
+    pub fn operation(self) -> Option<super::callbacks::SkillOperation> {
+        use super::callbacks::SkillOperation as Operation;
+        Some(match self {
+            Self::Damage => Operation::Damage,
+            Self::Status => Operation::Status,
+            Self::AreaStatus => Operation::AreaStatus,
+            Self::Ground => Operation::Ground,
+            Self::Recovery => Operation::Recovery,
+            Self::Inventory => Operation::Inventory,
+            Self::Movement => Operation::Movement,
+            Self::Spirit => Operation::Spirit,
+            Self::Dispel => Operation::Dispel,
+            Self::Tarot => Operation::Tarot,
+            Self::Estimate => Operation::Estimate,
+            Self::Menu | Self::Guild | Self::Native | Self::Passive | Self::Actor | Self::Unrouted => return None,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SkillMetadata {
+    pub route: Option<SkillRoute>,
     pub id: u32,
     pub name: String,
     pub max_level: u8,

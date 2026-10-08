@@ -64,12 +64,8 @@ pub enum SkillMenuChoice {
 }
 
 pub fn is_menu_skill(name: &str) -> bool {
-    matches!(name, "AC_MAKINGARROW" | "WS_WEAPONREFINE" | "BS_REPAIRWEAPON" | "SA_AUTOSPELL") || is_crafting_skill(name)
-}
-
-/// Skills that make an item from the recipes of `produce_db.txt`.
-pub fn is_crafting_skill(name: &str) -> bool {
-    matches!(name, "AM_PHARMACY" | "SA_CREATECON" | "AL_HOLYWATER" | "ASC_CDP")
+    crate::server::script::skill::metadata::SkillMetadata::find_by_name(name)
+        .is_some_and(|metadata| metadata.route == Some(crate::server::script::skill::metadata::SkillRoute::Menu))
 }
 
 const ELEMENTAL_CONVERTER_LEVEL: u16 = 23;

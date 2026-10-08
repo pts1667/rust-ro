@@ -287,7 +287,9 @@ impl ScriptSkillService {
         if SkillEnum::try_from_value(skill.id).is_err() {
             return Err(format!("Unknown skill {}", skill.name()));
         }
-        if Self::operation(skill.name()).is_some() {
+        if Self::operation(skill.name()).is_some()
+            || metadata::SkillMetadata::find(skill.id).is_some_and(|metadata| matches!(metadata.route, Some(metadata::SkillRoute::Menu | metadata::SkillRoute::Guild)))
+        {
             return Ok(());
         }
         if skills::skill_enums::to_object(SkillEnum::from_id(skill.id), level as u8).is_none() {
@@ -1265,60 +1267,18 @@ impl ScriptSkillService {
     fn status_for_skill(name: &str) -> Option<StatusChangeKind> {
         use StatusChangeKind::*;
         match name {
-            "SM_ENDURE" => Some(Endure),
             "SM_PROVOKE" | "SM_SELFPROVOKE" => Some(Provoke),
-            "AL_ANGELUS" => Some(Angelus),
-            "AL_BLESSING" => Some(Blessing),
-            "AL_INCAGI" => Some(IncreaseAgi),
             "AL_DECAGI" => Some(DecreaseAgi),
-            "AC_CONCENTRATION" => Some(Concentrate),
-            "MC_LOUD" => Some(Loud),
-            "PR_MAGNIFICAT" => Some(Magnificat),
-            "PR_GLORIA" => Some(Gloria),
-            "PR_IMPOSITIO" => Some(Impositio),
-            "PR_ASPERSIO" => Some(Aspersio),
-            "PR_KYRIE" => Some(Kyrie),
-            "PR_SUFFRAGIUM" => Some(Suffragium),
             "PR_LEXAETERNA" => Some(LexAeterna),
-            "HP_ASSUMPTIO" => Some(Assumptio),
-            "BS_ADRENALINE" => Some(Adrenaline),
-            "BS_WEAPONPERFECT" => Some(WeaponPerfection),
-            "BS_OVERTHRUST" => Some(Overthrust),
-            "KN_TWOHANDQUICKEN" => Some(TwoHandQuicken),
-            "SN_WINDWALK" => Some(WindWalk),
-            "MG_SIGHT" => Some(Sight),
-            "AL_RUWACH" => Some(Ruwach),
-            "ALL_PARTYFLEE" => Some(PartyFlee),
             "ALL_ANGEL_PROTECT" => Some(IncAllStatus),
             "PR_LEXDIVINA" => Some(Silence),
             "AL_PNEUMA" => Some(Pneuma),
-            "AL_CRUCIS" => Some(SignumCrucis),
-            "SA_FLAMELAUNCHER" => Some(FireWeapon),
-            "SA_FROSTWEAPON" => Some(WaterWeapon),
-            "SA_LIGHTNINGLOADER" => Some(WindWeapon),
-            "SA_SEISMICWEAPON" => Some(EarthWeapon),
-            "CR_AUTOGUARD" => Some(AutoGuard),
-            "CR_REFLECTSHIELD" => Some(ReflectShield),
-            "MO_EXPLOSIONSPIRITS" => Some(ExplosionSpirits),
-            "LK_AURABLADE" => Some(AuraBlade),
-            "LK_CONCENTRATION" => Some(Concentration),
-            "NPC_MAGICMIRROR" => Some(MagicMirror),
             "NPC_POWERUP" => Some(IncAttackRate),
-            "NPC_DEFENDER" => Some(Armor),
             "NPC_WEAPONBRAKER" => Some(WeaponBreaker),
             "KN_AUTOCOUNTER" => Some(AutoCounter),
-            "NPC_STONESKIN" | "NPC_ANTIMAGIC" => Some(ArmorChange),
-            "NPC_SLOWCAST" => Some(SlowCast),
             "NPC_CRITICALWOUND" => Some(CriticalWound),
             "NPC_HELLPOWER" => Some(HellPower),
             "WZ_QUAGMIRE" => Some(Quagmire),
-            "MG_ENERGYCOAT" => Some(EnergyCoat),
-            "TF_HIDING" => Some(Hiding),
-            "AS_CLOAKING" => Some(Cloaking),
-            "ST_CHASEWALK" => Some(ChaseWalk),
-            "BS_MAXIMIZE" => Some(MaximizePower),
-            "SA_MAGICROD" => Some(MagicRod),
-            "NJ_NEN" => Some(Nen),
             _ => Self::metadata_buff_status(name),
         }
     }
@@ -1333,36 +1293,10 @@ impl ScriptSkillService {
         .flatten()
     }
 
+    /// Skills that run a direct effect on the target (heal, dispel, strip, class effect...) instead of damage or a ground unit.
     fn is_special_skill(name: &str) -> bool {
-        matches!(
-            name,
-            "AL_TELEPORT"
-                | "AL_HEAL"
-                | "ALL_RESURRECTION"
-                | "MC_IDENTIFY"
-                | "TF_DETOXIFY"
-                | "AL_CURE"
-                | "PR_STRECOVERY"
-                | "SA_DISPELL"
-                | "SA_SPELLBREAKER"
-                | "CG_TAROTCARD"
-                | "MG_STONECURSE"
-                | "DC_WINKCHARM"
-                | "RG_STRIPARMOR"
-                | "RG_STRIPWEAPON"
-                | "RG_STRIPSHIELD"
-                | "RG_STRIPHELM"
-                | "ST_FULLSTRIP"
-                | "AS_SPLASHER"
-                | "CR_DEVOTION"
-                | "TK_MISSION"
-                | "NV_FIRSTAID"
-                | "ALL_REVERSEORCISH"
-                | "SA_REVERSEORCISH"
-                | "ITEM_ENCHANTARMS"
-                | "TF_PICKSTONE"
-                | "SA_ABRACADABRA"
-        ) || Self::is_class_skill(name)
+        use callbacks::SkillOperation::{Dispel, Inventory, Recovery, Status, Tarot};
+        matches!(Self::operation(name), Some(Status | Recovery | Dispel | Tarot | Inventory))
     }
 
     fn skill_status_request(skill: &SkillConfig, kind: StatusChangeKind, level: u8) -> StatusChangeRequest {
@@ -1529,6 +1463,50 @@ impl ScriptSkillService {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Number of player skills whose route is `Unrouted`. Lower it when a skill gets a handler; it must never grow.
+    const UNROUTED_BASELINE: usize = 104;
+
+    #[test]
+    fn every_skill_has_a_route_or_is_a_plain_buff() {
+        let missing: Vec<_> = metadata::SkillMetadata::all()
+            .iter()
+            .filter(|skill| skill.route.is_none() && ScriptSkillService::metadata_buff_status(&skill.name).is_none())
+            .map(|skill| skill.name.as_str())
+            .collect();
+        assert!(missing.is_empty(), "set a Route in skill_metadata.json for: {missing:?}");
+    }
+
+    #[test]
+    fn routes_agree_with_the_native_skill_type() {
+        use metadata::SkillRoute as Route;
+        use models::enums::skill::SkillType;
+        let mut wrong = vec![];
+        for skill in metadata::SkillMetadata::all() {
+            let native = SkillEnum::try_from_value(skill.id).ok().and_then(|value| skills::skill_enums::to_object(value, 1)).map(|object| object.skill_type());
+            let consistent = match skill.route {
+                Some(Route::Native) => native == Some(SkillType::Offensive),
+                Some(Route::Passive) => native == Some(SkillType::Passive),
+                Some(route) if route.operation().is_some() => ScriptSkillService::operation(&skill.name).is_some(),
+                _ => true,
+            };
+            if !consistent {
+                wrong.push(skill.name.as_str());
+            }
+        }
+        assert!(wrong.is_empty(), "route does not match the implementation of: {wrong:?}");
+    }
+
+    #[test]
+    fn unrouted_skills_only_shrink() {
+        let unrouted: Vec<_> = metadata::SkillMetadata::all()
+            .iter()
+            .filter(|skill| skill.route == Some(metadata::SkillRoute::Unrouted))
+            .map(|skill| skill.name.as_str())
+            .collect();
+        assert!(unrouted.len() <= UNROUTED_BASELINE, "{} skills are Unrouted (baseline {UNROUTED_BASELINE}): {unrouted:?}", unrouted.len());
+        assert!(unrouted.len() >= UNROUTED_BASELINE, "lower UNROUTED_BASELINE to {}", unrouted.len());
+    }
 
     #[test]
     fn fly_and_butterfly_wings_use_distinct_destinations() {

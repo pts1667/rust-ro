@@ -38,28 +38,3 @@ fn auto_berserk_toggles_through_the_metadata_status_path() {
     }
     assert!(!context.server.state().get_character(char_id).unwrap().status.has_status_change(StatusChangeKind::AutoBerserk));
 }
-
-#[test]
-#[ignore = "prints the route of every skill"]
-fn print_player_skill_routes() {
-    use crate::server::script::skill::ScriptSkillService;
-    use crate::server::script::skill::metadata::SkillMetadata;
-    use models::enums::skill::SkillType;
-    let mut native = std::collections::BTreeMap::<String, Vec<String>>::new();
-    for metadata in SkillMetadata::all() {
-        let Ok(skill) = SkillEnum::try_from_value(metadata.id) else { continue };
-        let route = if ScriptSkillService::operation(&metadata.name).is_some() {
-            "script".to_string()
-        } else {
-            match skills::skill_enums::to_object(skill, 1) {
-                Some(object) => format!("native-{:?}", object.skill_type()),
-                None => "none".to_string(),
-            }
-        };
-        let _ = SkillType::Passive;
-        native.entry(route).or_default().push(format!("{}[{}]", metadata.name, metadata.target_type.as_deref().unwrap_or("-")));
-    }
-    for (route, names) in &native {
-        println!("ROUTE {route} ({}): {}", names.len(), names.join(" "));
-    }
-}

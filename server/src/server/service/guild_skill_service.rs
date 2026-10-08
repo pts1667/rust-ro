@@ -36,7 +36,8 @@ static NEXT_AURA_TICK: AtomicU64 = AtomicU64::new(0);
 const CALL_OFFSETS: [(i32, i32); 9] = [(-1, 0), (1, 0), (0, 1), (0, -1), (-1, 1), (1, -1), (-1, -1), (1, 1), (0, 0)];
 
 pub(crate) fn is_active_guild_skill(skill_id: u32) -> bool {
-    matches!(skill_id, GD_BATTLEORDER | GD_REGENERATION | GD_RESTORE | GD_EMERGENCYCALL)
+    crate::server::script::skill::metadata::SkillMetadata::find(skill_id)
+        .is_some_and(|metadata| metadata.route == Some(crate::server::script::skill::metadata::SkillRoute::Guild))
 }
 
 fn in_range(source: &Character, target: &Character, range: u16) -> bool {

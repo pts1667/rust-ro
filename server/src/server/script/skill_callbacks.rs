@@ -27,40 +27,13 @@ pub enum SkillOperation {
 }
 
 impl ScriptSkillService {
+    /// Script operation of a skill: the `Route` of its metadata, or `Status` for a plain buff that names no route.
     pub fn operation(name: &str) -> Option<SkillOperation> {
-        use SkillOperation::*;
-        Some(match name {
-            "AL_HEAL" | "ALL_RESURRECTION" | "NV_FIRSTAID" | "AL_CURE" | "TF_DETOXIFY" | "PR_STRECOVERY" => Recovery,
-            "MC_IDENTIFY" | "TF_PICKSTONE" | "BS_GREED" | "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST"
-            | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" | "SA_ABRACADABRA" => Inventory,
-            "AL_TELEPORT" | "TF_BACKSLIDING" | "TK_HIGHJUMP" | "TK_RUN" | "RG_INTIMIDATE" => Movement,
-            "MO_CALLSPIRITS" | "CH_SOULCOLLECT" | "GS_GLITTERING" => Spirit,
-            "SA_DISPELL" | "SA_SPELLBREAKER" => Dispel,
-            "MG_STONECURSE" | "DC_WINKCHARM" | "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP"
-            | "AS_SPLASHER" => Status,
-            "CG_TAROTCARD" => Tarot,
-            "WZ_ESTIMATION" => Estimate,
-            "NPC_EARTHQUAKE" => Ground,
-            "AL_WARP" | "RG_GRAFFITI" | "RG_CLEANER" | "AM_SPHEREMINE" | "AM_CANNIBALIZE" => Ground,
-            "NPC_MAGICALATTACK" | "SL_STIN" | "SL_STUN" | "SL_SMA" => Damage,
-            "HT_ANKLESNARE" | "HT_SKIDTRAP" | "HT_LANDMINE" | "HT_SANDMAN" | "HT_FREEZINGTRAP" | "HT_BLASTMINE" | "HT_CLAYMORETRAP"
-            | "HT_SHOCKWAVE" | "HT_FLASHER" | "HT_TALKIEBOX" => Ground,
-            "CR_DEVOTION" => Status,
-            "TK_MISSION" => Inventory,
-            "HT_REMOVETRAP" | "HT_SPRINGTRAP" => Inventory,
-            "BA_FROSTJOKER" | "DC_SCREAM" | "NPC_WIDEBLEEDING" | "NPC_WIDECONFUSE" | "NPC_WIDECURSE" | "NPC_WIDESILENCE"
-            | "NPC_DRAGONFEAR" | "AL_CRUCIS" | "NPC_WIDESOULDRAIN" => AreaStatus,
-            "MG_FIREWALL" | "MG_THUNDERSTORM" | "WZ_HEAVENDRIVE" | "WZ_METEOR" | "WZ_VERMILION" | "WZ_STORMGUST" | "WZ_QUAGMIRE"
-            | "AL_PNEUMA" | "MG_SAFETYWALL" | "PR_SANCTUARY" | "AS_VENOMDUST" | "PF_SPIDERWEB" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "BS_HAMMERFALL" | "SA_DELUGE" | "SA_VOLCANO" | "SA_VIOLENTGALE" | "SA_LANDPROTECTOR" | "CR_GRANDCROSS" | "NPC_GRANDDARKNESS" => Ground,
-            name if Self::status_for_skill(name).is_some() || Self::is_class_skill(name) => Status,
-            "SM_BASH" | "SM_MAGNUM" | "MC_MAMMONITE" | "AC_DOUBLE" | "TF_POISON" | "AS_SONICBLOW" | "KN_PIERCE"
-            | "KN_BOWLINGBASH" | "MO_INVESTIGATE" | "WZ_FROSTNOVA" | "WZ_EARTHSPIKE" | "WZ_JUPITEL" | "WZ_WATERBALL"
-            | "MG_SOULSTRIKE" | "MG_COLDBOLT" | "MG_FROSTDIVER" | "MG_FIREBALL" | "MG_FIREBOLT" | "MG_LIGHTNINGBOLT"
-            | "PR_TURNUNDEAD" | "NPC_DARKSTRIKE" | "NPC_DARKBREATH" | "NPC_PULSESTRIKE" | "NPC_HELLJUDGEMENT"
-            | "NPC_VAMPIRE_GIFT" | "PA_PRESSURE" | "CH_PALMSTRIKE" | "CG_ARROWVULCAN" | "LK_JOINTBEAT" | "RG_BACKSTAP"
-            | "RG_RAID" | "WS_CARTTERMINATION" | "GS_TRACKING" | "GS_RAPIDSHOWER" | "GS_SPREADATTACK" | "NJ_HUUMA" | "NJ_ISSEN" => Damage,
-            _ => return None,
-        })
+        let metadata = SkillMetadata::find_by_name(name)?;
+        match metadata.route {
+            Some(route) => route.operation(),
+            None => Self::metadata_buff_status(name).map(|_| SkillOperation::Status),
+        }
     }
 
     pub fn area_status_request(

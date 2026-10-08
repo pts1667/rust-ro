@@ -124,6 +124,13 @@ This section contains guidance for common implementation tasks
 - Map instance events follow the same pattern with `MapEventHandler` and `map_events!` in `server/src/server/model/events/map_event/`
 - Script world requests are split by domain sub-enums in `server/src/server/service/script_world_requests.rs`, with each domain handler in its `script_world_*.rs` file
 
+## How to implement or route a player skill?
+- Every skill in `server/src/server/script/skill_metadata.json` has a `Route` (`SkillRoute` in `skill_metadata.rs`): `Damage`, `Status`, `AreaStatus`, `Ground`, `Recovery`, `Inventory`, `Movement`, `Spirit`, `Dispel`, `Tarot`, `Estimate` (script operations), `Menu`, `Guild`, `Native` (`lib/skills` offensive struct), `Passive`, `Actor` or `Unrouted` (no handler yet).
+- The metadata is generated from rathena by `tools/scripts-import/import_skill_operations.py`, which only adds missing skills and keeps existing entries (hand-edited fields and `Route` included). A new skill has no `Route`: set it by hand.
+- A plain buff (no damage, no unit, `Self`/`Support` target, a `Status` that exists in `StatusChangeKind`) needs no `Route` and no Rust: add the status kind in `lib/models/src/status_change.rs` (`bonuses()` for stat effects, `apply_status_for_target` for start values, `adjust_snapshot_for_target` for ASPD/speed) and regenerate the status metadata.
+- Anything else: set the `Route`, then add the bespoke code in the matching `server/src/server/script/skill_*.rs` file (name branches live there). Lowering the number of `Unrouted` skills means editing `UNROUTED_BASELINE` in the tests of `script/skill.rs`.
+- Passive effects are read through `known_skill_level`/`learned_level`: stat effects in `StatusService::passive_skill_bonuses` (`status_service.rs`), damage effects in `battle_service.rs`.
+
 ## How to implement a bitflag?
 - Create the enum in `lib/models/src/enums/` (add to existing file or create new one)
 - Use derive macro: `#[derive(WithMaskValueU64)]` (or U32, U16, U8 depending on size needed)
