@@ -344,11 +344,16 @@ impl Server {
                                 }
                             }
                         }
-                        character.set_movement(character_movement.path);
+                        let step_in_progress = character.replace_path(character_movement.path);
                         character.transition_to_moving();
-                        let movement = character.peek_mut_movement().unwrap();
-                        movement.set_move_at(move_at);
-                        let moved_at = movement.move_at() as u32;
+                        let moved_at = match step_in_progress {
+                            Some(step) => step.move_at() as u32,
+                            None => {
+                                let movement = character.peek_mut_movement().unwrap();
+                                movement.set_move_at(move_at);
+                                movement.move_at() as u32
+                            }
+                        };
                         packet_zc_notify_playermove.set_move_start_time(moved_at); // todo: time conversion check on client side ???
                         let movement = character_movement.current_position.to_move_data(&character_movement.destination);
                         packet_zc_notify_playermove.set_move_data(movement.clone());

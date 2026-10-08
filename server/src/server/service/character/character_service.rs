@@ -1921,6 +1921,7 @@ impl CharacterService {
             }
         }
 
+        info!("[rubberband-debug] stop char {} at ({}, {}) tick {} head {:?}", character.char_id, character.x, character.y, tick, character.peek_movement());
         character.clear_movement();
 
         let mut packet_zc_stop_move = PacketZcStopmove::new(GlobalConfigService::instance().packetver());

@@ -86,4 +86,61 @@ pub trait Movable {
     fn clear_movement(&mut self) {
         *self.movements_mut() = vec![];
     }
+    /// Keeps the step in progress so its cell is still reached, and returns it.
+    fn replace_path(&mut self, path: Vec<Movement>) -> Option<Movement> {
+        let step_in_progress = self.peek_movement().copied();
+        self.set_movement(path);
+        if let Some(step) = step_in_progress {
+            self.push_movement(step);
+        }
+        step_in_progress
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct Walker {
+        movements: Vec<Movement>,
+    }
+
+    impl Movable for Walker {
+        fn movements_mut(&mut self) -> &mut Vec<Movement> {
+            &mut self.movements
+        }
+
+        fn movements(&self) -> &Vec<Movement> {
+            &self.movements
+        }
+
+        fn set_movement(&mut self, movements: Vec<Movement>) {
+            self.movements = movements;
+        }
+    }
+
+    #[test]
+    fn replace_path_keeps_the_step_in_progress_before_the_new_path() {
+        let mut walker = Walker {
+            movements: vec![Movement::new(3, 0, 100), Movement::new(1, 0, 50)],
+        };
+
+        let kept = walker.replace_path(vec![Movement::new(0, 2, 0), Movement::new(0, 1, 0)]);
+
+        assert_eq!(kept, Some(Movement::new(1, 0, 50)));
+        assert_eq!(walker.pop_movement(), Some(Movement::new(1, 0, 50)));
+        assert_eq!(walker.pop_movement(), Some(Movement::new(0, 1, 0)));
+        assert_eq!(walker.pop_movement(), Some(Movement::new(0, 2, 0)));
+        assert_eq!(walker.pop_movement(), None);
+    }
+
+    #[test]
+    fn replace_path_without_a_step_in_progress_takes_the_new_path() {
+        let mut walker = Walker { movements: vec![] };
+
+        let kept = walker.replace_path(vec![Movement::new(0, 1, 0)]);
+
+        assert_eq!(kept, None);
+        assert_eq!(walker.pop_movement(), Some(Movement::new(0, 1, 0)));
+    }
 }
