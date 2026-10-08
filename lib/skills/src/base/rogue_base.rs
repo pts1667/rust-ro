@@ -1784,14 +1784,14 @@ impl SkillBase for Haggle {
 }
 impl InteractiveSkillBase for Haggle {
 }
-// RG_PLAGIARISM - Intimidate
-pub struct Intimidate {
+// RG_PLAGIARISM - Plagiarism
+pub struct Plagiarism {
     pub(crate) level: u8,
     pub(crate) cast_time: u32,
     pub(crate) after_cast_act_delay: u32,
     pub(crate) after_cast_walk_delay: u32,
 }
-impl SkillBase for Intimidate {
+impl SkillBase for Plagiarism {
     #[inline(always)]
     fn as_any(&self) -> &dyn Any {
         self
@@ -1862,7 +1862,7 @@ impl SkillBase for Intimidate {
         Some(self)
     }
 }
-impl InteractiveSkillBase for Intimidate {
+impl InteractiveSkillBase for Plagiarism {
 }
 // RG_CLOSECONFINE - Close Confine
 pub struct CloseConfine {

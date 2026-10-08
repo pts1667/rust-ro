@@ -1,4 +1,7 @@
+use models::enums::EnumWithNumberValue;
+use models::enums::class::JobName;
 use models::enums::look::LookType;
+use models::enums::skill_enums::SkillEnum;
 use models::enums::status::StatusTypes;
 
 use crate::server::Server;
@@ -8,6 +11,7 @@ use crate::server::model::map::RANDOM_CELL;
 use crate::server::model::permission_groups::CommandKind;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_flag_service::normalize_map;
+use crate::server::service::script_character_service::{self, learned_level};
 use crate::server::state::character::{Character, CharacterAction};
 use crate::server::state::server::ServerState;
 
@@ -41,6 +45,10 @@ pub fn handle(server: &Server, state: &mut ServerState, char_id: u32, command: &
         "zeny" => zeny(server, state, char_id, args),
         "statuspoint" => points(server, state, char_id, args, true),
         "skillpoint" => points(server, state, char_id, args, false),
+        "allskill" => all_skills(server, state, char_id),
+        "skilltree" => skill_tree(state, args),
+        "feelreset" => star_memory_reset(server, state, char_id, false),
+        "hatereset" => star_memory_reset(server, state, char_id, true),
         "str" | "agi" | "vit" | "int" | "dex" | "luk" => stat(server, state, char_id, command, args),
         "stat_all" => stat_all(server, state, char_id, args),
         "heal" => heal(server, state, char_id, args),
@@ -107,6 +115,76 @@ fn points(server: &Server, state: &mut ServerState, char_id: u32, args: &[&str],
         service.update_skill_point(character, updated as u32, true);
         say("Skill points changed.")
     }
+}
+
+/// `pc_allskillup`: the caller's job tree at maximum levels, through the same commit as a skill reset.
+fn all_skills(server: &Server, state: &mut ServerState, char_id: u32) -> Option<Vec<String>> {
+    let character = state.characters_mut().get_mut(&char_id)?;
+    let plan = match script_character_service::plan_all_skills(character) {
+        Ok(plan) => plan,
+        Err(error) => return say(&error),
+    };
+    if let Err(error) = server.repository.character_commit_skill_reset(character.char_id, character.account_id, &plan) {
+        return say(&error.to_string());
+    }
+    script_character_service::apply_reset_skills(server, character, &plan);
+    say("All skills have been added to your skill tree.")
+}
+
+/// Shows the caller's requirements for a skill of the target's job tree, or that the target cannot use it.
+fn skill_tree(state: &ServerState, args: &[&str]) -> Option<Vec<String>> {
+    let usage = "Please, enter a skill ID and a character name (usage: @skilltree <skill ID> <char name>).";
+    let Some(skill_id) = number(args, 0).and_then(|id| u32::try_from(id).ok()) else {
+        return say(usage);
+    };
+    if args.len() < 2 {
+        return say(usage);
+    }
+    let wanted = args[1..].join(" ");
+    let Some(target) = online(state).find(|character| character.name.eq_ignore_ascii_case(&wanted)) else {
+        return say("Character not found.");
+    };
+    let Ok(job) = JobName::try_from_value(target.status.job as usize) else {
+        return say("Character has an unknown job.");
+    };
+    let tree = GlobalConfigService::instance().get_job_skilltree(job);
+    let basic = learned_level(&target.status, SkillEnum::NvBasic.id());
+    let mut out = vec![format!("Player is using {} skill tree ({basic} basic points).", tree.name())];
+    let Some(entry) = script_character_service::class_tree_entries(tree).find(|entry| SkillEnum::from_name(entry.name()).id() == skill_id) else {
+        out.push("The player cannot use that skill.".into());
+        return lines(out);
+    };
+    let unmet: Vec<String> = entry
+        .requires()
+        .into_iter()
+        .flatten()
+        .filter(|requirement| learned_level(&target.status, SkillEnum::from_name(requirement.name()).id()) < requirement.level())
+        .map(|requirement| format!("Player requires level {} of skill {}.", requirement.level(), requirement.name()))
+        .collect();
+    if unmet.is_empty() {
+        out.push("The player meets all the requirements for that skill.".into());
+    } else {
+        out.extend(unmet);
+    }
+    lines(out)
+}
+
+/// `@feelreset` forgets the Sun, Moon and Star places, `@hatereset` the hated monsters.
+fn star_memory_reset(server: &Server, state: &mut ServerState, char_id: u32, hatred: bool) -> Option<Vec<String>> {
+    let character = state.characters_mut().get_mut(&char_id)?;
+    if character.status.job != JobName::StarGladiator.value() as u32 {
+        return say("You can't use this command with this class.");
+    }
+    if hatred {
+        character.game_systems.star_hates = [0; 3];
+    } else {
+        character.game_systems.star_places = Default::default();
+    }
+    character.refresh_script_context();
+    if let Err(error) = server.script_world_service().persist(character) {
+        return say(&error);
+    }
+    say(if hatred { "Reset 'Hatred' monsters." } else { "Reset 'Feeling' maps." })
 }
 
 fn stat_type(name: &str) -> Option<StatusTypes> {

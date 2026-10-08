@@ -1,12 +1,15 @@
+use models::enums::EnumWithMaskValueU32;
+use models::enums::mob::{MobMode, MobRace};
 use models::enums::skill_enums::SkillEnum;
-use models::enums::mob::MobRace;
 
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use super::ground::GroundSkill;
 use crate::server::state::character::Character;
 use crate::server::Server;
-use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
-use crate::server::model::events::map_event::{MapEvent, MobDamage, MobHeal, MobStatusChange};
+use crate::server::model::events::game_event::{CharacterDamage, CharacterEndStatus, CharacterSpDrain, CharacterStatusChange, GameEvent};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobHeal, MobKnockback, MobStatusChange};
+use crate::server::model::map_flags::MapFlag;
+use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 use models::status::StatusSnapshot;
@@ -19,6 +22,11 @@ const SANCTUARY_MAX_LEVEL_THRESHOLD: u8 = 6;
 const SANCTUARY_EXTRA_TARGETS: u8 = 3;
 const VENOM_DUST_DEFAULT_POISON_MS: i32 = 60_000;
 const EVIL_LAND_DEFAULT_BLIND_MS: i32 = 30_000;
+const FOG_BLIND_MS: i32 = 10_000;
+/// Marks the blindness Fog Wall applies, so leaving the fog only removes that blindness.
+const FOG_BLIND_MARK: i32 = 954;
+const WARM_SP_PER_MOB_HIT: u32 = 2;
+const WARM_SP_PER_PLAYER_TICK: u32 = 10;
 pub(super) const GANBANTEIN_SUCCESS_PERCENT: u8 = 80;
 const GANBANTEIN_RADIUS: u16 = 1;
 const SPIDER_WEB_DEFAULT_MS: i32 = 8000;
@@ -250,6 +258,129 @@ impl ScriptSkillService {
                 .skill_blocked_until
                 .insert(SkillEnum::MoExtremityfist.id(), tick + BODY_RELOCATION_ASURA_BLOCK_MS);
         }
+    }
+
+    /// Shadow Leap moves the caster to the chosen cell and ends Hiding whether or not the move succeeds.
+    pub(super) fn shadow_leap(&self, server: &Server, state: &ServerState, character: &mut Character, x: u16, y: u16, tick: u128) {
+        self.relocate_skill_actor(server, state, character, x, y, tick);
+        crate::server::service::status_effect_service::StatusEffectService::end(
+            server,
+            character,
+            Some(StatusChangeKind::Hiding),
+            tick,
+            &self.client_notification_sender,
+        );
+    }
+
+    /// Warm moves with its caster, knocks back monsters inside it and drains SP from hostile players.
+    pub(super) fn tick_warm(&self, server: &Server, state: &ServerState, ground: &mut GroundSkill, tick: u128) {
+        let group = ground.cells.first().map(|cell| cell.id).unwrap_or(0) as i32;
+        let Some(caster) = state.get_character(ground.source_id) else {
+            ground.expires_at = tick;
+            return;
+        };
+        let warm_active = caster.status.status_change(StatusChangeKind::Warm).is_some_and(|change| change.values[3] == group);
+        if !warm_active || caster.current_map_name() != &ground.map || caster.current_map_instance() != ground.instance {
+            ground.expires_at = tick;
+            return;
+        }
+        ground.source_x = caster.x;
+        ground.source_y = caster.y;
+        if let Some(cell) = ground.cells.first_mut() {
+            cell.x = caster.x;
+            cell.y = caster.y;
+        }
+        let Some(instance) = state.get_map_instance(&ground.map, ground.instance) else {
+            return;
+        };
+        let flags = state.map_flags(&MapInstanceKey::new(ground.map.clone(), ground.instance));
+        let hostile_players = flags.enabled(MapFlag::Pvp) || flags.is_gvg();
+        let mut caster_sp = caster.status.sp;
+        for mob in instance.state().mobs().values().filter(|mob| mob.status.hp() > 0 && ground.covers(mob.x, mob.y)) {
+            if mob.mode & MobMode::Boss.as_flag() != 0 && fastrand::u8(0..5) != 0 {
+                continue;
+            }
+            if caster_sp < WARM_SP_PER_MOB_HIT {
+                ground.expires_at = tick;
+                break;
+            }
+            caster_sp -= WARM_SP_PER_MOB_HIT;
+            server.add_to_next_tick(GameEvent::CharacterSpDrain(CharacterSpDrain {
+                char_id: caster.char_id,
+                amount: WARM_SP_PER_MOB_HIT,
+            }));
+            instance.add_to_next_tick(MapEvent::MobKnockback(MobKnockback {
+                mob_id: mob.id,
+                source_x: caster.x,
+                source_y: caster.y,
+                cells: 2 + fastrand::u16(0..=3),
+            }));
+        }
+        if hostile_players {
+            for target in state.characters().values().filter(|target| {
+                target.char_id != caster.char_id
+                    && target.status.hp > 0
+                    && target.current_map_name() == &ground.map
+                    && target.current_map_instance() == ground.instance
+                    && ground.covers(target.x, target.y)
+                    && (caster.game_systems.party_id == 0 || target.game_systems.party_id != caster.game_systems.party_id)
+            }) {
+                server.add_to_next_tick(GameEvent::CharacterSpDrain(CharacterSpDrain {
+                    char_id: target.char_id,
+                    amount: WARM_SP_PER_PLAYER_TICK,
+                }));
+            }
+        }
+    }
+
+    /// Fog Wall blinds enemies inside it. Players lose that blindness when they leave the fog; monsters keep it until it ends.
+    pub(super) fn tick_fog_wall(&self, server: &Server, state: &ServerState, ground: &mut GroundSkill, tick: u128) {
+        if ground.expires_at <= tick {
+            return;
+        }
+        let Some(instance) = state.get_map_instance(&ground.map, ground.instance) else {
+            return;
+        };
+        let caster_party = state.get_character(ground.source_id).map_or(0, |caster| caster.game_systems.party_id);
+        let flags = state.map_flags(&MapInstanceKey::new(ground.map.clone(), ground.instance));
+        let hostile_players = flags.enabled(MapFlag::Pvp) || flags.is_gvg();
+        for mob in instance.state().mobs().values().filter(|mob| {
+            mob.status.hp() > 0
+                && ground.covers(mob.x, mob.y)
+                && !mob.status_effects.has_status_change(StatusChangeKind::Blind)
+                && !mob.status_effects.has_status_change(StatusChangeKind::Deluge)
+        }) {
+            instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
+                mob_id: mob.id,
+                request: Self::fog_blind_request(ground.level),
+            }));
+        }
+        for target in state.characters().values().filter(|target| {
+            target.char_id != ground.source_id
+                && target.status.hp > 0
+                && target.current_map_name() == &ground.map
+                && target.current_map_instance() == ground.instance
+        }) {
+            let covered = ground.covers(target.x, target.y);
+            let enemy = hostile_players && (caster_party == 0 || target.game_systems.party_id != caster_party);
+            if covered && enemy && !target.status.has_status_change(StatusChangeKind::Blind) && !target.status.has_status_change(StatusChangeKind::Deluge) {
+                server.add_to_next_tick(GameEvent::CharacterStatusChange(CharacterStatusChange {
+                    char_id: target.char_id,
+                    request: Self::fog_blind_request(ground.level),
+                }));
+            } else if !covered && target.status.status_change(StatusChangeKind::Blind).is_some_and(|change| change.values[3] == FOG_BLIND_MARK) {
+                server.add_to_next_tick(GameEvent::CharacterEndStatus(CharacterEndStatus {
+                    char_id: target.char_id,
+                    kind: Some(StatusChangeKind::Blind),
+                }));
+            }
+        }
+    }
+
+    fn fog_blind_request(level: u8) -> StatusChangeRequest {
+        let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::Blind, FOG_BLIND_MS, i32::from(level));
+        request.values[3] = FOG_BLIND_MARK;
+        request
     }
 
     pub(super) fn tick_spider_web(&self, server: &Server, state: &ServerState, ground: &mut GroundSkill, tick: u128) {

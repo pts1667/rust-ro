@@ -1,13 +1,19 @@
+use models::enums::EnumWithMaskValueU32;
 use models::enums::element::Element;
 use models::enums::mob::MobRace;
+use models::status::StatusSnapshot;
+use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
-use crate::server::model::events::game_event::{CharacterPickUpItem, GameEvent};
-use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives, MobStatusChange, ScriptMobCombat};
+use crate::server::model::action::Damage;
+use crate::server::model::events::game_event::{CharacterPickUpItem, CharacterStatusChange, GameEvent};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobStatusAlternatives, MobStatusChange, ScriptMobCombat};
 use crate::server::model::map_item::MapItemType;
+use crate::server::service::map_combat_service::MagicAttackContext;
+use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
@@ -60,12 +66,13 @@ impl ScriptSkillService {
             "NPC_DRAGONFEAR" => ([Stun, Silence, Confusion, Bleeding][dragon_choice % 4], 10_000, 0),
             "AL_CRUCIS" => (SignumCrucis, 2500 + 400 * level as i32, 0),
             "BS_HAMMERFALL" => (Stun, (2000 + 1000 * level as i32).min(5000 + 500 * level as i32), 1000),
+            "PR_BENEDICTIO" => (Benedictio, 10_000, 0),
             _ => return None,
         };
         let party_exception = party_member && matches!(name, "BA_FROSTJOKER" | "DC_SCREAM");
         let duration = if name == "AL_CRUCIS" {
             Some(-1)
-        } else if party_exception {
+        } else if party_exception || name == "PR_BENEDICTIO" {
             metadata.duration(level, false)
         } else if name == "NPC_DRAGONFEAR" {
             metadata.duration((dragon_choice % 4 + 1) as u8, true)
@@ -107,6 +114,96 @@ impl ScriptSkillService {
             .collect()
     }
 
+    fn is_undead_or_demon(status: &StatusSnapshot) -> bool {
+        *status.element() == Element::Undead || matches!(status.race(), MobRace::Demon | MobRace::RUndead)
+    }
+
+    /// Benedictio buffs non-undead, non-demon players in the area and hits undead or demon mobs with holy magic.
+    fn cast_benedictio(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        character: &Character,
+        skill_id: u32,
+        level: u8,
+        x: u16,
+        y: u16,
+        tick: u128,
+    ) -> Result<(), String> {
+        let radius = SkillMetadata::find(skill_id).and_then(|metadata| metadata.splash(level)).unwrap_or(1).max(0) as u16;
+        let in_area = |target_x: u16, target_y: u16| target_x.abs_diff(x).max(target_y.abs_diff(y)) <= radius;
+        let instance = state
+            .get_map_instance_from_character(character)
+            .ok_or("Map instance is unavailable")?;
+        let (request, delay) = Self::area_status_request("PR_BENEDICTIO", skill_id, level, false, 0)
+            .ok_or("Benedictio status is unavailable")?;
+        let source = StatusService::instance().to_snapshot(&character.status);
+        let lower = source.matk_min().min(source.matk_max());
+        let upper = source.matk_max().max(lower);
+        for mob in instance.state().mobs().values().filter(|mob| {
+            mob.status.hp() > 0 && (!mob.summoned || mob.summon_ai == 0) && in_area(mob.x, mob.y) && Self::is_undead_or_demon(&mob.status)
+        }) {
+            let context = MagicAttackContext::new(fastrand::u16(lower..=upper), 1.0, Element::Holy, 1, skill_id);
+            let mut damage = Damage {
+                notification: None,
+                source_kind: *source.combat_actor_kind(),
+                skill_damage_adjusted: false,
+                healing: 0,
+                right_hand_damage: None,
+                target_id: mob.id,
+                attacker_id: character.char_id,
+                damage: 0,
+                attacked_at: tick,
+                damage_motion: 0,
+                battle_flags: BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag(),
+                skill_id,
+                skill_level: level,
+                landed: true,
+                proc_depth: 0,
+                credit_id: character.char_id,
+                defenses_applied: true,
+                magic_context: Some(context),
+            };
+            damage.set_signed_damage(server.battle_service().magic_damage_from_context(&source, &mob.status, context));
+            let damage = damage.with_skill_notification(character.current_map_name(), character.current_map_instance(), character.x, character.y, tick, 1, 0);
+            instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
+        }
+        if in_area(character.x, character.y) && !Self::is_undead_or_demon(&source) {
+            server.add_to_delayed_tick(
+                GameEvent::CharacterStatusChange(CharacterStatusChange { char_id: character.char_id, request: request.clone() }),
+                delay,
+            );
+        }
+        for target in state.characters().values().filter(|target| {
+            target.char_id != character.char_id && target.map_instance_key == character.map_instance_key && in_area(target.x, target.y)
+        }) {
+            if Self::is_undead_or_demon(&StatusService::instance().to_snapshot(&target.status)) {
+                continue;
+            }
+            server.add_to_delayed_tick(
+                GameEvent::CharacterStatusChange(CharacterStatusChange { char_id: target.char_id, request: request.clone() }),
+                delay,
+            );
+        }
+        let effect = ScriptSkillEffect {
+            source_char_id: character.char_id,
+            target_id: character.char_id,
+            skill_id,
+            level,
+            heal_value: 0,
+            proc_depth: 0,
+            skill_event_emitted: true,
+            cast_generation: 0,
+            action: super::ScriptSkillAction::Cast,
+            deferred_requirements: None,
+            prepared_outcome: None,
+            source_index: None,
+            source_item: None,
+        };
+        self.notify_support_skill(character, &effect);
+        Ok(())
+    }
+
     pub fn cast_area_status(
         &self,
         server: &Server,
@@ -119,6 +216,9 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Area skill has no pre-renewal definition")?;
+        if metadata.name == "PR_BENEDICTIO" {
+            return self.cast_benedictio(server, state, character, skill_id, level, x, y, tick);
+        }
         let radius = metadata.splash(level).unwrap_or(15);
         let radius = if radius < 0 { 15 } else { radius.min(u16::MAX as i32) as u16 };
         let instance = state

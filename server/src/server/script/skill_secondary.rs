@@ -16,6 +16,33 @@ use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 
 impl ScriptSkillService {
+    /// Cicada Skin Shedding: rathena pushes the blocking character away from the attacker.
+    pub(crate) fn utsusemi_block_knockback(
+        &self,
+        server: &Server,
+        state: &ServerState,
+        character: &mut crate::server::state::character::Character,
+        attacker_id: u32,
+        tick: u128,
+    ) -> Result<(), String> {
+        let Some(cells) = SkillMetadata::find(SkillEnum::NjUtsusemi.id())
+            .and_then(|metadata| metadata.knockback.as_ref())
+            .and_then(|value| value.value(1, "Amount"))
+        else {
+            return Ok(());
+        };
+        let source = match state.characters().get(&attacker_id) {
+            Some(attacker) => Some((attacker.x, attacker.y)),
+            None => state
+                .get_map_instance_from_character(character)
+                .and_then(|instance| instance.state().get_mob(attacker_id).map(|mob| (mob.x, mob.y))),
+        };
+        let Some((source_x, source_y)) = source else {
+            return Ok(());
+        };
+        self.apply_knockback(server, state, character, source_x, source_y, cells.clamp(0, i32::from(u16::MAX)) as u16, tick)
+    }
+
     pub fn stone_fling_status_requests(player_source: bool, level: u8) -> Vec<StatusChangeRequest> {
         let Some(metadata) = SkillMetadata::find(SkillEnum::TfThrowstone.id()) else {
             return vec![];

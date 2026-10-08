@@ -18,6 +18,8 @@ use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::{GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::{MapEvent, GroundTrapRecover, MobDamage, MobEndStatus, MobKnockback, MobStatusChange};
+use crate::server::service::map_flag_service::normalize_map;
+use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -64,6 +66,9 @@ pub enum GroundKind {
     EvilLand,
     FirePillar,
     Demonstration,
+    Basilica,
+    FogWall,
+    Warm,
 }
 
 impl GroundKind {
@@ -79,6 +84,9 @@ impl GroundKind {
             "NPC_EVILLAND" => Self::EvilLand,
             "WZ_FIREPILLAR" => Self::FirePillar,
             "AM_DEMONSTRATION" => Self::Demonstration,
+            "HP_BASILICA" => Self::Basilica,
+            "PF_FOGWALL" => Self::FogWall,
+            "SG_SUN_WARM" | "SG_MOON_WARM" | "SG_STAR_WARM" => Self::Warm,
             "WZ_QUAGMIRE" => Self::Quagmire,
             "SA_DELUGE" => Self::Deluge,
             "SA_VOLCANO" => Self::Volcano,
@@ -148,6 +156,8 @@ impl GroundKind {
             Self::Deluge => Some(StatusChangeKind::Deluge),
             Self::Volcano => Some(StatusChangeKind::Volcano),
             Self::ViolentGale => Some(StatusChangeKind::ViolentGale),
+            Self::Basilica => Some(StatusChangeKind::Basilica),
+            Self::FogWall => Some(StatusChangeKind::FogWall),
             _ => None,
         }
     }
@@ -214,13 +224,16 @@ impl GroundKind {
                 | Self::Volcano
                 | Self::ViolentGale
                 | Self::LandProtector
+                | Self::Basilica
+                | Self::FogWall
+                | Self::Warm
         )
     }
 
     pub(super) fn effect_range(self, configured: u16) -> u16 {
         match self {
             Self::Pneuma => 1,
-            Self::Sanctuary | Self::VenomDust | Self::SpiderWeb => 0,
+            Self::Sanctuary | Self::VenomDust | Self::SpiderWeb | Self::FogWall => 0,
             _ => configured,
         }
     }
@@ -403,12 +416,13 @@ impl ScriptSkillService {
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal ground definition is unavailable")?;
         if GroundKind::from_name(&metadata.name).is_none()
-            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "AM_SPHEREMINE" | "AM_CANNIBALIZE" | "CR_SLIMPITCHER" | "CR_CULTIVATION")
+            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "NJ_SHADOWJUMP" | "AM_SPHEREMINE" | "AM_CANNIBALIZE" | "CR_SLIMPITCHER" | "CR_CULTIVATION" | "PR_BENEDICTIO")
         {
             return Err("Skill does not accept a ground target".into());
         }
+        let basilica_cancel = metadata.name == "HP_BASILICA" && character.status.basilica_owner() == Some(character.char_id);
         if character.status.hp == 0
-            || character.status.blocks_casting()
+            || (character.status.blocks_casting() && !basilica_cancel)
             || (!instant && (character.script_skill_state.casting_until > tick || character.timing.get_canact_tick() > tick))
         {
             return Err("Character cannot start a ground skill now".into());
@@ -514,6 +528,17 @@ impl ScriptSkillService {
         self.validate_ground_target_with_mode(state, character, skill_id, level, x, y, tick, instant)?;
         self.end_cloaking_on_skill(server, character, skill_id, tick);
         let metadata = SkillMetadata::find(skill_id).unwrap();
+        if metadata.name == "HP_BASILICA" {
+            if character.status.basilica_owner() == Some(character.char_id) {
+                self.expire_owned_ground_units(character.char_id, GroundKind::Basilica, tick);
+                return Ok(());
+            }
+            let instance = state.get_map_instance_from_character(character).ok_or("Map instance is unavailable")?;
+            if instance.state().cells()[y as usize * instance.x_size() as usize + x as usize] & CellType::LandProtector.as_flag() != 0 {
+                return Err("A Land Protector blocks Basilica here".into());
+            }
+            self.expire_owned_ground_units(character.char_id, GroundKind::Basilica, tick);
+        }
         if metadata.name == "AL_WARP" {
             return self.start_warp_portal_menu(server, state, character, skill_id, level, x, y, tick, instant, depth, None);
         }
@@ -564,7 +589,7 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "CR_SLIMPITCHER" | "CR_CULTIVATION") {
+        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "NJ_SHADOWJUMP" | "CR_SLIMPITCHER" | "CR_CULTIVATION" | "PR_BENEDICTIO") {
             if instant && metadata.name == "BS_HAMMERFALL" {
                 return self.cast_area_status(server, state, character, skill_id, level, x, y, tick);
             }
@@ -591,6 +616,21 @@ impl ScriptSkillService {
             return Ok(());
         }
         let kind = GroundKind::from_name(&metadata.name).unwrap();
+        if kind == GroundKind::Warm {
+            let slot = match metadata.name.as_str() {
+                "SG_SUN_WARM" => 0,
+                "SG_MOON_WARM" => 1,
+                _ => 2,
+            };
+            if character.status.has_status_change(StatusChangeKind::Warm) {
+                return Err("Warm is already active".into());
+            }
+            if !character.status.has_status_change(StatusChangeKind::Miracle)
+                && character.game_systems.star_places[slot] != normalize_map(character.current_map_name())
+            {
+                return Err("Warm needs the remembered map".into());
+            }
+        }
         let instance = state
             .get_map_instance_from_character(character)
             .ok_or("Map instance is unavailable")?;
@@ -669,6 +709,7 @@ impl ScriptSkillService {
             vec![(x, y, 0)]
         };
         let mut active = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
+        let mut warm_group = None;
         if kind.element_field() {
             for ground in active.iter_mut().filter(|ground| ground.source_id == character.char_id && ground.kind.element_field()) {
                 ground.expires_at = active_from;
@@ -677,7 +718,8 @@ impl ScriptSkillService {
         for (number, (x, y, offset)) in centers.into_iter().enumerate() {
             let locations = match kind {
                 GroundKind::Firewall => Self::firewall_cells(character.x, character.y, x, y),
-                GroundKind::Pneuma => vec![(x, y)],
+                GroundKind::Pneuma | GroundKind::Warm => vec![(x, y)],
+                GroundKind::FogWall => Self::fogwall_cells(x, y),
                 GroundKind::Sanctuary => Self::sanctuary_cells(x, y),
                 GroundKind::VenomDust => Self::venom_dust_cells(x, y),
                 GroundKind::GrandCross | GroundKind::GrandDarkness => Self::grand_cross_cells(x, y),
@@ -690,6 +732,14 @@ impl ScriptSkillService {
                         && *y < instance.y_size()
                         && instance.state().cells()[*y as usize * instance.x_size() as usize + *x as usize] & CellType::Shootable.as_flag()
                             != 0
+                })
+                .filter(|(x, y)| {
+                    kind != GroundKind::FogWall
+                        || !active.iter().any(|ground| {
+                            matches!(ground.kind, GroundKind::Volcano | GroundKind::ViolentGale)
+                                && ground.expires_at > tick
+                                && ground.cells.iter().any(|cell| cell.remaining_hits > 0 && (cell.x, cell.y) == (*x, *y))
+                        })
                 })
                 .map(|(x, y)| GroundCell {
                     observers: Default::default(),
@@ -709,6 +759,9 @@ impl ScriptSkillService {
                 .collect::<Vec<_>>();
             if cells.is_empty() {
                 continue;
+            }
+            if kind == GroundKind::Warm {
+                warm_group = cells.first().map(|cell| cell.id);
             }
             active.push(GroundSkill {
                 portal: None,
@@ -765,6 +818,11 @@ impl ScriptSkillService {
             });
         }
         drop(active);
+        if let Some(group) = warm_group {
+            let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::Warm, duration.min(i32::MAX as u128) as i32, level as i32);
+            request.values[3] = group as i32;
+            StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
+        }
         if !instant {
             let payment = character
                 .script_skill_state
@@ -792,6 +850,14 @@ impl ScriptSkillService {
             );
         }
         Ok(())
+    }
+
+    pub(super) fn expire_owned_ground_units(&self, owner_id: u32, kind: GroundKind, tick: u128) {
+        if let Ok(mut active) = self.ground_skills.lock() {
+            for ground in active.iter_mut().filter(|ground| ground.source_id == owner_id && ground.kind == kind && ground.expires_at > tick) {
+                ground.expires_at = tick;
+            }
+        }
     }
 
     pub fn tick_ground_skills(&self, server: &Server, state: &ServerState, tick: u128) {
@@ -1000,6 +1066,9 @@ impl ScriptSkillService {
                             ground.level as i32,
                         );
                         request.values[3] = ground.cells.first().map(|cell| cell.id).unwrap_or(0) as i32;
+                        if kind == StatusChangeKind::Basilica {
+                            request.values[1] = ground.source_id as i32;
+                        }
                         if state.get_character(target_id).is_some() {
                             server.add_to_next_tick(GameEvent::CharacterStatusChange(
                                 crate::server::model::events::game_event::CharacterStatusChange {
@@ -1046,6 +1115,14 @@ impl ScriptSkillService {
                     }
                 }
                 ground.affected = affected;
+            }
+            if ground.kind == GroundKind::FogWall {
+                self.tick_fog_wall(server, state, ground, tick);
+                continue;
+            }
+            if ground.kind == GroundKind::Warm {
+                self.tick_warm(server, state, ground, tick);
+                continue;
             }
             if ground.kind == GroundKind::Sanctuary {
                 self.tick_sanctuary(server, state, ground, tick);
@@ -1325,6 +1402,14 @@ impl ScriptSkillService {
             .flat_map(|dy| {
                 (-radius..=radius).filter_map(move |dx| Some((u16::try_from(x as i32 + dx).ok()?, u16::try_from(y as i32 + dy).ok()?)))
             })
+            .collect()
+    }
+
+    pub fn fogwall_cells(x: u16, y: u16) -> Vec<(u16, u16)> {
+        (-2_i32..=2)
+            .flat_map(|dx| (-1_i32..=1).map(move |dy| (x as i32 + dx, y as i32 + dy)))
+            .filter(|(x, y)| *x >= 0 && *y >= 0)
+            .map(|(x, y)| (x as u16, y as u16))
             .collect()
     }
 

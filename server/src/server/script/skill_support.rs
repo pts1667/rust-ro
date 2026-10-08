@@ -312,7 +312,7 @@ impl ScriptSkillService {
                 }
             }
             "SM_PROVOKE" | "MS_PROVOKE" | "AL_DECAGI" | "SA_FLAMELAUNCHER" | "SA_FROSTWEAPON" | "SA_LIGHTNINGLOADER"
-            | "SA_SEISMICWEAPON" => {
+            | "SA_SEISMICWEAPON" | "RG_CLOSECONFINE" => {
                 let skill = self
                     .configuration
                     .find_skill_config(&script_sdk::Value::Number(effect.skill_id as i32))
@@ -336,7 +336,16 @@ impl ScriptSkillService {
                     source_status.int(),
                     character.status.base_level,
                 );
+                let target_duration_ms = request.duration_ms;
                 let started = StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
+                if started && kind == StatusChangeKind::CloseConfine2 {
+                    server.add_to_next_tick(GameEvent::CharacterStatusChange(
+                        crate::server::model::events::game_event::CharacterStatusChange {
+                            char_id: effect.source_char_id,
+                            request: Self::close_confine_caster_request(effect.level, target_duration_ms),
+                        },
+                    ));
+                }
                 if started && kind == StatusChangeKind::Provoke {
                     self.cancel_provoked_cast(state, character, tick);
                     let rate = crate::server::service::combat_trigger_service::coma_chance(

@@ -244,6 +244,7 @@ impl ScriptSkillService {
             ScriptSkillAction::AreaStatus { x, y } => match SkillMetadata::find(effect.skill_id).map(|metadata| metadata.name.as_str()) {
                 Some("HW_GANBANTEIN") => self.clear_ground_units(character, x, y),
                 Some("MO_BODYRELOCATION") => self.body_relocation(server, state, character, x, y, tick),
+                Some("NJ_SHADOWJUMP") => self.shadow_leap(server, state, character, x, y, tick),
                 Some("CR_SLIMPITCHER") => self.aid_condensed_potion(server, state, character, effect, x, y)?,
                 Some("CR_CULTIVATION") => self.cultivate(state, character, effect, x, y)?,
                 _ => self.cast_area_status(server, state, character, effect.skill_id, effect.level, x, y, tick)?,
@@ -655,6 +656,8 @@ impl ScriptSkillService {
                 source.int(),
                 target.status_effects.base_level,
             );
+            let caster_lock = (kind == StatusChangeKind::CloseConfine2)
+                .then(|| Self::close_confine_caster_request(effect.level, request.duration_ms));
             if kind == StatusChangeKind::Provoke {
                 instance.add_to_next_tick(MapEvent::MobProvoke(crate::server::model::events::map_event::MobProvoke {
                     mob_id: target.id,
@@ -667,6 +670,14 @@ impl ScriptSkillService {
                     mob_id: target.id,
                     request,
                 }));
+            }
+            if let Some(request) = caster_lock {
+                server.add_to_next_tick(GameEvent::CharacterStatusChange(
+                    crate::server::model::events::game_event::CharacterStatusChange {
+                        char_id: effect.source_char_id,
+                        request,
+                    },
+                ));
             }
         } else {
             match skill.name().as_str() {

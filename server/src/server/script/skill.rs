@@ -69,7 +69,7 @@ mod devotion;
 #[path = "ground_pillar.rs"]
 mod ground_pillar;
 #[path = "ground_skill.rs"]
-mod ground;
+pub(crate) mod ground;
 #[path = "ground_unit_effects.rs"]
 mod ground_unit_effects;
 #[path = "skill_magic.rs"]
@@ -667,9 +667,15 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if skill.name() == "BS_GREED" {
+        if matches!(skill.name().as_str(), "BS_GREED" | "WE_BABY") {
             if instant {
-                return self.collect_nearby_items(server, state, character);
+                return match skill.name().as_str() {
+                    "WE_BABY" => self.bond_family_baby(server, state, character, level),
+                    _ => self.collect_nearby_items(server, state, character),
+                };
+            }
+            if skill.name() == "WE_BABY" {
+                Self::baby_protected_parents(state, character)?;
             }
             let effect = ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -1287,8 +1293,22 @@ impl ScriptSkillService {
             "NPC_CRITICALWOUND" => Some(CriticalWound),
             "NPC_HELLPOWER" => Some(HellPower),
             "WZ_QUAGMIRE" => Some(Quagmire),
+            "RG_CLOSECONFINE" => Some(CloseConfine2),
             _ => Self::metadata_buff_status(name),
         }
+    }
+
+    /// The caster's half of Close Confine: a lock and flee bonus that outlives the target's hold by one second.
+    fn close_confine_caster_request(level: u8, target_duration_ms: i32) -> StatusChangeRequest {
+        const FLEE_BONUS: i32 = 10;
+        const EXTRA_MS: i32 = 1000;
+        let mut request = StatusChangeRequest::guaranteed(
+            StatusChangeKind::CloseConfine,
+            target_duration_ms.saturating_add(EXTRA_MS),
+            i32::from(level),
+        );
+        request.values[2] = FLEE_BONUS;
+        request
     }
 
     /// Self and support skills that do nothing but start the status their metadata names, or any skill routed `Status` explicitly.
@@ -1474,7 +1494,7 @@ mod tests {
     use super::*;
 
     /// Number of player skills whose route is `Unrouted`. Lower it when a skill gets a handler; it must never grow.
-    const UNROUTED_BASELINE: usize = 20;
+    const UNROUTED_BASELINE: usize = 4;
 
     #[test]
     fn every_skill_has_a_route_or_is_a_plain_buff() {
@@ -1515,6 +1535,14 @@ mod tests {
             .collect();
         assert!(unrouted.len() <= UNROUTED_BASELINE, "{} skills are Unrouted (baseline {UNROUTED_BASELINE}): {unrouted:?}", unrouted.len());
         assert!(unrouted.len() >= UNROUTED_BASELINE, "lower UNROUTED_BASELINE to {}", unrouted.len());
+    }
+
+    #[test]
+    fn close_confine_caster_lock_outlives_the_target_hold_by_a_second() {
+        let request = ScriptSkillService::close_confine_caster_request(5, 10_000);
+        assert_eq!(request.kind, StatusChangeKind::CloseConfine);
+        assert_eq!(request.duration_ms, 11_000);
+        assert_eq!(request.values[2], 10);
     }
 
     #[test]

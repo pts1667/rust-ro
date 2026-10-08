@@ -8175,7 +8175,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "Status": "Basilica",
     "TargetType": "Self",
     "Type": "Magic",
@@ -16251,7 +16251,7 @@
         "Hiding": true
       }
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "TargetType": "Ground"
   },
   {
@@ -16494,7 +16494,7 @@
     "Requires": {
       "SpCost": 15
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Tatamigaeshi",
     "TargetType": "Self",
     "Type": "Weapon",
@@ -20063,7 +20063,7 @@
     "Requires": {
       "SpCost": 25
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "Status": "FogWall",
     "TargetType": "Ground",
     "Type": "Magic",
@@ -20440,7 +20440,7 @@
     "Requires": {
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "SplashArea": 1,
     "Status": "Benedictio",
     "TargetType": "Ground",
@@ -21237,7 +21237,7 @@
     "Requires": {
       "SpCost": 25
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "CloseConfine2",
     "TargetType": "Attack",
     "Type": "Weapon"
@@ -21338,7 +21338,7 @@
     "Id": 225,
     "MaxLevel": 10,
     "Name": "RG_PLAGIARISM",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -22747,7 +22747,7 @@
     "Id": 441,
     "MaxLevel": 10,
     "Name": "SG_DEVIL",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "CastTime": 1000,
@@ -22770,7 +22770,7 @@
     "Id": 442,
     "MaxLevel": 3,
     "Name": "SG_FRIEND",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "Status": "SkillRate_Up"
   },
   {
@@ -22789,7 +22789,7 @@
     "Requires": {
       "SpCost": 100
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Fusion",
     "TargetType": "Self",
     "Type": "Misc"
@@ -22915,7 +22915,7 @@
     "Requires": {
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "SplashArea": 1,
     "Status": "Warm",
     "TargetType": "Self",
@@ -23023,7 +23023,7 @@
     "Requires": {
       "SpCost": 10
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "SplashArea": 1,
     "Status": "Warm",
     "TargetType": "Self",
@@ -23131,7 +23131,7 @@
     "Requires": {
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "SplashArea": 1,
     "Status": "Warm",
     "TargetType": "Self",
@@ -26095,7 +26095,7 @@
     "Id": 422,
     "MaxLevel": 10,
     "Name": "TK_HPTIME",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 1
   },
   {
@@ -26413,7 +26413,7 @@
     "Id": 423,
     "MaxLevel": 10,
     "Name": "TK_SPTIME",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 1,
     "Status": "EarthScroll"
   },
@@ -26542,7 +26542,7 @@
       "SpCost": 1,
       "SpRateCost": -10
     },
-    "Route": "Unrouted",
+    "Route": "Passive",
     "Status": "ProtectExp",
     "TargetType": "Self"
   },

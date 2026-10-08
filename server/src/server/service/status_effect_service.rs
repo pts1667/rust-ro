@@ -567,6 +567,7 @@ impl StatusEffectService {
         if status.has_status_change(StatusChangeKind::Invincible) { return 0; }
         if status.has_status_change(StatusChangeKind::Barrier) { return 1; }
         if status.has_status_change(StatusChangeKind::TrickDead) { return 0; }
+        if status.has_status_change(StatusChangeKind::Basilica) { return 0; }
         if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::Kaupe) {
             if (guard_roll as i32) < change.values[1] {
                 change.values[2] -= 1;
@@ -597,6 +598,11 @@ impl StatusEffectService {
         if physical && status.status_change(StatusChangeKind::AutoGuard).is_some_and(|change| (guard_roll as i32) < change.values[1]) { return 0; }
         if physical && status.status_change(StatusChangeKind::Parrying).is_some_and(|change| (guard_roll as i32) < change.values[1]) { return 0; }
         if physical && flags & BattleFlag::Long.as_flag() != 0 && status.has_status_change(StatusChangeKind::Pneuma) { return 0; }
+        if physical && flags & BattleFlag::Long.as_flag() != 0 && status.has_status_change(StatusChangeKind::Tatamigaeshi) { return 0; }
+        if status.has_status_change(StatusChangeKind::FogWall) {
+            if flags & BattleFlag::Skill.as_flag() != 0 { damage = damage * 3 / 4; }
+            if physical && flags & BattleFlag::Long.as_flag() != 0 { damage /= 4; }
+        }
         if physical && flags & BattleFlag::Long.as_flag() != 0 { if let Some(change) = status.status_change(StatusChangeKind::Defender) { damage = damage.saturating_mul((100 - change.values[1]).clamp(0, 100) as u32) / 100; } }
         if let Some(change) = status.status_change(StatusChangeKind::ArmorChange) { let resistance = if physical { change.values[1] } else if magical { change.values[2] } else { 0 }; damage = (damage as u64 * (100 - resistance).max(0) as u64 / 100).min(u32::MAX as u64) as u32; }
         if status.has_status_change(StatusChangeKind::LexAeterna) { damage = damage.saturating_mul(2); Self::end_status(status, Some(StatusChangeKind::LexAeterna)); }
@@ -804,10 +810,12 @@ impl StatusEffectService {
                 IncreaseAgi => haste = haste.max(25), WindWalk => { haste = haste.max(2 * value); snapshot.set_flee(snapshot.flee().saturating_add(second as i16)); }
                 SpeedUp0 | SpeedUp1 => haste = haste.max(value),
                 Run => haste = haste.max(55),
+                Fusion => haste = haste.max(25),
                 Agiup => haste = haste.max(value),
                 Invincible => haste = haste.max(50),
                 Keeping => snapshot.set_def(90),
                 SpiderWeb => snapshot.set_flee(snapshot.flee() / 2),
+                CloseConfine => snapshot.set_flee(snapshot.flee().saturating_add(third as i16)),
                 ElementalChange => if let Ok(element) = models::enums::element::Element::try_from_value(second as usize) { snapshot.set_element(element); snapshot.set_element_level(value.clamp(1, 4) as u8); },
                 Cloaking => {
                     if change.values[3] as u32 & models::status_change::CloakingFlag::AdjacentWall.as_flag() != 0 { haste = haste.max(if value >= 10 { 25 } else { 3 * value - 3 }); }
@@ -877,6 +885,10 @@ impl StatusEffectService {
             attack_delay_penalty += 500 - 100 * cavalier_mastery;
         }
         if status.active_statuses.iter().any(|change| matches!(change.kind, Freeze | Stun | Sleep | Stone)) { snapshot.set_flee(0); }
+        if status.has_status_change(Benedictio) {
+            snapshot.set_element(models::enums::element::Element::Holy);
+            snapshot.set_element_level(1);
+        }
         snapshot.set_speed((snapshot.speed() as i64 * (100 + slow - haste).max(40) as i64 / 100).clamp(10, u16::MAX as i64) as u16);
         if status.has_status_change(Defender) || status.has_status_change(Armor) { snapshot.set_speed(snapshot.speed().max(200)); }
         if status.has_status_change(SteelBody) { snapshot.set_speed(200); }
@@ -1191,6 +1203,52 @@ mod tests {
             assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, flags, false, SkillEnum::PaPressure.id(), 99), 800);
             assert_eq!(status.status_change(kind), Some(&before));
         }
+    }
+
+    #[test]
+    fn tatamigaeshi_blocks_long_range_physical_hits_only() {
+        use models::status_bonus::BattleFlag;
+        let mut status = Status { hp: 1000, max_hp: 1000, ..Default::default() };
+        start_for_test(&mut status, StatusChangeKind::Tatamigaeshi, 60000, 10, 0);
+        let long_weapon = BattleFlag::Weapon.as_flag() | BattleFlag::Long.as_flag();
+        let short_weapon = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        let long_magic = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag();
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, long_weapon, false, 0, 99), 0);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, short_weapon, false, 0, 99), 800);
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, long_magic, false, 0, 99), 800);
+        assert!(status.has_status_change(StatusChangeKind::Tatamigaeshi));
+    }
+
+    #[test]
+    fn basilica_names_its_owner_blocks_casting_and_takes_no_damage() {
+        use models::status_bonus::BattleFlag;
+        let mut status = Status { hp: 1000, max_hp: 1000, ..Default::default() };
+        let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::Basilica, 60000, 1);
+        request.values[1] = 42;
+        StatusEffectService::apply_status(&mut status, request, 0, 0).unwrap();
+        assert_eq!(status.basilica_owner(), Some(42));
+        assert!(status.blocks_casting());
+        let melee = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        assert_eq!(StatusEffectService::apply_incoming_skill_damage_with_roll(&mut status, 800, melee, false, 0, 99), 0);
+    }
+
+    #[test]
+    fn benedictio_turns_the_target_holy_at_level_one_over_an_elemental_change() {
+        use models::enums::element::Element;
+        crate::tests::common::before_all();
+        crate::server::service::status_service::StatusService::init(
+            crate::server::service::global_config_service::GlobalConfigService::instance(),
+            crate::tests::common::test_script_vm(),
+        );
+        let mut status = Status { hp: 100, max_hp: 100, ..Default::default() };
+        let mut elemental = StatusChangeRequest::guaranteed(StatusChangeKind::ElementalChange, 60000, 2);
+        elemental.values = [2, Element::Water.value() as i32, 0, 0];
+        StatusEffectService::apply_status(&mut status, elemental, 0, 0).unwrap();
+        start_for_test(&mut status, StatusChangeKind::Benedictio, 60000, 1, 0);
+        let mut snapshot = StatusService::instance().to_snapshot(&status);
+        StatusEffectService::adjust_snapshot_for_target(&status, &mut snapshot, false);
+        assert_eq!(*snapshot.element(), Element::Holy);
+        assert_eq!(snapshot.element_level(), 1);
     }
 
     #[test]

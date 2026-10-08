@@ -464,6 +464,7 @@ impl StatusService {
             bonuses.push(BonusType::SpConsumption((-4 * mana_recharge) as i8));
         }
         bonuses.extend(crate::server::script::skill::star_gladiator::anger_bonuses(status));
+        bonuses.extend(crate::server::script::skill::star_gladiator::devil_bonuses(status));
         let soul_drain = level(SkillEnum::HwSouldrain);
         if soul_drain > 0 {
             bonuses.push(BonusType::MaxspPercentage((2 * soul_drain) as i8));

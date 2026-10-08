@@ -12,7 +12,7 @@ use packets::packets::{Packet, PacketZcUseskillAck2};
 
 use super::{metadata::SkillMetadata, ScriptSkillAction, ScriptSkillEffect, ScriptSkillService, ScriptSkillState};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
-use crate::server::model::events::game_event::{CharacterMovement, CharacterUseSkill, GameEvent};
+use crate::server::model::events::game_event::{CharacterMovement, CharacterStatusChange, CharacterUseSkill, GameEvent};
 use crate::server::model::movement::Movement;
 use crate::server::model::path::PathNode;
 use crate::server::service::battle_service::BattleService;
@@ -135,10 +135,53 @@ impl ScriptSkillService {
         server.add_to_tick(GameEvent::CharacterScriptSkill(effect), delay.div_ceil(40).max(1).saturating_sub(1).min(usize::MAX as u128) as usize);
     }
 
+    /// Online parents that WE_BABY protects, or why the baby cannot call on them.
+    pub(crate) fn baby_protected_parents(state: &ServerState, character: &Character) -> Result<Vec<u32>, String> {
+        const AREA_SIZE: u16 = 14;
+        let parents: Vec<&Character> = [character.game_systems.father_id, character.game_systems.mother_id]
+            .into_iter()
+            .filter(|parent_id| *parent_id != 0)
+            .filter_map(|parent_id| state.get_character(parent_id))
+            .collect();
+        if parents.is_empty() {
+            return Err("WE_BABY needs an online parent".into());
+        }
+        let party_id = character.game_systems.party_id;
+        if party_id != 0 && parents.iter().all(|parent| parent.game_systems.party_id != party_id) {
+            return Err("WE_BABY needs a parent in the same party".into());
+        }
+        let nearby = parents.iter().any(|parent| {
+            parent.map_instance_key == character.map_instance_key
+                && parent.x.abs_diff(character.x).max(parent.y.abs_diff(character.y)) <= AREA_SIZE
+        });
+        if !nearby {
+            return Err("WE_BABY needs a parent nearby".into());
+        }
+        Ok(parents.iter().map(|parent| parent.char_id).collect())
+    }
+
+    /// The caster's own stun is left out: rathena's WE_BABY has no secondary duration, so that stun lasts no time.
+    pub(super) fn bond_family_baby(&self, server: &Server, state: &ServerState, character: &Character, level: u8) -> Result<(), String> {
+        let duration = SkillMetadata::find(models::enums::skill_enums::SkillEnum::WeBaby.id())
+            .and_then(|metadata| metadata.duration(level, false))
+            .unwrap_or(0);
+        for parent_id in Self::baby_protected_parents(state, character)? {
+            server.add_to_delayed_tick(
+                GameEvent::CharacterStatusChange(CharacterStatusChange {
+                    char_id: parent_id,
+                    request: StatusChangeRequest::guaranteed(StatusChangeKind::ProtectExp, duration, 0),
+                }),
+                0,
+            );
+        }
+        Ok(())
+    }
+
     pub fn apply_utility_skill(&self, server: &Server, state: &ServerState, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<bool, String> {
         let Some(metadata) = SkillMetadata::find(effect.skill_id) else { return Ok(false); };
         match metadata.name.as_str() {
             "BS_GREED" => self.collect_nearby_items(server, state, character)?,
+            "WE_BABY" => self.bond_family_baby(server, state, character, effect.level)?,
             "MO_CALLSPIRITS" | "CH_SOULCOLLECT" | "GS_GLITTERING" => {
                 character.script_skill_state.expire_spheres(tick);
                 let expiry = tick + metadata.duration(effect.level, false).unwrap_or(600000).max(0) as u128;

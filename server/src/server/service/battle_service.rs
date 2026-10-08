@@ -1912,7 +1912,7 @@ impl BattleService {
                 1.0
             }
             - target.luk() as f32 / 5.0;
-        if !double_attack && roll_percent(critical_chance, rng) {
+        if source.has_status_change(models::status_change::StatusChangeKind::Fusion) || (!double_attack && roll_percent(critical_chance, rng)) {
             return NormalAttackRoll::Critical;
         }
         let perfect_hit = sum_bonus(source, |bonus| match bonus {

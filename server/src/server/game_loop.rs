@@ -291,6 +291,7 @@ impl Server {
                             continue;
                         };
                         if character.status.blocks_movement()
+                            || character.status.basilica_owner() == Some(character.char_id)
                             || character.game_systems.is_trading()
                             || character.game_systems.buying_store.is_some()
                             || character.game_systems.vending_store.is_some()

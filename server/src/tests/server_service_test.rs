@@ -60,6 +60,9 @@ mod world_party_tests;
 #[path = "mob_command_test.rs"]
 mod mob_command_tests;
 
+#[path = "skill_command_test.rs"]
+mod skill_command_tests;
+
 #[path = "party_reward_test.rs"]
 mod party_reward_tests;
 

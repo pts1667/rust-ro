@@ -374,3 +374,51 @@ fn magic_rod_absorbs_a_direct_spell_before_damage_interruptions_and_combat_callb
     drop(guard_367);
     assert!(context.server.pop_task().is_none());
 }
+
+#[test]
+fn utsusemi_blocks_a_physical_hit_and_pushes_the_blocking_character_away_from_the_attacker() {
+    let (context, _repository, mut target) = super::native_payment_tests::fixture(false, false);
+    let id = target.char_id;
+    StatusEffectService::apply_status(&mut target.status, StatusChangeRequest::guaranteed(StatusChangeKind::Utsusemi, 60_000, 5), 100, 0).unwrap();
+    let mut attacker = crate::tests::common::character_helper::create_character();
+    attacker.char_id = id + 1;
+    attacker.status.hp = 100;
+    attacker.map_instance_key = target.map_instance_key.clone();
+    attacker.x = 51;
+    attacker.y = 50;
+    context.server.state_mut().insert_character(target);
+    context.server.state_mut().insert_character(attacker);
+
+    let damage = incoming_damage(id, id + 1, BattleFlag::Weapon.as_flag(), SkillEnum::SmBash);
+    context.server.admit_character_damage(&mut *context.server.state_mut(), damage, 101).unwrap();
+
+    let state = context.server.state();
+    let target = state.get_character(id).unwrap();
+    assert_eq!(target.status.hp, 1000);
+    assert_eq!(target.status.status_change(StatusChangeKind::Utsusemi).unwrap().values[1], 2);
+    assert_eq!((target.x, target.y), (43, 50));
+}
+
+#[test]
+fn utsusemi_does_not_block_or_push_magic_hits() {
+    let (context, _repository, mut target) = super::native_payment_tests::fixture(false, false);
+    let id = target.char_id;
+    StatusEffectService::apply_status(&mut target.status, StatusChangeRequest::guaranteed(StatusChangeKind::Utsusemi, 60_000, 5), 100, 0).unwrap();
+    let mut attacker = crate::tests::common::character_helper::create_character();
+    attacker.char_id = id + 1;
+    attacker.status.hp = 100;
+    attacker.map_instance_key = target.map_instance_key.clone();
+    attacker.x = 51;
+    attacker.y = 50;
+    context.server.state_mut().insert_character(target);
+    context.server.state_mut().insert_character(attacker);
+
+    let damage = incoming_damage(id, id + 1, BattleFlag::Magic.as_flag(), SkillEnum::MgFirebolt);
+    context.server.admit_character_damage(&mut *context.server.state_mut(), damage, 101).unwrap();
+
+    let state = context.server.state();
+    let target = state.get_character(id).unwrap();
+    assert!(target.status.hp < 1000);
+    assert_eq!(target.status.status_change(StatusChangeKind::Utsusemi).unwrap().values[1], 3);
+    assert_eq!((target.x, target.y), (50, 50));
+}

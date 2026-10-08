@@ -2,19 +2,23 @@
 
 use chrono::Datelike;
 use models::enums::bonus::BonusType;
+use models::enums::class::JobName;
+use models::enums::EnumWithNumberValue;
 use models::enums::size::Size;
 use models::enums::skill_enums::SkillEnum;
 use models::status::Status;
-use models::status_change::StatusChangeKind;
+use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
 use super::{ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
+use crate::server::model::map_flags::MapFlag;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_flag_service::normalize_map;
 use crate::server::service::script_character_service::learned_level;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
+use crate::server::state::server::ServerState;
 use crate::server::state::mob::Mob;
 
 const SLOTS: usize = 3;
@@ -64,6 +68,28 @@ pub(crate) fn anger_bonuses(status: &Status) -> Vec<BonusType> {
             (monster != 0 && level > 0).then_some(BonusType::PhysicalDamageAgainstMobIdPercentage(monster, percent.clamp(0, i8::MAX as i32) as i8))
         })
         .collect()
+}
+
+/// Devil gives 30% attack speed per level, but only once the job is at its maximum level.
+pub(crate) fn devil_percent(level: u8, job_level: u32, max_job_level: u32) -> i32 {
+    if level > 0 && job_level >= max_job_level { 30 * i32::from(level) } else { 0 }
+}
+
+pub(crate) fn devil_bonuses(status: &Status) -> Vec<BonusType> {
+    let max_job_level = u32::from(GlobalConfigService::instance().get_job_config(status.job).job_level().max_job_level());
+    match devil_percent(learned_level(status, SkillEnum::SgDevil.id()), status.job_level as u32, max_job_level) {
+        0 => Vec::new(),
+        percent => vec![BonusType::AspdPercentage(percent as f32)],
+    }
+}
+
+pub(crate) const MIRACLE_ODDS: u32 = 20_000;
+pub(crate) const MIRACLE_DURATION_MS: i32 = 3_600_000;
+const MIRACLE_AGI_LIMIT: u32 = 46;
+
+/// One attack in `MIRACLE_ODDS` starts Miracle, and above 46 AGI the chance falls to `46 / AGI`.
+pub(crate) fn miracle_starts(agi: u32, odds_roll: u32, agi_roll: u32) -> bool {
+    odds_roll == 0 && (agi <= MIRACLE_AGI_LIMIT || agi_roll < MIRACLE_AGI_LIMIT)
 }
 
 /// Extra experience in percent from a hated monster killed on the day of its slot, the Star slot standing in for all monsters during a Miracle.
@@ -151,6 +177,33 @@ impl ScriptSkillService {
         StatusEffectService::start(server, character, request, tick, &self.client_notification_sender).map(|_| ())
     }
 
+    /// Miracle can start on any attack of a Star Gladiator, except on maps that block it.
+    pub(crate) fn try_miracle(&self, server: &Server, state: &ServerState, character: &mut Character, tick: u128) -> Result<(), String> {
+        if character.status.job != JobName::StarGladiator.value() as u32 || state.map_flags(&character.map_instance_key).enabled(MapFlag::NoSunMoonStarMiracle) {
+            return Ok(());
+        }
+        let agi = StatusService::instance().to_snapshot(&character.status).agi() as u32;
+        if !miracle_starts(agi, fastrand::u32(0..MIRACLE_ODDS), fastrand::u32(0..agi.max(1))) {
+            return Ok(());
+        }
+        let request = StatusChangeRequest::guaranteed(StatusChangeKind::Miracle, MIRACLE_DURATION_MS, 0);
+        StatusEffectService::start(server, character, request, tick, &self.client_notification_sender).map(|_| ())
+    }
+
+    /// Fusion drains the caster's HP on each landed basic attack. rathena can kill the caster here; this stops at 1 HP.
+    pub(crate) fn fusion_hit_cost(status: &Status, max_hp: u32, against_player: bool) -> u32 {
+        if !status.has_status_change(StatusChangeKind::Fusion) {
+            return 0;
+        }
+        let hp = status.hp;
+        let cost = match (against_player, u64::from(hp) * 100 <= u64::from(max_hp) * 20) {
+            (false, _) => 2 * max_hp / 100,
+            (true, true) => hp,
+            (true, false) => max_hp / 13,
+        };
+        cost.min(hp.saturating_sub(1))
+    }
+
     /// A slot keeps its monster for good: a second cast only shows it again.
     pub(super) fn star_hate_mob(&self, server: &Server, caster: &mut Character, effect: &ScriptSkillEffect, mob: &Mob) -> Result<bool, String> {
         let slot = level_slot(effect.level)?;
@@ -175,6 +228,20 @@ impl ScriptSkillService {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fusion_costs_hp_per_landed_basic_attack_and_stops_at_one_hp() {
+        let mut status = Status::default();
+        status.hp = 1000;
+        assert_eq!(ScriptSkillService::fusion_hit_cost(&status, 1000, false), 0);
+        StatusEffectService::apply_status(&mut status, StatusChangeRequest::guaranteed(StatusChangeKind::Fusion, 60_000, 0), 0, 0).unwrap();
+        assert_eq!(ScriptSkillService::fusion_hit_cost(&status, 1000, false), 20);
+        assert_eq!(ScriptSkillService::fusion_hit_cost(&status, 1000, true), 76);
+        status.hp = 200;
+        assert_eq!(ScriptSkillService::fusion_hit_cost(&status, 1000, true), 199);
+        status.hp = 10;
+        assert_eq!(ScriptSkillService::fusion_hit_cost(&status, 1000, false), 9);
+    }
 
     #[test]
     fn the_sun_moon_and_stars_take_turns_over_the_year() {
@@ -248,6 +315,21 @@ mod tests {
         assert_eq!(bonuses(StatusChangeKind::SunComfort, [2, 90, 0, 0]), vec![BonusType::Def(90)]);
         assert_eq!(bonuses(StatusChangeKind::MoonComfort, [2, 18, 0, 0]), vec![BonusType::Flee(18)]);
         assert_eq!(bonuses(StatusChangeKind::StarComfort, [2, 180, 0, 0]), vec![BonusType::AspdPercentage(6.0)]);
+    }
+
+    #[test]
+    fn devil_speeds_attacks_only_at_the_maximum_job_level() {
+        assert_eq!(devil_percent(3, 49, 50), 0);
+        assert_eq!(devil_percent(3, 50, 50), 90);
+        assert_eq!(devil_percent(0, 50, 50), 0);
+    }
+
+    #[test]
+    fn miracle_needs_the_odds_roll_and_low_agility_or_the_agility_roll() {
+        assert!(miracle_starts(40, 0, 45));
+        assert!(!miracle_starts(40, 1, 0));
+        assert!(miracle_starts(100, 0, 45));
+        assert!(!miracle_starts(100, 0, 46));
     }
 
     #[test]

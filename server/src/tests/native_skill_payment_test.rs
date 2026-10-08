@@ -1367,3 +1367,149 @@ fn vulture_grants_extend_native_skill_range_before_atomic_payment() {
         assert_eq!(source.has_pending_skill(), !accepted);
     }
 }
+
+#[test]
+fn shadow_leap_moves_the_caster_onto_a_walkable_cell_and_ends_hiding() {
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    crate::server::service::status_effect_service::StatusEffectService::apply_status(
+        &mut character.status,
+        models::status_change::StatusChangeRequest::guaranteed(models::status_change::StatusChangeKind::Hiding, 60_000, 0),
+        0,
+        0,
+    )
+    .unwrap();
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    context
+        .server
+        .script_skill_service()
+        .place_ground_skill_depth(&context.server, &context.server.state(), &mut character, SkillEnum::NjShadowjump.id(), 1, 53, 50, 0, true, 0)
+        .unwrap();
+    assert_eq!((character.x, character.y), (53, 50));
+    assert!(!character.status.has_status_change(models::status_change::StatusChangeKind::Hiding));
+}
+
+#[test]
+fn benedictio_is_accepted_on_a_ground_cell_and_leaves_a_caster_outside_the_area_alone() {
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    context
+        .server
+        .script_skill_service()
+        .place_ground_skill_depth(&context.server, &context.server.state(), &mut character, SkillEnum::PrBenedictio.id(), 1, 53, 50, 0, true, 0)
+        .unwrap();
+    assert!(!character.status.has_status_change(models::status_change::StatusChangeKind::Benedictio));
+}
+
+#[test]
+fn basilica_covers_five_by_five_and_its_owner_cancels_it_without_a_new_unit() {
+    use crate::server::script::skill::ground::GroundKind;
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    let place = |character: &mut crate::server::state::character::Character, tick: u128| {
+        context
+            .server
+            .script_skill_service()
+            .place_ground_skill_depth(&context.server, &context.server.state(), character, SkillEnum::HpBasilica.id(), 1, 50, 50, tick, true, 0)
+    };
+    place(&mut character, 0).unwrap();
+    assert!(context.server.script_skill_service().ground_field_contains(&character, GroundKind::Basilica, 52, 52, 500));
+    assert!(!context.server.script_skill_service().ground_field_contains(&character, GroundKind::Basilica, 53, 50, 500));
+    let mut owned = models::status_change::StatusChangeRequest::guaranteed(models::status_change::StatusChangeKind::Basilica, 60000, 1);
+    owned.values[1] = character.char_id as i32;
+    crate::server::service::status_effect_service::StatusEffectService::apply_status(&mut character.status, owned, 0, 0).unwrap();
+    place(&mut character, 1000).unwrap();
+    assert!(!context.server.script_skill_service().ground_field_contains(&character, GroundKind::Basilica, 52, 52, 1000));
+}
+
+#[test]
+fn basilica_is_refused_on_a_land_protector_cell() {
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    instance.state_mut().cells_mut()[50 * instance.x_size() as usize + 50] |= models::enums::cell::CellType::LandProtector.as_flag();
+    let result = context
+        .server
+        .script_skill_service()
+        .place_ground_skill_depth(&context.server, &context.server.state(), &mut character, SkillEnum::HpBasilica.id(), 1, 50, 50, 0, true, 0);
+    assert!(result.is_err());
+}
+
+#[test]
+fn we_baby_needs_an_online_parent_nearby_and_protects_that_parent() {
+    use crate::server::script::skill::ScriptSkillService;
+    let (context, _repository, mut character) = fixture(false, false);
+    let parent_id = 9_001;
+    assert!(ScriptSkillService::baby_protected_parents(&context.server.state(), &character).is_err());
+    character.game_systems.father_id = parent_id;
+    assert!(ScriptSkillService::baby_protected_parents(&context.server.state(), &character).is_err());
+    let mut parent = create_character();
+    parent.char_id = parent_id;
+    parent.map_instance_key = character.map_instance_key.clone();
+    parent.x = 80;
+    parent.y = 50;
+    context.server.state_mut().insert_character(parent);
+    assert!(ScriptSkillService::baby_protected_parents(&context.server.state(), &character).is_err());
+    context.server.state_mut().characters_mut().get_mut(&parent_id).unwrap().x = 52;
+    assert_eq!(ScriptSkillService::baby_protected_parents(&context.server.state(), &character), Ok(vec![parent_id]));
+}
+
+#[test]
+fn fog_wall_covers_its_five_by_three_layout_and_nothing_beyond_it() {
+    use crate::server::script::skill::ground::GroundKind;
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    context
+        .server
+        .script_skill_service()
+        .place_ground_skill_depth(&context.server, &context.server.state(), &mut character, SkillEnum::PfFogwall.id(), 1, 50, 50, 0, true, 0)
+        .unwrap();
+    let fog = |x, y| context.server.script_skill_service().ground_field_contains(&character, GroundKind::FogWall, x, y, 1000);
+    assert!(fog(48, 49) && fog(52, 51) && fog(50, 50));
+    assert!(!fog(53, 50) && !fog(50, 52));
+}
+
+#[test]
+fn warm_needs_its_caster_on_the_matching_feel_map_and_one_warm_at_a_time() {
+    use models::enums::EnumWithMaskValueU16 as _;
+    let (context, _repository, mut character) = fixture(false, false);
+    let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
+    instance.state_mut().cells_mut().fill(models::enums::cell::CellType::Walkable.as_flag() | models::enums::cell::CellType::Shootable.as_flag());
+    let place = |character: &mut crate::server::state::character::Character| {
+        context
+            .server
+            .script_skill_service()
+            .place_ground_skill_depth(&context.server, &context.server.state(), character, SkillEnum::SgSunWarm.id(), 1, 50, 50, 0, true, 0)
+    };
+    assert!(place(&mut character).is_err());
+    character.game_systems.star_places[0] = "prontera".into();
+    assert!(place(&mut character).is_err());
+    character.game_systems.star_places[0] = "empty".into();
+    place(&mut character).unwrap();
+    assert!(character.status.has_status_change(models::status_change::StatusChangeKind::Warm));
+    assert!(place(&mut character).is_err());
+}
+
+#[test]
+fn sp_drain_lowers_sp_and_leaves_hp_alone() {
+    use crate::server::model::events::game_event::{CharacterSpDrain, GameEventHandler};
+    let (context, _repository, mut character) = fixture(false, false);
+    character.status.sp = 30;
+    let char_id = character.char_id;
+    let hp = character.status.hp;
+    context.server.state_mut().insert_character(character);
+    CharacterSpDrain { char_id, amount: 12 }
+        .handle(&context.server, &mut context.server.state_mut(), 0)
+        .unwrap();
+    let state = context.server.state();
+    let drained = state.get_character(char_id).unwrap();
+    assert_eq!((drained.status.sp, drained.status.hp), (18, hp));
+}

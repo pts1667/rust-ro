@@ -1,18 +1,26 @@
 use models::enums::class::JobName;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
+use models::status::Status;
 use models::status_bonus::BattleFlag;
-use models::status_change::StatusChangeKind;
+use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
 use super::ScriptSkillService;
 use crate::server::Server;
 use crate::server::service::script_character_service::learned_level;
+use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
 /// Latency allowance added to a combo window, the client sends the follow-up after the previous skill's delay ends.
 const COMBO_GRACE_MS: u128 = 300;
+
+/// `skill_get_time(SG_FRIEND, 1)`: the Friend bonus waits this long for the next roll.
+const FRIEND_DURATION_MS: i32 = 10_000;
+
+/// `skill_get_time2(ASC_EDP)`: the Deadly Poison an Enchant Deadly Poison hit leaves behind.
+const EDP_POISON_DURATION_MS: i32 = 60_000;
 
 /// Rathena rate of the Triple Attack proc is `30 - level` percent.
 const TRIPLE_ATTACK_BASE_RATE: u32 = 30;
@@ -49,7 +57,51 @@ fn spheres(character: &Character, tick: u128) -> usize {
     character.script_skill_state.spirit_spheres.iter().filter(|expiry| **expiry > tick).count()
 }
 
+/// `50 + 50 * level` percent, Friend of the Sun, Moon and Stars.
+fn friend_bonus(level: u8) -> i32 {
+    50 + 50 * i32::from(level)
+}
+
+/// `rate += rate * bonus / 100`
+fn boosted_rate(rate: u32, bonus: u32) -> u32 {
+    rate + rate * bonus / 100
+}
+
+fn has_job(status: &Status, jobs: &[JobName]) -> bool {
+    jobs.iter().any(|job| status.job == job.value() as u32)
+}
+
+/// The Friend bonus of the skill is used up by the next roll of that skill, whether it hits or not.
+fn take_friend_bonus(character: &mut Character, skill_id: u32) -> u32 {
+    let Some(change) = character
+        .status
+        .status_change(StatusChangeKind::SkillRateUp)
+        .filter(|change| change.values[0] == skill_id as i32)
+    else {
+        return 0;
+    };
+    let bonus = change.values[1].max(0) as u32;
+    StatusEffectService::end_status(&mut character.status, Some(StatusChangeKind::SkillRateUp));
+    bonus
+}
+
 impl ScriptSkillService {
+    /// Enchant Deadly Poison: a basic attack may leave a Deadly Poison on the monster it hits, the chance in percent is the EDP status value.
+    pub fn edp_poison_request(status: &Status) -> Option<StatusChangeRequest> {
+        let edp = status.status_change(StatusChangeKind::Edp)?;
+        (edp.values[1] > 0).then(|| StatusChangeRequest {
+            kind: StatusChangeKind::DeadlyPoison,
+            duration_ms: EDP_POISON_DURATION_MS,
+            values: [0; 4],
+            rate: edp.values[1].saturating_mul(100).min(10_000) as u16,
+            flags: 0,
+        })
+    }
+
+    pub fn triggers_friend_share(skill_id: u32) -> bool {
+        skill_id == SkillEnum::TkCounter.id() || skill_id == SkillEnum::MoCombofinish.id()
+    }
+
     pub fn is_combo_skill(skill_id: u32) -> bool {
         [SkillEnum::MoChaincombo, SkillEnum::MoCombofinish, SkillEnum::ChTigerfist, SkillEnum::ChChaincrush]
             .iter()
@@ -147,10 +199,22 @@ impl ScriptSkillService {
 
     /// A normal attack of a Taekwon holding a stance may open the window of its kick, the window shrinks with AGI and DEX.
     pub fn try_stance_combo(&self, character: &mut Character, target_id: u32, tick: u128) {
-        let Some((_, kick, _)) = STANCES
-            .iter()
-            .find(|(stance, _, rate)| character.status.has_status_change(*stance) && fastrand::u32(0..100) < *rate)
-        else {
+        let mut chosen = None;
+        for (stance, kick, rate) in STANCES.iter() {
+            if !character.status.has_status_change(*stance) {
+                continue;
+            }
+            let rate = if *stance == StatusChangeKind::ReadyCounter {
+                boosted_rate(*rate, take_friend_bonus(character, SkillEnum::TkCounter.id()))
+            } else {
+                *rate
+            };
+            if fastrand::u32(0..100) < rate {
+                chosen = Some(*kick);
+                break;
+            }
+        }
+        let Some(kick) = chosen else {
             return;
         };
         let snapshot = StatusService::instance().to_snapshot(&character.status);
@@ -174,7 +238,11 @@ impl ScriptSkillService {
     /// Part of a normal attack of a Monk who learned Triple Attack: some hits become the skill, which opens the combo.
     pub fn try_triple_attack(&self, server: &Server, state: &ServerState, character: &mut Character, target_id: u32, tick: u128) -> bool {
         let level = learned_level(&character.status, SkillEnum::MoTripleattack.id());
-        if level == 0 || fastrand::u32(0..100) >= TRIPLE_ATTACK_BASE_RATE.saturating_sub(u32::from(level)) {
+        if level == 0 {
+            return false;
+        }
+        let bonus = take_friend_bonus(character, SkillEnum::MoTripleattack.id());
+        if fastrand::u32(0..100) >= boosted_rate(TRIPLE_ATTACK_BASE_RATE.saturating_sub(u32::from(level)), bonus) {
             return false;
         }
         if self.cast_skill(server, state, character, SkillEnum::MoTripleattack.id(), level, target_id, false, tick, true).is_err() {
@@ -186,5 +254,94 @@ impl ScriptSkillService {
         character.timing.set_canact_tick(next);
         self.advance_combo(character, SkillEnum::MoTripleattack.id(), target_id, motion, tick);
         true
+    }
+
+    /// Friend of the Sun, Moon and Stars (`party_skill_check`): a Star Gladiator's Counter raises the Triple Attack rate of party Monks on the same map,
+    /// and a Monk's Combo Finish raises the Counter rate of party Star Gladiators that have a ready counter.
+    pub fn share_friend_rate(&self, server: &Server, state: &mut ServerState, caster_id: u32, skill_id: u32, tick: u128) -> Result<(), String> {
+        let Some(caster) = state.get_character(caster_id) else {
+            return Ok(());
+        };
+        let party = caster.game_systems.party_id;
+        if party == 0 {
+            return Ok(());
+        }
+        let instance = caster.map_instance_key.clone();
+        let caster_level = learned_level(&caster.status, SkillEnum::SgFriend.id());
+        let in_party = |member: &Character| member.char_id != caster_id && member.game_systems.party_id == party && member.map_instance_key == instance;
+        let grants: Vec<(u32, u32, i32)> = if skill_id == SkillEnum::TkCounter.id() {
+            if caster_level == 0 {
+                return Ok(());
+            }
+            state
+                .characters()
+                .values()
+                .filter(|member| in_party(member) && has_job(&member.status, &[JobName::Monk, JobName::Champion]))
+                .filter(|member| learned_level(&member.status, SkillEnum::MoTripleattack.id()) > 0)
+                .map(|member| (member.char_id, SkillEnum::MoTripleattack.id(), friend_bonus(caster_level)))
+                .collect()
+        } else if skill_id == SkillEnum::MoCombofinish.id() {
+            state
+                .characters()
+                .values()
+                .filter(|member| in_party(member) && has_job(&member.status, &[JobName::StarGladiator]))
+                .filter(|member| member.status.has_status_change(StatusChangeKind::ReadyCounter))
+                .filter(|member| learned_level(&member.status, SkillEnum::SgFriend.id()) > 0)
+                .map(|member| {
+                    let level = learned_level(&member.status, SkillEnum::SgFriend.id());
+                    (member.char_id, SkillEnum::TkCounter.id(), friend_bonus(level))
+                })
+                .collect()
+        } else {
+            return Ok(());
+        };
+        for (member_id, skill, bonus) in grants {
+            let Some(member) = state.characters_mut().get_mut(&member_id) else {
+                continue;
+            };
+            let mut request = StatusChangeRequest::guaranteed(StatusChangeKind::SkillRateUp, FRIEND_DURATION_MS, skill as i32);
+            request.values[1] = bonus;
+            StatusEffectService::start(server, member, request, tick, &self.client_notification_sender)?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn with_status(kind: StatusChangeKind, values: [i32; 4]) -> Status {
+        let mut request = StatusChangeRequest::guaranteed(kind, -1, 0);
+        request.values = values;
+        let mut status = Status::default();
+        StatusEffectService::apply_status(&mut status, request, 0, 0).unwrap();
+        status
+    }
+
+    #[test]
+    fn friend_bonus_grows_by_half_per_level_and_boosts_the_rate() {
+        assert_eq!(friend_bonus(1), 100);
+        assert_eq!(friend_bonus(3), 200);
+        assert_eq!(boosted_rate(20, 100), 40);
+        assert_eq!(boosted_rate(29, 0), 29);
+    }
+
+    #[test]
+    fn enchant_deadly_poison_poisons_monsters_with_its_chance_for_sixty_seconds() {
+        assert!(ScriptSkillService::edp_poison_request(&Status::default()).is_none());
+        let request = ScriptSkillService::edp_poison_request(&with_status(StatusChangeKind::Edp, [5, 0, 0, 0])).unwrap();
+        assert_eq!(request.kind, StatusChangeKind::DeadlyPoison);
+        assert_eq!((request.rate, request.duration_ms), (500, 60_000));
+    }
+
+    #[test]
+    fn friend_bonus_is_used_up_by_the_roll_of_its_own_skill_only() {
+        let mut character = crate::tests::common::character_helper::create_character();
+        character.status = with_status(StatusChangeKind::SkillRateUp, [SkillEnum::MoTripleattack.id() as i32, 150, 0, 0]);
+        assert_eq!(take_friend_bonus(&mut character, SkillEnum::TkCounter.id()), 0);
+        assert!(character.status.has_status_change(StatusChangeKind::SkillRateUp));
+        assert_eq!(take_friend_bonus(&mut character, SkillEnum::MoTripleattack.id()), 150);
+        assert!(!character.status.has_status_change(StatusChangeKind::SkillRateUp));
     }
 }

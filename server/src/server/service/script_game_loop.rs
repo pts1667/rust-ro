@@ -711,7 +711,8 @@ impl Server {
         let exempt = flags.enabled(MapFlag::NoExpPenalty)
             || flags.enabled(MapFlag::NoPenalty)
             || flags.is_gvg()
-            || flags.enabled(MapFlag::Battleground);
+            || flags.enabled(MapFlag::Battleground)
+            || character.status.has_status_change(models::status_change::StatusChangeKind::ProtectExp);
         let plan = match super::script_character_service::plan_death_penalty(character, exempt) {
             Ok(Some(plan)) => plan,
             Ok(None) => return,
@@ -933,6 +934,7 @@ impl Server {
         }
         let statuses: Vec<_> = character.status.active_statuses.iter().map(|change| change.kind).collect();
         let map_flags = state.map_flags(&character.map_instance_key);
+        let utsusemi_hits = character.status.status_change(models::status_change::StatusChangeKind::Utsusemi).map(|change| change.values[1]);
         damage.damage = StatusEffectService::apply_incoming_skill_damage_flags(
             &mut character.status,
             damage.damage,
@@ -940,6 +942,15 @@ impl Server {
             map_flags.versus(state.siege_active()),
             damage.skill_id,
         );
+        let utsusemi_blocked = utsusemi_hits.is_some_and(|hits| {
+            character
+                .status
+                .status_change(models::status_change::StatusChangeKind::Utsusemi)
+                .is_none_or(|change| change.values[1] < hits)
+        });
+        if utsusemi_blocked {
+            self.script_skill_service().utsusemi_block_knockback(self, state, &mut character, damage.attacker_id, tick)?;
+        }
         damage.damage = super::map_flag_service::apply_map_combat_damage(
             &map_flags,
             &GlobalConfigService::instance().config().game,

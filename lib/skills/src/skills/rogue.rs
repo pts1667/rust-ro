@@ -132,13 +132,13 @@ impl Skill for Haggle {
 }
 impl InteractiveSkill for Haggle {
 }
-impl Skill for Intimidate {
+impl Skill for Plagiarism {
     fn new(level: u8) -> Option<Self> where Self : Sized {
         if level > 10 { return None }
         Some(Self { level, cast_time: 0, after_cast_act_delay: 0, after_cast_walk_delay: 0 })
     }
 }
-impl InteractiveSkill for Intimidate {
+impl InteractiveSkill for Plagiarism {
 }
 impl Skill for CloseConfine {
     fn new(level: u8) -> Option<Self> where Self : Sized {

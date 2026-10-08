@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use configuration::configuration::{JobSkillTree, SkillInTree};
 use models::enums::class::JobName;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue};
@@ -558,6 +559,44 @@ pub fn plan_reset_skills(character: &Character, refund_points: bool) -> Result<S
         skill_points,
         options,
     })
+}
+
+/// Every skill of the job tree at its maximum level, the skill points spent: `pc_allskillup`.
+pub fn plan_all_skills(character: &Character) -> Result<ScriptSkillResetPlan, String> {
+    let job = JobName::try_from_value(character.status.job as usize).map_err(|_| "Unknown character job")?;
+    let configuration = GlobalConfigService::instance();
+    let quest_learnable = configuration.config().game.quest_skill_learn;
+    let mut known_skills = character.status.known_skills.clone();
+    for entry in class_tree_entries(configuration.get_job_skilltree(job)) {
+        let skill = SkillEnum::from_name(entry.name());
+        let excluded = skill == SkillEnum::SgDevil || skill.is_platinium() || skill.to_name().starts_with("WE_") || (is_quest_skill(skill.id()) && !quest_learnable);
+        let Some(max_level) = crate::server::script::skill::metadata::SkillMetadata::find(skill.id()).map(|metadata| metadata.max_level) else {
+            continue;
+        };
+        if excluded {
+            continue;
+        }
+        known_skills.retain(|known| known.value != skill);
+        known_skills.push(KnownSkill { value: skill, level: max_level });
+    }
+    let mut status = character.status.clone();
+    status.known_skills = known_skills.clone();
+    Ok(ScriptSkillResetPlan {
+        expected_skills: persisted_skills(&character.status),
+        persisted_skills: persisted_skills(&status),
+        permanent_grants: character.game_systems.permanent_skill_grants.clone(),
+        known_skills,
+        temporary_grants: character.status.script_skill_grants.iter().map(|(id, grant)| (*id, *grant)).collect(),
+        refund: 0,
+        expected_skill_points: character.status.skill_point,
+        skill_points: 0,
+        options: character.options,
+    })
+}
+
+/// The class tree and its parent trees, in the order the client shows them.
+pub fn class_tree_entries(tree: &JobSkillTree) -> impl Iterator<Item = &SkillInTree> {
+    tree.tree().iter().chain(tree.parent_skills().values().flatten())
 }
 
 pub fn apply_reset_skills(server: &Server, character: &mut Character, plan: &ScriptSkillResetPlan) {

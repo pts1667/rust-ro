@@ -217,10 +217,16 @@ impl GlobalConfigService {
         self.maps.get(name)
     }
 
+    /// Tree keys use underscores where job names have spaces (`Star_Gladiator`), and the Union has its own tree.
     pub fn get_job_skilltree(&self, job: JobName) -> &JobSkillTree {
+        let wanted = match job {
+            JobName::StarGladiatorUnion => "Star_Gladiator2",
+            _ => job.as_str(),
+        };
+        let key = |name: &str| name.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_ascii_lowercase();
         self.jobs_skills_tree
             .iter()
-            .find(|tree| tree.name().eq(job.as_str()))
+            .find(|tree| key(tree.name()) == key(wanted))
             .unwrap_or_else(|| panic!("Expected to find skill tree for job {}", job.as_str()))
     }
 }

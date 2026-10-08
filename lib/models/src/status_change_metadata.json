@@ -294,6 +294,7 @@
     },
     "States": {
       "NoAttack": true,
+      "NoCast": true,
       "NoMoveCond": true
     }
   },
@@ -308,6 +309,30 @@
   "BATTLEORDERS": {
     "DurationLookup": "GD_BATTLEORDER",
     "Icon": "EFST_GDSKILL_BATTLEORDER"
+  },
+  "PROTECTEXP": {
+    "DurationLookup": "WE_BABY",
+    "Icon": "EFST_PROTECTEXP",
+    "States": {
+      "NoDeathPenalty": true
+    }
+  },
+  "FOGWALL": {
+    "DurationLookup": "PF_FOGWALL",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true
+    }
+  },
+  "WARM": {
+    "DurationLookup": "SG_SUN_WARM",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnMapWarp": true
+    }
   },
   "BENEDICTIO": {
     "DurationLookup": "PR_BENEDICTIO",
@@ -2336,6 +2361,12 @@
   },
   "SKE": {
     "DurationLookup": "SL_SKE"
+  },
+  "FUSION": {
+    "DurationLookup": "SG_FUSION"
+  },
+  "SKILLRATE_UP": {
+    "DurationLookup": "SG_FRIEND"
   },
   "SLEEP": {
     "DurationLookup": "NPC_SLEEPATTACK",

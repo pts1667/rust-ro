@@ -570,6 +570,11 @@ impl Status {
         self.active_statuses.iter().any(|change| change.kind.blocks_casting())
     }
 
+    /// The character whose Basilica covers this status holder; `None` for a cell-placed Basilica.
+    pub fn basilica_owner(&self) -> Option<u32> {
+        self.status_change(StatusChangeKind::Basilica).map(|change| change.values[1] as u32).filter(|owner| *owner != 0)
+    }
+
     pub fn right_hand_weapon(&self) -> Option<&WearWeapon> {
         self.weapons
             .iter()

@@ -346,6 +346,26 @@ impl ServerService {
                 if let Some(damage) = maybe_damage {
                     if damage.landed {
                         self.script_skill_service.try_stance_combo(character, map_item.id(), tick);
+                        if let Err(error) = self.script_skill_service.try_miracle(server, server_state, character, tick) {
+                            warn!("Miracle could not start: {}", error);
+                        }
+                        let fusion_cost = ScriptSkillService::fusion_hit_cost(
+                            &character.status,
+                            self.get_status_snapshot(&character.status, tick).max_hp(),
+                            *map_item.object_type() == MapItemType::Character,
+                        );
+                        if fusion_cost > 0 {
+                            let (hp, sp) = (character.status.hp - fusion_cost, character.status.sp);
+                            self.character_service.update_hp_sp(character, hp, sp);
+                        }
+                        if *map_item.object_type() == MapItemType::Mob {
+                            if let Some(request) = ScriptSkillService::edp_poison_request(&character.status) {
+                                map_instance.add_to_next_tick(MapEvent::MobStatusChange(crate::server::model::events::map_event::MobStatusChange {
+                                    mob_id: map_item.id(),
+                                    request,
+                                }));
+                            }
+                        }
                     }
                     if self.configuration_service.config().game.pet_support.attack_support && character.game_systems.pet.as_ref().is_some_and(|pet|!pet.incubating&&pet.intimacy>0) {
                         server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
@@ -638,6 +658,12 @@ impl ServerService {
             if let Some(skill_use_response) = skill_use_response {
                 let after_cast_delay = character.skill_in_use().skill.after_cast_act_delay();
                 self.script_skill_service.advance_combo(character, skill_use_response.skill_id, skill_use_response.target_id, after_cast_delay, tick);
+                if character.game_systems.party_id != 0 && ScriptSkillService::triggers_friend_share(skill_use_response.skill_id) {
+                    server.add_to_next_tick(GameEvent::SkillFriendShare(crate::server::model::events::game_event::SkillFriendShare {
+                        char_id: character.char_id,
+                        skill_id: skill_use_response.skill_id,
+                    }));
+                }
                 if skill_use_response.skill_type == SkillType::Offensive {
                     let maybe_map_instance = server_state.get_map_instance(character.current_map_name(), character.current_map_instance());
                     let map_instance = maybe_map_instance.as_ref().unwrap();

@@ -255,7 +255,7 @@ pub fn to_object(skill_enum: SkillEnum, level: u8) -> Option<Box<dyn Skill>> {
         SkillEnum::RgCleaner => Remover::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::RgGangster => Slyness::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::RgCompulsion => Haggle::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
-        SkillEnum::RgPlagiarism => Intimidate::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::RgPlagiarism => Plagiarism::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::AmAxemastery => AxeMastery::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::AmLearningpotion => PotionResearch::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::AmPharmacy => PreparePotion::new(level).map(|s| Box::new(s) as Box<dyn Skill>),

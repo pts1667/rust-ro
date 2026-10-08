@@ -123,6 +123,8 @@ game_events! {
     CharacterStatusAlternatives(CharacterStatusAlternatives),
     CharacterEndStatus(CharacterEndStatus),
     CharacterKnockback(CharacterKnockback),
+    CharacterSpDrain(CharacterSpDrain),
+    SkillFriendShare(SkillFriendShare),
     CharacterUseGroundSkill(CharacterUseGroundSkill),
     CharacterUseGroundSkillText(CharacterUseGroundSkillText),
     ReleaseScriptCapture(ReleaseScriptCapture),

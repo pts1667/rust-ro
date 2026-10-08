@@ -537,6 +537,44 @@ impl GameEventHandler for CharacterKnockback {
     }
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub struct CharacterSpDrain {
+    pub char_id: u32,
+    pub amount: u32,
+}
+
+impl GameEventHandler for CharacterSpDrain {
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        if let Some(mut character) = state.characters_mut().remove(&self.char_id) {
+            let sp = character.status.sp.saturating_sub(self.amount);
+            let hp = character.status.hp;
+            server.character_service().update_hp_sp(&mut character, hp, sp);
+            state.insert_character(character);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct SkillFriendShare {
+    pub char_id: u32,
+    pub skill_id: u32,
+}
+
+impl GameEventHandler for SkillFriendShare {
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+
+    fn handle(self, server: &Server, state: &mut ServerState, tick: u128) -> Result<(), String> {
+        server.script_skill_service().share_friend_rate(server, state, self.char_id, self.skill_id, tick)
+    }
+}
+
 impl GameEventHandler for CharacterUseGroundSkill {
     fn required_character(&self) -> Option<u32> {
         Some(self.char_id)
