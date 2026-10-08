@@ -324,7 +324,7 @@ impl TemporaryStatusBonus {
 
     pub fn remaining_ms(&self, tick: u128) -> u32 {
         match self.expirency {
-            BonusExpiry::Never => u32::max_value(),
+            BonusExpiry::Never => u32::MAX,
             BonusExpiry::Time(until) => {
                 if until > tick {
                     (until - tick) as u32
@@ -332,7 +332,7 @@ impl TemporaryStatusBonus {
                     0
                 }
             }
-            BonusExpiry::Counter(_) => u32::max_value(),
+            BonusExpiry::Counter(_) => u32::MAX,
         }
     }
 }

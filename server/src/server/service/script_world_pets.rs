@@ -342,7 +342,7 @@ impl ScriptWorldService {
             return Err("Monster is already being captured or removed".into());
         }
         let map = state.get_map_instance_from_character(character).ok_or("Character map is unavailable")?;
-        let claim_id = self.next_pet_capture_id.fetch_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed, |value| value.checked_add(1))
+        let claim_id = self.next_pet_capture_id.try_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed, |value| value.checked_add(1))
             .map_err(|_| "Pet capture identifiers exhausted")?;
         let expires_at = capture.expires_at.min(now.saturating_add(5000));
         character.game_systems.pending_pet_capture = Some(crate::server::model::game_systems::PendingPetCapture {

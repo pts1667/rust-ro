@@ -1,9 +1,3 @@
-[unstable]
-codegen-backend = true
-[profile.rustro]
-inherits = "release"
-codegen-backend = "cranelift"
-
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "link-args=/STACK:8388608"]
 

@@ -260,7 +260,7 @@ impl Character {
     }
 
     pub(crate) fn next_position_revision(&self) -> u64 {
-        self.position_revision.fetch_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed,
+        self.position_revision.try_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed,
             |revision| revision.checked_add(1)).expect("Character position revisions exhausted") + 1
     }
 

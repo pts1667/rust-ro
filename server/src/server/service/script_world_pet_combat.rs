@@ -278,7 +278,7 @@ impl ScriptWorldService {
         let cast_time = super::companion_skills::companion_cast_time(&source, metadata, attack.level);
         let cast_id = self
             .next_pet_cast_id
-            .fetch_update(
+            .try_update(
                 std::sync::atomic::Ordering::Relaxed,
                 std::sync::atomic::Ordering::Relaxed,
                 |value| value.checked_add(1),

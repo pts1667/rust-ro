@@ -1,10 +1,8 @@
-#![feature(test)]
 #[macro_use]
 extern crate accessor;
 extern crate core;
 extern crate models;
 extern crate packets;
-extern crate test;
 #[macro_use]
 extern crate tracing;
 

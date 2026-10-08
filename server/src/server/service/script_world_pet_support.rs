@@ -262,7 +262,7 @@ impl ScriptWorldService {
         let data = self.configuration.get_mob_safe(i32::from(pet.class_id)).ok_or("Pet monster data is unavailable")?;
         let snapshot = crate::server::model::status::StatusFromDb::from_mob_model(data);
         let cast_time = super::companion_skills::companion_cast_time(&snapshot, metadata, level);
-        let id = self.next_pet_cast_id.fetch_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed, |value| value.checked_add(1))
+        let id = self.next_pet_cast_id.try_update(std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed, |value| value.checked_add(1))
             .map_err(|_| "Pet cast identifiers exhausted")?;
         let support = character.game_systems.pet_support.as_mut().ok_or("Pet support state is unavailable")?;
         support.casting = Some(PetSupportCast { id, skill_id, level, target_id: character.char_id, attack: None,
