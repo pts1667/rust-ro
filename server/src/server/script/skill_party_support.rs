@@ -16,7 +16,7 @@ use crate::server::Server;
 
 impl ScriptSkillService {
     pub(super) fn party_support_skill(name: &str) -> bool {
-        matches!(name, "AL_ANGELUS" | "PR_GLORIA" | "PR_MAGNIFICAT" | "BS_WEAPONPERFECT" | "BS_ADRENALINE" | "BS_OVERTHRUST")
+        matches!(name, "AL_ANGELUS" | "PR_GLORIA" | "PR_MAGNIFICAT" | "BS_WEAPONPERFECT" | "BS_ADRENALINE" | "BS_ADRENALINE2" | "BS_OVERTHRUST")
     }
 
     pub(super) fn apply_party_support(&self, server: &Server, state: &ServerState, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<(), String> {
@@ -45,7 +45,7 @@ impl ScriptSkillService {
             })
         }).map(|target| {
             let mut request = Self::skill_status_request(skill, kind, effect.level);
-            if matches!(kind, StatusChangeKind::WeaponPerfection | StatusChangeKind::Adrenaline | StatusChangeKind::Overthrust) {
+            if matches!(kind, StatusChangeKind::WeaponPerfection | StatusChangeKind::Adrenaline | StatusChangeKind::Adrenaline2 | StatusChangeKind::Overthrust) {
                 request.values[1] = i32::from(target.char_id == source_id);
                 if hilt_binding { request.duration_ms = request.duration_ms.saturating_add(request.duration_ms / 10); }
             }

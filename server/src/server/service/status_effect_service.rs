@@ -182,7 +182,12 @@ impl StatusEffectService {
                 Endure => values[1] = 7,
                 AspdPotion0 | AspdPotion1 | AspdPotion2 | AspdPotion3 => values[1] = 50 * (2 + request.kind.id() as i32 - AspdPotion0.id() as i32),
                 TwoHandQuicken | MercQuicken => values[1] = 300,
-                Adrenaline => values[2] = if values[1] != 0 { 300 } else { 200 },
+                Adrenaline | Adrenaline2 => values[2] = if values[1] != 0 { 300 } else { 200 },
+                SpearQuicken => values[1] = 200 + 10 * values[0],
+                OneHand => values[1] = 300,
+                MaxOverThrust => values[1] = 20 * values[0],
+                TrueSight => { values[1] = 10 * values[0]; values[2] = 3 * values[0]; }
+                Providence => values[1] = 5 * values[0],
                 Overthrust => values[2] = if values[1] != 0 { 5 * values[0] } else { 5 },
                 Concentrate => { values[1] = 2 + values[0]; values[2] = status.agi as i32 * values[1] / 100; values[3] = status.dex as i32 * values[1] / 100; }
                 Blessing if player => values[1] = values[0],
@@ -802,7 +807,7 @@ impl StatusEffectService {
                 DecreaseAgi => slow = slow.max(25), Quagmire => slow = slow.max(50), Curse => { slow = slow.max(300); snapshot.set_bonus_luk(-(snapshot.base_luk() as i16)); snapshot.set_atk_left_side(snapshot.atk_left_side() * 3 / 4); snapshot.set_atk_right_side(snapshot.atk_right_side() * 3 / 4); }
                 Wedding => slow = slow.max(100), SlowDown => slow = slow.max(value),
                 AspdPotion0 | AspdPotion1 | AspdPotion2 | AspdPotion3 => potion_haste = potion_haste.max(second),
-                TwoHandQuicken | MercQuicken => quicken = quicken.max(second), Adrenaline => quicken = quicken.max(third),
+                TwoHandQuicken | MercQuicken | OneHand | SpearQuicken => quicken = quicken.max(second), Adrenaline | Adrenaline2 => quicken = quicken.max(third),
                 AssnCros => quicken = quicken.max(second),
                 DontForgetMe => { attack_delay_penalty += second; slow = slow.max(third); }
                 Longing => { attack_delay_penalty += second; slow = slow.max(50 - 10 * value); }
@@ -1165,6 +1170,39 @@ mod tests {
             StatusEffectService::adjust_snapshot(&status, &mut snapshot);
             assert_eq!(snapshot.aspd(), 162.5);
         }
+    }
+
+    #[test]
+    fn spear_and_one_hand_quicken_and_adrenaline_rush_two_scale_attack_delay_by_their_rate() {
+        for (kind, level, party_member, expected) in [
+            (StatusChangeKind::SpearQuicken, 10, 0, 165.0),
+            (StatusChangeKind::OneHand, 1, 0, 165.0),
+            (StatusChangeKind::Adrenaline2, 5, 0, 165.0),
+            (StatusChangeKind::Adrenaline2, 5, 1, 160.0),
+        ] {
+            let mut status = Status { hp: 1000, max_hp: 1000, ..Default::default() };
+            let mut request = StatusChangeRequest::guaranteed(kind, 60000, level);
+            request.values[1] = if kind == StatusChangeKind::Adrenaline2 { 1 - party_member } else { 0 };
+            assert!(StatusEffectService::apply_status(&mut status, request, 0, 0).unwrap().started);
+            let mut snapshot = StatusSnapshot::_from(&status);
+            snapshot.set_aspd(150.0);
+            StatusEffectService::adjust_snapshot(&status, &mut snapshot);
+            assert_eq!(snapshot.aspd(), expected, "{kind:?}");
+        }
+    }
+
+    #[test]
+    fn true_sight_and_spear_quicken_bonuses_scale_with_level_and_providence_resists_holy_and_demons() {
+        let mut status = Status { hp: 1000, max_hp: 1000, ..Default::default() };
+        for kind in [StatusChangeKind::TrueSight, StatusChangeKind::SpearQuicken, StatusChangeKind::Providence] {
+            start_for_test(&mut status, kind, 60000, 10, 0);
+        }
+        let bonuses = status.active_statuses.iter().flat_map(|change| change.bonuses()).collect::<Vec<_>>();
+        use models::enums::bonus::BonusType::*;
+        assert!(bonuses.contains(&AllStats(5)) && bonuses.contains(&Hit(30)) && bonuses.contains(&AtkPercentage(20)));
+        assert!(bonuses.contains(&Crit(10.0)) && bonuses.contains(&Crit(30.0)) && bonuses.contains(&Flee(20)));
+        assert!(bonuses.contains(&ResistanceDamageFromElementPercentage(models::enums::element::Element::Holy, 50)));
+        assert!(bonuses.contains(&ResistanceDamageFromRacePercentage(models::enums::mob::MobRace::Demon, 50)));
     }
 
     fn start_for_test(status: &mut Status, kind: StatusChangeKind, duration: i32, value: i32, tick: u128) {

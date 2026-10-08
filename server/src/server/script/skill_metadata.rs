@@ -79,6 +79,22 @@ impl SkillMetadata {
         Self::all().iter().find(|skill| skill.id == id)
     }
 
+    pub fn find_by_name(name: &str) -> Option<&'static Self> {
+        static BY_NAME: OnceLock<std::collections::HashMap<&'static str, &'static SkillMetadata>> = OnceLock::new();
+        BY_NAME
+            .get_or_init(|| Self::all().iter().map(|skill| (skill.name.as_str(), skill)).collect())
+            .get(name)
+            .copied()
+    }
+
+    pub fn flag(&self, name: &str) -> bool {
+        self.flags.get(name).copied().unwrap_or(false)
+    }
+
+    pub fn damages(&self) -> bool {
+        !self.damage_flags.get("NoDamage").copied().unwrap_or(false)
+    }
+
     pub fn duration(&self, level: u8, secondary: bool) -> Option<i32> {
         if secondary { &self.duration2 } else { &self.duration1 }
             .as_ref()

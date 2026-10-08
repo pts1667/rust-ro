@@ -47,8 +47,8 @@ def import_metadata(root, reference):
     missing = set(CLASSIC_SKILLS) - by_name.keys()
     if missing:
         raise ValueError(f"Missing pre-renewal skill definitions: {sorted(missing)}")
-    fields = ("Id", "Name", "MaxLevel", "Type", "TargetType", "Range", "HitCount", "Element", "SplashArea", "CastTime", "CastCancel", "CastTimeFlags", "AfterCastActDelay", "AfterCastWalkDelay", "Duration1", "Duration2", "Cooldown", "Knockback", "Status", "Flags", "DamageFlags", "Unit", "Requires")
-    selected_skills = set(CLASSIC_SKILLS) | {skill["Name"] for skill in skills if 0 < skill["Id"] < 1000 or 8001 <= skill["Id"] <= 8016 or 8201 <= skill["Id"] <= 8240}
+    fields = ("Id", "Name", "MaxLevel", "Type", "TargetType", "Range", "HitCount", "Element", "SplashArea", "CastTime", "CastCancel", "CastTimeFlags", "CastDelayFlags", "AfterCastActDelay", "AfterCastWalkDelay", "Duration1", "Duration2", "Cooldown", "Knockback", "Status", "Flags", "DamageFlags", "Unit", "Requires")
+    selected_skills = set(CLASSIC_SKILLS) | {skill["Name"] for skill in skills if 0 < skill["Id"] < 1019 or 8001 <= skill["Id"] <= 8016 or 8201 <= skill["Id"] <= 8240}
     skill_fields = fields
     kinds = {name for name in re.findall(r'\w+\s*=\s*\d+\s*=>\s*"([A-Z0-9_]+)"', (root / "lib/models/src/status_change.rs").read_text(encoding="utf-8"))}
     statuses = yaml.safe_load((reference / "db/pre-re/status.yml").read_text(encoding="utf-8"))["Body"]
@@ -57,8 +57,13 @@ def import_metadata(root, reference):
     if kinds - selected.keys():
         raise ValueError(f"Missing pre-renewal status definitions: {sorted(kinds - selected.keys())}")
     selected_skills.update(status["DurationLookup"] for status in selected.values() if status.get("DurationLookup") in by_name)
-    write(root / "server/src/server/script/skill_metadata.json", [{field: by_name[name][field] for field in skill_fields if field in by_name[name]} for name in sorted(selected_skills)])
-    write(root / "lib/models/src/status_change_metadata.json", selected)
+    skill_path = root / "server/src/server/script/skill_metadata.json"
+    status_path = root / "lib/models/src/status_change_metadata.json"
+    kept_skills = {skill["Name"]: skill for skill in json.loads(skill_path.read_text(encoding="utf-8"))} if skill_path.exists() else {}
+    kept_statuses = json.loads(status_path.read_text(encoding="utf-8")) if status_path.exists() else {}
+    # Entries already in the files may carry hand-tuned fields: only add what is missing.
+    write(skill_path, [kept_skills.get(name) or {field: by_name[name][field] for field in skill_fields if field in by_name[name]} for name in sorted(selected_skills)])
+    write(status_path, {**selected, **{name: kept_statuses[name] for name in selected if name in kept_statuses}})
 
 
 if __name__ == "__main__":

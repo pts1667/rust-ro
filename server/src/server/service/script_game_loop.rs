@@ -1412,11 +1412,33 @@ impl Server {
         packet.extend_from_slice(&(prize.item_id as u16).to_le_bytes());
         let _ = sender.try_send(Notification::Char(CharNotification::new(char_id, packet)));
         let identified = !item.item_type.should_be_identified_when_dropped();
-        self.add_to_next_tick(GameEvent::CharacterAddItems(crate::server::model::events::game_event::CharacterAddItems {
-            char_id,
-            should_perform_check: true,
-            buy: false,
-            items: vec![crate::repository::model::item_model::InventoryItemModel::from_item_model(&item, 1, identified)],
-        }));
+        let prize_item = crate::repository::model::item_model::InventoryItemModel::from_item_model(&item, 1, identified);
+        let fits = state.characters().get(&char_id).is_some_and(|character| self.mvp_prize_fits(character, &prize_item));
+        if fits {
+            self.add_to_next_tick(GameEvent::CharacterAddItems(crate::server::model::events::game_event::CharacterAddItems {
+                char_id,
+                should_perform_check: true,
+                buy: false,
+                items: vec![prize_item],
+            }));
+        } else if let Some(map) = state.characters().get(&char_id).and_then(|character| state.get_map_instance_from_character(character)) {
+            map.add_to_next_tick(MapEvent::ScriptDropItem(crate::server::model::events::map_event::ScriptDropItem {
+                owner_id: char_id,
+                item_id: prize.item_id,
+                amount: 1,
+                x,
+                y,
+            }));
+        }
+    }
+
+    pub(crate) fn mvp_prize_fits(&self, character: &crate::server::state::character::Character, item: &crate::repository::model::item_model::InventoryItemModel) -> bool {
+        let weight = u64::from(character.weight()) + item.weight.max(0) as u64 * item.amount.max(0) as u64;
+        if weight > u64::from(self.character_service().max_weight(character)) {
+            return false;
+        }
+        let stacks_onto_existing = item.item_type().is_stackable()
+            && character.inventory.iter().flatten().any(|held| held.item_id == item.item_id && held.amount.checked_add(item.amount).is_some());
+        stacks_onto_existing || character.inventory.iter().flatten().count() < usize::from(GlobalConfigService::instance().config().game.max_inventory)
     }
 }

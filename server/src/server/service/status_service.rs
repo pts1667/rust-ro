@@ -170,6 +170,7 @@ impl StatusService {
         if kaina > 0 {
             bonuses.push(BonusType::Maxsp(30 * i32::from(kaina)));
         }
+        bonuses.extend(Self::passive_skill_bonuses(status));
         bonuses = BonusType::merge_enums(&bonuses);
         snapshot.set_bonuses(bonuses.iter().map(|bonus| StatusBonus::new(*bonus)).collect());
         let mut known_skills = snapshot.known_skills().clone();
@@ -436,6 +437,28 @@ impl StatusService {
     }
 
     #[inline]
+    fn passive_skill_bonuses(status: &Status) -> Vec<BonusType> {
+        use models::enums::element::Element;
+        use models::enums::skill_enums::SkillEnum;
+        let level = |skill: SkillEnum| i32::from(crate::server::service::script_character_service::learned_level(status, skill.id()));
+        let mut bonuses = Vec::new();
+        let trust = level(SkillEnum::CrTrust);
+        if trust > 0 {
+            bonuses.push(BonusType::Maxhp(200 * trust));
+            bonuses.push(BonusType::ResistanceDamageFromElementPercentage(Element::Holy, (5 * trust) as i8));
+        }
+        let skin_tempering = level(SkillEnum::BsSkintemper);
+        if skin_tempering > 0 {
+            bonuses.push(BonusType::ResistanceDamageFromElementPercentage(Element::Neutral, skin_tempering as i8));
+            bonuses.push(BonusType::ResistanceDamageFromElementPercentage(Element::Fire, (5 * skin_tempering) as i8));
+        }
+        let mana_recharge = level(SkillEnum::HpManarecharge);
+        if mana_recharge > 0 {
+            bonuses.push(BonusType::SpConsumption((-4 * mana_recharge) as i8));
+        }
+        bonuses
+    }
+
     fn truncate(x: f32, decimals: u32) -> f32 {
         let y = 10i32.pow(decimals) as f32;
         (x * y).round() / y
@@ -819,6 +842,27 @@ mod tests {
             StatusService::skill_after_cast_delay(&snapshot, SkillEnum::MgFirebolt.id(), 1000),
             500
         );
+    }
+
+    #[test]
+    fn trust_skin_tempering_and_mana_recharge_passives_scale_with_their_level() {
+        use models::enums::element::Element;
+        use models::status::KnownSkill;
+        let status = Status {
+            known_skills: vec![
+                KnownSkill { value: SkillEnum::CrTrust, level: 5 },
+                KnownSkill { value: SkillEnum::BsSkintemper, level: 5 },
+                KnownSkill { value: SkillEnum::HpManarecharge, level: 5 },
+            ],
+            ..Status::default()
+        };
+        let bonuses = StatusService::passive_skill_bonuses(&status);
+        assert!(bonuses.contains(&BonusType::Maxhp(1000)));
+        assert!(bonuses.contains(&BonusType::ResistanceDamageFromElementPercentage(Element::Holy, 25)));
+        assert!(bonuses.contains(&BonusType::ResistanceDamageFromElementPercentage(Element::Neutral, 5)));
+        assert!(bonuses.contains(&BonusType::ResistanceDamageFromElementPercentage(Element::Fire, 25)));
+        assert!(bonuses.contains(&BonusType::SpConsumption(-20)));
+        assert!(StatusService::passive_skill_bonuses(&Status::default()).is_empty());
     }
 
     #[test]

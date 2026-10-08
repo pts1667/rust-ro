@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::enums::bonus::BonusType;
 use crate::enums::element::Element;
+use crate::enums::mob::MobRace;
 use crate::enums::status::StatusEffect;
 use crate::enums::{EnumWithMaskValueU32, EnumWithNumberValue, EnumWithStringValue};
 
@@ -107,6 +108,8 @@ status_changes! {
     Armor = 104 => "ARMOR", ElementalChange = 165 => "ELEMENTALCHANGE", ModeChange = 177 => "MODECHANGE", Rebirth = 284 => "REBIRTH",
     Invincible = 295 => "INVINCIBLE", MaxPain = 668 => "MAXPAIN", WeaponBreaker = 908 => "WEAPONBREAKER", Powerup = 951 => "POWERUP", Agiup = 952 => "AGIUP",
     SpiderWeb = 133 => "SPIDERWEB", AutoCounter = 87 => "AUTOCOUNTER",
+    SpearQuicken = 86 => "SPEARQUICKEN", OneHand = 150 => "ONEHAND", Adrenaline2 = 145 => "ADRENALINE2", MaxOverThrust = 156 => "MAXOVERTHRUST",
+    TrueSight = 120 => "TRUESIGHT", Providence = 79 => "PROVIDENCE",
     EntryQueueApplyDelay = 704 => "ENTRY_QUEUE_APPLY_DELAY", EntryQueueNotifyAdmissionTimeOut = 705 => "ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT",
 }
 
@@ -284,6 +287,9 @@ impl StatusChange {
             DecreaseAgi => vec![BonusType::Agi((-second).clamp(-127, 127) as i8)],
             Concentrate => vec![BonusType::Agi(third.clamp(-127, 127) as i8), BonusType::Dex(fourth.clamp(-127, 127) as i8)],
             Quagmire => vec![BonusType::Agi((-second).clamp(-127, 127) as i8), BonusType::Dex((-second).clamp(-127, 127) as i8)],
+            SpearQuicken => vec![BonusType::Crit(3.0 * value as f32), BonusType::Flee((2 * value).clamp(-32768, 32767) as i16)],
+            TrueSight => vec![BonusType::AllStats(5), BonusType::Crit(second as f32 / 10.0), BonusType::Hit(third.clamp(-32768, 32767) as i16), BonusType::AtkPercentage((2 * value).clamp(-127, 127) as i8)],
+            Providence => vec![BonusType::ResistanceDamageFromElementPercentage(Element::Holy, second.clamp(-127, 127) as i8), BonusType::ResistanceDamageFromRacePercentage(MobRace::Demon, second.clamp(-127, 127) as i8)],
             Gloria => vec![BonusType::Luk(30)], Loud => vec![BonusType::Str(4)],
             Spurt => vec![BonusType::Str(10)],
             Fleet => vec![BonusType::AtkPercentage(third.clamp(-127, 127) as i8)],

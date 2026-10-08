@@ -53,6 +53,7 @@ pub fn handle(server: &Server, state: &mut ServerState, char_id: u32, command: &
         "guildstorage" => storage(server, state, char_id, true),
         "monster" => monster(state, char_id, args),
         "killmonster" => kill_monsters(state, char_id),
+        "mobsearch" => mob_search(state, char_id, args),
         "mobinfo" => mob_info(args),
         "whodrops" => who_drops(args),
         "day" | "night" => time_of_day(server, state, command == "night"),
@@ -250,6 +251,26 @@ fn kill_monsters(state: &mut ServerState, char_id: u32) -> Option<Vec<String>> {
     let instance = state.get_map_instance_from_character(state.get_character(char_id)?)?;
     instance.add_to_next_tick(MapEvent::AdminKillAllMobs(AdminKillAllMobs { char_id }));
     say("All monsters have been killed!")
+}
+
+fn mob_search(state: &ServerState, char_id: u32, args: &[&str]) -> Option<Vec<String>> {
+    let Some(model) = GlobalConfigService::instance().find_mob(&args.join(" ")) else {
+        return say("Please, enter a monster name or id (usage: @mobsearch <monster name or id>).");
+    };
+    let character = state.get_character(char_id)?;
+    let instance = state.get_map_instance_from_character(character)?;
+    let mut found: Vec<(u32, u16, u16)> = instance
+        .state()
+        .mobs()
+        .values()
+        .filter(|mob| i32::from(mob.mob_id) == model.id)
+        .map(|mob| (mob.id, mob.x, mob.y))
+        .collect();
+    found.sort_unstable();
+    let mut out = vec![format!("Mob Search... '{}' on {}:", model.name_english, character.current_map_name())];
+    out.extend(found.iter().take(LISTED_NAMES).map(|(id, x, y)| format!("{id} [{x},{y}]")));
+    out.push(format!("Number of monsters: {}", found.len()));
+    lines(out)
 }
 
 fn mob_info(args: &[&str]) -> Option<Vec<String>> {

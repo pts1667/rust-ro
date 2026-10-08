@@ -1027,7 +1027,7 @@ impl ScriptSkillService {
         }
         if let Some(kind) = Self::status_for_skill(skill.name()) {
             let toggled = metadata::SkillMetadata::find(effect.skill_id)
-                .is_some_and(|metadata| metadata.flags.get("Toggleable").copied().unwrap_or(false))
+                .is_some_and(|metadata| metadata.flag("Toggleable") || kind == StatusChangeKind::AutoBerserk)
                 && character.status.has_status_change(kind);
             if toggled {
                 StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
@@ -1319,8 +1319,18 @@ impl ScriptSkillService {
             "BS_MAXIMIZE" => Some(MaximizePower),
             "SA_MAGICROD" => Some(MagicRod),
             "NJ_NEN" => Some(Nen),
-            _ => None,
+            _ => Self::metadata_buff_status(name),
         }
+    }
+
+    /// Self and support skills that do nothing but start the status their metadata names.
+    fn metadata_buff_status(name: &str) -> Option<StatusChangeKind> {
+        let metadata = metadata::SkillMetadata::find_by_name(name)?;
+        (!metadata.damages()
+            && metadata.unit.is_none()
+            && matches!(metadata.target_type.as_deref(), Some("Self" | "Support")))
+        .then(|| metadata.status.as_deref().and_then(StatusChangeKind::from_name))
+        .flatten()
     }
 
     fn is_special_skill(name: &str) -> bool {
@@ -1357,6 +1367,9 @@ impl ScriptSkillService {
 
     fn skill_status_request(skill: &SkillConfig, kind: StatusChangeKind, level: u8) -> StatusChangeRequest {
         let mut request = StatusChangeRequest::guaranteed(kind, Self::duration(skill, level).min(i32::MAX as u32) as i32, level as i32);
+        if kind == StatusChangeKind::AutoBerserk {
+            request.duration_ms = -1;
+        }
         if skill.name() == "NPC_ANTIMAGIC" {
             request.values[1] = skill.id as i32;
         }

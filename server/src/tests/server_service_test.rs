@@ -40,6 +40,10 @@ mod npc_unit_data_tests;
 #[path = "npc_effect_test.rs"]
 mod npc_effect_tests;
 
+#[cfg(feature = "unit_tests")]
+#[path = "player_skill_test.rs"]
+mod player_skill_tests;
+
 #[path = "item_dialog_test.rs"]
 mod item_dialog_tests;
 
@@ -52,6 +56,9 @@ mod script_map_command_tests;
 
 #[path = "world_party_test.rs"]
 mod world_party_tests;
+
+#[path = "mob_command_test.rs"]
+mod mob_command_tests;
 
 #[path = "party_reward_test.rs"]
 mod party_reward_tests;

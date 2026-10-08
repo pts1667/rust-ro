@@ -560,3 +560,19 @@ fn real_player_drop_and_party_pickup_preserve_the_equipment_instance() {
         255, 3843, 1, 2
     ]);
 }
+
+#[test]
+fn mvp_prize_falls_to_the_floor_only_when_the_inventory_cannot_take_it() {
+    use crate::repository::model::item_model::InventoryItemModel;
+    use crate::server::service::global_config_service::GlobalConfigService;
+    let (context, _, ids) = fixture();
+    let potion = InventoryItemModel::from_item_model(&GlobalConfigService::instance().get_item(501), 1, true);
+    let sword = InventoryItemModel::from_item_model(&GlobalConfigService::instance().get_item(1201), 1, true);
+    let max_slots = usize::from(GlobalConfigService::instance().config().game.max_inventory);
+    let mut state = context.server.state_mut();
+    let character = state.characters_mut().get_mut(&ids[0]).unwrap();
+    assert!(context.server.mvp_prize_fits(character, &sword));
+    character.inventory = (0..max_slots).map(|_| Some(potion.clone())).collect();
+    assert!(!context.server.mvp_prize_fits(character, &sword));
+    assert!(context.server.mvp_prize_fits(character, &potion));
+}

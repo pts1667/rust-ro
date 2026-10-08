@@ -2287,6 +2287,15 @@
     "Type": "Weapon"
   },
   {
+    "Flags": {
+      "IsQuest": true
+    },
+    "Id": 1003,
+    "MaxLevel": 1,
+    "Name": "AS_SONICACCEL",
+    "Type": "Weapon"
+  },
+  {
     "AfterCastActDelay": 2000,
     "AfterCastWalkDelay": 2000,
     "CastDelayFlags": {
@@ -2578,6 +2587,32 @@
       "Range": 1,
       "Target": "Enemy"
     }
+  },
+  {
+    "DamageFlags": {
+      "IgnoreAtkCard": true
+    },
+    "Duration2": 60000,
+    "Flags": {
+      "IgnoreAutoGuard": true,
+      "IgnoreCicada": true,
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1004,
+    "MaxLevel": 1,
+    "Name": "AS_VENOMKNIFE",
+    "Range": 9,
+    "Requires": {
+      "Ammo": {
+        "Dagger": true
+      },
+      "AmmoAmount": 1,
+      "SpCost": 15
+    },
+    "Status": "Poison",
+    "TargetType": "Attack",
+    "Type": "Weapon"
   },
   {
     "DamageFlags": {
@@ -2876,6 +2911,26 @@
     },
     "TargetType": "Attack",
     "Type": "Weapon"
+  },
+  {
+    "AfterCastActDelay": 2000,
+    "CastTime": 1000,
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 30000,
+    "Flags": {
+      "IsQuest": true
+    },
+    "Id": 1010,
+    "MaxLevel": 1,
+    "Name": "BA_PANGVOICE",
+    "Range": 9,
+    "Requires": {
+      "SpCost": 20
+    },
+    "TargetType": "Attack",
+    "Type": "Misc"
   },
   {
     "DamageFlags": {
@@ -3782,6 +3837,15 @@
     "Id": 100,
     "MaxLevel": 3,
     "Name": "BS_TWOHANDSWORD",
+    "Type": "Weapon"
+  },
+  {
+    "Flags": {
+      "IsQuest": true
+    },
+    "Id": 1012,
+    "MaxLevel": 1,
+    "Name": "BS_UNFAIRLYTRICK",
     "Type": "Weapon"
   },
   {
@@ -5185,6 +5249,27 @@
     },
     "Status": "Stun",
     "TargetType": "Attack",
+    "Type": "Weapon"
+  },
+  {
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 300000,
+    "Flags": {
+      "IsQuest": true,
+      "Toggleable": true
+    },
+    "Id": 1002,
+    "Knockback": 2,
+    "MaxLevel": 1,
+    "Name": "CR_SHRINK",
+    "Requires": {
+      "SpCost": 15,
+      "State": "Shield"
+    },
+    "Status": "Shrink",
+    "TargetType": "Self",
     "Type": "Weapon"
   },
   {
@@ -8457,6 +8542,26 @@
     }
   },
   {
+    "Element": "Weapon",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1009,
+    "Knockback": 3,
+    "MaxLevel": 1,
+    "Name": "HT_PHANTASMIC",
+    "Range": -9,
+    "Requires": {
+      "SpCost": 10,
+      "Weapon": {
+        "Bow": true
+      }
+    },
+    "TargetType": "Attack",
+    "Type": "Weapon"
+  },
+  {
     "Duration1": 100,
     "Element": "Weapon",
     "Flags": {
@@ -9398,6 +9503,23 @@
     "Id": 64,
     "MaxLevel": 5,
     "Name": "KN_CAVALIERMASTERY",
+    "Type": "Weapon"
+  },
+  {
+    "CastTime": 500,
+    "Element": "Weapon",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1001,
+    "MaxLevel": 1,
+    "Name": "KN_CHARGEATK",
+    "Range": 14,
+    "Requires": {
+      "SpCost": 40
+    },
+    "TargetType": "Attack",
     "Type": "Weapon"
   },
   {
@@ -13466,6 +13588,32 @@
     "Type": "Weapon"
   },
   {
+    "AfterCastActDelay": 2000,
+    "DamageFlags": {
+      "IgnoreAtkCard": true,
+      "Splash": true
+    },
+    "Duration2": 5000,
+    "Element": "Weapon",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1016,
+    "Knockback": 5,
+    "MaxLevel": 1,
+    "Name": "MO_BALKYOUNG",
+    "Range": -1,
+    "Requires": {
+      "HpCost": 10,
+      "SpCost": 20
+    },
+    "SplashArea": 1,
+    "Status": "Stun",
+    "TargetType": "Attack",
+    "Type": "Weapon"
+  },
+  {
     "DamageFlags": {
       "NoDamage": true
     },
@@ -13956,6 +14104,29 @@
     "Id": 259,
     "MaxLevel": 10,
     "Name": "MO_IRONHAND",
+    "Type": "Weapon"
+  },
+  {
+    "AfterCastActDelay": 1000,
+    "CastTime": 2000,
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 600000,
+    "Flags": {
+      "IsQuest": true,
+      "PartyOnly": true
+    },
+    "HitCount": 1,
+    "Id": 1015,
+    "MaxLevel": 1,
+    "Name": "MO_KITRANSLATION",
+    "Range": 9,
+    "Requires": {
+      "SpCost": 40,
+      "SpiritSphereCost": 1
+    },
+    "TargetType": "Support",
     "Type": "Weapon"
   },
   {
@@ -20224,6 +20395,29 @@
     }
   },
   {
+    "CastTime": 4000,
+    "CastTimeFlags": {
+      "IgnoreDex": true
+    },
+    "DamageFlags": {
+      "NoDamage": true,
+      "Splash": true
+    },
+    "Element": "Holy",
+    "Flags": {
+      "IsQuest": true
+    },
+    "Id": 1014,
+    "MaxLevel": 1,
+    "Name": "PR_REDEMPTIO",
+    "Requires": {
+      "SpCost": 400
+    },
+    "SplashArea": 14,
+    "TargetType": "Self",
+    "Type": "Magic"
+  },
+  {
     "CastTime": 5000,
     "DamageFlags": {
       "IgnoreDefense": true,
@@ -20499,6 +20693,26 @@
     },
     "SplashArea": 5,
     "TargetType": "Ground"
+  },
+  {
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 10000,
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1005,
+    "MaxLevel": 1,
+    "Name": "RG_CLOSECONFINE",
+    "Range": 1,
+    "Requires": {
+      "SpCost": 25
+    },
+    "Status": "CloseConfine2",
+    "TargetType": "Attack",
+    "Type": "Weapon"
   },
   {
     "Id": 224,
@@ -21031,6 +21245,21 @@
       "NoDamage": true
     },
     "Flags": {
+      "IsQuest": true
+    },
+    "Id": 1007,
+    "MaxLevel": 1,
+    "Name": "SA_CREATECON",
+    "Requires": {
+      "SpCost": 30
+    },
+    "TargetType": "Self"
+  },
+  {
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Flags": {
       "IsNpc": true
     },
     "HitCount": 1,
@@ -21156,6 +21385,93 @@
     "MaxLevel": 5,
     "Name": "SA_DRAGONOLOGY",
     "Type": "Weapon"
+  },
+  {
+    "AfterCastActDelay": 1000,
+    "CastTime": 2000,
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 1800000,
+    "Element": "Fire",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1018,
+    "MaxLevel": 1,
+    "Name": "SA_ELEMENTFIRE",
+    "Range": 9,
+    "Requires": {
+      "ItemCost": [
+        {
+          "Amount": 1,
+          "Item": "Elemental_Fire"
+        }
+      ],
+      "SpCost": 30
+    },
+    "Status": "ElementalChange",
+    "TargetType": "Attack",
+    "Type": "Magic"
+  },
+  {
+    "AfterCastActDelay": 1000,
+    "CastTime": 2000,
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 1800000,
+    "Element": "Earth",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1017,
+    "MaxLevel": 1,
+    "Name": "SA_ELEMENTGROUND",
+    "Range": 9,
+    "Requires": {
+      "ItemCost": [
+        {
+          "Amount": 1,
+          "Item": "Elemental_Earth"
+        }
+      ],
+      "SpCost": 30
+    },
+    "Status": "ElementalChange",
+    "TargetType": "Attack",
+    "Type": "Magic"
+  },
+  {
+    "AfterCastActDelay": 1000,
+    "CastTime": 2000,
+    "DamageFlags": {
+      "NoDamage": true
+    },
+    "Duration1": 1800000,
+    "Element": "Water",
+    "Flags": {
+      "IsQuest": true
+    },
+    "HitCount": 1,
+    "Id": 1008,
+    "MaxLevel": 1,
+    "Name": "SA_ELEMENTWATER",
+    "Range": 9,
+    "Requires": {
+      "ItemCost": [
+        {
+          "Amount": 1,
+          "Item": "Elemental_Water"
+        }
+      ],
+      "SpCost": 30
+    },
+    "Status": "ElementalChange",
+    "TargetType": "Attack",
+    "Type": "Magic"
   },
   {
     "CastTime": 3000,
@@ -27199,6 +27515,27 @@
       "Layout": 2,
       "Target": "Enemy"
     }
+  },
+  {
+    "CastTime": 2000,
+    "Duration1": 120000,
+    "Element": "Fire",
+    "Flags": {
+      "IsQuest": true,
+      "TargetTrap": true
+    },
+    "HitCount": 1,
+    "Id": 1006,
+    "Knockback": 3,
+    "MaxLevel": 1,
+    "Name": "WZ_SIGHTBLASTER",
+    "Requires": {
+      "SpCost": 40
+    },
+    "SplashArea": 1,
+    "Status": "SightBlaster",
+    "TargetType": "Self",
+    "Type": "Magic"
   },
   {
     "AfterCastActDelay": 2000,

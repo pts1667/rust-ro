@@ -109,7 +109,8 @@ impl CharacterService {
         } else {
             0
         };
-        base_weight + (character.status.str * 300) as u32 + riding
+        let enlarge_weight_limit = 2000 * u32::from(crate::server::service::script_character_service::learned_level(&character.status, SkillEnum::McInccarry.id()));
+        base_weight + (character.status.str * 300) as u32 + riding + enlarge_weight_limit
     }
 
     pub fn can_carry_weight(&self, character: &Character, additional_weight: u32) -> bool {

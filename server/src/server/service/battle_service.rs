@@ -1270,6 +1270,25 @@ mod equipment_bonus_tests {
     }
 
     #[test]
+    fn divine_protection_adds_vitality_defense_only_against_undead_and_demon_monsters() {
+        let mut player = status();
+        player.set_combat_actor_kind(models::enums::actor::CombatActorKind::Player);
+        player.set_base_level(100);
+        player.set_known_skills(vec![models::status::KnownSkill { value: SkillEnum::AlDp, level: 10 }]);
+        let mut mob = status();
+        mob.set_combat_actor_kind(models::enums::actor::CombatActorKind::Monster);
+        mob.set_race(MobRace::Demon);
+        assert_eq!(BattleService::divine_protection_defense(&mob, &player, true), 70.0);
+        mob.set_race(MobRace::Brute);
+        assert_eq!(BattleService::divine_protection_defense(&mob, &player, true), 0.0);
+        mob.set_element(Element::Undead);
+        assert_eq!(BattleService::divine_protection_defense(&mob, &player, true), 70.0);
+        assert_eq!(BattleService::divine_protection_defense(&mob, &player, false), 0.0);
+        mob.set_combat_actor_kind(models::enums::actor::CombatActorKind::Player);
+        assert_eq!(BattleService::divine_protection_defense(&mob, &player, true), 0.0);
+    }
+
+    #[test]
     fn every_classic_weapon_mastery_uses_its_actual_weapon_and_riding_changes_spear_mastery() {
         let service = context();
         let mut source = status();
@@ -2669,6 +2688,9 @@ impl BattleService {
             + source
                 .status_change(models::status_change::StatusChangeKind::Overthrust)
                 .map_or(0.0, |change| change.values[2] as f32 / 100.0)
+            + source
+                .status_change(models::status_change::StatusChangeKind::MaxOverThrust)
+                .map_or(0.0, |change| change.values[1] as f32 / 100.0)
     }
 
     pub fn attack_uses_ammo(source: &StatusSnapshot, skill_id: u32) -> bool {
@@ -2790,12 +2812,9 @@ impl BattleService {
         };
 
         let full_vitdef = if !ignores_def || elemental_extra.is_some() {
-            self.sample_soft_defense(
-                target_status,
-                *target_status.combat_actor_kind() == models::enums::actor::CombatActorKind::Player,
-                ignore_percentage,
-                overrides.soft_defense_roll,
-            )
+            let player_target = *target_status.combat_actor_kind() == models::enums::actor::CombatActorKind::Player;
+            self.sample_soft_defense(target_status, player_target, ignore_percentage, overrides.soft_defense_roll)
+                + Self::divine_protection_defense(source_status, target_status, player_target)
         } else {
             0.0
         };
@@ -2935,6 +2954,11 @@ impl BattleService {
             );
         }
         atk += 2.0 * known_skill_level(source_status, SkillEnum::BsWeaponresearch) as f32
+            + if skill_id == SkillEnum::NjSyuriken.id() {
+                3.0 * known_skill_level(source_status, SkillEnum::NjTobidougu) as f32
+            } else {
+                0.0
+            }
             + if skill_id != SkillEnum::McCartrevolution.id() && known_skill_level(source_status, SkillEnum::BsHiltbinding) > 0 {
                 4.0
             } else {
@@ -3047,6 +3071,15 @@ impl BattleService {
     ///  [VIT*0.5] + rnd([VIT*0.3], max([VIT*0.3],[VIT^2/150]-1))
     pub fn player_vitdef(&self, target_status: &StatusSnapshot) -> u16 {
         self.sample_soft_defense(target_status, true, 0, None) as u16
+    }
+
+    fn divine_protection_defense(source: &StatusSnapshot, target: &StatusSnapshot, player_target: bool) -> f32 {
+        let level = known_skill_level(target, SkillEnum::AlDp);
+        let undead_or_demon = matches!(source.race(), MobRace::Demon | MobRace::RUndead) || *source.element() == Element::Undead;
+        if !player_target || level == 0 || *source.combat_actor_kind() != models::enums::actor::CombatActorKind::Monster || !undead_or_demon {
+            return 0.0;
+        }
+        (target.base_level() as f32 / 25.0 + 3.0).mul_add(level as f32, 0.5).floor()
     }
 
     fn reduced_hard_defense(target: &StatusSnapshot, ignored_percentage: i32) -> f32 {
