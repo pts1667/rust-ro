@@ -6,9 +6,8 @@ use database::model::{CharacterInventory, CharacterRecord, InventoryRecord, Seed
 use models::enums::cell::CellType;
 use models::enums::item::EquipmentLocation;
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU64, EnumWithNumberValue};
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU64};
 use models::status::KnownSkill;
-use sled::transaction::Transactional;
 
 use super::ServerServiceTestContext;
 use crate::repository::{InventoryRepository, SledRepository};
@@ -832,7 +831,7 @@ fn inventory_loading_preserves_distinct_persistent_rows_and_crafted_potion_metad
 
 
 fn move_to_group(context: &ServerServiceTestContext, id: u32, group: u32) {
-    let mut state = context.server.state_mut();
+    let state = context.server.state_mut();
     let account_id = state.characters().get(&id).unwrap().account_id;
     let old = state.find_session(account_id).unwrap();
     let mut session = Session::create_empty(account_id, old.auth_code, old.user_level, context.server.packetver())

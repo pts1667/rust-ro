@@ -264,6 +264,9 @@ impl ScriptWorldService {
                 self.send(character.char_id, packet)
             }
             GuildRequest::GuildInformation(kind) => {
+                if character.game_systems.guild_id == 0 {
+                    return Ok(());
+                }
                 let guild = self
                     .repository
                     .guild(character.game_systems.guild_id)

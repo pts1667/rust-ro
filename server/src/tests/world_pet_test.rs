@@ -6,7 +6,6 @@ use models::enums::EnumWithNumberValue;
 use packets::packets::{Packet, PacketZcStatusValues};
 use script_runtime::Host;
 use script_sdk::{Function, Request, Value};
-use sled::transaction::Transactional;
 
 use super::{fixture, request};
 use crate::repository::InventoryRepository;

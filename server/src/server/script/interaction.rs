@@ -26,6 +26,11 @@ impl NpcScriptHost {
         let packetver = self.server.packetver();
         let npc = self.script.id;
         match function {
+            Function::Mes | Function::Next | Function::Select | Function::InputNumber | Function::InputString => self.dialog_open = true,
+            Function::Close => self.dialog_open = false,
+            _ => {}
+        }
+        match function {
             Function::Mes => {
                 let text = arguments.iter().map(Value::text).collect::<Vec<_>>().join("\n");
                 if text.len() > 16_000 {

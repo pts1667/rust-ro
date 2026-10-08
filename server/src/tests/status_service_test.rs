@@ -37,7 +37,7 @@ fn before_each_with_latch(latch_size: usize) -> StatusServiceTestContext {
 #[cfg(test)]
 #[cfg(not(feature = "integration_tests"))]
 mod tests {
-    #[macro_use]
+    
     use crate::format_result;
     use std::fs::File;
     use std::io::{Seek, SeekFrom, Write};
@@ -60,7 +60,7 @@ mod tests {
         equip_item_with_cards_and_refinement,
     };
     use crate::tests::common::fixtures::TestResult;
-    use crate::tests::common::fixtures::battle_fixture::{BattleFixture, Equipment};
+    use crate::tests::common::fixtures::battle_fixture::Equipment;
     use crate::{eq_with_variance, status_snapshot};
 
     #[test]
@@ -676,6 +676,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "regenerates docs/progress report and cannot fail; run with --ignored"]
     fn test_all_stats_when_job_level_change() {
         let fixture_file = "src/tests/common/fixtures/data/stats-for-each-job-level.json";
         let result_file_path = "../docs/progress/stats-for-each-job-level_progress.md";
@@ -683,6 +684,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "regenerates docs/progress report and cannot fail; run with --ignored"]
     fn test_all_stats_when_equip_items() {
         let fixture_file = "src/tests/common/fixtures/data/stats-for-items.json";
         let result_file_path = "../docs/progress/stats-for-each-items_progress.md";
@@ -690,6 +692,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "regenerates docs/progress report and cannot fail; run with --ignored"]
     fn test_each_stats() {
         let fixture_file = "src/tests/common/fixtures/data/stats-for-each-stats.json";
         let result_file_path = "../docs/progress/each-bonus_progress.md";
@@ -697,32 +700,11 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "regenerates docs/progress report and cannot fail; run with --ignored"]
     fn test_all_stats_when_card() {
         let fixture_file = "src/tests/common/fixtures/data/stats-for-cards.json";
         let result_file_path = "../docs/progress/stats-for-each-card_progress.md";
         stats_tests(fixture_file, result_file_path, "Stats for each cards", None, false);
-    }
-
-    #[test]
-    fn playground() {
-        let id = "0g3rud";
-        let fixture_file = "src/tests/common/fixtures/data/stats-for-cards.json";
-        let result_file_path = "../docs/progress/stats-for-each-items_progress.md";
-        stats_tests(fixture_file, result_file_path, "Stats for each job level", Some(id), false);
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_increase_base_on_high_upgrade_cards() {
-        // apocalypse Card
-        // dimik Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_increase_base_on_low_upgrade_cards() {
-        // gold acidus Card
-        // gibbet
     }
 
     #[test]
@@ -785,52 +767,11 @@ mod tests {
         }
     }
 
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_stat_increase_base_on_another_stat_cards() {
-        // venatu Card
-    }
-
-    // #[test]
-    #[bench]
-    // fn fullstuff_bench() {
-    fn fullstuff_bench(bencher: &mut test::Bencher) {
-        let id = "ve5tmv";
-        let context = before_each();
-        let fixture_file = "src/tests/common/fixtures/data/fullstuff.json";
-        let scenario = BattleFixture::load(fixture_file);
-        let scenarii = scenario.iter().find(|s| s.id() == id).unwrap();
-        let mut character = create_character();
-        scenarii.all_equipments().iter().for_each(|e| {
-            equip_item_from_id_with_cards(
-                &mut character,
-                e.item_id() as u32,
-                e.cards().iter().map(|c| c.item_id()).collect::<Vec<i16>>(),
-            );
-        });
-        let mut character_status = &mut character.status;
-        let job = JobName::from_string(scenarii.job().as_str());
-        character_status.job = job.value() as u32;
-        character_status.job_level = scenarii.job_level();
-        character_status.str = scenarii.base_str();
-        character_status.agi = scenarii.base_agi();
-        character_status.vit = scenarii.base_vit();
-        character_status.dex = scenarii.base_dex();
-        character_status.int = scenarii.base_int();
-        character_status.luk = scenarii.base_luk();
-        character_status.base_level = scenarii.base_level();
-
-        bencher.iter(|| {
-            context.status_service.to_snapshot(&character_status);
-        });
-    }
-
     pub(crate) fn stats_tests(fixture_file: &str, result_file_path: &str, title: &str, test_id: Option<&str>, assert_passed: bool) {
         // Given
         let context = before_each();
         let _packetver = GlobalConfigService::instance().packetver();
         let scenario = crate::tests::common::fixtures::battle_fixture::BattleFixture::load(fixture_file);
-        let mut i = -1;
 
         let mut results: Vec<TestResult> = Vec::with_capacity(scenario.len());
         // When
@@ -841,7 +782,6 @@ mod tests {
                 }
             }
             // println!("{}",scenarii.id());
-            i += 1;
             let mut character = create_character();
             scenarii.all_equipments().iter().for_each(|e| {
                 equip_item_from_id_with_cards(
@@ -851,7 +791,7 @@ mod tests {
                 );
             });
 
-            let mut character_status = &mut character.status;
+            let character_status = &mut character.status;
             let job = JobName::from_string(scenarii.job().as_str());
             character_status.job = job.value() as u32;
             character_status.job_level = scenarii.job_level();
@@ -875,7 +815,7 @@ mod tests {
                 status: mem::take(character_status),
                 actual_combat_result: None,
             };
-            let mut passed = false;
+            let _passed = false;
             results.push(result);
         }
         if test_id.is_some() {
@@ -1185,7 +1125,7 @@ mod tests {
         markdown_rows_passed.iter().for_each(|r| {
             result_file.write(r.as_bytes()).unwrap();
         });
-        result_file.seek(SeekFrom::Start(0));
+        result_file.seek(SeekFrom::Start(0)).unwrap();
         result_file
             .write_all(format!("{}/{} tests passed\n", passed_count, results.len()).as_bytes())
             .unwrap();

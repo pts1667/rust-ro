@@ -641,24 +641,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "not yet implemented"]
-    fn start_use_skill_should_validate_range_requirement() {}
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn start_use_skill_should_consume_sp_on_success() {}
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn start_use_skill_should_consume_zeny_on_success() {}
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn start_use_skill_should_consume_item_on_success() {
-        // freezing trap, acid demonstration, stone curse
-    }
-
-    #[test]
     fn use_skill_should_apply_bonuses() {
         // Given
         let mut context = before_each();
@@ -731,6 +713,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "regenerates docs/progress report and cannot fail; run with --ignored"]
     fn offensive_skill_calculate_damage() {
         // Given
         let context = before_each();
@@ -738,7 +721,6 @@ mod tests {
         let _packetver = GlobalConfigService::instance().packetver();
         let fixture_file = "src/tests/common/fixtures/data/battle-all-skills-weapon-no-passives.json";
         let scenario = common::fixtures::battle_fixture::BattleFixture::load(fixture_file);
-        let mut i = -1;
         #[derive(Clone)]
         struct TestResult {
             id: String,
@@ -759,7 +741,6 @@ mod tests {
                 // TODO basic attack
                 continue;
             }
-            i += 1;
             let mut character_status = Status::default();
             let job = JobName::from_string(scenarii.job().as_str());
             character_status.job = job.value() as u32;
@@ -945,72 +926,6 @@ mod tests {
                     .as_bytes(),
                 )
                 .unwrap();
-        }
-    }
-    #[test]
-    fn playground() {
-        let id = "11yv4j";
-        // Given
-        let context = before_each();
-        let mut character = create_character();
-        let _packetver = GlobalConfigService::instance().packetver();
-        let fixture_file = "src/tests/common/fixtures/data/battle-all-skills-weapon-no-passives.json";
-        let scenario = common::fixtures::battle_fixture::BattleFixture::load(fixture_file);
-
-        // When
-        for scenarii in scenario.iter() {
-            if !scenarii.id().eq(id) {
-                continue;
-            }
-            let mut character_status = Status::default();
-            let job = JobName::from_string(scenarii.job().as_str());
-            character_status.job = job.value() as u32;
-            character_status.str = scenarii.base_str();
-            character_status.agi = scenarii.base_agi();
-            character_status.vit = scenarii.base_vit();
-            character_status.dex = scenarii.base_dex();
-            character_status.int = scenarii.base_int();
-            character_status.luk = scenarii.base_luk();
-            character_status.base_level = scenarii.base_level();
-            character_status.job_level = scenarii.job_level();
-            character_status.hp = scenarii.max_hp() as u32;
-            character_status.sp = scenarii.max_sp() as u32;
-            character.status = character_status;
-            let item_id = scenarii.equipments().weapon().as_ref().unwrap().item_id();
-            if item_id >= 0 {
-                equip_item_from_id(&mut character, item_id as u32);
-            } else {
-                takeoff_weapon(&mut character);
-            }
-            if let Some(ammo) = scenarii.ammo() {
-                equip_item_from_name(&mut character, ammo.as_str());
-            }
-            let target = create_mob(1, scenarii.target().to_uppercase().as_str());
-            let skill = skills::skill_enums::to_object(
-                SkillEnum::from_id(scenarii.skill_to_use().skid()),
-                scenarii.skill_to_use().level(),
-            )
-            .unwrap();
-            let skill_config = GlobalConfigService::instance().get_skill_config(skill.id()).clone();
-            let offensive_skill = skill.as_offensive_skill().unwrap();
-
-            let min = context
-                .skill_min_service
-                .calculate_damage(status_snapshot!(context, character), &target.status, offensive_skill);
-            let max = context
-                .skill_max_service
-                .calculate_damage(status_snapshot!(context, character), &target.status, offensive_skill);
-
-            let assert_min = scenarii.min_dmg().max(1) - 1 <= min && min <= scenarii.min_dmg() + 1;
-            let assert_max = scenarii.max_dmg().max(1) - 1 <= max && max <= scenarii.max_dmg() + 1;
-            println!(
-                "Passed: {}, min: {}/{}, max: {}/{}",
-                assert_min && assert_max,
-                min,
-                scenarii.min_dmg(),
-                max,
-                scenarii.max_dmg()
-            );
         }
     }
 }

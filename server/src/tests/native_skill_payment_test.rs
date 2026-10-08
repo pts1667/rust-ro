@@ -203,7 +203,7 @@ fn earthquake_uses_attack_and_hits_three_split_waves() {
     use models::enums::EnumWithMaskValueU16;
     use models::enums::cell::CellType;
 
-    use crate::server::model::events::map_event::{MapEvent, MobDamage, ScriptMobCombat};
+    use crate::server::model::events::map_event::{MapEvent, MobDamage};
     let (context, _, mut character) = fixture(false, true);
     character.status.str = 30;
     let instance = context.server.state().get_map_instance_from_character(&character).unwrap();

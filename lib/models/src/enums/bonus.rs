@@ -1067,7 +1067,7 @@ mod tests {
         let damage_fire = BonusType::PhysicalDamageAgainstElementPercentage(Element::Fire, 5);
         let bonuses = vec![str1, str2, damage_water1, damage_water2, damage_fire];
 
-        let merged_bonus = BonusType::merge_enums(&bonuses);
+        let _merged_bonus = BonusType::merge_enums(&bonuses);
         let bonuses_ref: Vec<&BonusType> = bonuses.iter().map(|b| b).collect();
         assert_eq!(
             *BonusType::get_enum(&BonusType::Str(0), &bonuses_ref).unwrap(),

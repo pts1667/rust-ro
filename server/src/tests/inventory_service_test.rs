@@ -71,7 +71,7 @@ mod tests {
     use models::enums::item::EquipmentLocation;
     use models::enums::{EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
     use packets::packets::{
-        Packet, PacketZcAckItemcomposition, PacketZcAttackRange, PacketZcEquipArrow, PacketZcItemThrowAck, PacketZcItemcompositionList,
+        PacketZcAckItemcomposition, PacketZcAttackRange, PacketZcEquipArrow, PacketZcItemThrowAck, PacketZcItemcompositionList,
         PacketZcReqTakeoffEquipAck2, PacketZcReqWearEquipAck2, PacketZcSpriteChange2,
     };
 
@@ -80,11 +80,11 @@ mod tests {
     use crate::server::model::events::game_event::{
         CharacterAddItems, CharacterEquipItem, CharacterRemoveItem, CharacterRemoveItems, CharacterRequestCardCompositionList, CharacterSlotCard, CharacterZeny, CharacterUpdateClientSideStats, CharacterUpdateWeight};
     use crate::server::model::events::map_event::{CharacterDropItems, MapEvent};
-    use crate::server::model::events::persistence_event::{InventoryItemUpdate, PersistenceEvent};
+    use crate::server::model::events::persistence_event::InventoryItemUpdate;
     use crate::server::model::tasks_queue::TasksQueue;
     use crate::server::service::global_config_service::GlobalConfigService;
     use crate::tests::common::assert_helper::{
-        NotificationExpectation, SentPacket, has_sent_notification, has_sent_persistence_event, task_queue_contains_event,
+        NotificationExpectation, SentPacket, has_sent_notification, task_queue_contains_event,
         task_queue_contains_event_at_tick,
     };
     use crate::tests::common::character_helper::{add_item_in_inventory, add_items_in_inventory, create_character, equip_item_from_name};
@@ -93,7 +93,7 @@ mod tests {
     use crate::tests::common::mocked_repository;
     use crate::tests::inventory_service_test::{GameEvent, before_each, before_each_with_latch};
     use crate::{
-        assert_not_sent_packet_in_current_packetver, assert_sent_packet_in_current_packetver, assert_sent_persistence_event,
+        assert_not_sent_packet_in_current_packetver, assert_sent_packet_in_current_packetver,
         assert_task_queue_contains_event, assert_task_queue_contains_event_at_tick, assert_task_queue_is_empty,
     };
 
@@ -1100,7 +1100,7 @@ mod tests {
         add_items_in_inventory(&mut character, "Jellopy", 10);
         add_items_in_inventory(&mut character, "Knife", 1);
         // When
-        context.inventory_service.remove_item_from_inventory(
+        let _ = context.inventory_service.remove_item_from_inventory(
             context.runtime(),
             CharacterRemoveItems {
                 char_id: character.char_id,
@@ -1149,7 +1149,7 @@ mod tests {
         add_items_in_inventory(&mut character, "Jellopy", 10);
         add_items_in_inventory(&mut character, "Knife", 1);
         // When
-        context.inventory_service.remove_item_from_inventory(
+        let _ = context.inventory_service.remove_item_from_inventory(
             context.runtime(),
             CharacterRemoveItems {
                 char_id: character.char_id,
@@ -1256,7 +1256,7 @@ mod tests {
         let mut knife_item_model = character.get_item_from_inventory(index).unwrap().clone();
         let char_id = character.char_id;
         // When
-        context.inventory_service.character_drop_items(
+        let _ = context.inventory_service.character_drop_items(
             context.runtime(),
             &mut character,
             CharacterRemoveItems {
@@ -1330,7 +1330,7 @@ mod tests {
         let _knife_item_model = character.get_item_from_inventory(index).unwrap().clone();
         let char_id = character.char_id;
         // When
-        context.inventory_service.character_drop_items(
+        let _ = context.inventory_service.character_drop_items(
             context.runtime(),
             &mut character,
             CharacterRemoveItems {
@@ -1361,7 +1361,7 @@ mod tests {
     #[test]
     fn test_send_card_composition_list_should_send_list_of_slotable_items() {
         // Given
-        let mut context = before_each_with_latch(mocked_repository(), 1);
+        let context = before_each_with_latch(mocked_repository(), 1);
         let packetver = GlobalConfigService::instance().packetver();
         let mut character = create_character();
         add_items_in_inventory(&mut character, "Wilow_Card", 1);

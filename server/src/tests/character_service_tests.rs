@@ -88,7 +88,7 @@ mod tests {
     use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, CharacterUpdateClientSideStats};
     use crate::server::model::events::map_event::{MapEvent, MobDropItems};
     use crate::server::model::events::persistence_event::{
-        IncreaseSkillLevel, PersistenceEvent, ResetSkills, SavePositionUpdate, StatusUpdate,
+        PersistenceEvent, SavePositionUpdate, StatusUpdate,
     };
     use crate::server::model::map_instance::MapInstanceKey;
     use crate::server::model::movement::Movement;
@@ -393,7 +393,6 @@ mod tests {
                 GlobalConfigService::instance().packetver()
             ))])
         );
-        use sled::transaction::Transactional;
         repository.database.characters.transaction(|tree| {
             let mut stored: database::model::CharacterRecord = database::tx_required(tree, &character.char_id.to_be_bytes())?;
             stored.zeny = 150;
@@ -1394,26 +1393,6 @@ mod tests {
                 PacketZcSpriteChange2::packet_id(GlobalConfigService::instance().packetver())
             )])
         );
-    }
-
-    #[test]
-    fn test_load_units_in_fov_should_add_new_item_in_character_map_view() {
-        // Given
-        let _context = before_each(mocked_repository());
-
-        // When
-
-        // Then
-    }
-
-    #[test]
-    fn test_load_units_in_fov_should_remove_out_of_fov_item_from_character_map_view() {
-        // Given
-        let _context = before_each(mocked_repository());
-
-        // When
-
-        // Then
     }
 
     #[test]

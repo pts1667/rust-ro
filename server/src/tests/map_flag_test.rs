@@ -246,7 +246,7 @@ fn live_map_flag_calls_update_the_main_state_and_enqueue_the_same_flags_for_the_
 
 #[test]
 fn gvg_map_damage_rates_distinguish_skill_damage_and_normal_attack_range() {
-    let (context, ..) = super::native_payment_tests::fixture(false, true);
+    let (_context, ..) = super::native_payment_tests::fixture(false, true);
     let config = &crate::server::service::global_config_service::GlobalConfigService::instance()
         .config()
         .game;

@@ -147,7 +147,7 @@ fn load_account(server: &Server, session: &Session) -> Result<AccountRecord, Str
         .ok_or_else(|| "Account no longer exists".to_string())
 }
 
-pub fn send_pin_state(server: &Server, context: &Request, session: &Session, state: u16) {
+pub fn send_pin_state(_server: &Server, context: &Request, session: &Session, state: u16) {
     let seed = rand::random::<u32>() % 0xFFFF;
     session.account.char_server().pin_seed = seed;
     socket_send_raw!(context, pin_state_packet(seed, session.account_id, state));

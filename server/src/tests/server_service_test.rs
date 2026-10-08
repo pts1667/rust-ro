@@ -23,7 +23,7 @@ use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::mocked_repository::MockedRepository;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{ServerBuilder, TestContext, create_mpsc, test_script_vm};
+use crate::tests::common::{TestContext, create_mpsc, test_script_vm};
 
 #[path = "native_skill_payment_test.rs"]
 mod native_payment_tests;
@@ -95,7 +95,6 @@ fn before_each() -> ServerServiceTestContext {
 
 #[cfg(not(feature = "integration_tests"))]
 fn before_each_pickup() -> (ServerServiceTestContext, crate::server::state::character::Character) {
-    use sled::transaction::Transactional;
     let (context, repository, character) = native_payment_tests::fixture(false, true);
     repository.database.items.transaction(|tree| {
         for name in ["Red_Potion", "Clover", "Knife"] {
@@ -199,17 +198,17 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
 #[cfg(test)]
 #[cfg(not(feature = "integration_tests"))]
 mod tests {
-    use std::mem;
+    
     use std::sync::Arc;
-    use std::time::Duration;
+    
 
-    use models::enums::bonus::BonusType;
+    
     use models::enums::skill_enums::SkillEnum;
     use models::item::DroppedItem;
     use movement::position::Position;
     use models::status::KnownSkill;
-    use models::status_bonus::{StatusBonus, StatusBonuses};
-    use packets::packets::{PacketZcMsgStateChange, PacketZcMsgStateChange2};
+    
+    
 
     use crate::server::Server;
     use crate::server::model::events::game_event::CharacterUseSkill;
@@ -217,15 +216,13 @@ mod tests {
     use crate::server::model::map_item::ToMapItem;
     use crate::server::model::tasks_queue::TasksQueue;
     use crate::server::service::global_config_service::GlobalConfigService;
-    use crate::tests::common::assert_helper::{
-        NotificationExpectation, SentPacket, assert_vecs_equal, has_sent_notification, task_queue_contains_event_at_tick,
-    };
-    use crate::tests::common::character_helper::create_character;
+    use crate::tests::common::assert_helper::task_queue_contains_event_at_tick;
+    
     use crate::tests::common::map_instance_helper::create_empty_map_instance;
     use crate::tests::common::server_helper::create_empty_server_state;
     use crate::tests::server_service_test::before_each;
     use crate::util::tick::get_tick;
-    use crate::{assert_sent_packet_in_current_packetver, assert_vec_equals, status_snapshot};
+    
 
     #[test]
     fn chat_with_an_unknown_at_command_is_answered_from_the_game_loop() {

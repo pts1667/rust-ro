@@ -3,7 +3,8 @@ use std::sync::OnceLock;
 
 use models::status_bonus::BattleFlag;
 use models::status_change::StatusChangeKind;
-use models::enums::EnumWithMaskValueU32;
+use models::enums::cell::CellType;
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
 use serde::Deserialize;
 
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
@@ -23,6 +24,7 @@ const NEARBY_MOB_RANGE: u16 = 9;
 const AFTER_SKILL_WINDOW_MS: u128 = 2000;
 const NPC_RUN_DEFAULT_DISTANCE: u16 = 7;
 const MOB_SKILL_INTERVAL_MS: u128 = 1000;
+const FREE_CELL_ATTEMPTS: usize = 16;
 const TRICKCASTING_MS: u128 = MOB_SKILL_INTERVAL_MS * 3;
 const TRICKCASTING_STOP_MS: u128 = MOB_SKILL_INTERVAL_MS * 7 / 10;
 const TRICKCASTING_ESCAPE_CELLS: u16 = 8;
@@ -302,13 +304,13 @@ impl MapInstanceService {
                     if !Self::condition_met(mob, entry, first_pass, slaves, nearby, master_attacked, &characters, tick) {
                         continue;
                     }
-                    if let Some(cast) = Self::build_cast(mob, entry, metadata, &actor, None, &characters) {
+                    if let Some(cast) = Self::build_cast(state, mob, entry, metadata, &actor, None, &characters) {
                         selected = Some((key, Some(cast), entry.delay));
                         break;
                     }
                     continue;
                 };
-                if let Some(cast) = Self::build_cast(mob, entry, metadata, &actor, Some(&friend), &characters) {
+                if let Some(cast) = Self::build_cast(state, mob, entry, metadata, &actor, Some(&friend), &characters) {
                     selected = Some((key, Some(cast), entry.delay));
                     break;
                 }
@@ -647,7 +649,29 @@ impl MapInstanceService {
         }
     }
 
+    /// Mirrors rathena `map_search_freecell`: a random walkable cell within `radius`, falling back to the center.
+    fn free_cell_around(state: &MapInstanceState, center: (u16, u16), radius: i32) -> (u16, u16) {
+        let walkable = |x: i32, y: i32| {
+            x >= 0
+                && y >= 0
+                && x < i32::from(state.x_size())
+                && y < i32::from(state.y_size())
+                && state
+                    .cells()
+                    .get(y as usize * state.x_size() as usize + x as usize)
+                    .is_some_and(|cell| cell & CellType::Walkable.as_flag() != 0)
+        };
+        (0..FREE_CELL_ATTEMPTS)
+            .find_map(|_| {
+                let x = i32::from(center.0) + fastrand::i32(-radius..=radius);
+                let y = i32::from(center.1) + fastrand::i32(-radius..=radius);
+                walkable(x, y).then_some((x as u16, y as u16))
+            })
+            .unwrap_or(center)
+    }
+
     fn build_cast(
+        state: &MapInstanceState,
         mob: &Mob,
         entry: &MobSkillEntry,
         metadata: &SkillMetadata,
@@ -695,9 +719,7 @@ impl MapInstanceService {
                     }
                     _ => ((mob.x, mob.y), 4),
                 };
-                let x = (i32::from(center.0) + fastrand::i32(-radius..=radius)).clamp(0, i32::from(u16::MAX)) as u16;
-                let y = (i32::from(center.1) + fastrand::i32(-radius..=radius)).clamp(0, i32::from(u16::MAX)) as u16;
-                (mob.id, (x, y))
+                (mob.id, Self::free_cell_around(state, center, radius))
             }
             _ => return None,
         };

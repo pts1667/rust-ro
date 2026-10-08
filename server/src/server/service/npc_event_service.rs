@@ -340,6 +340,7 @@ impl Server {
                 _ => None,
             },
             logout_token: None,
+            dialog_open: false,
             error: None,
         };
         if let Some(guard) = event.timer_guard { state.script_timers.consume(guard); }
@@ -348,18 +349,18 @@ impl Server {
         let notifications = self.server_service().notification_sender();
         let packetver = self.packetver();
         self.runtime().spawn(async move {
-            let error = match tokio::time::timeout(timeout, vm.execute(host, "run_event", event.entry_id)).await {
-                Ok((host, result)) => result.err().map(|error| host.error.unwrap_or(error)),
-                Err(_) => Some("NPC event timed out".into()),
+            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.execute(host, "run_event", event.entry_id)).await {
+                Ok((host, result)) => (result.err().map(|error| host.error.unwrap_or(error)), host.dialog_open),
+                Err(_) => (Some("NPC event timed out".into()), true),
             };
-            if let Some(error) = error {
+            if let Some(error) = &error {
                 script_debug!("NPC event failed: npc={} entry={} char={}: {error}", event.npc_id, event.entry_id, session.char_id());
-                if !background && session.script_generation.load(std::sync::atomic::Ordering::Acquire) == generation {
-                    let mut packet = PacketZcCloseDialog::new(packetver);
-                    packet.naid = event.npc_id;
-                    packet.fill_raw();
-                    let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));
-                }
+            }
+            if !background && (error.is_some() || dialog_open) && session.script_generation.load(std::sync::atomic::Ordering::Acquire) == generation {
+                let mut packet = PacketZcCloseDialog::new(packetver);
+                packet.naid = event.npc_id;
+                packet.fill_raw();
+                let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));
             }
             if !background {
                 session.finish_script(generation);

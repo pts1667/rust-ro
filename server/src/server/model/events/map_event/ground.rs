@@ -43,11 +43,31 @@ impl MapEventHandler for GroundTrapRecover {
 impl MapEventHandler for crate::server::script::skill::actor::MapActorSkillCast {
     fn handle(self, ctx: &MapEventContext) {
         let request = self;
+        let (skill_id, level, source, source_type, at, target_id, ground) = (
+            request.request.skill_id,
+            request.request.level,
+            request.source.id,
+            request.source.object_type,
+            (request.source.x, request.source.y),
+            request.request.target_id,
+            request.request.ground,
+        );
         if let Err(error) = ctx
             .service
             .start_actor_skill(ctx.map_instance.state_mut().as_mut(), request, ctx.tick)
         {
-            error!("Actor skill cast failed on {}: {}", ctx.map_instance.name(), error);
+            error!(
+                "Actor skill cast failed on {}: {} (skill {} lv {}, {:?} {} at {:?}, target {}, ground {:?})",
+                ctx.map_instance.name(),
+                error,
+                skill_id,
+                level,
+                source_type,
+                source,
+                at,
+                target_id,
+                ground
+            );
         }
     }
 }

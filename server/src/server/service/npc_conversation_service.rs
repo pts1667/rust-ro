@@ -27,7 +27,7 @@ impl Server {
         let generation = session.set_script_handler_channel_sender(sender);
         let notifications = self.server_service().notification_sender();
         let host = NpcScriptHost { server, session: session.clone(), script: script.clone(), inputs: receiver,
-            notifications: notifications.clone(), generation, background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, map_instance, error: None };
+            notifications: notifications.clone(), generation, background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, map_instance, dialog_open: false, error: None };
         let vm = self.script_service().vm.clone();
         let entry = script.entry_id;
         let npc_id = script.id;
@@ -38,20 +38,19 @@ impl Server {
         let started = std::time::Instant::now();
         script_debug!("NPC conversation started: npc={npc_id} ({npc_name}) entry={entry} char={char_id}");
         self.runtime().spawn(async move {
-            let error = match tokio::time::timeout(timeout, vm.execute(host, "run_npc", entry)).await {
-                Ok((host, result)) => result.err().map(|error| host.error.unwrap_or(error)),
-                Err(_) => Some("NPC conversation timed out".into()),
+            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.execute(host, "run_npc", entry)).await {
+                Ok((host, result)) => (result.err().map(|error| host.error.unwrap_or(error)), host.dialog_open),
+                Err(_) => (Some("NPC conversation timed out".into()), true),
             };
             let elapsed_ms = started.elapsed().as_millis();
             match &error {
                 Some(error) => script_debug!("NPC conversation failed: npc={npc_id} ({npc_name}) entry={entry} char={char_id} after {elapsed_ms}ms: {error}"),
                 None => script_debug!("NPC conversation finished: npc={npc_id} ({npc_name}) entry={entry} char={char_id} after {elapsed_ms}ms"),
             }
-            if error.is_some() {
-                if session.script_generation.load(Ordering::Acquire) == generation {
-                    let mut packet = PacketZcCloseDialog::new(packetver); packet.naid = npc_id; packet.fill_raw();
-                    let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));
-                }
+            // rAthena's `end` closes the dialogue too; a script ending after `next` (Hoffman's warp) would leave the window open.
+            if (error.is_some() || dialog_open) && session.script_generation.load(Ordering::Acquire) == generation {
+                let mut packet = PacketZcCloseDialog::new(packetver); packet.naid = npc_id; packet.fill_raw();
+                let _ = notifications.try_send(Notification::Char(CharNotification::new(session.char_id(), packet.raw)));
             }
             session.finish_script(generation);
         });

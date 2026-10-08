@@ -729,133 +729,6 @@ mod tests {
         )
     }
 
-    // https://irowiki.org/classic/Card_Reference
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_defensive_resistence_cards() {
-        // Wootan Fighter Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_defensive_immunity_cards() {
-        // Ungoliant Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_elemental_damage_reduction_cards() {
-        // jakk Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_racial_damage_reduction_cards() {
-        // thara frog Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_size_damage_reduction_cards() {
-        // Mysteltainn Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_mob_group_damage_reduction_cards() {
-        // Alice Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_exp_increase_cards() {
-        // Am Mut Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_garment_elemental_damage_increase_cards() {
-        // Magmaring Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_weapon_elemental_damage_increase() {
-        // fireblend
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_ammo_elemental_damage_increase() {
-        // fire arrow with bow
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_critical_damage_increase_against_race_cards() {
-        // assaulter Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_damage_increase_against_group_cards() {
-        // abysmal Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_damage_increase_against_race_cards() {
-        // hydra Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_damage_increase_against_element_cards() {
-        // vadon Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_damage_increase_against_size_cards() {
-        // minorous Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_chance_to_inflict_effect_cards() {
-        // zenorc Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_status_armor_inflict_effect_cards() {
-        // skogul Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_food_dropping_cards() {
-        // anopheles Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_box_dropping_cards() {
-        // sleeper Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_increase_skill_damage_cards() {
-        // hill wind Card
-    }
-
-    #[test]
-    #[ignore = "not yet implemented"]
-    fn test_drain_sp_cards() {
-        // phendark Card
-    }
-
     fn battle_test_cases(
         fixture_file: &str,
         result_file_path: &str,
@@ -867,7 +740,6 @@ mod tests {
         battle_min_service: &BattleService,
         battle_max_service: &BattleService,
     ) {
-        let mut i = -1;
         let mut results: Vec<TestResult> = Vec::with_capacity(scenario.len());
         for mut scenarii in scenario {
             if let Some(test_id) = test_id {
@@ -875,7 +747,6 @@ mod tests {
                     continue;
                 }
             }
-            i += 1;
             let mut character = create_character();
             scenarii.all_equipments().iter().for_each(|e| {
                 equip_item_from_id_with_cards(
@@ -885,7 +756,7 @@ mod tests {
                 );
             });
             scenarii.ammo_id().as_ref().map(|ammo| equip_item_from_id(&mut character, *ammo));
-            let mut character_status = &mut character.status;
+            let character_status = &mut character.status;
             let job = JobName::from_string(scenarii.job().as_str());
             character_status.job = job.value() as u32;
             character_status.job_level = scenarii.job_level();
@@ -898,14 +769,14 @@ mod tests {
             character_status.base_level = scenarii.base_level();
             let status_snapshot = status_service.to_snapshot(&character_status);
             let target = create_mob_by_id(1, scenarii.target_id());
-            let is_ranged = status_snapshot
+            let _is_ranged = status_snapshot
                 .right_hand_weapon()
                 .map(|w| w.weapon_type().is_ranged())
                 .unwrap_or(false);
             let max_dmg = battle_max_service.calculate_damage(&status_snapshot, &target.status, None);
             let min_dmg = battle_min_service.calculate_damage(&status_snapshot, &target.status, None);
 
-            let mut result = TestResult {
+            let result = TestResult {
                 id: scenarii.id().clone(),
                 job: job.as_str().to_string(),
                 job_level: scenarii.job_level() as usize,
@@ -1090,7 +961,7 @@ mod tests {
         markdown_rows_passed.iter().for_each(|r| {
             result_file.write(r.as_bytes()).unwrap();
         });
-        result_file.seek(SeekFrom::Start(0));
+        result_file.seek(SeekFrom::Start(0)).unwrap();
         result_file
             .write_all(format!("{}/{} tests passed\n", passed_count, results.len()).as_bytes())
             .unwrap();

@@ -206,6 +206,7 @@ fn setup_logger(config: &'static Config, debug_log: bool) {
     tracing_subscriber::fmt()
         .with_env_filter(filter)
         .with_writer(std::io::stdout)
+        .with_ansi(std::io::IsTerminal::is_terminal(&std::io::stdout()))
         .compact()
         .with_line_number(true)
         .with_thread_ids(false)

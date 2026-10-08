@@ -1,4 +1,4 @@
-use std::sync::{Arc, Once};
+use std::sync::{Arc, Once, OnceLock};
 use std::{fs, thread};
 
 use configuration::configuration::DatabaseConfig;
@@ -23,7 +23,7 @@ use crate::tests::common;
 use crate::tests::common::{CONFIGS, create_mpsc};
 
 static INIT: Once = Once::new();
-pub static mut SERVER: Option<Arc<Server>> = None;
+pub static SERVER: OnceLock<Arc<Server>> = OnceLock::new();
 
 pub async fn before_all() -> Arc<Server> {
     INIT.call_once(|| unsafe {
@@ -49,8 +49,8 @@ pub async fn before_all() -> Arc<Server> {
         let mobs: Vec<MobModel> = mob_models.unwrap().into();
 
         let mobs_map = mobs.clone().into_iter().map(|mob| (mob.id as u32, mob)).collect();
-        let mob_spawns = unsafe {
-            MobSpawnLoader::load_mob_spawns(CONFIGS.as_ref().unwrap(), mobs_map, "../config/npc", runtime.clone())
+        let mob_spawns = {
+            MobSpawnLoader::load_mob_spawns(CONFIGS.get().unwrap(), mobs_map, "../config/npc", runtime.clone())
                 .join()
                 .unwrap()
         };
@@ -61,14 +61,12 @@ pub async fn before_all() -> Arc<Server> {
             &mut map_item_ids,
             "../config/maps/pre-re",
         );
-        unsafe {
-            crate::GlobalConfigService::instance_mut().maps = maps;
-        }
-        let (not_use_sender, not_use_receiver) = create_mpsc::<Notification>();
+        crate::GlobalConfigService::instance_mut().maps = maps;
+        let (_not_use_sender, not_use_receiver) = create_mpsc::<Notification>();
         let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
         let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
         let server = Server::new(
-            CONFIGS.as_ref().unwrap(),
+            CONFIGS.get().unwrap(),
             repository_arc.clone(),
             map_item_ids,
             npc_script_vm,
@@ -77,11 +75,11 @@ pub async fn before_all() -> Arc<Server> {
             persistence_event_sender.clone(),
             runtime,
         );
-        SERVER = Some(Arc::new(server));
+        let server = SERVER.get_or_init(|| Arc::new(server)).clone();
         thread::spawn(move || {
             info!("Starting server");
             Server::start(
-                SERVER.clone().unwrap(),
+                server,
                 client_notification_sender,
                 not_use_receiver,
                 persistence_event_receiver,
@@ -102,7 +100,7 @@ pub async fn before_all() -> Arc<Server> {
 }
 
 pub fn server() -> Arc<Server> {
-    unsafe { SERVER.clone().unwrap() }
+    SERVER.get().unwrap().clone()
 }
 
 pub async fn character_join_game() -> u32 {

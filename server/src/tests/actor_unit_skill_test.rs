@@ -13,7 +13,7 @@ use crate::server::model::events::map_event::{MapEvent, MobStatusChange};
 use crate::server::model::map::Map;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::map_flags::{MapFlag, MapFlags};
-use crate::server::model::map_item::{MapItems, ToMapItem, ToMapItemSnapshot};
+use crate::server::model::map_item::{MapItems, ToMapItemSnapshot};
 use crate::server::model::script::Script;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::script::skill::actor::{self, NpcSkillState};

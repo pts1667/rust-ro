@@ -516,6 +516,7 @@ impl Server {
             event_arguments: None,
             timer_context: Some(callback.key),
             logout_token: Some(token),
+            dialog_open: false,
             error: None,
         };
         let vm = self.script_service().vm.clone();

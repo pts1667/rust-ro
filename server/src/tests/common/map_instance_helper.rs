@@ -1,5 +1,5 @@
 use std::sync::mpsc::SyncSender;
-use std::sync::{Arc, Once};
+use std::sync::{Arc, OnceLock};
 
 use models::enums::EnumWithMaskValueU16;
 use models::enums::cell::CellType;
@@ -12,8 +12,7 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::state::map_instance::MapInstanceState;
 
-static mut EMPTY_MAP: Option<Map> = None;
-static INIT_EMPTY_MAP: Once = Once::new();
+static EMPTY_MAP: OnceLock<Map> = OnceLock::new();
 pub fn create_empty_map_instance_state() -> MapInstanceState {
     let cells: Vec<u16> = vec![CellType::Walkable.as_flag(); 100 * 100 + 1];
     MapInstanceState::new(
@@ -27,8 +26,8 @@ pub fn create_empty_map_instance_state() -> MapInstanceState {
 }
 
 pub fn create_empty_map() -> &'static Map {
-    INIT_EMPTY_MAP.call_once(|| unsafe {
-        EMPTY_MAP = Some(Map::new(
+    EMPTY_MAP.get_or_init(|| {
+        Map::new(
             100,
             100,
             100 * 100,
@@ -37,9 +36,8 @@ pub fn create_empty_map() -> &'static Map {
             Default::default(),
             Default::default(),
             Default::default(),
-        ));
-    });
-    unsafe { EMPTY_MAP.as_ref().unwrap() }
+        )
+    })
 }
 pub fn create_empty_map_instance(
     client_notification_channel: SyncSender<Notification>,

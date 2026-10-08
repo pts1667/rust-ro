@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "integration_tests", allow(dead_code))]
+
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::persistence_event::PersistenceEvent;
 use crate::server::service::character::skill_tree_service::SkillTreeService;
@@ -46,7 +48,7 @@ mod tests {
 
     #[test]
     fn skill_tree_packet_uses_effective_eye_passives_for_attack_ranges() {
-        use packets::packets::{Packet, PacketZcSkillinfoList};
+        use packets::packets::PacketZcSkillinfoList;
 
         use crate::server::service::global_config_service::GlobalConfigService;
         let context = before_each();

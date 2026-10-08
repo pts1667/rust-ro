@@ -10,11 +10,11 @@ mod tests {
     use crate::tests::common::integration_test::{before_all, character_join_game};
 
     #[tokio::test]
-    async fn concurrency_testKillMonsterWhileMoving() {
+    async fn concurrency_test_kill_monster_while_moving() {
         // Given
         let server = before_all().await;
         // When
-        server.state();
+        drop(server.state());
         println!("test1");
         let char_id = character_join_game().await;
         let map_instance = {
@@ -34,7 +34,7 @@ mod tests {
         // Given
         let server = before_all().await;
         // When
-        server.state();
+        drop(server.state());
         character_join_game().await;
         println!("test2");
         // Then
@@ -47,7 +47,7 @@ mod tests {
         // When
         let char_id = character_join_game().await;
         let mut server_mut = server.state_mut();
-        let mut character = server_mut.characters_mut().get_mut(&char_id).unwrap();
+        let _character = server_mut.characters_mut().get_mut(&char_id).unwrap();
         for _ in 0..60 {
             server.add_to_next_tick(GameEvent::CharacterChangeMap(CharacterChangeMap {
                 char_id,

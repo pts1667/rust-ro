@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 use std::sync::Arc;
 
-use models::enums::EnumWithMaskValueU32;
 
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::GameEvent;
@@ -142,6 +141,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "11M drop rolls (~1100 x 10k kills); run with --ignored"]
     fn test_mob_drop_item_when_mob_is_a_normal_monster() {
         // Given
         let context = before_each();

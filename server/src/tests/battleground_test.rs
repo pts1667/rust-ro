@@ -86,7 +86,7 @@ fn destroying_a_team_releases_every_member_and_leaving_resets_tracking() {
     context.server.state_mut().characters_mut().get_mut(&150_000).unwrap().bg_tracking.last_hp = 10;
     call(&context, 150_000, Function::BgLeave, vec![]);
     let guard_88 = context.server.state();
-    let leader = guard_88.get_character(150_000).unwrap().clone();
+    let leader = guard_88.get_character(150_000).unwrap();
     assert_eq!((leader.bg_id, leader.bg_tracking.last_hp), (0, u32::MAX));
     drop(guard_88);
     call(&context, 0, Function::BgDestroy, vec![second.into()]);

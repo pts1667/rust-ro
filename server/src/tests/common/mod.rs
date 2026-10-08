@@ -14,7 +14,7 @@ pub mod server_helper;
 pub mod sync_helper;
 
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, Mutex, Once};
+use std::sync::{Arc, Mutex, Once, OnceLock};
 use std::{fs, thread};
 
 use configuration::configuration::Config;
@@ -36,7 +36,7 @@ use crate::setup_logger;
 use crate::tests::common::mocked_repository::MockedRepository;
 use crate::tests::common::sync_helper::{CountDownLatch, IncrementLatch};
 
-static mut CONFIGS: Option<Config> = None;
+static CONFIGS: OnceLock<Config> = OnceLock::new();
 static INIT: Once = Once::new();
 
 pub struct TestContext {
@@ -148,20 +148,18 @@ pub fn create_mpsc<T>() -> (SyncSender<T>, Receiver<T>) {
 
 pub fn before_all() {
     INIT.call_once(|| {
-        unsafe {
-            let mut config: Config = serde_json::from_str(&fs::read_to_string("../config.template.json").unwrap()).unwrap();
-            let file_path = "../config/status_point_reward.json";
-            Config::set_config_status_point_rewards(&mut config, file_path).unwrap();
-            let file_path = "../config/status_point_raising_cost.json";
-            Config::set_config_status_point_raising_cost(&mut config, file_path).unwrap();
-            let file_path = "../config/exp.json";
-            Config::set_exp_requirements(&mut config, file_path).unwrap();
-            config.game.mob_move_frequency_when_no_player_around = 0.95;
-            config.game.mob_spawn_refresh_frequency = 0.2;
-            config.game.mob_action_refresh_frequency = 0.2;
-            CONFIGS = Some(config);
-            setup_logger(CONFIGS.as_ref().unwrap(), false);
-        }
+        let mut config: Config = serde_json::from_str(&fs::read_to_string("../config.template.json").unwrap()).unwrap();
+        let file_path = "../config/status_point_reward.json";
+        Config::set_config_status_point_rewards(&mut config, file_path).unwrap();
+        let file_path = "../config/status_point_raising_cost.json";
+        Config::set_config_status_point_raising_cost(&mut config, file_path).unwrap();
+        let file_path = "../config/exp.json";
+        Config::set_exp_requirements(&mut config, file_path).unwrap();
+        config.game.mob_move_frequency_when_no_player_around = 0.95;
+        config.game.mob_spawn_refresh_frequency = 0.2;
+        config.game.mob_action_refresh_frequency = 0.2;
+        let configs = CONFIGS.get_or_init(|| config);
+        setup_logger(configs, false);
         let skills_config = Config::load_skills_config("..").unwrap();
 
         let item_models = serde_json::from_str::<ItemModels>(&fs::read_to_string("../config/items.json").unwrap());
@@ -173,7 +171,7 @@ pub fn before_all() {
 
         let job_configs = Config::load_jobs_config("..").unwrap();
         let job_skills_tree = Config::load_jobs_skill_tree("..").unwrap();
-        let config = unsafe { CONFIGS.clone().unwrap() };
+        let config = CONFIGS.get().unwrap().clone();
         crate::GlobalConfigService::init(
             config,
             items,

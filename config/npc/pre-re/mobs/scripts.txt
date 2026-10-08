@@ -1,0 +1,526 @@
+// Monster spawns that rAthena declares inside NPC script files (the converter only compiles NPCs).
+
+// npc/pre-re/jobs/novice/novice.txt
+new_1-3,0,0	monster	Poring	1002,10
+new_1-3,0,0	monster	Drops	1113,10
+new_1-3,0,0	monster	Lunatic	1063,10
+new_1-3,0,0	monster	ChonChon	1011,10
+new_2-3,0,0	monster	Condor	1009,10
+new_2-3,0,0	monster	Picky	1050,10
+new_2-3,0,0	monster	Willow	1010,10
+new_2-3,0,0	monster	Roda Frog	1012,10
+new_3-3,0,0	monster	Condor	1009,10
+new_3-3,0,0	monster	Picky	1050,10
+new_3-3,0,0	monster	Willow	1010,10
+new_3-3,0,0	monster	Roda Frog	1012,10
+new_4-3,0,0	monster	Rocker	1052,10
+new_4-3,0,0	monster	Thief Bug	1051,10
+new_4-3,0,0	monster	Thief Bug	1053,10
+new_4-3,0,0	monster	Spore	1014,10
+new_5-3,0,0	monster	Rocker	1052,10
+new_5-3,0,0	monster	Thief Bug	1051,1
+new_5-3,0,0	monster	Thief Bug	1053,1
+new_5-3,0,0	monster	Spore	1014,1
+new_1-3,0,0	monster	Fabre	1184,5
+new_2-3,0,0	monster	Fabre	1184,5
+new_3-3,0,0	monster	Fabre	1184,5
+new_4-3,0,0	monster	Fabre	1184,5
+new_5-3,0,0	monster	Fabre	1184,5
+
+// npc/pre-re/jobs/1-1/swordman.txt
+job_sword1,0,0	monster	Chonchon	1183,20
+job_sword1,35,79	monster	Fabre	1184,3,60000,30000
+job_sword1,50,108	monster	Fabre	1184,3,60000,30000
+job_sword1,61,28	monster	Fabre	1184,3,60000,30000
+job_sword1,61,92	monster	Fabre	1184,3,60000,30000
+job_sword1,110,112	monster	Fabre	1184,2,60000,30000
+job_sword1,161,94	monster	Fabre	1184,2,60000,30000
+job_sword1,130,76	monster	Fabre	1184,2,60000,30000
+job_sword1,103,58	monster	Fabre	1184,2,60000,30000
+job_sword1,130,24	monster	Fabre	1184,5,60000,30000
+job_sword1,201,36	monster	Fabre	1184,2,60000,30000
+job_sword1,201,16	monster	Fabre	1184,2,60000,30000
+job_sword1,239,44	monster	Fabre	1184,3,60000,30000
+job_sword1,239,76	monster	Fabre	1184,2,60000,30000
+job_sword1,231,101	monster	Fabre	1184,2,60000,30000
+job_sword1,234,117	monster	Fabre	1184,2,60000,30000
+job_sword1,198,91	monster	Fabre	1184,2,60000,30000
+job_sword1,200,63	monster	Fabre	1184,2,60000,30000
+
+// npc/pre-re/jobs/1-1/thief.txt
+job_thief1,0,0	monster	Orange Mushroom	1182,180
+job_thief1,0,0	monster	Fabre	1184,50
+job_thief1,0,0	monster	Chonchon	1183,50
+job_thief1,0,0	monster	Spore	1014,30
+
+// npc/jobs/2-2/monk.txt
+job_monk,0,0	monster	Thief Mushroom	1182,70
+job_monk,0,0	monster	Thief Bug Larva	1051,20
+
+// npc/quests/okolnir.txt
+que_qaru01,116,313	monster	Garden Keeper	1932,1,180000
+que_qaru01,120,285	monster	Garden Keeper	1932,1,180000
+que_qaru01,117,236	monster	Garden Keeper	1932,1,180000
+que_qaru01,103,223	monster	Garden Keeper	1932,1,180000
+que_qaru01,85,204	monster	Garden Keeper	1932,1,180000
+que_qaru01,79,186	monster	Garden Keeper	1932,1,180000
+que_qaru01,73,167	monster	Garden Keeper	1932,1,180000
+que_qaru01,68,150	monster	Garden Keeper	1932,1,180000
+que_qaru01,71,128	monster	Garden Keeper	1932,1,180000
+que_qaru01,69,118	monster	Garden Keeper	1932,1,180000
+que_qaru01,117,78	monster	Garden Keeper	1932,1,180000
+que_qaru01,110,79	monster	Garden Keeper	1932,1,180000
+que_qaru01,141,80	monster	Garden Keeper	1932,1,180000
+que_qaru01,158,84	monster	Garden Keeper	1932,1,180000
+que_qaru01,193,104	monster	Garden Keeper	1932,1,180000
+que_qaru01,119,269	monster	Garden Keeper	1932,1,180000
+que_qaru01,155,77	monster	Garden Keeper	1932,1,180000
+que_qaru01,110,317	monster	Garden Watcher	1933,1,600000
+que_qaru01,115,295	monster	Garden Watcher	1933,1,1200000
+que_qaru01,116,256	monster	Garden Watcher	1933,1,600000
+que_qaru01,113,242	monster	Garden Watcher	1933,1,1200000
+que_qaru01,99,223	monster	Garden Watcher	1933,1,600000
+que_qaru01,94,216	monster	Garden Watcher	1933,1,1200000
+que_qaru01,77,198	monster	Garden Watcher	1933,1,600000
+que_qaru01,70,174	monster	Garden Watcher	1933,1,1200000
+que_qaru01,72,147	monster	Garden Watcher	1933,1,600000
+que_qaru01,64,134	monster	Garden Watcher	1933,1,1200000
+que_qaru01,77,107	monster	Garden Watcher	1933,1,600000
+que_qaru01,84,88	monster	Garden Watcher	1933,1,1200000
+que_qaru01,98,82	monster	Garden Watcher	1933,1,600000
+que_qaru01,129,79	monster	Garden Watcher	1933,1,1200000
+que_qaru01,91,124	monster	Garden Watcher	1933,1,600000
+que_qaru01,173,95	monster	Garden Watcher	1933,1,1200000
+que_qaru01,179,127	monster	Garden Watcher	1933,1,600000
+que_qaru01,195,120	monster	Garden Watcher	1933,1,1200000
+que_qaru01,178,159	monster	Garden Watcher	1933,1,600000
+que_qaru01,88,145	monster	Garden Watcher	1933,1,1200000
+que_qaru01,94,157	monster	Garden Watcher	1933,1,600000
+que_qaru01,95,177	monster	Garden Watcher	1933,1,1200000
+que_qaru01,129,196	monster	Garden Watcher	1933,1,600000
+que_qaru01,154,196	monster	Garden Watcher	1933,1,1200000
+que_qaru01,170,187	monster	Garden Watcher	1933,1,600000
+que_qaru01,194,180	monster	Garden Watcher	1933,1,1200000
+que_qaru01,214,181	monster	Garden Watcher	1933,1,600000
+que_qaru01,243,199	monster	Garden Watcher	1933,1,1200000
+que_qaru02,116,313	monster	Garden Keeper	1932,1,180000
+que_qaru02,120,285	monster	Garden Keeper	1932,1,180000
+que_qaru02,117,236	monster	Garden Keeper	1932,1,180000
+que_qaru02,103,223	monster	Garden Keeper	1932,1,180000
+que_qaru02,85,204	monster	Garden Keeper	1932,1,180000
+que_qaru02,79,186	monster	Garden Keeper	1932,1,180000
+que_qaru02,73,167	monster	Garden Keeper	1932,1,180000
+que_qaru02,68,150	monster	Garden Keeper	1932,1,180000
+que_qaru02,71,128	monster	Garden Keeper	1932,1,180000
+que_qaru02,69,118	monster	Garden Keeper	1932,1,180000
+que_qaru02,117,78	monster	Garden Keeper	1932,1,180000
+que_qaru02,110,79	monster	Garden Keeper	1932,1,180000
+que_qaru02,141,80	monster	Garden Keeper	1932,1,180000
+que_qaru02,158,84	monster	Garden Keeper	1932,1,180000
+que_qaru02,193,104	monster	Garden Keeper	1932,1,180000
+que_qaru02,119,269	monster	Garden Keeper	1932,1,180000
+que_qaru02,155,77	monster	Garden Keeper	1932,1,180000
+que_qaru02,110,317	monster	Garden Watcher	1933,1,600000
+que_qaru02,115,295	monster	Garden Watcher	1933,1,1200000
+que_qaru02,116,256	monster	Garden Watcher	1933,1,600000
+que_qaru02,113,242	monster	Garden Watcher	1933,1,1200000
+que_qaru02,99,223	monster	Garden Watcher	1933,1,600000
+que_qaru02,94,216	monster	Garden Watcher	1933,1,1200000
+que_qaru02,77,198	monster	Garden Watcher	1933,1,600000
+que_qaru02,70,174	monster	Garden Watcher	1933,1,1200000
+que_qaru02,72,147	monster	Garden Watcher	1933,1,600000
+que_qaru02,64,134	monster	Garden Watcher	1933,1,1200000
+que_qaru02,77,107	monster	Garden Watcher	1933,1,600000
+que_qaru02,84,88	monster	Garden Watcher	1933,1,1200000
+que_qaru02,98,82	monster	Garden Watcher	1933,1,600000
+que_qaru02,129,79	monster	Garden Watcher	1933,1,1200000
+que_qaru02,91,124	monster	Garden Watcher	1933,1,600000
+que_qaru02,173,95	monster	Garden Watcher	1933,1,1200000
+que_qaru02,179,127	monster	Garden Watcher	1933,1,600000
+que_qaru02,195,120	monster	Garden Watcher	1933,1,1200000
+que_qaru02,178,159	monster	Garden Watcher	1933,1,600000
+que_qaru02,88,145	monster	Garden Watcher	1933,1,1200000
+que_qaru02,94,157	monster	Garden Watcher	1933,1,600000
+que_qaru02,95,177	monster	Garden Watcher	1933,1,1200000
+que_qaru02,129,196	monster	Garden Watcher	1933,1,600000
+que_qaru02,154,196	monster	Garden Watcher	1933,1,1200000
+que_qaru02,170,187	monster	Garden Watcher	1933,1,600000
+que_qaru02,194,180	monster	Garden Watcher	1933,1,1200000
+que_qaru02,214,181	monster	Garden Watcher	1933,1,600000
+que_qaru02,243,199	monster	Garden Watcher	1933,1,1200000
+que_qaru03,116,313	monster	Garden Keeper	1932,1,180000
+que_qaru03,120,285	monster	Garden Keeper	1932,1,180000
+que_qaru03,117,236	monster	Garden Keeper	1932,1,180000
+que_qaru03,103,223	monster	Garden Keeper	1932,1,180000
+que_qaru03,85,204	monster	Garden Keeper	1932,1,180000
+que_qaru03,79,186	monster	Garden Keeper	1932,1,180000
+que_qaru03,73,167	monster	Garden Keeper	1932,1,180000
+que_qaru03,68,150	monster	Garden Keeper	1932,1,180000
+que_qaru03,71,128	monster	Garden Keeper	1932,1,180000
+que_qaru03,69,118	monster	Garden Keeper	1932,1,180000
+que_qaru03,117,78	monster	Garden Keeper	1932,1,180000
+que_qaru03,110,79	monster	Garden Keeper	1932,1,180000
+que_qaru03,141,80	monster	Garden Keeper	1932,1,180000
+que_qaru03,158,84	monster	Garden Keeper	1932,1,180000
+que_qaru03,193,104	monster	Garden Keeper	1932,1,180000
+que_qaru03,119,269	monster	Garden Keeper	1932,1,180000
+que_qaru03,155,77	monster	Garden Keeper	1932,1,180000
+que_qaru03,110,317	monster	Garden Watcher	1933,1,600000
+que_qaru03,115,295	monster	Garden Watcher	1933,1,1200000
+que_qaru03,116,256	monster	Garden Watcher	1933,1,600000
+que_qaru03,113,242	monster	Garden Watcher	1933,1,1200000
+que_qaru03,99,223	monster	Garden Watcher	1933,1,600000
+que_qaru03,94,216	monster	Garden Watcher	1933,1,1200000
+que_qaru03,77,198	monster	Garden Watcher	1933,1,600000
+que_qaru03,70,174	monster	Garden Watcher	1933,1,1200000
+que_qaru03,72,147	monster	Garden Watcher	1933,1,600000
+que_qaru03,64,134	monster	Garden Watcher	1933,1,1200000
+que_qaru03,77,107	monster	Garden Watcher	1933,1,600000
+que_qaru03,84,88	monster	Garden Watcher	1933,1,1200000
+que_qaru03,98,82	monster	Garden Watcher	1933,1,600000
+que_qaru03,129,79	monster	Garden Watcher	1933,1,1200000
+que_qaru03,91,124	monster	Garden Watcher	1933,1,600000
+que_qaru03,173,95	monster	Garden Watcher	1933,1,1200000
+que_qaru03,179,127	monster	Garden Watcher	1933,1,600000
+que_qaru03,195,120	monster	Garden Watcher	1933,1,1200000
+que_qaru03,178,159	monster	Garden Watcher	1933,1,600000
+que_qaru03,88,145	monster	Garden Watcher	1933,1,1200000
+que_qaru03,94,157	monster	Garden Watcher	1933,1,600000
+que_qaru03,95,177	monster	Garden Watcher	1933,1,1200000
+que_qaru03,129,196	monster	Garden Watcher	1933,1,600000
+que_qaru03,154,196	monster	Garden Watcher	1933,1,1200000
+que_qaru03,170,187	monster	Garden Watcher	1933,1,600000
+que_qaru03,194,180	monster	Garden Watcher	1933,1,1200000
+que_qaru03,214,181	monster	Garden Watcher	1933,1,600000
+que_qaru03,243,199	monster	Garden Watcher	1933,1,1200000
+que_qaru04,116,313	monster	Garden Keeper	1932,1,180000
+que_qaru04,120,285	monster	Garden Keeper	1932,1,180000
+que_qaru04,117,236	monster	Garden Keeper	1932,1,180000
+que_qaru04,103,223	monster	Garden Keeper	1932,1,180000
+que_qaru04,85,204	monster	Garden Keeper	1932,1,180000
+que_qaru04,79,186	monster	Garden Keeper	1932,1,180000
+que_qaru04,73,167	monster	Garden Keeper	1932,1,180000
+que_qaru04,68,150	monster	Garden Keeper	1932,1,180000
+que_qaru04,71,128	monster	Garden Keeper	1932,1,180000
+que_qaru04,69,118	monster	Garden Keeper	1932,1,180000
+que_qaru04,117,78	monster	Garden Keeper	1932,1,180000
+que_qaru04,110,79	monster	Garden Keeper	1932,1,180000
+que_qaru04,141,80	monster	Garden Keeper	1932,1,180000
+que_qaru04,158,84	monster	Garden Keeper	1932,1,180000
+que_qaru04,193,104	monster	Garden Keeper	1932,1,180000
+que_qaru04,119,269	monster	Garden Keeper	1932,1,180000
+que_qaru04,155,77	monster	Garden Keeper	1932,1,180000
+que_qaru04,110,317	monster	Garden Watcher	1933,1,600000
+que_qaru04,115,295	monster	Garden Watcher	1933,1,1200000
+que_qaru04,116,256	monster	Garden Watcher	1933,1,600000
+que_qaru04,113,242	monster	Garden Watcher	1933,1,1200000
+que_qaru04,99,223	monster	Garden Watcher	1933,1,600000
+que_qaru04,94,216	monster	Garden Watcher	1933,1,1200000
+que_qaru04,77,198	monster	Garden Watcher	1933,1,600000
+que_qaru04,70,174	monster	Garden Watcher	1933,1,1200000
+que_qaru04,72,147	monster	Garden Watcher	1933,1,600000
+que_qaru04,64,134	monster	Garden Watcher	1933,1,1200000
+que_qaru04,77,107	monster	Garden Watcher	1933,1,600000
+que_qaru04,84,88	monster	Garden Watcher	1933,1,1200000
+que_qaru04,98,82	monster	Garden Watcher	1933,1,600000
+que_qaru04,129,79	monster	Garden Watcher	1933,1,1200000
+que_qaru04,91,124	monster	Garden Watcher	1933,1,600000
+que_qaru04,173,95	monster	Garden Watcher	1933,1,1200000
+que_qaru04,179,127	monster	Garden Watcher	1933,1,600000
+que_qaru04,195,120	monster	Garden Watcher	1933,1,1200000
+que_qaru04,178,159	monster	Garden Watcher	1933,1,600000
+que_qaru04,88,145	monster	Garden Watcher	1933,1,1200000
+que_qaru04,94,157	monster	Garden Watcher	1933,1,600000
+que_qaru04,95,177	monster	Garden Watcher	1933,1,1200000
+que_qaru04,129,196	monster	Garden Watcher	1933,1,600000
+que_qaru04,154,196	monster	Garden Watcher	1933,1,1200000
+que_qaru04,170,187	monster	Garden Watcher	1933,1,600000
+que_qaru04,194,180	monster	Garden Watcher	1933,1,1200000
+que_qaru04,214,181	monster	Garden Watcher	1933,1,600000
+que_qaru04,243,199	monster	Garden Watcher	1933,1,1200000
+que_qaru05,116,313	monster	Garden Keeper	1932,1,180000
+que_qaru05,120,285	monster	Garden Keeper	1932,1,180000
+que_qaru05,117,236	monster	Garden Keeper	1932,1,180000
+que_qaru05,103,223	monster	Garden Keeper	1932,1,180000
+que_qaru05,85,204	monster	Garden Keeper	1932,1,180000
+que_qaru05,79,186	monster	Garden Keeper	1932,1,180000
+que_qaru05,73,167	monster	Garden Keeper	1932,1,180000
+que_qaru05,68,150	monster	Garden Keeper	1932,1,180000
+que_qaru05,71,128	monster	Garden Keeper	1932,1,180000
+que_qaru05,69,118	monster	Garden Keeper	1932,1,180000
+que_qaru05,117,78	monster	Garden Keeper	1932,1,180000
+que_qaru05,110,79	monster	Garden Keeper	1932,1,180000
+que_qaru05,141,80	monster	Garden Keeper	1932,1,180000
+que_qaru05,158,84	monster	Garden Keeper	1932,1,180000
+que_qaru05,193,104	monster	Garden Keeper	1932,1,180000
+que_qaru05,119,269	monster	Garden Keeper	1932,1,180000
+que_qaru05,155,77	monster	Garden Keeper	1932,1,180000
+que_qaru05,110,317	monster	Garden Watcher	1933,1,600000
+que_qaru05,115,295	monster	Garden Watcher	1933,1,1200000
+que_qaru05,116,256	monster	Garden Watcher	1933,1,600000
+que_qaru05,113,242	monster	Garden Watcher	1933,1,1200000
+que_qaru05,99,223	monster	Garden Watcher	1933,1,600000
+que_qaru05,94,216	monster	Garden Watcher	1933,1,1200000
+que_qaru05,77,198	monster	Garden Watcher	1933,1,600000
+que_qaru05,70,174	monster	Garden Watcher	1933,1,1200000
+que_qaru05,72,147	monster	Garden Watcher	1933,1,600000
+que_qaru05,64,134	monster	Garden Watcher	1933,1,1200000
+que_qaru05,77,107	monster	Garden Watcher	1933,1,600000
+que_qaru05,84,88	monster	Garden Watcher	1933,1,1200000
+que_qaru05,98,82	monster	Garden Watcher	1933,1,600000
+que_qaru05,129,79	monster	Garden Watcher	1933,1,1200000
+que_qaru05,91,124	monster	Garden Watcher	1933,1,600000
+que_qaru05,173,95	monster	Garden Watcher	1933,1,1200000
+que_qaru05,179,127	monster	Garden Watcher	1933,1,600000
+que_qaru05,195,120	monster	Garden Watcher	1933,1,1200000
+que_qaru05,178,159	monster	Garden Watcher	1933,1,600000
+que_qaru05,88,145	monster	Garden Watcher	1933,1,1200000
+que_qaru05,94,157	monster	Garden Watcher	1933,1,600000
+que_qaru05,95,177	monster	Garden Watcher	1933,1,1200000
+que_qaru05,129,196	monster	Garden Watcher	1933,1,600000
+que_qaru05,154,196	monster	Garden Watcher	1933,1,1200000
+que_qaru05,170,187	monster	Garden Watcher	1933,1,600000
+que_qaru05,194,180	monster	Garden Watcher	1933,1,1200000
+que_qaru05,214,181	monster	Garden Watcher	1933,1,600000
+que_qaru05,243,199	monster	Garden Watcher	1933,1,1200000
+que_qsch01,116,313	monster	Garden Keeper	1932,1,180000
+que_qsch01,120,285	monster	Garden Keeper	1932,1,180000
+que_qsch01,117,236	monster	Garden Keeper	1932,1,180000
+que_qsch01,103,223	monster	Garden Keeper	1932,1,180000
+que_qsch01,85,204	monster	Garden Keeper	1932,1,180000
+que_qsch01,79,186	monster	Garden Keeper	1932,1,180000
+que_qsch01,73,167	monster	Garden Keeper	1932,1,180000
+que_qsch01,68,150	monster	Garden Keeper	1932,1,180000
+que_qsch01,71,128	monster	Garden Keeper	1932,1,180000
+que_qsch01,69,118	monster	Garden Keeper	1932,1,180000
+que_qsch01,117,78	monster	Garden Keeper	1932,1,180000
+que_qsch01,110,79	monster	Garden Keeper	1932,1,180000
+que_qsch01,141,80	monster	Garden Keeper	1932,1,180000
+que_qsch01,158,84	monster	Garden Keeper	1932,1,180000
+que_qsch01,193,104	monster	Garden Keeper	1932,1,180000
+que_qsch01,119,269	monster	Garden Keeper	1932,1,180000
+que_qsch01,155,77	monster	Garden Keeper	1932,1,180000
+que_qsch01,110,317	monster	Garden Watcher	1933,1,600000
+que_qsch01,115,295	monster	Garden Watcher	1933,1,1200000
+que_qsch01,116,256	monster	Garden Watcher	1933,1,600000
+que_qsch01,113,242	monster	Garden Watcher	1933,1,1200000
+que_qsch01,99,223	monster	Garden Watcher	1933,1,600000
+que_qsch01,94,216	monster	Garden Watcher	1933,1,1200000
+que_qsch01,77,198	monster	Garden Watcher	1933,1,600000
+que_qsch01,70,174	monster	Garden Watcher	1933,1,1200000
+que_qsch01,72,147	monster	Garden Watcher	1933,1,600000
+que_qsch01,64,134	monster	Garden Watcher	1933,1,1200000
+que_qsch01,77,107	monster	Garden Watcher	1933,1,600000
+que_qsch01,84,88	monster	Garden Watcher	1933,1,1200000
+que_qsch01,98,82	monster	Garden Watcher	1933,1,600000
+que_qsch01,129,79	monster	Garden Watcher	1933,1,1200000
+que_qsch01,91,124	monster	Garden Watcher	1933,1,600000
+que_qsch01,173,95	monster	Garden Watcher	1933,1,1200000
+que_qsch01,179,127	monster	Garden Watcher	1933,1,600000
+que_qsch01,195,120	monster	Garden Watcher	1933,1,1200000
+que_qsch01,178,159	monster	Garden Watcher	1933,1,600000
+que_qsch01,88,145	monster	Garden Watcher	1933,1,1200000
+que_qsch01,94,157	monster	Garden Watcher	1933,1,600000
+que_qsch01,95,177	monster	Garden Watcher	1933,1,1200000
+que_qsch01,129,196	monster	Garden Watcher	1933,1,600000
+que_qsch01,154,196	monster	Garden Watcher	1933,1,1200000
+que_qsch01,170,187	monster	Garden Watcher	1933,1,600000
+que_qsch01,194,180	monster	Garden Watcher	1933,1,1200000
+que_qsch01,214,181	monster	Garden Watcher	1933,1,600000
+que_qsch01,243,199	monster	Garden Watcher	1933,1,1200000
+que_qsch02,116,313	monster	Garden Keeper	1932,1,180000
+que_qsch02,120,285	monster	Garden Keeper	1932,1,180000
+que_qsch02,117,236	monster	Garden Keeper	1932,1,180000
+que_qsch02,103,223	monster	Garden Keeper	1932,1,180000
+que_qsch02,85,204	monster	Garden Keeper	1932,1,180000
+que_qsch02,79,186	monster	Garden Keeper	1932,1,180000
+que_qsch02,73,167	monster	Garden Keeper	1932,1,180000
+que_qsch02,68,150	monster	Garden Keeper	1932,1,180000
+que_qsch02,71,128	monster	Garden Keeper	1932,1,180000
+que_qsch02,69,118	monster	Garden Keeper	1932,1,180000
+que_qsch02,117,78	monster	Garden Keeper	1932,1,180000
+que_qsch02,110,79	monster	Garden Keeper	1932,1,180000
+que_qsch02,141,80	monster	Garden Keeper	1932,1,180000
+que_qsch02,158,84	monster	Garden Keeper	1932,1,180000
+que_qsch02,193,104	monster	Garden Keeper	1932,1,180000
+que_qsch02,119,269	monster	Garden Keeper	1932,1,180000
+que_qsch02,155,77	monster	Garden Keeper	1932,1,180000
+que_qsch02,110,317	monster	Garden Watcher	1933,1,600000
+que_qsch02,115,295	monster	Garden Watcher	1933,1,1200000
+que_qsch02,116,256	monster	Garden Watcher	1933,1,600000
+que_qsch02,113,242	monster	Garden Watcher	1933,1,1200000
+que_qsch02,99,223	monster	Garden Watcher	1933,1,600000
+que_qsch02,94,216	monster	Garden Watcher	1933,1,1200000
+que_qsch02,77,198	monster	Garden Watcher	1933,1,600000
+que_qsch02,70,174	monster	Garden Watcher	1933,1,1200000
+que_qsch02,72,147	monster	Garden Watcher	1933,1,600000
+que_qsch02,64,134	monster	Garden Watcher	1933,1,1200000
+que_qsch02,77,107	monster	Garden Watcher	1933,1,600000
+que_qsch02,84,88	monster	Garden Watcher	1933,1,1200000
+que_qsch02,98,82	monster	Garden Watcher	1933,1,600000
+que_qsch02,129,79	monster	Garden Watcher	1933,1,1200000
+que_qsch02,91,124	monster	Garden Watcher	1933,1,600000
+que_qsch02,173,95	monster	Garden Watcher	1933,1,1200000
+que_qsch02,179,127	monster	Garden Watcher	1933,1,600000
+que_qsch02,195,120	monster	Garden Watcher	1933,1,1200000
+que_qsch02,178,159	monster	Garden Watcher	1933,1,600000
+que_qsch02,88,145	monster	Garden Watcher	1933,1,1200000
+que_qsch02,94,157	monster	Garden Watcher	1933,1,600000
+que_qsch02,95,177	monster	Garden Watcher	1933,1,1200000
+que_qsch02,129,196	monster	Garden Watcher	1933,1,600000
+que_qsch02,154,196	monster	Garden Watcher	1933,1,1200000
+que_qsch02,170,187	monster	Garden Watcher	1933,1,600000
+que_qsch02,194,180	monster	Garden Watcher	1933,1,1200000
+que_qsch02,214,181	monster	Garden Watcher	1933,1,600000
+que_qsch02,243,199	monster	Garden Watcher	1933,1,1200000
+que_qsch03,116,313	monster	Garden Keeper	1932,1,180000
+que_qsch03,120,285	monster	Garden Keeper	1932,1,180000
+que_qsch03,117,236	monster	Garden Keeper	1932,1,180000
+que_qsch03,103,223	monster	Garden Keeper	1932,1,180000
+que_qsch03,85,204	monster	Garden Keeper	1932,1,180000
+que_qsch03,79,186	monster	Garden Keeper	1932,1,180000
+que_qsch03,73,167	monster	Garden Keeper	1932,1,180000
+que_qsch03,68,150	monster	Garden Keeper	1932,1,180000
+que_qsch03,71,128	monster	Garden Keeper	1932,1,180000
+que_qsch03,69,118	monster	Garden Keeper	1932,1,180000
+que_qsch03,117,78	monster	Garden Keeper	1932,1,180000
+que_qsch03,110,79	monster	Garden Keeper	1932,1,180000
+que_qsch03,141,80	monster	Garden Keeper	1932,1,180000
+que_qsch03,158,84	monster	Garden Keeper	1932,1,180000
+que_qsch03,193,104	monster	Garden Keeper	1932,1,180000
+que_qsch03,119,269	monster	Garden Keeper	1932,1,180000
+que_qsch03,155,77	monster	Garden Keeper	1932,1,180000
+que_qsch03,110,317	monster	Garden Watcher	1933,1,600000
+que_qsch03,115,295	monster	Garden Watcher	1933,1,1200000
+que_qsch03,116,256	monster	Garden Watcher	1933,1,600000
+que_qsch03,113,242	monster	Garden Watcher	1933,1,1200000
+que_qsch03,99,223	monster	Garden Watcher	1933,1,600000
+que_qsch03,94,216	monster	Garden Watcher	1933,1,1200000
+que_qsch03,77,198	monster	Garden Watcher	1933,1,600000
+que_qsch03,70,174	monster	Garden Watcher	1933,1,1200000
+que_qsch03,72,147	monster	Garden Watcher	1933,1,600000
+que_qsch03,64,134	monster	Garden Watcher	1933,1,1200000
+que_qsch03,77,107	monster	Garden Watcher	1933,1,600000
+que_qsch03,84,88	monster	Garden Watcher	1933,1,1200000
+que_qsch03,98,82	monster	Garden Watcher	1933,1,600000
+que_qsch03,129,79	monster	Garden Watcher	1933,1,1200000
+que_qsch03,91,124	monster	Garden Watcher	1933,1,600000
+que_qsch03,173,95	monster	Garden Watcher	1933,1,1200000
+que_qsch03,179,127	monster	Garden Watcher	1933,1,600000
+que_qsch03,195,120	monster	Garden Watcher	1933,1,1200000
+que_qsch03,178,159	monster	Garden Watcher	1933,1,600000
+que_qsch03,88,145	monster	Garden Watcher	1933,1,1200000
+que_qsch03,94,157	monster	Garden Watcher	1933,1,600000
+que_qsch03,95,177	monster	Garden Watcher	1933,1,1200000
+que_qsch03,129,196	monster	Garden Watcher	1933,1,600000
+que_qsch03,154,196	monster	Garden Watcher	1933,1,1200000
+que_qsch03,170,187	monster	Garden Watcher	1933,1,600000
+que_qsch03,194,180	monster	Garden Watcher	1933,1,1200000
+que_qsch03,214,181	monster	Garden Watcher	1933,1,600000
+que_qsch03,243,199	monster	Garden Watcher	1933,1,1200000
+que_qsch04,116,313	monster	Garden Keeper	1932,1,180000
+que_qsch04,120,285	monster	Garden Keeper	1932,1,180000
+que_qsch04,117,236	monster	Garden Keeper	1932,1,180000
+que_qsch04,103,223	monster	Garden Keeper	1932,1,180000
+que_qsch04,85,204	monster	Garden Keeper	1932,1,180000
+que_qsch04,79,186	monster	Garden Keeper	1932,1,180000
+que_qsch04,73,167	monster	Garden Keeper	1932,1,180000
+que_qsch04,68,150	monster	Garden Keeper	1932,1,180000
+que_qsch04,71,128	monster	Garden Keeper	1932,1,180000
+que_qsch04,69,118	monster	Garden Keeper	1932,1,180000
+que_qsch04,117,78	monster	Garden Keeper	1932,1,180000
+que_qsch04,110,79	monster	Garden Keeper	1932,1,180000
+que_qsch04,141,80	monster	Garden Keeper	1932,1,180000
+que_qsch04,158,84	monster	Garden Keeper	1932,1,180000
+que_qsch04,193,104	monster	Garden Keeper	1932,1,180000
+que_qsch04,119,269	monster	Garden Keeper	1932,1,180000
+que_qsch04,155,77	monster	Garden Keeper	1932,1,180000
+que_qsch04,110,317	monster	Garden Watcher	1933,1,600000
+que_qsch04,115,295	monster	Garden Watcher	1933,1,1200000
+que_qsch04,116,256	monster	Garden Watcher	1933,1,600000
+que_qsch04,113,242	monster	Garden Watcher	1933,1,1200000
+que_qsch04,99,223	monster	Garden Watcher	1933,1,600000
+que_qsch04,94,216	monster	Garden Watcher	1933,1,1200000
+que_qsch04,77,198	monster	Garden Watcher	1933,1,600000
+que_qsch04,70,174	monster	Garden Watcher	1933,1,1200000
+que_qsch04,72,147	monster	Garden Watcher	1933,1,600000
+que_qsch04,64,134	monster	Garden Watcher	1933,1,1200000
+que_qsch04,77,107	monster	Garden Watcher	1933,1,600000
+que_qsch04,84,88	monster	Garden Watcher	1933,1,1200000
+que_qsch04,98,82	monster	Garden Watcher	1933,1,600000
+que_qsch04,129,79	monster	Garden Watcher	1933,1,1200000
+que_qsch04,91,124	monster	Garden Watcher	1933,1,600000
+que_qsch04,173,95	monster	Garden Watcher	1933,1,1200000
+que_qsch04,179,127	monster	Garden Watcher	1933,1,600000
+que_qsch04,195,120	monster	Garden Watcher	1933,1,1200000
+que_qsch04,178,159	monster	Garden Watcher	1933,1,600000
+que_qsch04,88,145	monster	Garden Watcher	1933,1,1200000
+que_qsch04,94,157	monster	Garden Watcher	1933,1,600000
+que_qsch04,95,177	monster	Garden Watcher	1933,1,1200000
+que_qsch04,129,196	monster	Garden Watcher	1933,1,600000
+que_qsch04,154,196	monster	Garden Watcher	1933,1,1200000
+que_qsch04,170,187	monster	Garden Watcher	1933,1,600000
+que_qsch04,194,180	monster	Garden Watcher	1933,1,1200000
+que_qsch04,214,181	monster	Garden Watcher	1933,1,600000
+que_qsch04,243,199	monster	Garden Watcher	1933,1,1200000
+que_qsch05,116,313	monster	Garden Keeper	1932,1,180000
+que_qsch05,120,285	monster	Garden Keeper	1932,1,180000
+que_qsch05,117,236	monster	Garden Keeper	1932,1,180000
+que_qsch05,103,223	monster	Garden Keeper	1932,1,180000
+que_qsch05,85,204	monster	Garden Keeper	1932,1,180000
+que_qsch05,79,186	monster	Garden Keeper	1932,1,180000
+que_qsch05,73,167	monster	Garden Keeper	1932,1,180000
+que_qsch05,68,150	monster	Garden Keeper	1932,1,180000
+que_qsch05,71,128	monster	Garden Keeper	1932,1,180000
+que_qsch05,69,118	monster	Garden Keeper	1932,1,180000
+que_qsch05,117,78	monster	Garden Keeper	1932,1,180000
+que_qsch05,110,79	monster	Garden Keeper	1932,1,180000
+que_qsch05,141,80	monster	Garden Keeper	1932,1,180000
+que_qsch05,158,84	monster	Garden Keeper	1932,1,180000
+que_qsch05,193,104	monster	Garden Keeper	1932,1,180000
+que_qsch05,119,269	monster	Garden Keeper	1932,1,180000
+que_qsch05,155,77	monster	Garden Keeper	1932,1,180000
+que_qsch05,110,317	monster	Garden Watcher	1933,1,600000
+que_qsch05,115,295	monster	Garden Watcher	1933,1,1200000
+que_qsch05,116,256	monster	Garden Watcher	1933,1,600000
+que_qsch05,113,242	monster	Garden Watcher	1933,1,1200000
+que_qsch05,99,223	monster	Garden Watcher	1933,1,600000
+que_qsch05,94,216	monster	Garden Watcher	1933,1,1200000
+que_qsch05,77,198	monster	Garden Watcher	1933,1,600000
+que_qsch05,70,174	monster	Garden Watcher	1933,1,1200000
+que_qsch05,72,147	monster	Garden Watcher	1933,1,600000
+que_qsch05,64,134	monster	Garden Watcher	1933,1,1200000
+que_qsch05,77,107	monster	Garden Watcher	1933,1,600000
+que_qsch05,84,88	monster	Garden Watcher	1933,1,1200000
+que_qsch05,98,82	monster	Garden Watcher	1933,1,600000
+que_qsch05,129,79	monster	Garden Watcher	1933,1,1200000
+que_qsch05,91,124	monster	Garden Watcher	1933,1,600000
+que_qsch05,173,95	monster	Garden Watcher	1933,1,1200000
+que_qsch05,179,127	monster	Garden Watcher	1933,1,600000
+que_qsch05,195,120	monster	Garden Watcher	1933,1,1200000
+que_qsch05,178,159	monster	Garden Watcher	1933,1,600000
+que_qsch05,88,145	monster	Garden Watcher	1933,1,1200000
+que_qsch05,94,157	monster	Garden Watcher	1933,1,600000
+que_qsch05,95,177	monster	Garden Watcher	1933,1,1200000
+que_qsch05,129,196	monster	Garden Watcher	1933,1,600000
+que_qsch05,154,196	monster	Garden Watcher	1933,1,1200000
+que_qsch05,170,187	monster	Garden Watcher	1933,1,600000
+que_qsch05,194,180	monster	Garden Watcher	1933,1,1200000
+que_qsch05,214,181	monster	Garden Watcher	1933,1,600000
+que_qsch05,243,199	monster	Garden Watcher	1933,1,1200000
+
+// npc/quests/quests_moscovia.txt
+mosk_que,0,0	monster	Freezer	1887,10,20000
+mosk_que,0,0	monster	Hatii Baby	1888,3,300000
+mosk_que,0,0	monster	Sasquatch	1243,15,10000
+
+// npc/quests/the_sign_quest.txt
+que_sign02,0,0	monster	Ancient Mummy	1522,8
+que_sign02,0,0	monster	Evil Druid	1435,8
+que_sign02,0,0	monster	Ghoul	1423,20
+que_sign02,0,0	monster	Incubus	1580,8
+que_sign02,0,0	monster	Injustice	1446,8
+que_sign02,0,0	monster	Skeleton Prisoner	1479,15
+que_sign02,0,0	monster	Zombie Prisoner	1480,15
+que_sign02,0,0	monster	Wraith	1475,15
+que_sign02,0,0	monster	Wraith Dead	1566,8

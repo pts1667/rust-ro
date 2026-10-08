@@ -67,6 +67,8 @@ pub struct NpcScriptHost {
     pub event_arguments: Option<Vec<Value>>,
     pub timer_context: Option<crate::server::model::script_timer::NpcTimerKey>,
     pub logout_token: Option<u64>,
+    /// The client shows a dialogue window the script has not closed yet.
+    pub dialog_open: bool,
     pub error: Option<String>,
 }
 
