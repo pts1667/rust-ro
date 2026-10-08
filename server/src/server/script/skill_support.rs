@@ -37,6 +37,9 @@ impl ScriptSkillService {
         if !issued_skill && flags.enabled(MapFlag::NoSkill) {
             return Err("Skills cannot be used on this map".into());
         }
+        if !issued_skill && Self::forbidden_on_map(skill_id, &flags) {
+            return Err("This skill is forbidden on this kind of map".into());
+        }
         if metadata.name == "AL_TELEPORT" && flags.enabled(MapFlag::NoTeleport) {
             return Err(crate::server::script::skill::actor::TELEPORT_DISABLED.into());
         }
@@ -47,6 +50,23 @@ impl ScriptSkillService {
             return Err("Ice Wall is disabled on this map".into());
         }
         Ok(())
+    }
+
+    /// `skill_nocast_db`: skills banned in normal, PvP, GvG or Battleground maps and in restricted zones.
+    pub(crate) fn forbidden_on_map(skill_id: u32, flags: &crate::server::model::map_flags::MapFlags) -> bool {
+        const NORMAL: u32 = 1;
+        const PVP: u32 = 2;
+        const GVG: u32 = 4;
+        const BATTLEGROUND: u32 = 8;
+        const ZONES_FROM: u32 = 32;
+        let Some(banned) = nocast_flags(skill_id) else { return false };
+        let versus = flags.enabled(MapFlag::Pvp) || flags.is_gvg() || flags.enabled(MapFlag::Battleground);
+        let zones = (flags.get(MapFlag::Restricted, None) as u32) & !(ZONES_FROM - 1);
+        (!versus && banned & NORMAL != 0)
+            || (flags.enabled(MapFlag::Pvp) && banned & PVP != 0)
+            || (flags.is_gvg() && banned & GVG != 0)
+            || (flags.enabled(MapFlag::Battleground) && banned & BATTLEGROUND != 0)
+            || banned & zones != 0
     }
 
     pub(super) fn snatch_map_allowed(state: &ServerState, source: &Character) -> bool {
@@ -128,6 +148,7 @@ impl ScriptSkillService {
         request.rate = match skill.name().as_str() {
             "SM_PROVOKE" | "MS_PROVOKE" => Self::provoke_rate(source_level, target_level, level),
             "AL_DECAGI" => Self::decrease_agi_rate(source_level, source_int, level),
+            "BA_PANGVOICE" => 7000,
             name if Self::endow_skill(name) => (6000 + 1000 * u16::from(level)).min(10000),
             _ => 10000,
         };
@@ -400,4 +421,22 @@ mod tests {
             }
         }
     }
+}
+
+fn nocast_flags(skill_id: u32) -> Option<u32> {
+    use std::collections::HashMap;
+    use std::sync::OnceLock;
+    static TABLE: OnceLock<HashMap<u32, u32>> = OnceLock::new();
+    TABLE
+        .get_or_init(|| {
+            let mut table = HashMap::new();
+            for line in include_str!("skill_nocast_db.txt").lines().filter(|line| !line.starts_with('#')) {
+                if let Some((skill, flag)) = line.split_once(',').and_then(|(skill, flag)| Some((skill.parse::<u32>().ok()?, flag.parse::<u32>().ok()?))) {
+                    *table.entry(skill).or_default() |= flag;
+                }
+            }
+            table
+        })
+        .get(&skill_id)
+        .copied()
 }

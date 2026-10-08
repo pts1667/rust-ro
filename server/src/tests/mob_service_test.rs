@@ -70,6 +70,7 @@ mod tests {
             position: Position { x, y, dir: 0 },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         }
     }
 
@@ -102,6 +103,17 @@ mod tests {
             MobAction::Attacking { target_id, .. } => assert_eq!(target_id, 100),
             _ => panic!("Expected Attacking state"),
         }
+    }
+
+    #[test]
+    fn test_aggressive_mob_ignores_a_sitting_player_under_gangster_paradise() {
+        let context = before_each();
+        let cells: Vec<u16> = vec![1; 100 * 100];
+        let hidden = vec![create_character_snapshot(100, 51, 50).ignored_by_monsters(true)];
+
+        let mut mob = create_mob_with_mode_at(1, 50, 50, aggressive_mode(), 1, 12);
+        let action = context.mob_service.action_ai(&mut mob, &hidden, &cells, 100, 100, 10000);
+        assert!(!matches!(action, Some(MobAIAction::Attack(_))) && mob.get_target_id().is_none());
     }
 
     #[test]

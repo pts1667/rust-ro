@@ -1447,6 +1447,8 @@ impl MapInstanceService {
                 .unwrap_or_else(|| panic!("can't find mob with id {}", id));
             let mob_model = self.configuration_service.get_mob(mob.mob_id as i32);
             let owner = mob.attacker_with_higher_damage();
+            let experience_rate = 100
+                + mob.status_effects.status_change(models::status_change::StatusChangeKind::RichMankim).map_or(0, |change| change.values[1].max(0) as u32);
             let mut contributions = mob.actor_damages.values().copied().collect::<Vec<_>>();
             contributions.sort_by_key(|contribution| contribution.actor_id);
             if owner != 0 && !(mob.summon_ai != 0 && mob.summon_owner.is_some()) {
@@ -1458,8 +1460,8 @@ impl MapInstanceService {
                         mob_x: mob.x,
                         mob_y: mob.y,
                         map_instance_key: instance_key.clone(),
-                        mob_base_exp: mob_model.exp as u32,
-                        mob_job_exp: mob_model.job_exp as u32,
+                        mob_base_exp: (mob_model.exp as u32).saturating_mul(experience_rate) / 100,
+                        mob_job_exp: (mob_model.job_exp as u32).saturating_mul(experience_rate) / 100,
                         mob_max_hp: mob.status.max_hp(),
                         contributions,
                     }),

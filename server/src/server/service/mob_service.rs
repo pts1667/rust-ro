@@ -351,6 +351,7 @@ impl MobService {
             .filter(|c| matches!(c.map_item.object_type(), MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::Mob))
             .filter(|c| c.guild_id == 0 || !mob.friendly_guilds.contains(&c.guild_id))
             .filter(|c| mob.bg_id == 0 || c.bg_id != mob.bg_id)
+            .filter(|c| !c.ignored_by_monsters || mob.status.has_mob_capability(models::enums::mob::MobCapability::StatusImmune))
         {
             let distance = manhattan_distance(mob.x, mob.y, character.position.x, character.position.y);
 

@@ -642,7 +642,7 @@ impl ServerService {
                     let maybe_map_instance = server_state.get_map_instance(character.current_map_name(), character.current_map_instance());
                     let map_instance = maybe_map_instance.as_ref().unwrap();
                     match self.script_skill_service.complete_damage_skill(server, server_state, character, skill_use_response.to_damage(), &self.battle_service, tick) {
-                        Ok(damages) => for (kind, damage) in damages {
+                        Ok(damages) => for (kind, damage) in ScriptSkillService::double_cast(character, skill_use_response.skill_id, damages, fastrand::u8(0..100)) {
                             if kind == MapItemType::SkillUnit { self.apply_damage(kind, map_instance, damage); }
                             else if kind == MapItemType::Mob { map_instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage })); }
                             else { self.server_task_queue.add_to_first_index(GameEvent::CharacterDamage(CharacterDamage { damage })); }

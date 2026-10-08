@@ -948,7 +948,16 @@ impl Server {
             damage.battle_flags,
         );
         super::map_flag_service::apply_map_skill_damage(&map_flags, &mut damage, &target_snapshot);
+        let attacker_uses_blade = state.characters().get(&damage.attacker_id).is_none_or(|attacker| {
+            use models::enums::weapon::WeaponType::{Dagger, Sword1H, Sword2H};
+            matches!(StatusService::instance().to_snapshot(&attacker.status).right_hand_weapon_type(), Dagger | Sword1H | Sword2H)
+        });
+        let rejected = StatusEffectService::reject_sword(&mut character.status, attacker_uses_blade, damage.battle_flags, damage.damage, fastrand::u8(0..100));
+        damage.damage -= rejected;
         let sender = self.server_service().notification_sender();
+        if damage.damage > target_snapshot.max_hp() / 4 && character.status.has_status_change(models::status_change::StatusChangeKind::Dancing) {
+            StatusEffectService::end(self, &mut character, Some(models::status_change::StatusChangeKind::Dancing), tick, &sender);
+        }
         let mut reported = 0_i64;
         for kind in statuses {
             if !character.status.has_status_change(kind) {
@@ -963,8 +972,8 @@ impl Server {
         }
         let mut redirected = None;
         if damage.damage > 0 {
-            let reflected =
-                super::combat_trigger_service::physical_reflection(&target_snapshot, damage.battle_flags, damage.skill_id, damage.damage);
+            let reflected = super::combat_trigger_service::physical_reflection(&target_snapshot, damage.battle_flags, damage.skill_id, damage.damage)
+                .saturating_add(rejected);
             if reflected > 0 && damage.proc_depth < 8 {
                 let reflected = Damage {
                     notification: None,

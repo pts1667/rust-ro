@@ -42,6 +42,12 @@ mod actor_ground;
 mod area_damage;
 #[path = "skill_autocast.rs"]
 mod autocast;
+#[path = "skill_alchemy.rs"]
+mod alchemy;
+#[path = "skill_star_gladiator.rs"]
+pub(crate) mod star_gladiator;
+#[path = "skill_cast_status.rs"]
+mod cast_status;
 #[path = "skill_callbacks.rs"]
 pub mod callbacks;
 #[path = "skill_class.rs"]
@@ -769,7 +775,8 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if Self::status_for_skill(skill.name()).is_some() || Self::is_special_skill(skill.name()) {
+        let martyr_hit = instant && skill.name() == "PA_SACRIFICE";
+        if !martyr_hit && (Self::status_for_skill(skill.name()).is_some() || Self::is_special_skill(skill.name())) {
             if !matches!(target.map_item.object_type(), MapItemType::Character) {
                 if *target.map_item.object_type() != MapItemType::Mob {
                     return Err("Skill target does not support this effect".into());
@@ -1269,6 +1276,7 @@ impl ScriptSkillService {
         match name {
             "SM_PROVOKE" | "SM_SELFPROVOKE" => Some(Provoke),
             "AL_DECAGI" => Some(DecreaseAgi),
+            "BA_PANGVOICE" => Some(Confusion),
             "PR_LEXAETERNA" => Some(LexAeterna),
             "ALL_ANGEL_PROTECT" => Some(IncAllStatus),
             "PR_LEXDIVINA" => Some(Silence),
@@ -1283,12 +1291,13 @@ impl ScriptSkillService {
         }
     }
 
-    /// Self and support skills that do nothing but start the status their metadata names.
+    /// Self and support skills that do nothing but start the status their metadata names, or any skill routed `Status` explicitly.
     fn metadata_buff_status(name: &str) -> Option<StatusChangeKind> {
         let metadata = metadata::SkillMetadata::find_by_name(name)?;
-        (!metadata.damages()
-            && metadata.unit.is_none()
-            && matches!(metadata.target_type.as_deref(), Some("Self" | "Support")))
+        (metadata.route == Some(metadata::SkillRoute::Status)
+            || !metadata.damages()
+                && metadata.unit.is_none()
+                && matches!(metadata.target_type.as_deref(), Some("Self" | "Support")))
         .then(|| metadata.status.as_deref().and_then(StatusChangeKind::from_name))
         .flatten()
     }
@@ -1465,7 +1474,7 @@ mod tests {
     use super::*;
 
     /// Number of player skills whose route is `Unrouted`. Lower it when a skill gets a handler; it must never grow.
-    const UNROUTED_BASELINE: usize = 104;
+    const UNROUTED_BASELINE: usize = 20;
 
     #[test]
     fn every_skill_has_a_route_or_is_a_plain_buff() {
@@ -1486,7 +1495,7 @@ mod tests {
             let native = SkillEnum::try_from_value(skill.id).ok().and_then(|value| skills::skill_enums::to_object(value, 1)).map(|object| object.skill_type());
             let consistent = match skill.route {
                 Some(Route::Native) => native == Some(SkillType::Offensive),
-                Some(Route::Passive) => native == Some(SkillType::Passive),
+                Some(Route::Passive) => native != Some(SkillType::Offensive),
                 Some(route) if route.operation().is_some() => ScriptSkillService::operation(&skill.name).is_some(),
                 _ => true,
             };

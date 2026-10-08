@@ -56,6 +56,12 @@ impl ScriptSkillService {
             if !server.player_skill_target_allowed(state, &character, target_id, skill_id, true) { return Err("Autocast target is unavailable".into()); }
             let plan = self.autocast_requirements_plan(&character, skill_id, level, tick)?;
             server.item_service().pay_requirement_plan(server, &mut character, &plan, None, tick)?;
+            if metadata.name == "TF_POISON" && trigger == CombatTrigger::Hit {
+                Self::spend_poison_react(&mut character, tick, &self.client_notification_sender);
+            }
+            if metadata.name == "PA_SACRIFICE" {
+                Self::pay_martyrs_reckoning(server, &mut character, tick, &self.client_notification_sender);
+            }
             let result = if metadata.name == "CG_TAROTCARD" {
                 self.cast_equipment_tarot(server, state, &mut character, target_id, level, tick, depth)
             } else {

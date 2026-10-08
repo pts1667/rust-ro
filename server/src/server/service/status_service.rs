@@ -196,6 +196,9 @@ impl StatusService {
         if status.riding && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::KnRiding) > 0 {
             snapshot.set_state(snapshot.state() | models::enums::skill::SkillState::Riding.as_flag());
         }
+        if status.falcon && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::HtFalcon) > 0 {
+            snapshot.set_state(snapshot.state() | models::enums::skill::SkillState::Falcon.as_flag());
+        }
 
         let firearm = matches!(snapshot.right_hand_weapon_type(), models::enums::weapon::WeaponType::Revolver
             | models::enums::weapon::WeaponType::Rifle | models::enums::weapon::WeaponType::Gatling
@@ -263,6 +266,10 @@ impl StatusService {
             })
             .sum::<f32>();
         snapshot.set_perfect_dodge((1.0 + snapshot.luk() as f32 / 10.0 + perfect_dodge_bonus).clamp(0.0, 100.0));
+        if let Some(auto_blitz) = Self::auto_blitz_proc(status, &snapshot) {
+            bonuses.push(BonusType::CombatProc(auto_blitz, 1));
+            snapshot.set_bonuses(bonuses.iter().map(|bonus| StatusBonus::new(*bonus)).collect());
+        }
         snapshot.set_aspd(snapshot.aspd() + self.aspd(&snapshot));
         snapshot.set_matk_min(
             ((snapshot.int() + ((snapshot.int() as f32 / 7.0).floor() as u16).pow(2)) as f32 * snapshot.matk_item_modifier()).floor()
@@ -456,7 +463,31 @@ impl StatusService {
         if mana_recharge > 0 {
             bonuses.push(BonusType::SpConsumption((-4 * mana_recharge) as i8));
         }
+        bonuses.extend(crate::server::script::skill::star_gladiator::anger_bonuses(status));
+        let soul_drain = level(SkillEnum::HwSouldrain);
+        if soul_drain > 0 {
+            bonuses.push(BonusType::MaxspPercentage((2 * soul_drain) as i8));
+        }
         bonuses
+    }
+
+    /// A falcon-carrying archer sometimes follows a normal arrow shot with a free Blitz Beat.
+    fn auto_blitz_proc(status: &Status, snapshot: &StatusSnapshot) -> Option<models::status_bonus::CombatProc> {
+        use models::enums::skill_enums::SkillEnum;
+        use models::status_bonus::{AutoSpellFlag, BattleFlag, CombatProc, CombatProcKind, CombatTrigger};
+        let learned = snapshot.known_skill_level(SkillEnum::HtBlitzbeat);
+        if learned == 0 || !status.falcon || *snapshot.right_hand_weapon_type() != models::enums::weapon::WeaponType::Bow {
+            return None;
+        }
+        let level = learned.min(((status.job_level + 9) / 10).clamp(1, u32::from(u8::MAX)) as u8);
+        let per_mille = snapshot.luk() as i32 * 10 / 3 + 1;
+        // Arrow shots halve spell procs, the doubling restores the intended per-mille chance.
+        let mut proc = CombatProc::new(CombatTrigger::Attack, CombatProcKind::Spell, per_mille * 10 * 2);
+        proc.value = SkillEnum::HtBlitzbeat.id();
+        proc.level = i16::from(level);
+        proc.flags = AutoSpellFlag::OtherTarget.as_flag();
+        proc.battle_flags = BattleFlag::normalize(0, true);
+        Some(proc)
     }
 
     fn truncate(x: f32, decimals: u32) -> f32 {
@@ -531,6 +562,9 @@ impl StatusService {
             .sum::<i32>();
         let mut modifier = dex * item * (1.0 + specific as f32 / 100.0).max(0.0);
         if !ignores("IgnoreStatus") {
+            if status.has_status_change(models::status_change::StatusChangeKind::Memorize) {
+                modifier *= 0.5;
+            }
             if let Some(change) = status.status_change(models::status_change::StatusChangeKind::SlowCast) {
                 modifier *= 1.0 + (20 * change.values[0]) as f32 / 100.0;
             }
@@ -863,6 +897,29 @@ mod tests {
         assert!(bonuses.contains(&BonusType::ResistanceDamageFromElementPercentage(Element::Fire, 25)));
         assert!(bonuses.contains(&BonusType::SpConsumption(-20)));
         assert!(StatusService::passive_skill_bonuses(&Status::default()).is_empty());
+    }
+
+    #[test]
+    fn auto_blitz_needs_a_falcon_and_a_bow_and_caps_the_level_by_job_level() {
+        use models::enums::weapon::WeaponType;
+        use models::enums::EnumWithMaskValueU64;
+        use models::item::WearWeapon;
+        use models::status::{KnownSkill, StatusSnapshot};
+        let mut status = Status {
+            luk: 99,
+            job_level: 11,
+            falcon: true,
+            known_skills: vec![KnownSkill { value: SkillEnum::HtBlitzbeat, level: 5 }, KnownSkill { value: SkillEnum::HtFalcon, level: 1 }],
+            weapons: vec![WearWeapon {
+                item_id: 1701, attack: 15, level: 1, weapon_type: WeaponType::Bow, location: models::enums::item::EquipmentLocation::HandRight.as_flag(),
+                refine: 0, element: models::enums::element::Element::Neutral, card0: 0, card1: 0, card2: 0, card3: 0, ranked_forged: false, inventory_index: 0, range: 9,
+            }],
+            ..Status::default()
+        };
+        let proc = StatusService::auto_blitz_proc(&status, &StatusSnapshot::_from(&status)).unwrap();
+        assert_eq!((proc.value, proc.level, proc.rate), (SkillEnum::HtBlitzbeat.id(), 2, 6620));
+        status.falcon = false;
+        assert!(StatusService::auto_blitz_proc(&status, &StatusSnapshot::_from(&status)).is_none());
     }
 
     #[test]

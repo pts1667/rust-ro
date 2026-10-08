@@ -62,6 +62,8 @@ pub struct MapItemSnapshot {
     pub(crate) position: Position,
     pub(crate) guild_id: u32,
     pub(crate) bg_id: u32,
+    /// Monsters that are not status immune do not pick this target (Gangster Paradise while sitting).
+    pub(crate) ignored_by_monsters: bool,
 }
 
 impl MapItem {
@@ -100,7 +102,7 @@ impl MapItem {
 
 impl MapItemSnapshot {
     pub fn new(map_item: MapItem, position: Position) -> Self {
-        Self { map_item, position, guild_id: 0, bg_id: 0 }
+        Self { map_item, position, guild_id: 0, bg_id: 0, ignored_by_monsters: false }
     }
 
     pub fn with_guild(mut self, guild_id: u32) -> Self {
@@ -110,6 +112,11 @@ impl MapItemSnapshot {
 
     pub fn with_bg(mut self, bg_id: u32) -> Self {
         self.bg_id = bg_id;
+        self
+    }
+
+    pub fn ignored_by_monsters(mut self, ignored: bool) -> Self {
+        self.ignored_by_monsters = ignored;
         self
     }
 

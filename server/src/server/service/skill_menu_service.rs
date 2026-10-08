@@ -9,6 +9,8 @@ use crate::repository::model::item_model::{InventoryItemModel, ItemModel};
 use crate::repository::script_inventory_repository::{ScriptInventoryTransaction, ScriptItemGrant};
 use crate::server::model::refine::{self, MAX_REFINE, RefineCostType};
 use crate::server::script::game_data::data;
+use crate::server::script::skill::star_gladiator;
+use crate::server::service::map_flag_service::normalize_map;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character::Character;
@@ -43,6 +45,7 @@ pub enum SkillMenuKind {
     ElementalConverter,
     WeaponRefine,
     AutoSpell,
+    StarPlace,
     RepairWeapon { target: u32 },
 }
 
@@ -61,6 +64,7 @@ pub enum SkillMenuChoice {
     WeaponRefine(u32),
     Repair(u16),
     AutoSpell(u32),
+    StarPlace(u8),
 }
 
 pub fn is_menu_skill(name: &str) -> bool {
@@ -213,6 +217,10 @@ impl Server {
                 }
                 (SkillMenuKind::AutoSpell, packet)
             }
+            "SG_FEEL" => match self.star_place_menu(character, level)? {
+                Some(packet) => (SkillMenuKind::StarPlace, packet),
+                None => return Ok(()),
+            },
             "BS_REPAIRWEAPON" => {
                 let target = self.repair_target(state, character, skill_id, level, target_id)?;
                 let mut entries = vec![];
@@ -311,6 +319,7 @@ impl Server {
                 let learned = learned_level(character, spell);
                 self.script_skill_service().start_auto_spell(self, character, menu.level, spell, learned, tick)
             }
+            (SkillMenuKind::StarPlace, SkillMenuChoice::StarPlace(which)) => self.remember_star_place(character, &menu, which, tick),
             (SkillMenuKind::WeaponRefine, SkillMenuChoice::WeaponRefine(index)) => {
                 let index = index.checked_sub(CLIENT_INDEX_OFFSET).and_then(|index| usize::try_from(index).ok());
                 index.map_or(Ok(()), |index| self.refine_weapon(character, &menu, index, tick))
@@ -318,8 +327,31 @@ impl Server {
             (SkillMenuKind::RepairWeapon { target }, SkillMenuChoice::Repair(index)) if index != MENU_CANCELLED => {
                 self.repair_weapon(state, character, &menu, *target, usize::from(index), tick)
             }
-            (_, SkillMenuChoice::Arrow(_) | SkillMenuChoice::WeaponRefine(_) | SkillMenuChoice::Repair(_) | SkillMenuChoice::AutoSpell(_)) => Ok(()),
+            (_, SkillMenuChoice::Arrow(_) | SkillMenuChoice::WeaponRefine(_) | SkillMenuChoice::Repair(_) | SkillMenuChoice::AutoSpell(_) | SkillMenuChoice::StarPlace(_)) => Ok(()),
         }
+    }
+
+    /// Feeling of the Sun, Moon and Stars asks the client to confirm the current map, or shows the one already remembered.
+    fn star_place_menu(&self, character: &Character, level: u8) -> Result<Option<Vec<u8>>, String> {
+        let slot = star_gladiator::level_slot(level)?;
+        let place = &character.game_systems.star_places[slot];
+        if place.is_empty() {
+            return Ok(Some(star_gladiator::place_request_packet(slot)));
+        }
+        self.send_to_character(character.char_id, star_gladiator::place_packet(place, slot));
+        Ok(None)
+    }
+
+    fn remember_star_place(&self, character: &mut Character, menu: &SkillMenu, which: u8, tick: u128) -> Result<(), String> {
+        let slot = star_gladiator::level_slot(menu.level)?;
+        if usize::from(which) != slot || !character.game_systems.star_places[slot].is_empty() {
+            return Err("This place cannot be remembered".into());
+        }
+        self.pay_menu_skill(character, menu, tick)?;
+        character.game_systems.star_places[slot] = normalize_map(character.current_map_name());
+        self.script_world_service().persist(character)?;
+        self.send_to_character(character.char_id, star_gladiator::place_packet(&character.game_systems.star_places[slot], slot));
+        Ok(())
     }
 
     fn pay_menu_skill(&self, character: &mut Character, menu: &SkillMenu, tick: u128) -> Result<(), String> {

@@ -269,6 +269,7 @@ impl Character {
         self.status.active_auto_bonuses.retain(|bonus| {
             bonus.definition.source_pet_id == 0 || active_pet_id == Some(bonus.definition.source_pet_id)
         });
+        self.status.star_hates = self.game_systems.star_hates;
         self.status.spirit_sphere_count = u8::try_from(self.script_skill_state.spirit_spheres.len()).unwrap_or(u8::MAX);
         self.status.script_context = Some(std::sync::Arc::new(self.script_character_state()));
     }
@@ -767,6 +768,7 @@ impl Character {
     pub fn set_options(&mut self, options: u64) {
         self.options = options;
         self.status.riding = options & PlayerOption::Riding.as_flag() != 0;
+        self.status.falcon = options & PlayerOption::Falcon.as_flag() != 0;
     }
 
     pub fn weight(&self) -> u32 {
@@ -819,5 +821,9 @@ impl ToMapItemSnapshot for Character {
         })
         .with_guild(self.game_systems.guild_id)
         .with_bg(self.bg_id)
+        .ignored_by_monsters(
+            self.is_sitting()
+                && self.status.known_skills.iter().any(|skill| skill.value == models::enums::skill_enums::SkillEnum::RgGangster && skill.level > 0),
+        )
     }
 }

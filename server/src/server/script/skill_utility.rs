@@ -130,7 +130,7 @@ impl ScriptSkillService {
             let base_delay = SkillMetadata::find(skill.id).and_then(|metadata| metadata.after_cast_act_delay.as_ref()?.value(effect.level, "Time")).unwrap_or(0).max(0) as u32;
             let after_cast = StatusService::skill_after_cast_delay(&status, skill.id, base_delay) as u128;
             character.timing.set_canact_tick(tick + delay + after_cast);
-            if character.status.has_status_change(StatusChangeKind::Suffragium) { StatusEffectService::end_status_at(&mut character.status, Some(StatusChangeKind::Suffragium), tick); StatusEffectService::send_icon(character, StatusChangeKind::Suffragium, false, tick, &self.client_notification_sender); }
+            Self::spend_cast_statuses(character, skill.id, tick, &self.client_notification_sender);
         }
         server.add_to_tick(GameEvent::CharacterScriptSkill(effect), delay.div_ceil(40).max(1).saturating_sub(1).min(usize::MAX as u128) as usize);
     }

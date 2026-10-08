@@ -147,6 +147,34 @@ impl ItemService {
         Ok(success)
     }
 
+    /// Twilight Alchemy: makes `quantity` of an item in one go, each one rolling its own success, and returns how many succeeded.
+    pub(crate) fn make_batch(&self, server: &Server, character: &mut Character, item_id: i32, quantity: u16, trigger: u16) -> Result<u16, String> {
+        let counts = count_items(character);
+        let recipe = data().recipes.iter().find(|recipe| {
+            recipe.item_id == item_id
+                && can_make(character, recipe, &counts)
+                && recipe.materials.iter().all(|material| counts.get(&material.item_id).copied().unwrap_or_default() >= i32::from(material.amount.max(1)) * i32::from(quantity))
+        }).ok_or("The materials for this batch are missing")?;
+        let mut removals = Vec::new();
+        for material in recipe.materials.iter().filter(|material| material.amount > 0) {
+            removals.push((material.item_id, material.amount.checked_mul(quantity as i16).ok_or("Too many materials")?));
+        }
+        let mut rng = fastrand::Rng::new();
+        let successes = (0..quantity).filter(|_| {
+            let chance = self.crafting_chance(character, recipe, trigger, 0, false, &counts, &mut rng);
+            rng.i32(0..10_000) < chance
+        }).count() as u16;
+        let creator = [character.char_id as u16 as i16, (character.char_id >> 16) as u16 as i16];
+        let change = ScriptInventoryTransaction { char_id: character.char_id, account_id: character.account_id, consumption: None, exact_removals: vec![], hp: None, sp: None,
+            removals, grants: if successes > 0 { vec![ScriptItemGrant { item_id: recipe.item_id, amount: successes as i16, identified: true, refine: 0, cards: [254, 0, creator[0], creator[1]], unique_id: None, damaged: false }] } else { vec![] },
+            identifications: vec![], variables: vec![], zeny: None, max_weight: server.character_service().max_weight(character), max_slots: 100, world: None, reset_skills: None,
+            character_changes: vec![], pool_draws: vec![], fame: None };
+        let result = server.repository.script_inventory_transaction(&change).map_err(|error| error.to_string())?;
+        self.install_inventory(server, character, result.inventory, None);
+        character.refresh_script_context();
+        Ok(successes)
+    }
+
     fn crafting_chance(&self, character: &Character, recipe: &Recipe, trigger: u16, stars: i32, elemental: bool, counts: &HashMap<i32, i32>, rng: &mut fastrand::Rng) -> i32 {
         let snapshot = StatusService::instance().to_snapshot(&character.status);
         let skill = |name: &str| character.status.known_skills.iter().find(|skill| skill.value.to_name() == name).map_or(0, |skill| i32::from(skill.level));

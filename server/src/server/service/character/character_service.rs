@@ -109,8 +109,10 @@ impl CharacterService {
         } else {
             0
         };
-        let enlarge_weight_limit = 2000 * u32::from(crate::server::service::script_character_service::learned_level(&character.status, SkillEnum::McInccarry.id()));
-        base_weight + (character.status.str * 300) as u32 + riding + enlarge_weight_limit
+        let learned = |skill: SkillEnum| u32::from(crate::server::service::script_character_service::learned_level(&character.status, skill.id()));
+        let enlarge_weight_limit = 2000 * (learned(SkillEnum::McInccarry) + learned(SkillEnum::AllInccarry));
+        let weight = base_weight + (character.status.str * 300) as u32 + riding + enlarge_weight_limit;
+        weight + weight * crate::server::script::skill::star_gladiator::knowledge_weight_percent(character) / 100
     }
 
     pub fn can_carry_weight(&self, character: &Character, additional_weight: u32) -> bool {
@@ -373,6 +375,10 @@ impl CharacterService {
         if !character.transition_to_standing() {
             return;
         }
+        if character.status.has_status_change(models::status_change::StatusChangeKind::TensionRelax) {
+            crate::server::service::status_effect_service::StatusEffectService::end_status(&mut character.status, Some(models::status_change::StatusChangeKind::TensionRelax));
+            crate::server::service::status_effect_service::StatusEffectService::send_icon(character, models::status_change::StatusChangeKind::TensionRelax, false, 0, &self.client_notification_sender);
+        }
         let mut packet_zc_msg_state_change = PacketZcMsgStateChange::new(self.configuration_service.packetver());
         packet_zc_msg_state_change.set_aid(character.char_id);
         packet_zc_msg_state_change.set_index(ClientEffectIcon::Sit as i16);
@@ -396,16 +402,17 @@ impl CharacterService {
         let battle = &self.configuration_service.config().battle;
         let interval = battle.get("natural_healhp_interval") as u128;
         let delay = if character.is_sitting() { interval / 2 } else { interval };
+        let regen_while_walking = crate::server::service::script_character_service::learned_level(&character.status, SkillEnum::SmMovingrecovery.id()) > 0;
         if character.status.hp > 0
-            && tick > character.last_moved_at
-            && tick - character.last_moved_at >= delay
+            && (regen_while_walking || tick > character.last_moved_at && tick - character.last_moved_at >= delay)
             && tick > character.last_regen_hp_at
             && tick - character.last_regen_hp_at >= delay
             && !self.blocks_natural_regen(character)
             && character_status.hp() < character_status.max_hp()
         {
-            let hp_regen = self.status_service.character_regen_hp(&character_status);
-            let hp = character_status.hp() + hp_regen;
+            let relaxed = character.is_sitting() && character.status.has_status_change(models::status_change::StatusChangeKind::TensionRelax);
+            let hp_regen = self.status_service.character_regen_hp(&character_status) * if relaxed { 3 } else { 1 };
+            let hp = (character_status.hp() + hp_regen).min(character_status.max_hp());
             character.status.set_hp(hp);
             character.last_regen_hp_at = tick;
             let mut packet_status_hp_change = PacketZcParChange::new(self.configuration_service.packetver());

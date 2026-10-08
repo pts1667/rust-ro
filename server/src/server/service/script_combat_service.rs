@@ -127,7 +127,11 @@ pub fn handle(server: &Server, state: &mut ServerState, request: ScriptCombatReq
         monster_level: mob.map_or(1, |mob| mob.level.max(1) as u32),
     };
     let mut rng = fastrand::Rng::new();
-    let effects = resolve(owner.bonuses(), &event, &mut rng);
+    let mut effects = resolve(owner.bonuses(), &event, &mut rng);
+    let soul_drain = owner.known_skill_level(models::enums::skill_enums::SkillEnum::HwSouldrain);
+    if request.trigger == CombatTrigger::Kill && soul_drain > 0 && request.battle_flags & models::status_bonus::BattleFlag::Magic.as_flag() != 0 {
+        effects.push(CombatEffect::Heal { hp: 0, sp: (event.monster_level * (95 + 15 * u32::from(soul_drain)) / 100) as i32 });
+    }
     for effect in effects {
         if let Err(error) = apply_effect(server, state, &request, &other, effect, tick, &mut rng) {
             error!("Unable to apply equipment combat effect for {}: {}", request.source_id, error);

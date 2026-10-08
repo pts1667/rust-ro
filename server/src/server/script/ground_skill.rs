@@ -403,7 +403,7 @@ impl ScriptSkillService {
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal ground definition is unavailable")?;
         if GroundKind::from_name(&metadata.name).is_none()
-            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "AM_SPHEREMINE" | "AM_CANNIBALIZE")
+            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "AM_SPHEREMINE" | "AM_CANNIBALIZE" | "CR_SLIMPITCHER" | "CR_CULTIVATION")
         {
             return Err("Skill does not accept a ground target".into());
         }
@@ -564,7 +564,7 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION") {
+        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "CR_SLIMPITCHER" | "CR_CULTIVATION") {
             if instant && metadata.name == "BS_HAMMERFALL" {
                 return self.cast_area_status(server, state, character, skill_id, level, x, y, tick);
             }
@@ -635,20 +635,7 @@ impl ScriptSkillService {
                             .max(0) as u128,
                 ),
             );
-            if character.status.has_status_change(StatusChangeKind::Suffragium) {
-                crate::server::service::status_effect_service::StatusEffectService::end_status_at(
-                    &mut character.status,
-                    Some(StatusChangeKind::Suffragium),
-                    tick,
-                );
-                crate::server::service::status_effect_service::StatusEffectService::send_icon(
-                    character,
-                    StatusChangeKind::Suffragium,
-                    false,
-                    tick,
-                    &self.client_notification_sender,
-                );
-            }
+            Self::spend_cast_statuses(character, skill_id, tick, &self.client_notification_sender);
         }
         let mut base_duration = metadata.duration(level, false).unwrap_or(100);
         if kind == GroundKind::Firewall && character.status.has_status_change(StatusChangeKind::ViolentGale) {

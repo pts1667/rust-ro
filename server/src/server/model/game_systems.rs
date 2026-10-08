@@ -19,6 +19,10 @@ pub struct CharacterGameSystems {
     pub permanent_skill_grants: BTreeMap<u32, u8>,
     pub memo_points: [Option<MemoPoint>; 3],
     pub partner_id: u32,
+    /// Maps remembered by Feeling of the Sun, Moon and Stars, empty when the slot is free.
+    pub star_places: [String; 3],
+    /// Monster classes registered by Hatred of the Sun, Moon and Stars, 0 when the slot is free.
+    pub star_hates: [u32; 3],
     pub father_id: u32,
     pub mother_id: u32,
     pub child_id: u32,

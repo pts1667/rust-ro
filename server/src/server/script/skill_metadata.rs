@@ -58,6 +58,8 @@ pub enum SkillRoute {
     Passive,
     /// Monster, homunculus, mercenary and other actor-only skills.
     Actor,
+    /// Casting needs no handler: the reference server does nothing for it, or the effect is driven elsewhere (a client packet, an item).
+    Inert,
     /// No handler yet; casting does nothing. Listed so the gap stays visible.
     Unrouted,
 }
@@ -77,7 +79,7 @@ impl SkillRoute {
             Self::Dispel => Operation::Dispel,
             Self::Tarot => Operation::Tarot,
             Self::Estimate => Operation::Estimate,
-            Self::Menu | Self::Guild | Self::Native | Self::Passive | Self::Actor | Self::Unrouted => return None,
+            Self::Menu | Self::Guild | Self::Native | Self::Passive | Self::Actor | Self::Inert | Self::Unrouted => return None,
         })
     }
 }

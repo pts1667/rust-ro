@@ -173,6 +173,20 @@ mod equipment_bonus_tests {
     }
 
     #[test]
+    fn blitz_beat_ignores_defense_and_scales_with_hits_and_steel_crow() {
+        use models::status::KnownSkill;
+        let service = context();
+        let target = status();
+        let mut source = weapon_status(&[]);
+        let blitz = |level| skills::skill_enums::to_object(SkillEnum::HtBlitzbeat, level).unwrap();
+        assert_eq!(service.calculate_damage(&source, &target, blitz(5).as_offensive_skill()), 5 * 80);
+        source.set_known_skills(vec![KnownSkill { value: SkillEnum::HtSteelcrow, level: 10 }]);
+        assert_eq!(service.calculate_damage(&source, &target, blitz(3).as_offensive_skill()), 3 * 140);
+        let assault = skills::skill_enums::to_object(SkillEnum::SnFalconassault, 1).unwrap();
+        assert_eq!(service.calculate_damage(&source, &target, assault.as_offensive_skill()), 140 * 5 * 220 / 100);
+    }
+
+    #[test]
     fn conditional_weapon_attack_adds_base_attack_only_for_the_actual_combined_weapon() {
         use models::enums::item::EquipmentLocation::{HandLeft, HandRight};
         let service = context();
@@ -2533,6 +2547,18 @@ impl BattleService {
         let mut damage = 0;
         let mut magic_context = None;
         if let Some(skill) = skill {
+            if matches!(skill.id(), id if id == SkillEnum::HtBlitzbeat.id() || id == SkillEnum::SnFalconassault.id()) {
+                let flags = BattleFlag::Misc.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
+                let per_hit = Self::falcon_hit_damage(source_status);
+                let hits = u32::from(skill.hit_count().unsigned_abs().max(1));
+                let raw = if skill.id() == SkillEnum::SnFalconassault.id() {
+                    per_hit * 5 * (150 + 70 * u32::from(skill.level())) / 100
+                } else {
+                    per_hit
+                };
+                let damage = self.actor_misc_skill_damage(raw, source_status, target_status, &Element::Neutral, flags, skill.id());
+                return ((damage * hits).min(i32::MAX as u32) as i32, None);
+            }
             if matches!(skill.id(), id if id == SkillEnum::PaPressure.id() || id == SkillEnum::TfThrowstone.id()) {
                 let raw = if skill.id() == SkillEnum::PaPressure.id() {
                     500 + 300 * u32::from(skill.level())
@@ -2631,6 +2657,11 @@ impl BattleService {
         }
 
         (damage, magic_context)
+    }
+
+    /// Blitz Beat damage per hit, before the hit count and defensive reductions.
+    pub fn falcon_hit_damage(source: &StatusSnapshot) -> u32 {
+        (u32::from(source.dex() / 10 + source.int() / 2) + 3 * u32::from(source.known_skill_level(SkillEnum::HtSteelcrow)) + 40) * 2
     }
 
     pub fn is_weapon_skill(skill: &dyn OffensiveSkill) -> bool {
@@ -3660,6 +3691,7 @@ impl BattleService {
             .and_then(|change| Element::try_from_value(change.values[0] as usize).ok())
             .or_else(|| {
                 [
+                    (StatusChangeKind::Edp, Element::Poison),
                     (StatusChangeKind::WaterWeapon, Element::Water),
                     (StatusChangeKind::EarthWeapon, Element::Earth),
                     (StatusChangeKind::FireWeapon, Element::Fire),
@@ -3682,7 +3714,10 @@ impl BattleService {
             }
             _ => None,
         });
-        let damage = scale_damage(damage, generic);
+        let mut damage = scale_damage(damage, generic);
+        if let Some(edp) = source.status_change(models::status_change::StatusChangeKind::Edp).filter(|_| !magic && *element == Element::Poison) {
+            damage = scale_damage(scale_damage(damage, edp.values[2]), 25);
+        }
         if magic {
             scale_damage(
                 damage,

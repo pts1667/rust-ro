@@ -244,6 +244,8 @@ impl ScriptSkillService {
             ScriptSkillAction::AreaStatus { x, y } => match SkillMetadata::find(effect.skill_id).map(|metadata| metadata.name.as_str()) {
                 Some("HW_GANBANTEIN") => self.clear_ground_units(character, x, y),
                 Some("MO_BODYRELOCATION") => self.body_relocation(server, state, character, x, y, tick),
+                Some("CR_SLIMPITCHER") => self.aid_condensed_potion(server, state, character, effect, x, y)?,
+                Some("CR_CULTIVATION") => self.cultivate(state, character, effect, x, y)?,
                 _ => self.cast_area_status(server, state, character, effect.skill_id, effect.level, x, y, tick)?,
             },
             ScriptSkillAction::Summon { x, y } => self.summon_alchemist_creature(state, character, effect, x, y)?,

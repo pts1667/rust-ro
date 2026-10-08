@@ -1083,6 +1083,7 @@ impl ToMapItemSnapshot for Mob {
             },
             guild_id: 0,
             bg_id: self.bg_id,
+            ignored_by_monsters: false,
         }
     }
 }

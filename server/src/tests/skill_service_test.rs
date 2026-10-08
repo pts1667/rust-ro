@@ -122,6 +122,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         let known_skill = KnownSkill {
             value: SkillEnum::SmBash,
@@ -298,6 +299,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -390,6 +392,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -480,6 +483,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -574,6 +578,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         let character_status = status_snapshot!(context, character);
         // When
@@ -682,6 +687,7 @@ mod tests {
             },
             guild_id: 0,
             bg_id: 0,
+            ignored_by_monsters: false,
         };
         // When
         for scenarii in scenario {

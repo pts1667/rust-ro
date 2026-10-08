@@ -240,6 +240,17 @@ mod tests {
     }
 
     #[test]
+    fn star_place_confirmation_is_framed_before_the_next_command() {
+        for version in [20120229, 20120307] {
+            let mut frames = ClientFrames::new(version);
+            let agree = [0x54, 0x02, 1];
+            let amount = [0x43, 0x01, 1, 2, 3, 4, 5, 6, 7, 8];
+            let stream = [agree.as_slice(), amount.as_slice()].concat();
+            assert_eq!(frames.push(&stream).unwrap(), vec![agree.to_vec(), amount.to_vec()], "packetver {version}");
+        }
+    }
+
+    #[test]
     fn keeps_fragmented_world_packets_and_separates_coalesced_packets() {
         let mut frames = ClientFrames::new(20120229);
         assert!(frames.push(&[0x9F]).unwrap().is_empty());

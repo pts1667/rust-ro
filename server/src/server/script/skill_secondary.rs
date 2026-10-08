@@ -62,6 +62,8 @@ impl ScriptSkillService {
         match metadata.name.as_str() {
             "TF_POISON" => status(Poison, (10 + 4 * level_i) * 100, true),
             "NPC_POISON" => status(Poison, 2000 * level_i, true),
+            "AS_VENOMKNIFE" => status(Poison, 10000, true),
+            "MO_BALKYOUNG" => status(Stun, 7000, true),
             "NPC_HELLJUDGEMENT" => status(Curse, 10000, true),
             "AS_SPLASHER" => status(Poison, 10000, true),
             "MG_FROSTDIVER" => status(Freeze, (3 * level_i + 35).min(level_i + 60) * 100, true),

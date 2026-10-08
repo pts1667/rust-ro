@@ -148,7 +148,10 @@ impl ScriptSkillService {
             allow_hp_death: false,
             hp,
             sp,
-            zeny: amount("ZenyCost").max(0) as u32,
+            zeny: {
+                let zeny = amount("ZenyCost").max(0) as u32;
+                if metadata.name == "MC_MAMMONITE" && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::BsUnfairlytrick) > 0 { zeny * 9 / 10 } else { zeny }
+            },
             spirit_spheres: spheres,
             removals: vec![],
         };
@@ -246,12 +249,17 @@ impl ScriptSkillService {
             .any(|bonus| matches!(bonus, BonusType::EnableNoGemstoneRequired))
             || (character.status.has_status_change(StatusChangeKind::IntoAbyss) && metadata.name != "HW_GANBANTEIN");
         if metadata.name != "AM_CALLHOMUN" {
-            for requirement in requirements
+            let one_per_level = matches!(metadata.name.as_str(), "AM_POTIONPITCHER" | "CR_SLIMPITCHER" | "CR_CULTIVATION");
+            for (index, requirement) in requirements
                 .get("ItemCost")
                 .and_then(|value| value.as_array())
                 .into_iter()
                 .flatten()
+                .enumerate()
             {
+                if one_per_level && index + 1 != usize::from(level) {
+                    continue;
+                }
                 if requirement
                     .get("Level")
                     .and_then(|value| value.as_u64())

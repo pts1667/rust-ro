@@ -320,7 +320,7 @@ impl SkillBase for FalconAssault {
         false
     }
     fn _is_physical(&self) -> bool {
-        true
+        false
     }
     #[inline(always)]
     fn _validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {

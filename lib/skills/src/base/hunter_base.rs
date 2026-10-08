@@ -1648,7 +1648,7 @@ impl SkillBase for BlitzBeat {
         129
     }
     fn skill_type(&self) -> SkillType {
-        SkillType::Passive
+        SkillType::Offensive
     }
     fn _level(&self) -> u8 {
         self.level
@@ -1708,7 +1708,7 @@ impl SkillBase for BlitzBeat {
         0
     }
     fn _target_type(&self) -> SkillTargetType {
-        SkillTargetType::Passive
+        SkillTargetType::Target
     }
     fn _is_magic(&self) -> bool {
         false
@@ -1753,15 +1753,27 @@ impl SkillBase for BlitzBeat {
        1000
     }
     #[inline(always)]
-    fn is_passive_skill(&self) -> bool {
+    fn is_offensive_skill(&self) -> bool {
         true
     }
     #[inline(always)]
-    fn as_passive_skill(&self) -> Option<&dyn PassiveSkill> {
+    fn as_offensive_skill(&self) -> Option<&dyn OffensiveSkill> {
         Some(self)
     }
 }
-impl PassiveSkillBase for BlitzBeat {
+impl OffensiveSkillBase for BlitzBeat {
+    #[inline(always)]
+    fn _hit_count(&self) -> i8 {
+        self.level as i8
+    }
+    #[inline(always)]
+    fn _element(&self) -> Element {
+        Element::Neutral
+    }
+    #[inline(always)]
+    fn _inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
+        vec![]
+    }
 }
 // HT_DETECTING - Detect
 pub struct Detect {

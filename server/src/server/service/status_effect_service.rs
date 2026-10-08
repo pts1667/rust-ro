@@ -194,6 +194,15 @@ impl StatusEffectService {
                 Quagmire => { if values[1] == 0 { values[1] = (if player { 5 } else { 10 }) * values[0]; } }
                 Kyrie => { values[1] = (status.max_hp as u64 * (values[0].max(0) as u64 * 2 + 10) / 100).min(i32::MAX as u64) as i32; values[2] = values[0] / 2 + 5; }
                 WindWalk => values[1] = (values[0] + 1) / 2,
+                Edp => { values[1] = (values[0] + 1) / 2 + 2; values[2] = 50 * (values[0] + 1); }
+                PoisonReact => { values[1] = values[0] / 2; values[2] = 50; }
+                RejectSword => { values[1] = 15 * values[0]; values[2] = 3; }
+                DoubleCast => values[1] = 30 + 10 * values[0],
+                Memorize => { values[1] = 5; duration = -1; }
+                MagicPower => { values[1] = 5 * values[0]; values[3] = 0; }
+                Meltdown => { values[1] = 100 * values[0]; values[2] = 70 * values[0]; }
+                Sacrifice => { values[1] = 5; duration = -1; }
+                Utsusemi => values[1] = (values[0] + 1) / 2,
                 MercFleeUp | MercAttackUp | MercHitUp => values[1] = 15 * values[0],
                 MercHpUp | MercSpUp => values[1] = 5 * values[0],
                 MagicMirror => values[1] = 20 * (1 + (values[0].max(1) - 1) % 5),
@@ -516,6 +525,17 @@ impl StatusEffectService {
         Some(revived)
     }
 
+    /// Counter Instinct: a blade hit is halved and the cut half goes back to the attacker, three times at most.
+    pub fn reject_sword(status: &mut Status, attacker_uses_blade: bool, flags: u32, damage: u32, roll: u8) -> u32 {
+        use models::status_bonus::BattleFlag;
+        if !attacker_uses_blade || damage < 2 || flags & BattleFlag::Weapon.as_flag() == 0 { return 0; }
+        let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::RejectSword) else { return 0 };
+        if i32::from(roll) >= change.values[1] { return 0; }
+        change.values[2] -= 1;
+        if change.values[2] <= 0 { Self::end_status(status, Some(StatusChangeKind::RejectSword)); }
+        damage / 2
+    }
+
     pub fn apply_incoming_damage(status: &mut Status, damage: u32, physical: bool) -> u32 {
         use models::status_bonus::BattleFlag;
         let flags = if physical { BattleFlag::Weapon.as_flag() } else { BattleFlag::Magic.as_flag() };
@@ -559,6 +579,13 @@ impl StatusEffectService {
             if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::SafetyWall) {
                 change.values[1] -= 1;
                 if change.values[1] <= 0 { Self::end_status(status, Some(StatusChangeKind::SafetyWall)); }
+                return 0;
+            }
+        }
+        if physical {
+            if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::Utsusemi) {
+                change.values[1] -= 1;
+                if change.values[1] <= 0 { Self::end_status(status, Some(StatusChangeKind::Utsusemi)); }
                 return 0;
             }
         }
@@ -650,6 +677,7 @@ impl StatusEffectService {
             }
             server.character_service().reload_client_side_status(character);
             Self::send_visual_status(character, sender);
+            if kind == StatusChangeKind::TensionRelax { server.character_service().sit(character); }
             if pet_recovery_start { server.script_world_service().pet_status_started(character, kind, tick); }
         }
         Ok(result.started)
@@ -811,6 +839,13 @@ impl StatusEffectService {
                 AssnCros => quicken = quicken.max(second),
                 DontForgetMe => { attack_delay_penalty += second; slow = slow.max(third); }
                 Longing => { attack_delay_penalty += second; slow = slow.max(50 - 10 * value); }
+                Dancing if player && !status.has_status_change(Longing) => {
+                    use models::enums::skill_enums::SkillEnum::{BaMusicallesson, DcDancinglesson, SlBarddancer};
+                    let lesson = i32::from(snapshot.known_skill_level(BaMusicallesson).max(snapshot.known_skill_level(DcDancinglesson)));
+                    let linked = status.status_change(Spirit).is_some_and(|spirit| spirit.values[1] == SlBarddancer.id() as i32);
+                    let link_level = if linked { i32::from(snapshot.known_skill_level(SlBarddancer)) } else { 0 };
+                    slow = slow.max((500 - (40 + 10 * link_level) * lesson).max(0));
+                }
                 EternalChaos => snapshot.set_def(0),
                 Nibelungen if !player || status.right_hand_weapon().is_some_and(|weapon| weapon.level == 4) => {
                     snapshot.set_atk_right_side(snapshot.atk_right_side().saturating_add(second));
@@ -965,6 +1000,34 @@ mod tests {
         assert_eq!(StatusEffectService::apply_incoming_damage(&mut status, 2000, true), 0);
         assert_eq!(StatusEffectService::apply_incoming_damage(&mut status, 2000, true), 1000);
         assert!(!status.has_status_change(StatusChangeKind::Kyrie));
+    }
+
+    #[test]
+    fn cicada_skin_shedding_blocks_weapon_hits_until_its_charges_run_out() {
+        use models::status_bonus::BattleFlag;
+        let mut status = status();
+        start_for_test(&mut status, StatusChangeKind::Utsusemi, 20000, 3, 0);
+        let weapon = BattleFlag::Weapon.as_flag() | BattleFlag::Short.as_flag();
+        assert_eq!(StatusEffectService::apply_incoming_damage_flags(&mut status, 500, weapon, false), 0);
+        assert_eq!(StatusEffectService::apply_incoming_damage_flags(&mut status, 500, BattleFlag::Magic.as_flag(), false), 500);
+        assert_eq!(StatusEffectService::apply_incoming_damage_flags(&mut status, 500, weapon, false), 0);
+        assert!(!status.has_status_change(StatusChangeKind::Utsusemi));
+        assert_eq!(StatusEffectService::apply_incoming_damage_flags(&mut status, 500, weapon, false), 500);
+    }
+
+    #[test]
+    fn reject_sword_returns_half_of_blade_hits_for_three_uses() {
+        use models::status_bonus::BattleFlag;
+        let mut status = status();
+        start_for_test(&mut status, StatusChangeKind::RejectSword, 300000, 5, 0);
+        let weapon = BattleFlag::Weapon.as_flag();
+        assert_eq!(StatusEffectService::reject_sword(&mut status, false, weapon, 100, 0), 0);
+        assert_eq!(StatusEffectService::reject_sword(&mut status, true, BattleFlag::Magic.as_flag(), 100, 0), 0);
+        assert_eq!(StatusEffectService::reject_sword(&mut status, true, weapon, 100, 99), 0);
+        for _ in 0..3 {
+            assert_eq!(StatusEffectService::reject_sword(&mut status, true, weapon, 100, 0), 50);
+        }
+        assert!(!status.has_status_change(StatusChangeKind::RejectSword));
     }
 
     #[test]

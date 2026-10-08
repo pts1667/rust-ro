@@ -2030,7 +2030,7 @@ impl SkillBase for KiExplosion {
         1016
     }
     fn skill_type(&self) -> SkillType {
-        SkillType::Support
+        SkillType::Offensive
     }
     fn _level(&self) -> u8 {
         self.level
@@ -2081,7 +2081,7 @@ impl SkillBase for KiExplosion {
         false
     }
     fn _is_physical(&self) -> bool {
-        false
+        true
     }
     #[inline(always)]
     fn _validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {
@@ -2096,11 +2096,11 @@ impl SkillBase for KiExplosion {
        2000
     }
     #[inline(always)]
-    fn is_supportive_skill(&self) -> bool {
+    fn is_offensive_skill(&self) -> bool {
         true
     }
     #[inline(always)]
-    fn as_supportive_skill(&self) -> Option<&dyn SupportiveSkill> {
+    fn as_offensive_skill(&self) -> Option<&dyn OffensiveSkill> {
         Some(self)
     }
     #[inline(always)]
@@ -2108,5 +2108,21 @@ impl SkillBase for KiExplosion {
         16
     }
 }
-impl SupportiveSkillBase for KiExplosion {
+impl OffensiveSkillBase for KiExplosion {
+    #[inline(always)]
+    fn _hit_count(&self) -> i8 {
+        1
+    }
+    #[inline(always)]
+    fn _element(&self) -> Element {
+        Element::Neutral
+    }
+    #[inline(always)]
+    fn _dmg_atk(&self) -> Option<f32> {
+        Some(3.0)
+    }
+    #[inline(always)]
+    fn _inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
+        vec![]
+    }
 }

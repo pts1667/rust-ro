@@ -348,6 +348,9 @@ fn area_and_utility_skills_pay_once_when_the_queued_effect_completes() {
         } else {
             id
         };
+        if skill == SkillEnum::BsGreed {
+            context.server.map_flag_overrides().insert(("empty".into(), 0), Default::default());
+        }
         context.server.state_mut().insert_character(character);
         context
             .server

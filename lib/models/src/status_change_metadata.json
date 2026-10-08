@@ -336,6 +336,34 @@
       "NoUnEquipItem": true
     }
   },
+  "BLADESTOP": {
+    "DurationLookup": "MO_BLADESTOP",
+    "Flags": {
+      "MobLoseTarget": true,
+      "NoClearance": true,
+      "NoClearbuff": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_BLADESTOP",
+    "States": {
+      "NoAttack": true,
+      "NoDropItem": true,
+      "NoInteract": true,
+      "NoMove": true,
+      "NoPickItem": true
+    }
+  },
+  "BLADESTOP_WAIT": {
+    "DurationLookup": "MO_BLADESTOP",
+    "Flags": {
+      "RemoveOnChangeMap": true
+    },
+    "States": {
+      "NoMove": true
+    }
+  },
   "BLEEDING": {
     "DurationLookup": "NPC_BLEEDING",
     "Fail": {
@@ -502,6 +530,43 @@
     },
     "States": {
       "NoPickItem": true
+    }
+  },
+  "CLOSECONFINE": {
+    "DurationLookup": "RG_CLOSECONFINE",
+    "Flags": {
+      "BossResist": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "StopWalking": true
+    },
+    "Icon": "EFST_RG_CCONFINE_M",
+    "States": {
+      "NoMove": true
+    }
+  },
+  "CLOSECONFINE2": {
+    "DurationLookup": "RG_CLOSECONFINE",
+    "Fail": {
+      "Closeconfine2": true
+    },
+    "Flags": {
+      "BossResist": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true,
+      "RemoveOnChangeMap": true,
+      "StopWalking": true
+    },
+    "Icon": "EFST_RG_CCONFINE_S",
+    "States": {
+      "NoMove": true
     }
   },
   "COMA": {
@@ -774,6 +839,15 @@
     },
     "Icon": "EFST_DONTFORGETME"
   },
+  "DOUBLECAST": {
+    "DurationLookup": "PF_DOUBLECASTING",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_DOUBLECASTING"
+  },
   "DPOISON": {
     "DurationLookup": "NPC_POISON",
     "Fail": {
@@ -812,6 +886,16 @@
       "RemoveOnUnequipWeapon": true
     },
     "Icon": "EFST_PROPERTYGROUND"
+  },
+  "EDP": {
+    "DurationLookup": "ASC_EDP",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_EDP"
   },
   "ELEMENTALCHANGE": {
     "DurationLookup": "NPC_ATTRICHANGE",
@@ -1102,6 +1186,17 @@
       "NoSave": true
     }
   },
+  "GOSPEL": {
+    "DurationLookup": "PA_GOSPEL",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_GOSPEL",
+    "States": {
+      "NoMoveCond": true
+    }
+  },
   "HALLUCINATION": {
     "DurationLookup": "NPC_HALLUCINATION",
     "Fail": {
@@ -1134,6 +1229,10 @@
       "NoRemoveOnDead": true
     },
     "Icon": "EFST_HELLPOWER"
+  },
+  "HERMODE": {
+    "DurationLookup": "CG_HERMODE",
+    "Icon": "EFST_HERMODE"
   },
   "HIDING": {
     "DurationLookup": "TF_HIDING",
@@ -1356,6 +1455,15 @@
   "INCREASE_MAXSP": {
     "Icon": "EFST_ATKER_MOVESPEED"
   },
+  "INCREASING": {
+    "DurationLookup": "GS_INCREASING",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_GS_ACCURACY"
+  },
   "INCSTR": {
     "Flags": {
       "NoBanishingBuster": true,
@@ -1544,6 +1652,17 @@
   "MAGICMIRROR": {
     "DurationLookup": "NPC_MAGICMIRROR"
   },
+  "MAGICPOWER": {
+    "DurationLookup": "HW_MAGICPOWER",
+    "EndOnStart": {
+      "Magicpower": true
+    },
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_MAGICPOWER"
+  },
   "MAGICROD": {
     "DurationLookup": "SA_MAGICROD",
     "Flags": {
@@ -1588,6 +1707,26 @@
       "NoDispell": true
     },
     "Icon": "EFST_MANU_MATK"
+  },
+  "MARIONETTE": {
+    "DurationLookup": "CG_MARIONETTE",
+    "Fail": {
+      "Marionette": true
+    },
+    "Flags": {
+      "RemoveOnChangeMap": true
+    },
+    "Icon": "EFST_MARIONETTE_MASTER"
+  },
+  "MARIONETTE2": {
+    "DurationLookup": "CG_MARIONETTE",
+    "Fail": {
+      "Marionette2": true
+    },
+    "Flags": {
+      "RemoveOnChangeMap": true
+    },
+    "Icon": "EFST_MARIONETTE"
   },
   "MATKFOOD": {
     "Flags": {
@@ -1642,6 +1781,26 @@
       "NoRemoveOnDead": true
     },
     "Icon": "EFST_PROTECT_MDEF"
+  },
+  "MELTDOWN": {
+    "DurationLookup": "WS_MELTDOWN",
+    "Flags": {
+      "MadoCancel": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_MELTDOWN"
+  },
+  "MEMORIZE": {
+    "DurationLookup": "PF_MEMORIZE",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_MEMORIZE"
   },
   "MERC_ATKUP": {
     "Flags": {
@@ -1713,8 +1872,25 @@
     },
     "Icon": "EFST_MINDBREAKER"
   },
+  "MIRACLE": {
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "RemoveOnMapWarp": true
+    },
+    "Icon": "EFST_SOULLINK"
+  },
   "MODECHANGE": {
     "DurationLookup": "NPC_EMOTION"
+  },
+  "MOON_COMFORT": {
+    "DurationLookup": "SG_MOON_COMFORT",
+    "Flags": {
+      "RemoveOnMapWarp": true
+    },
+    "Icon": "EFST_MOON_COMFORT"
   },
   "NEN": {
     "CalcFlags": {
@@ -1834,6 +2010,13 @@
       "Poison": true
     }
   },
+  "POISONREACT": {
+    "DurationLookup": "AS_POISONREACT",
+    "Flags": {
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_POISONREACT"
+  },
   "POWERUP": {
     "DurationLookup": "NPC_POWERUP",
     "Flags": {
@@ -1843,6 +2026,14 @@
       "NoDispell": true
     },
     "Icon": "EFST_POWERUP"
+  },
+  "PRESERVE": {
+    "DurationLookup": "ST_PRESERVE",
+    "Flags": {
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_PRESERVE"
   },
   "PROVIDENCE": {
     "DurationLookup": "CR_PROVIDENCE",
@@ -1967,6 +2158,20 @@
     },
     "Icon": "EFST_GDSKILL_REGENERATION"
   },
+  "REJECTSWORD": {
+    "DurationLookup": "ST_REJECTSWORD",
+    "Icon": "EFST_SWORDREJECT"
+  },
+  "RICHMANKIM": {
+    "DurationLookup": "BD_RICHMANKIM",
+    "Flags": {
+      "BossResist": true,
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoDispell": true
+    },
+    "Icon": "EFST_RICHMANKIM"
+  },
   "ROKISWEIL": {
     "DurationLookup": "BD_ROKISWEIL",
     "Flags": {
@@ -1994,6 +2199,12 @@
     },
     "Options": {
       "Ruwach": true
+    }
+  },
+  "SACRIFICE": {
+    "DurationLookup": "PA_SACRIFICE",
+    "Flags": {
+      "RemoveOnHermode": true
     }
   },
   "SAFETYWALL": {
@@ -2044,6 +2255,16 @@
     },
     "Icon": "EFST_PROPERTYDARK"
   },
+  "SHRINK": {
+    "DurationLookup": "CR_SHRINK",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoDispell": true,
+      "NoRemoveOnDead": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_CR_SHRINK"
+  },
   "SIEGFRIED": {
     "DurationLookup": "BD_SIEGFRIED",
     "Flags": {
@@ -2061,6 +2282,18 @@
       "NoSave": true,
       "SendOption": true
     },
+    "Options": {
+      "Sight": true
+    }
+  },
+  "SIGHTBLASTER": {
+    "DurationLookup": "WZ_SIGHTBLASTER",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoDispell": true,
+      "NoSave": true
+    },
+    "Icon": "EFST_WZ_SIGHTBLASTER",
     "Options": {
       "Sight": true
     }
@@ -2275,6 +2508,13 @@
     },
     "Icon": "EFST_STRUP"
   },
+  "STAR_COMFORT": {
+    "DurationLookup": "SG_STAR_COMFORT",
+    "Flags": {
+      "RemoveOnMapWarp": true
+    },
+    "Icon": "EFST_STAR_COMFORT"
+  },
   "STEELBODY": {
     "DurationLookup": "MO_STEELBODY",
     "Flags": {
@@ -2467,12 +2707,31 @@
       "NoAttack": true
     }
   },
+  "SUN_COMFORT": {
+    "DurationLookup": "SG_SUN_COMFORT",
+    "Flags": {
+      "RemoveOnMapWarp": true
+    },
+    "Icon": "EFST_SUN_COMFORT"
+  },
   "SWOO": {
     "DurationLookup": "SL_SWOO",
     "Flags": {
       "NonPlayer": true
     },
     "Icon": "EFST_SWOO"
+  },
+  "TATAMIGAESHI": {
+    "DurationLookup": "NJ_TATAMIGAESHI"
+  },
+  "TENSIONRELAX": {
+    "DurationLookup": "LK_TENSIONRELAX",
+    "Flags": {
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_TENSIONRELAX"
   },
   "TRICKDEAD": {
     "DurationLookup": "NV_TRICKDEAD",
@@ -2520,6 +2779,16 @@
       "RequireWeapon": true
     },
     "Icon": "EFST_TWOHANDQUICKEN"
+  },
+  "UTSUSEMI": {
+    "DurationLookup": "NJ_UTSUSEMI",
+    "Flags": {
+      "NoBanishingBuster": true,
+      "NoClearance": true,
+      "NoSave": true,
+      "RemoveOnHermode": true
+    },
+    "Icon": "EFST_NJ_UTSUSEMI"
   },
   "VIOLENTGALE": {
     "DurationLookup": "SA_VIOLENTGALE",

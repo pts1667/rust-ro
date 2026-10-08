@@ -14,6 +14,7 @@ impl StatusFromDb {
     pub fn from_char_model(char_model: &CharSelectModel, configuration: &GameConfig, known_skills: Vec<KnownSkill>) -> Status {
         Status {
             taekwon_ranked: false,
+            star_hates: [0; 3],
             spirit_sphere_count: 0,
             job: char_model.class as u32,
             hp: char_model.hp as u32,
@@ -48,6 +49,7 @@ impl StatusFromDb {
             job_exp: char_model.job_exp as u32,
             state: 0,
             riding: false,
+            falcon: false,
             is_male: char_model.sex != "F",
             size: Default::default(),
             weapons: vec![],

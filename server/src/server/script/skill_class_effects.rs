@@ -2,7 +2,7 @@ use models::enums::actor::CombatActorKind;
 use models::enums::class::JobName;
 use models::enums::mob::{MobCapability, MobStealFlag};
 use models::enums::skill_enums::SkillEnum;
-use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU8, EnumWithNumberValue};
+use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithMaskValueU8, EnumWithNumberValue};
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
@@ -11,7 +11,7 @@ use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterAddItems, CharacterDamage, CharacterZeny, GameEvent};
-use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobMarkStolen, MobStatusChange, ScriptSpawn};
+use crate::server::model::events::map_event::{MapEvent, MobDamage, MobEndStatus, MobHeal, MobMarkStolen, MobStatusChange, ScriptMobCombat, ScriptSpawn};
 use crate::server::model::map_instance::MapInstance;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_effect_service::StatusEffectService;
@@ -24,12 +24,14 @@ const EMOTION_QUESTION: u8 = 1;
 const SOUL_LINK_MISUSE_STUN_MS: i32 = 500;
 const ES_REPEAT_STUN_MS: i32 = 10_000;
 const SP_PER_SPHERE: u32 = 7;
+const REDEMPTIO_RESURRECTION_LEVEL: u8 = 3;
 /// Chance for Absorb Spirits to drain SP from a monster.
 const ABSORB_MOB_CHANCE_PERCENT: u32 = 20;
 const SOUL_CHANGE_MOB_SP_PERCENT: u32 = 3;
 const MINDBREAKER_BASE_CHANCE: u32 = 55;
 const RANDOM_MONSTER_ATTEMPTS: usize = 64;
 const MAX_RANDOM_MONSTER_LEVEL: i32 = 99;
+const PORING_MOB_ID: u32 = 1002;
 
 impl ScriptSkillService {
     /// The class-specific soul links, each starts `Spirit` on the target with the skill id as its second value.
@@ -66,14 +68,15 @@ impl ScriptSkillService {
             || Self::es_debuff(name).is_some()
             || Self::is_taekwon_skill(name)
             || Self::is_performance_skill(name)
+            || Self::is_alchemy_skill(name)
             || matches!(
             name,
-            "MO_ABSORBSPIRITS" | "TF_STEAL" | "RG_STEALCOIN" | "PF_MINDBREAKER" | "PF_HPCONVERSION" | "PF_SOULCHANGE" | "SA_QUESTION" | "SA_GRAVITY"
+            "MO_ABSORBSPIRITS" | "MO_KITRANSLATION" | "CR_FULLPROTECTION" | "PR_REDEMPTIO" | "SG_SUN_COMFORT" | "SG_MOON_COMFORT" | "SG_STAR_COMFORT" | "SG_HATE" | "CG_MARIONETTE" | "WE_MALE" | "WE_FEMALE" | "SA_ELEMENTWATER" | "SA_ELEMENTGROUND" | "SA_ELEMENTFIRE" | "SA_CLASSCHANGE" | "SA_MONOCELL" | "TF_STEAL" | "RG_STEALCOIN" | "PF_MINDBREAKER" | "PF_HPCONVERSION" | "PF_SOULCHANGE" | "SA_QUESTION" | "SA_GRAVITY"
                 | "SA_LEVELUP" | "SA_INSTANTDEATH" | "SA_FULLRECOVERY" | "SA_COMA" | "SA_FORTUNE" | "SA_DEATH" | "SA_SUMMONMONSTER"
         )
     }
 
-    fn timed_request(effect: &ScriptSkillEffect, kind: StatusChangeKind) -> StatusChangeRequest {
+    pub(super) fn timed_request(effect: &ScriptSkillEffect, kind: StatusChangeKind) -> StatusChangeRequest {
         StatusChangeRequest {
             kind,
             duration_ms: SkillMetadata::find(effect.skill_id).and_then(|metadata| metadata.duration(effect.level, false)).unwrap_or(0),
@@ -195,6 +198,109 @@ impl ScriptSkillService {
                     Self::grant_sp(server, character, spheres * SP_PER_SPHERE);
                 } else {
                     self.followup_action(server, effect, effect.source_char_id, ScriptSkillAction::Heal { hp: 0, sp: spheres * SP_PER_SPHERE });
+                }
+            }
+            "MO_KITRANSLATION" => {
+                let party_id = state.get_character(effect.source_char_id).map_or(0, |source| source.game_systems.party_id);
+                if on_self || party_id == 0 || character.game_systems.party_id != party_id {
+                    return Err("Ki Translation only works on another party member".into());
+                }
+                if character.status.job == JobName::Gunslinger.value() as u32 {
+                    return Err("Gunslingers cannot hold spirit spheres".into());
+                }
+                character.script_skill_state.expire_spheres(tick);
+                if character.script_skill_state.spirit_spheres.len() >= 5 {
+                    return Err("The target already holds five spirit spheres".into());
+                }
+                let expiry = tick + metadata.duration(effect.level, false).unwrap_or(600_000).max(0) as u128;
+                character.script_skill_state.add_sphere(expiry, 5);
+                character.status.spirit_sphere_count = character.script_skill_state.spirit_spheres.len().min(u8::MAX as usize) as u8;
+                self.notify_spheres(character);
+            }
+            "PR_REDEMPTIO" => {
+                let flags = state.map_flags(&character.map_instance_key);
+                if flags.is_gvg() || flags.enabled(crate::server::model::map_flags::MapFlag::Battleground) {
+                    return Err("Redemptio is disabled on this map".into());
+                }
+                let party_id = character.game_systems.party_id;
+                let radius = metadata.splash(effect.level).unwrap_or(14).max(0) as u16;
+                let fallen: Vec<u32> = state
+                    .characters()
+                    .values()
+                    .filter(|member| {
+                        party_id != 0
+                            && member.game_systems.party_id == party_id
+                            && member.status.hp == 0
+                            && member.map_instance_key == character.map_instance_key
+                            && member.x.abs_diff(character.x).max(member.y.abs_diff(character.y)) <= radius
+                    })
+                    .map(|member| member.char_id)
+                    .collect();
+                if fallen.is_empty() {
+                    return Err("No fallen party member is in range".into());
+                }
+                for char_id in fallen {
+                    server.add_to_next_tick(GameEvent::CharacterScriptSkill(ScriptSkillEffect {
+                        source_char_id: character.char_id,
+                        target_id: char_id,
+                        skill_id: SkillEnum::AllResurrection.id(),
+                        level: REDEMPTIO_RESURRECTION_LEVEL,
+                        heal_value: 0,
+                        proc_depth: effect.proc_depth,
+                        skill_event_emitted: true,
+                        cast_generation: 0,
+                        action: ScriptSkillAction::Cast,
+                        deferred_requirements: None,
+                        prepared_outcome: None,
+                        source_index: None,
+                        source_item: None,
+                    }));
+                }
+                server.character_service().update_hp_sp(character, 1, 0);
+            }
+            "CG_MARIONETTE" => self.start_marionette(server, state, character, effect, tick)?,
+            "SG_SUN_COMFORT" | "SG_MOON_COMFORT" | "SG_STAR_COMFORT" => self.star_comfort(server, character, &metadata.name, effect, tick)?,
+            "SG_HATE" => return Err("Hatred of the Sun, Moon and Stars only targets monsters".into()),
+            "WE_MALE" | "WE_FEMALE" => {
+                let source_partner = if on_self { character.game_systems.partner_id } else { state.get_character(effect.source_char_id).map_or(0, |source| source.game_systems.partner_id) };
+                let partner_id = if on_self { source_partner } else { character.char_id };
+                if partner_id == 0 || partner_id != source_partner {
+                    return Err("The caster is not married to the target".into());
+                }
+                let share = |partner: &Character| {
+                    let snapshot = StatusService::instance().to_snapshot(&partner.status);
+                    if metadata.name == "WE_MALE" { (snapshot.max_hp() / 10, 0) } else { (0, snapshot.max_sp() / 10) }
+                };
+                if on_self {
+                    let partner = state.get_character(partner_id).ok_or("The partner is not online")?;
+                    let (hp, sp) = share(partner);
+                    self.followup_action(server, effect, partner_id, ScriptSkillAction::Heal { hp, sp });
+                } else {
+                    let (hp, sp) = share(character);
+                    Self::restore(server, character, hp, sp);
+                }
+            }
+            "AM_POTIONPITCHER" => self.aid_potion(server, state, character, effect)?,
+            "AM_BERSERKPITCHER" => self.aid_berserk_potion(server, character, tick)?,
+            "AM_TWILIGHT1" | "AM_TWILIGHT2" | "AM_TWILIGHT3" => self.twilight_alchemy(server, character, &metadata.name)?,
+            "CR_FULLPROTECTION" => {
+                use models::enums::item::ItemType;
+                let slots = [
+                    (StatusChangeKind::ProtectWeapon, models::enums::item::EquipmentLocation::HandRight.as_flag() | models::enums::item::EquipmentLocation::HandLeft.as_flag(), ItemType::Weapon),
+                    (StatusChangeKind::ProtectShield, models::enums::item::EquipmentLocation::HandLeft.as_flag(), ItemType::Armor),
+                    (StatusChangeKind::ProtectArmor, models::enums::item::EquipmentLocation::Armor.as_flag(), ItemType::Armor),
+                    (StatusChangeKind::ProtectHelm, models::enums::item::EquipmentLocation::HeadTop.as_flag(), ItemType::Armor),
+                ];
+                let protected: Vec<_> = slots
+                    .into_iter()
+                    .filter(|(_, location, item_type)| character.inventory.iter().flatten().any(|item| item.item_type() == *item_type && item.equip as u64 & location != 0))
+                    .map(|(kind, _, _)| kind)
+                    .collect();
+                if protected.is_empty() {
+                    return Err("The target wears nothing to protect".into());
+                }
+                for kind in protected {
+                    StatusEffectService::start(server, character, Self::timed_request(effect, kind), tick, &self.client_notification_sender)?;
                 }
             }
             "SA_QUESTION" => {
@@ -361,6 +467,38 @@ impl ScriptSkillService {
                 self.grant_zeny(server, caster, mob_level.saturating_mul(100))?;
                 true
             }
+            "SA_ELEMENTWATER" | "SA_ELEMENTGROUND" | "SA_ELEMENTFIRE" => {
+                let element = match metadata.name.as_str() {
+                    "SA_ELEMENTWATER" => models::enums::element::Element::Water,
+                    "SA_ELEMENTGROUND" => models::enums::element::Element::Earth,
+                    _ => models::enums::element::Element::Fire,
+                };
+                if !immune {
+                    let mut request = Self::timed_request(effect, StatusChangeKind::ElementalChange);
+                    request.values = [i32::from(effect.level), element.value() as i32, 0, 0];
+                    instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: mob.id, request }));
+                }
+                !immune
+            }
+            "SA_CLASSCHANGE" | "SA_MONOCELL" => {
+                let replacement = if metadata.name == "SA_MONOCELL" {
+                    Some(PORING_MOB_ID)
+                } else {
+                    crate::server::script::game_data::random_summon("CLASSCHANGE", &mut fastrand::Rng::new())
+                };
+                match replacement.filter(|_| !immune) {
+                    Some(mob_id) => {
+                        instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
+                            source_id: caster.char_id,
+                            target_id: mob.id,
+                            effect: crate::server::service::script_combat_service::MobCombatEffect::ClassChange { mob_id },
+                        }));
+                        true
+                    }
+                    None => false,
+                }
+            }
+            "SG_HATE" => self.star_hate_mob(server, caster, effect, mob)?,
             "PF_MINDBREAKER" => {
                 let blocked = immune || Self::undead_target(&mob.status) || mob.status_effects.has_status_change(StatusChangeKind::MindBreaker);
                 if !blocked {

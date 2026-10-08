@@ -19,6 +19,8 @@ pub struct Status {
     pub mob_capabilities: u32,
     pub mob_class: MobClass,
     pub taekwon_ranked: bool,
+    /// Monster class hated in the Sun, Moon and Star slots, 0 when the slot is empty.
+    pub star_hates: [u32; 3],
     pub spirit_sphere_count: u8,
     pub script_context: Option<std::sync::Arc<crate::script_context::ScriptCharacterState>>,
     pub script_skill_grants: std::collections::BTreeMap<u32, crate::skill_grant::ScriptSkillGrant>,
@@ -44,6 +46,7 @@ pub struct Status {
     pub job_exp: u32,
     pub state: u64,
     pub riding: bool,
+    pub falcon: bool,
     pub size: Size,
     pub is_male: bool,
     pub weapons: Vec<WearWeapon>,

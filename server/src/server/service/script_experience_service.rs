@@ -64,6 +64,8 @@ pub fn monster_experience_awards_with_pets(
             } else {
                 owner_experience_share_with_map_and_pets(kill, owner_id, &flags, pet_exp_to_master, pet_exp_rate)
             };
+        let blessing = 100 + crate::server::script::skill::star_gladiator::bless_percent(&owner.status, kill.mob_id as u32);
+        let (base, job) = (base.saturating_mul(blessing) / 100, job.saturating_mul(blessing) / 100);
         if base == 0 && job == 0 {
             continue;
         }

@@ -102,5 +102,5 @@ impl Skill for ThrowVenomKnife {
         Some(Self { level, cast_time: 0, after_cast_act_delay: 0, after_cast_walk_delay: 0 })
     }
 }
-impl SupportiveSkill for ThrowVenomKnife {
+impl OffensiveSkill for ThrowVenomKnife {
 }

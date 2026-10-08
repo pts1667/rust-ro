@@ -191,23 +191,7 @@ impl SkillService {
             skill.base_after_cast_act_delay(),
         ));
         skill.update_after_cast_walk_delay(skill.base_after_cast_walk_delay());
-        if character
-            .status
-            .has_status_change(models::status_change::StatusChangeKind::Suffragium)
-        {
-            crate::server::service::status_effect_service::StatusEffectService::end_status_at(
-                &mut character.status,
-                Some(models::status_change::StatusChangeKind::Suffragium),
-                tick,
-            );
-            crate::server::service::status_effect_service::StatusEffectService::send_icon(
-                character,
-                models::status_change::StatusChangeKind::Suffragium,
-                false,
-                tick,
-                &self.client_notification_sender,
-            );
-        }
+        crate::server::script::skill::ScriptSkillService::spend_cast_statuses(character, skill_id, tick, &self.client_notification_sender);
         let mut packet_zc_useskill_ack2 = PacketZcUseskillAck2::new(self.configuration_service.packetver());
         packet_zc_useskill_ack2.set_target_id(target_snapshot.map_item().id());
         packet_zc_useskill_ack2.set_skid(skill_id as u16);

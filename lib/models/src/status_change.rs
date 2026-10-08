@@ -108,6 +108,13 @@ status_changes! {
     Armor = 104 => "ARMOR", ElementalChange = 165 => "ELEMENTALCHANGE", ModeChange = 177 => "MODECHANGE", Rebirth = 284 => "REBIRTH",
     Invincible = 295 => "INVINCIBLE", MaxPain = 668 => "MAXPAIN", WeaponBreaker = 908 => "WEAPONBREAKER", Powerup = 951 => "POWERUP", Agiup = 952 => "AGIUP",
     SpiderWeb = 133 => "SPIDERWEB", AutoCounter = 87 => "AUTOCOUNTER",
+    RichMankim = 166 => "RICHMANKIM", Hermode = 158 => "HERMODE", Marionette = 126 => "MARIONETTE", Marionette2 = 127 => "MARIONETTE2", Gospel = 114 => "GOSPEL",
+    SunComfort = 217 => "SUN_COMFORT", MoonComfort = 218 => "MOON_COMFORT", StarComfort = 219 => "STAR_COMFORT", Miracle = 227 => "MIRACLE",
+    Edp = 119 => "EDP", PoisonReact = 27 => "POISONREACT", RejectSword = 125 => "REJECTSWORD", Preserve = 151 => "PRESERVE",
+    DoubleCast = 154 => "DOUBLECAST", Memorize = 131 => "MEMORIZE", MagicPower = 118 => "MAGICPOWER", TensionRelax = 111 => "TENSIONRELAX",
+    Meltdown = 122 => "MELTDOWN", Sacrifice = 135 => "SACRIFICE", Increasing = 230 => "INCREASING", Utsusemi = 233 => "UTSUSEMI",
+    Tatamigaeshi = 232 => "TATAMIGAESHI", BladeStopWait = 94 => "BLADESTOP_WAIT", BladeStop = 95 => "BLADESTOP", SightBlaster = 160 => "SIGHTBLASTER",
+    CloseConfine = 162 => "CLOSECONFINE", CloseConfine2 = 163 => "CLOSECONFINE2", Shrink = 159 => "SHRINK",
     SpearQuicken = 86 => "SPEARQUICKEN", OneHand = 150 => "ONEHAND", Adrenaline2 = 145 => "ADRENALINE2", MaxOverThrust = 156 => "MAXOVERTHRUST",
     TrueSight = 120 => "TRUESIGHT", Providence = 79 => "PROVIDENCE",
     EntryQueueApplyDelay = 704 => "ENTRY_QUEUE_APPLY_DELAY", EntryQueueNotifyAdmissionTimeOut = 705 => "ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT",
@@ -288,6 +295,38 @@ impl StatusChange {
             Concentrate => vec![BonusType::Agi(third.clamp(-127, 127) as i8), BonusType::Dex(fourth.clamp(-127, 127) as i8)],
             Quagmire => vec![BonusType::Agi((-second).clamp(-127, 127) as i8), BonusType::Dex((-second).clamp(-127, 127) as i8)],
             SpearQuicken => vec![BonusType::Crit(3.0 * value as f32), BonusType::Flee((2 * value).clamp(-32768, 32767) as i16)],
+            Sacrifice => {
+                use crate::status_bonus::{AutoSpellFlag, BattleFlag, CombatProc, CombatProcKind, CombatTrigger};
+                let mut proc = CombatProc::new(CombatTrigger::Attack, CombatProcKind::Spell, 10_000);
+                proc.value = crate::enums::skill_enums::SkillEnum::PaSacrifice.id();
+                proc.level = value.clamp(1, i16::MAX as i32) as i16;
+                proc.flags = AutoSpellFlag::OtherTarget.as_flag();
+                proc.battle_flags = BattleFlag::normalize(0, true);
+                vec![BonusType::CombatProc(proc, 1)]
+            }
+            PoisonReact if second > 0 => {
+                use crate::status_bonus::{AutoSpellFlag, BattleFlag, CombatProc, CombatProcKind, CombatTrigger};
+                let mut proc = CombatProc::new(CombatTrigger::Hit, CombatProcKind::Spell, third.clamp(0, 100) * 100);
+                proc.value = crate::enums::skill_enums::SkillEnum::TfPoison.id();
+                proc.level = 5;
+                proc.flags = AutoSpellFlag::OtherTarget.as_flag();
+                proc.battle_flags = BattleFlag::Weapon.as_flag();
+                vec![BonusType::CombatProc(proc, 1)]
+            }
+            Marionette | Marionette2 => {
+                let sign = if self.kind == Marionette { -1 } else { 1 };
+                let share = |packed: i32, shift: u32| (sign * ((packed >> shift) & 0xFF)) as i8;
+                vec![
+                    BonusType::Str(share(third, 0)), BonusType::Agi(share(third, 8)), BonusType::Vit(share(third, 16)),
+                    BonusType::Int(share(fourth, 0)), BonusType::Dex(share(fourth, 8)), BonusType::Luk(share(fourth, 16)),
+                ]
+            }
+            SunComfort => vec![BonusType::Def(second.clamp(0, i16::MAX as i32) as i16)],
+            MoonComfort => vec![BonusType::Flee(second.clamp(0, i16::MAX as i32) as i16)],
+            StarComfort => vec![BonusType::AspdPercentage(3.0 * value as f32)],
+            Meltdown => vec![BonusType::BreakWeaponPercentage((second / 100).clamp(0, 127) as i8), BonusType::BreakArmorPercentage(third as f32 / 100.0)],
+            Increasing => vec![BonusType::Agi(4), BonusType::Dex(4), BonusType::Hit(20)],
+            MagicPower if fourth == 1 => vec![BonusType::MatkPercentage(second.clamp(-127, 127) as i8)],
             TrueSight => vec![BonusType::AllStats(5), BonusType::Crit(second as f32 / 10.0), BonusType::Hit(third.clamp(-32768, 32767) as i16), BonusType::AtkPercentage((2 * value).clamp(-127, 127) as i8)],
             Providence => vec![BonusType::ResistanceDamageFromElementPercentage(Element::Holy, second.clamp(-127, 127) as i8), BonusType::ResistanceDamageFromRacePercentage(MobRace::Demon, second.clamp(-127, 127) as i8)],
             Gloria => vec![BonusType::Luk(30)], Loud => vec![BonusType::Str(4)],

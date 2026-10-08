@@ -12,6 +12,7 @@ use crate::server::state::character::Character;
 pub fn create_character() -> Character {
     let status = Status {
         taekwon_ranked: false,
+        star_hates: [0; 3],
         spirit_sphere_count: 0,
         job: JobName::Novice.value() as u32,
         hp: 0,
@@ -35,6 +36,7 @@ pub fn create_character() -> Character {
         job_exp: 0,
         state: 0,
         riding: false,
+        falcon: false,
         size: Default::default(),
         is_male: true,
         weapons: vec![],

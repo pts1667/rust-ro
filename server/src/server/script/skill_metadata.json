@@ -226,7 +226,7 @@
     "Id": 692,
     "MaxLevel": 9,
     "Name": "ALL_CATCRY",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "AfterCastActDelay": 12000,
@@ -236,7 +236,7 @@
     "Id": 695,
     "MaxLevel": 9,
     "Name": "ALL_DREAM_SUMMERNIGHT",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "Flags": {
@@ -245,7 +245,7 @@
     "Id": 681,
     "MaxLevel": 10,
     "Name": "ALL_INCCARRY",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Cooldown": 300000,
@@ -349,7 +349,7 @@
     "Requires": {
       "SpCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -1174,7 +1174,7 @@
       "SpCost": 10,
       "SpRateCost": 8
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Support"
   },
   {
@@ -1580,7 +1580,7 @@
       ],
       "SpCost": 1
     },
-    "Route": "Native",
+    "Route": "Status",
     "TargetType": "Support"
   },
   {
@@ -1680,7 +1680,7 @@
       ],
       "SpCost": 200
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self"
   },
   {
@@ -1707,7 +1707,7 @@
       ],
       "SpCost": 200
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self"
   },
   {
@@ -1734,7 +1734,7 @@
       ],
       "SpCost": 200
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self"
   },
   {
@@ -1915,7 +1915,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Edp",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -2335,7 +2335,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "PoisonReact",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -2675,7 +2675,7 @@
       "AmmoAmount": 1,
       "SpCost": 15
     },
-    "Route": "Unrouted",
+    "Route": "Native",
     "Status": "Poison",
     "TargetType": "Attack",
     "Type": "Weapon"
@@ -2875,7 +2875,7 @@
         "Musical": true
       }
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self",
     "Type": "Misc",
     "Unit": {
@@ -3001,7 +3001,7 @@
     "Requires": {
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Attack",
     "Type": "Misc"
   },
@@ -3372,7 +3372,7 @@
         "Whip": true
       }
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "RichManKim",
     "TargetType": "Self",
     "Type": "Misc",
@@ -3952,7 +3952,7 @@
     "Id": 1012,
     "MaxLevel": 1,
     "Name": "BS_UNFAIRLYTRICK",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "Type": "Weapon"
   },
   {
@@ -4474,7 +4474,7 @@
     "Requires": {
       "SpCost": 100
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Marionette",
     "TargetType": "Support"
   },
@@ -4878,7 +4878,7 @@
     "Id": 392,
     "MaxLevel": 1,
     "Name": "CR_ALCHEMY",
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -4966,7 +4966,7 @@
       ],
       "SpCost": 10
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "TargetType": "Ground"
   },
   {
@@ -5093,7 +5093,7 @@
       ],
       "SpCost": 40
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Support",
     "Type": "Weapon"
   },
@@ -5403,7 +5403,7 @@
       "SpCost": 15,
       "State": "Shield"
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Shrink",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -5465,7 +5465,7 @@
       ],
       "SpCost": 30
     },
-    "Route": "Unrouted",
+    "Route": "Ground",
     "SplashArea": 3,
     "TargetType": "Ground"
   },
@@ -5579,7 +5579,7 @@
     "Id": 393,
     "MaxLevel": 1,
     "Name": "CR_SYNTHESISPOTION",
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -6028,7 +6028,7 @@
         "Whip": true
       }
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self",
     "Type": "Misc",
     "Unit": {
@@ -6123,7 +6123,7 @@
     "Id": 10007,
     "MaxLevel": 1,
     "Name": "GD_GLORYWOUNDS",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 2,
     "Status": "GloryWounds",
     "Unit": {
@@ -6144,7 +6144,7 @@
     "Id": 10009,
     "MaxLevel": 1,
     "Name": "GD_HAWKEYES",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 2,
     "Status": "HawkEyes",
     "Unit": {
@@ -6170,7 +6170,7 @@
     "Id": 10015,
     "MaxLevel": 3,
     "Name": "GD_ITEMEMERGENCYCALL",
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -6181,7 +6181,7 @@
     "Id": 10006,
     "MaxLevel": 1,
     "Name": "GD_LEADERSHIP",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 2,
     "Status": "Leadership",
     "Unit": {
@@ -6251,7 +6251,7 @@
     "Id": 10008,
     "MaxLevel": 1,
     "Name": "GD_SOULCOLD",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 2,
     "Status": "SoulCold",
     "Unit": {
@@ -7010,7 +7010,7 @@
       "SpCost": 30,
       "SpiritSphereCost": 4
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Increasing",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -7172,13 +7172,13 @@
     "Id": 509,
     "MaxLevel": 10,
     "Name": "GS_SINGLEACTION",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 510,
     "MaxLevel": 10,
     "Name": "GS_SNAKEEYE",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -8192,7 +8192,7 @@
     "Id": 481,
     "MaxLevel": 5,
     "Name": "HP_MANARECHARGE",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 363,
@@ -8419,7 +8419,7 @@
       ],
       "State": "Falcon"
     },
-    "Route": "Passive",
+    "Route": "Native",
     "SplashArea": 1,
     "TargetType": "Attack",
     "Type": "Misc"
@@ -9415,7 +9415,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "MagicPower",
     "TargetType": "Self",
     "Type": "Magic"
@@ -10150,7 +10150,7 @@
     "Id": 360,
     "MaxLevel": 1,
     "Name": "LK_FURY",
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self",
     "Type": "Weapon"
   },
@@ -10439,7 +10439,7 @@
     "Requires": {
       "SpCost": 15
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "TensionRelax",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -10910,14 +10910,14 @@
       "SpCost": 40,
       "State": "Cart"
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
     "Id": 37,
     "MaxLevel": 10,
     "Name": "MC_DISCOUNT",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -10941,7 +10941,7 @@
     "Id": 36,
     "MaxLevel": 10,
     "Name": "MC_INCCARRY",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -11027,7 +11027,7 @@
     "Id": 38,
     "MaxLevel": 10,
     "Name": "MC_OVERCHARGE",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 39,
@@ -13916,7 +13916,7 @@
       "HpCost": 10,
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Native",
     "SplashArea": 1,
     "Status": "Stun",
     "TargetType": "Attack",
@@ -14002,7 +14002,7 @@
         "Whip": true
       }
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "BladeStop_Wait",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -14446,7 +14446,7 @@
       "SpCost": 40,
       "SpiritSphereCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Support",
     "Type": "Weapon"
   },
@@ -16136,7 +16136,7 @@
     "Requires": {
       "SpCost": 10
     },
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "CastTime": 4000,
@@ -16573,7 +16573,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Utsusemi",
     "TargetType": "Self"
   },
@@ -19960,7 +19960,7 @@
     "Requires": {
       "SpCost": 100
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Sacrifice",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -20039,7 +20039,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "DoubleCast",
     "TargetType": "Self",
     "Type": "Magic"
@@ -20150,7 +20150,7 @@
     "Requires": {
       "SpCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Memorize",
     "TargetType": "Self",
     "Type": "Magic"
@@ -20932,7 +20932,7 @@
     "Requires": {
       "SpCost": 400
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "SplashArea": 14,
     "TargetType": "Self",
     "Type": "Magic"
@@ -21246,7 +21246,7 @@
     "Id": 224,
     "MaxLevel": 5,
     "Name": "RG_COMPULSION",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -21259,14 +21259,14 @@
     "Requires": {
       "SpCost": 10
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Ground"
   },
   {
     "Id": 223,
     "MaxLevel": 1,
     "Name": "RG_GANGSTER",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "SplashArea": 1
   },
   {
@@ -21648,7 +21648,7 @@
     "Id": 213,
     "MaxLevel": 5,
     "Name": "RG_TUNNELDRIVE",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "DamageFlags": {
@@ -21748,7 +21748,7 @@
     "Requires": {
       "SpCost": 2
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self",
     "Type": "Magic"
   },
@@ -21767,7 +21767,7 @@
     "Requires": {
       "SpCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Attack",
     "Type": "Magic"
   },
@@ -21964,7 +21964,7 @@
       ],
       "SpCost": 30
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "ElementalChange",
     "TargetType": "Attack",
     "Type": "Magic"
@@ -21994,7 +21994,7 @@
       ],
       "SpCost": 30
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "ElementalChange",
     "TargetType": "Attack",
     "Type": "Magic"
@@ -22024,7 +22024,7 @@
       ],
       "SpCost": 30
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "ElementalChange",
     "TargetType": "Attack",
     "Type": "Magic"
@@ -22434,7 +22434,7 @@
     "Requires": {
       "SpCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Attack",
     "Type": "Magic"
   },
@@ -22761,7 +22761,7 @@
     "Requires": {
       "SpCost": 100
     },
-    "Route": "Unrouted",
+    "Route": "Menu",
     "TargetType": "Self",
     "Type": "Magic"
   },
@@ -22807,7 +22807,7 @@
     "Requires": {
       "SpCost": 100
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Attack",
     "Type": "Magic"
   },
@@ -22816,20 +22816,20 @@
     "Id": 443,
     "MaxLevel": 10,
     "Name": "SG_KNOWLEDGE",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "Status": "Knowledge"
   },
   {
     "Id": 436,
     "MaxLevel": 3,
     "Name": "SG_MOON_ANGER",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 439,
     "MaxLevel": 5,
     "Name": "SG_MOON_BLESS",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "AfterCastActDelay": 1000,
@@ -22878,7 +22878,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Moon_Comfort",
     "TargetType": "Self",
     "Type": "Magic"
@@ -22931,13 +22931,13 @@
     "Id": 437,
     "MaxLevel": 3,
     "Name": "SG_STAR_ANGER",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 440,
     "MaxLevel": 5,
     "Name": "SG_STAR_BLESS",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "AfterCastActDelay": 1000,
@@ -22986,7 +22986,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Star_Comfort",
     "TargetType": "Self",
     "Type": "Magic"
@@ -23039,13 +23039,13 @@
     "Id": 435,
     "MaxLevel": 3,
     "Name": "SG_SUN_ANGER",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "Id": 438,
     "MaxLevel": 5,
     "Name": "SG_SUN_BLESS",
-    "Route": "Unrouted"
+    "Route": "Passive"
   },
   {
     "AfterCastActDelay": 1000,
@@ -23094,7 +23094,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Sun_Comfort",
     "TargetType": "Self",
     "Type": "Magic"
@@ -23431,7 +23431,7 @@
     "Id": 573,
     "MaxLevel": 5,
     "Name": "SL_COLLECTOR",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "AfterCastActDelay": 500,
@@ -23526,7 +23526,7 @@
     "Id": 572,
     "MaxLevel": 5,
     "Name": "SL_DEATHKNIGHT",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "AfterCastActDelay": 500,
@@ -23556,7 +23556,7 @@
     "Id": 575,
     "MaxLevel": 5,
     "Name": "SL_GUNNER",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "AfterCastActDelay": 500,
@@ -23708,7 +23708,7 @@
     "Id": 466,
     "MaxLevel": 7,
     "Name": "SL_KAINA",
-    "Route": "Unrouted",
+    "Route": "Passive",
     "Type": "Magic"
   },
   {
@@ -24060,7 +24060,7 @@
     "Id": 574,
     "MaxLevel": 5,
     "Name": "SL_NINJA",
-    "Route": "Unrouted"
+    "Route": "Inert"
   },
   {
     "AfterCastActDelay": 500,
@@ -25677,7 +25677,7 @@
     "Requires": {
       "SpCost": 30
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Preserve",
     "TargetType": "Self"
   },
@@ -25714,7 +25714,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "RejectSword",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -26647,7 +26647,7 @@
       "SpCost": 1,
       "SpRateCost": -10
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self"
   },
   {
@@ -26667,7 +26667,7 @@
       "HpRateCost": -10,
       "SpCost": 1
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "TargetType": "Self"
   },
   {
@@ -26795,7 +26795,7 @@
     "Requires": {
       "SpCost": 5
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -26809,7 +26809,7 @@
     "Requires": {
       "SpCost": 5
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Self"
   },
   {
@@ -26952,7 +26952,7 @@
         }
       ]
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "Status": "Meltdown",
     "TargetType": "Self",
     "Type": "Weapon"
@@ -27041,7 +27041,7 @@
       ],
       "SpCost": 20
     },
-    "Route": "Unrouted",
+    "Route": "Inert",
     "TargetType": "Ground"
   },
   {
@@ -28226,7 +28226,7 @@
     "Requires": {
       "SpCost": 40
     },
-    "Route": "Unrouted",
+    "Route": "Status",
     "SplashArea": 1,
     "Status": "SightBlaster",
     "TargetType": "Self",

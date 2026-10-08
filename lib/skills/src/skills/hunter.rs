@@ -144,7 +144,7 @@ impl Skill for BlitzBeat {
         Some(Self { level, cast_time: 0, after_cast_act_delay: 0, after_cast_walk_delay: 0 })
     }
 }
-impl PassiveSkill for BlitzBeat {
+impl OffensiveSkill for BlitzBeat {
 }
 impl Skill for Detect {
     fn new(level: u8) -> Option<Self> where Self : Sized {
