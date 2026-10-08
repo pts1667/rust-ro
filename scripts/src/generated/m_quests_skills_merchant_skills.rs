@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13671(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13672(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -198,7 +198,7 @@ fn npc_13671(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13672(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13673(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_MERCHANT")?)?.truthy() {
         if op(ctx.call(Function::GetSkillLv, vec![s("MC_CHANGECART")])?, "==", n(1))?.truthy() {
@@ -370,7 +370,7 @@ fn npc_13672(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13673(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13674(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_care_random = n(0);
     let _ = pc;
     if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_MERCHANT")?)?.truthy() {
@@ -806,16 +806,16 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13671 => npc_call(npc_13671(ctx, 0, vec![])),
         13672 => npc_call(npc_13672(ctx, 0, vec![])),
         13673 => npc_call(npc_13673(ctx, 0, vec![])),
+        13674 => npc_call(npc_13674(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104813 => npc_call(npc_13671(ctx, 1, vec![])),
+        104818 => npc_call(npc_13672(ctx, 1, vec![])),
         _ => None,
     }
 }

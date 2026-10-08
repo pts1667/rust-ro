@@ -10942,6 +10942,775 @@ fn npc_12893(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_12894(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONDISABLE: usize = 1;
+    const LABEL_ONTIMER180000: usize = 2;
+    const LABEL_ONMYMOBDEAD: usize = 3;
+    let mut l_amount: Vec<Value> = Vec::new();
+    let mut l_input = n(0);
+    let mut l_input_s = s("");
+    let mut l_item = n(0);
+    let mut l_item_req: Vec<Value> = Vec::new();
+    let mut l_player_name_s = s("");
+    let mut l_string_s = s("");
+    let mut l_total = n(0);
+    let mut l_zeny_req = n(0);
+    'sm: loop {
+        match pc {
+                0 => {
+                    if op(get(ctx, "rhea_rus_main")?, "<", n(9))?.truthy() {
+                        ctx.mes("[Baba Yaga]")?;
+                        ctx.mes("...........................")?;
+                        ctx.mes("If you lotter around here any longer, I will make myself some tasty human soup! Hehehehehe.")?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_KIK")?])?;
+                        ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?, n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))])?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    } else {
+                        if op(get(ctx, "rhea_rus_main")?, "==", n(9))?.truthy() {
+                            l_player_name_s = ctx.call(Function::StrCharInfo, vec![n(0)])?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Why are you here, you yummy looking human? If you lotter around here any longer, I will make myself some tasty human soup! Hehehehehe")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                            ctx.mes("I, ah, I.. Gold.. golden...")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("What are you babbling about?")?;
+                            ctx.mes("Do you want me to transform you into a savage beast?!")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("'Presto Change-o!!'")?;
+                            ctx.mes("'Turn into a pig!!'")?;
+                            ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_BARRIER")?])?;
+                            ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Hmm? You are protected by a Protection Spell?")?;
+                            ctx.mes("But, it was weake. My spell destroyed it.")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Leave now, or I will curse you again! 'Presto...'")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                            ctx.mes("Eh, eh.. I mean.. I say.. spell...")?;
+                            ctx.next()?;
+                            let (input, status) = input_text(ctx, &[])?;
+                            l_input_s = input;
+                            if op(l_input_s.clone(), "==", s("Spellshield Protection"))?.truthy() {
+                                ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                                ctx.mes("Eh, eh.. I mean.. I say.. spell...")?;
+                                ctx.mes(op(op(s(""), "+", l_input_s.clone())?, "+", s(" !!!"))?.text())?;
+                                ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_ABSORBSPIRITS")?])?;
+                                ctx.next()?;
+                            } else {
+                                ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                                ctx.mes("Eh, eh.. I mean.. I say.. spell...")?;
+                                ctx.mes(op(op(s(""), "+", l_input_s.clone())?, "+", s(" !!!"))?.text())?;
+                                ctx.next()?;
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("What are you planning to do with that weak spell!?")?;
+                                ctx.mes("Get away, child!")?;
+                                ctx.close()?;
+                                ctx.call(Function::Warp, vec![s("mosk_dun02"), n(135), n(163)])?;
+                                return Err(END.into());
+                            }
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Ho, you are protected by a Protection Spell. You are no ordinary kid.")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                            ctx.mes("I heard that you are able to make the 'Golden Key' and that's why I am here!")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("'Golden Key'? Why do you need it?")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                            ctx.mes("I need it to release Maria Mobrena from her dark wall prison.")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("...Maria Morebna...")?;
+                            ctx.mes("Are you fighting against Koshei?")?;
+                            ctx.next()?;
+                            ctx.mes(op(op(s("["), "+", l_player_name_s.clone())?, "+", s("]"))?.text())?;
+                            ctx.mes("If he gets in my way of keeping my promise to her, I guess that I will fight him.")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Ho, kiheeheheheheheh. Ehehehehehehe.")?;
+                            ctx.mes("You are interesting. You don't seem to be scared of Koshei.")?;
+                            ctx.next()?;
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Ok, the materials for the key are...")?;
+                            ctx.next()?;
+                            if ((((op(ctx.call(Function::CountItem, vec![n(724)])?, ">", n(1))?.truthy() && op(ctx.call(Function::CountItem, vec![n(969)])?, ">", n(2))?.truthy()) && ctx.call(Function::CountItem, vec![n(7877)])?.truthy()) && op(ctx.call(Function::CountItem, vec![n(7878)])?, ">", n(1))?.truthy()) && op(ctx.call(Function::CountItem, vec![n(7879)])?, ">", n(9))?.truthy()) {
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("You have already gatered all the materials?")?;
+                                ctx.next()?;
+                            } else {
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("What? I cannot make you the 'Golden Key' without the materials.")?;
+                                ctx.next()?;
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("Go and find ^0000ff2 Cursed Ruby, 3 Gold, 1 Red Ring, 2 Lusalka's Hair, 10 Golden Thread^000000!")?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            }
+                            ctx.mes("[Baba Yaga]")?;
+                            ctx.mes("Ok, let's begin. Ah, before that... Wait here!")?;
+                            ctx.call(Function::DelItem, vec![n(724), n(2)])?;
+                            ctx.call(Function::DelItem, vec![n(969), n(3)])?;
+                            ctx.call(Function::DelItem, vec![n(7877), n(1)])?;
+                            ctx.call(Function::DelItem, vec![n(7878), n(2)])?;
+                            ctx.call(Function::DelItem, vec![n(7879), n(10)])?;
+                            set(ctx, "rhea_rus_main", n(10))?;
+                            ctx.close()?;
+                            return Err(END.into());
+                        } else {
+                            if op(get(ctx, "rhea_rus_main")?, "==", n(10))?.truthy() {
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("You come here!")?;
+                                ctx.next()?;
+                                ctx.mes("- Baba Yaga looks -")?;
+                                ctx.mes("- at you carefully -")?;
+                                ctx.next()?;
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("Hmmm, you look energetic and strong. Ok, while I make the 'Golden Key', you must first do a favor for me!")?;
+                                ctx.next()?;
+                                if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_ARCHER")?)?.truthy() {
+                                    ctx.mes("[Baba Yaga]")?;
+                                    ctx.mes("My cow has run away. Find her and cast a Return Spell on her. The spell is '^ff0000Good feed is orange-flavored^000000'. You sould remember it.")?;
+                                    ctx.next()?;
+                                    ctx.mes("[Baba Yaga]")?;
+                                    ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                    set(ctx, "rhea_rus_main", n(11))?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_ACOLYTE")?)?.truthy() {
+                                        ctx.mes("[Baba Yaga]")?;
+                                        ctx.mes("Behind my house, there is noisy coffin. It has been so nosiy recently that I can't sleep. Silence it.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Baba Yaga]")?;
+                                        ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                        set(ctx, "rhea_rus_main", n(16))?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_THIEF")?)?.truthy() {
+                                            ctx.mes("[Baba Yaga]")?;
+                                            ctx.mes("Please find my silver spoons. Those bad pirates stole them. I can feel them around the wrecked ship. Bring them to me.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Baba Yaga]")?;
+                                            ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                            set(ctx, "rhea_rus_main", n(21))?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_MAGE")?)?.truthy() {
+                                                ctx.mes("[Baba Yaga]")?;
+                                                ctx.mes("Buy me a magic book. It is published by Momotaro in Amatsu. Go there and buy it for me.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Baba Yaga]")?;
+                                                ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                set(ctx, "rhea_rus_main", n(26))?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_SWORDMAN")?)?.truthy() {
+                                                    ctx.mes("[Baba Yaga]")?;
+                                                    ctx.mes("Can you see a jar next to the cabin? There is a House ghost living in there. Drive him out of there. He irritates me a lot.")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Baba Yaga]")?;
+                                                    ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                    set(ctx, "rhea_rus_main", n(31))?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("Go to the Broom Grandmother in Payon and buy me a broom. It is best for cleaning but I don't have time to go there.")?;
+                                ctx.next()?;
+                                ctx.mes("[Baba Yaga]")?;
+                                ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                set(ctx, "rhea_rus_main", n(36))?;
+                                ctx.close()?;
+                                return Err(END.into());
+                            } else {
+                                if (op(get(ctx, "rhea_rus_main")?, ">", n(10))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(16))?.truthy()) {
+                                    ctx.mes("[Baba Yaga]")?;
+                                    ctx.mes("My cow has run away. Find her and cast a Return Spell on her. The spell is '^ff0000Good feed is orange-flavored^000000'. You sould remember it.")?;
+                                    ctx.next()?;
+                                    ctx.mes("[Baba Yaga]")?;
+                                    ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                } else {
+                                    if (op(get(ctx, "rhea_rus_main")?, ">", n(15))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(21))?.truthy()) {
+                                        ctx.mes("[Baba Yaga]")?;
+                                        ctx.mes("Can you see a jar next to the cabin? There is a House ghost living in there. Drive him out of there. He irritates me a lot.")?;
+                                        ctx.next()?;
+                                        ctx.mes("[Baba Yaga]")?;
+                                        ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                        ctx.close()?;
+                                        return Err(END.into());
+                                    } else {
+                                        if (op(get(ctx, "rhea_rus_main")?, ">", n(20))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(26))?.truthy()) {
+                                            ctx.mes("[Baba Yaga]")?;
+                                            ctx.mes("Please find my silver spoons. Those bad pirates stole them. I can feel them around the wrecked ship. Bring them to me.")?;
+                                            ctx.next()?;
+                                            ctx.mes("[Baba Yaga]")?;
+                                            ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        } else {
+                                            if op(get(ctx, "rhea_rus_main")?, "==", n(26))?.truthy() {
+                                                ctx.mes("[Baba Yaga]")?;
+                                                ctx.mes("Buy me a magic book. It is published by Momotaro in Amatsu. Go there and buy it for me.")?;
+                                                ctx.next()?;
+                                                ctx.mes("[Baba Yaga]")?;
+                                                ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            } else {
+                                                if op(get(ctx, "rhea_rus_main")?, "==", n(27))?.truthy() {
+                                                    if op(ctx.call(Function::CountItem, vec![n(7881)])?, ">", n(0))?.truthy() {
+                                                        ctx.mes("[Baba Yaga]")?;
+                                                        ctx.mes("Ho, did you buy the magic book? Give it to me. I will try it out.")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("- Baba Yaga takes the book, -")?;
+                                                        ctx.mes("reads one of the pages, -")?;
+                                                        ctx.mes("and casts something -")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Baba Yaga]")?;
+                                                        ctx.mes("Ok.. Let's do this.")?;
+                                                        ctx.mes("'Keep off the grass!!!'")?;
+                                                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_BEGINSPELL4")?])?;
+                                                        ctx.call(Function::DelItem, vec![n(7881), n(1)])?;
+                                                        set(ctx, "rhea_rus_main", n(28))?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(52), n(210), s("Violent Gardener"), n(1493), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(53), n(210), s("Dangerous Gardener"), n(1500), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(54), n(210), s("Brutal Gardener"), n(1497), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::DoNpcEvent, vec![s("Baba Yaga#rus32::OnDisable")])?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    }
+                                                    ctx.mes("[Baba Yaga]")?;
+                                                    ctx.mes("Buy me a magic book. It is published by Momotaro in Amatsu. Go there and buy it for me.")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Baba Yaga]")?;
+                                                    ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                    ctx.close()?;
+                                                    return Err(END.into());
+                                                } else {
+                                                    if op(get(ctx, "rhea_rus_main")?, "==", n(28))?.truthy() {
+                                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                        ctx.mes("W, what is this, suddenly?!")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Baba Yaga]")?;
+                                                        ctx.mes("Ho.. this is for a beautiful garden. This is better than I expected. Ok then, let's do this.")?;
+                                                        ctx.next()?;
+                                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                        ctx.mes("Hey, are you listening to me?")?;
+                                                        ctx.next()?;
+                                                        ctx.mes("[Baba Yaga]")?;
+                                                        ctx.mes("'There is an order for you to open your eyes!!!'")?;
+                                                        ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_BEGINSPELL3")?])?;
+                                                        set(ctx, "rhea_rus_main", n(29))?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(52), n(210), s("Alarm to 5 minutes"), n(1193), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(53), n(210), s("Alarm on time"), n(1193), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::Monster, vec![s("mosk_dun02"), n(54), n(210), s("Alarm past 5 minutes"), n(1193), n(1), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                                                        ctx.call(Function::DoNpcEvent, vec![s("Baba Yaga#rus32::OnDisable")])?;
+                                                        ctx.close()?;
+                                                        return Err(END.into());
+                                                    } else {
+                                                        if op(get(ctx, "rhea_rus_main")?, "==", n(29))?.truthy() {
+                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                            ctx.mes("What are you doing!!")?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Baba Yaga]")?;
+                                                            ctx.mes("Hmm, this one makes people deligent and doesn't look effective. Ok then, next is a House Ghost...")?;
+                                                            ctx.next()?;
+                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                            ctx.mes("Hey, I am talking...")?;
+                                                            ctx.call(Function::Emotion, vec![constant(ctx, "ET_CRY")?, n(i32::from(ctx.call(Function::GetCharacterId, vec![n(0)])?.truthy()))])?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Baba Yaga]")?;
+                                                            ctx.mes("'In the corner...'")?;
+                                                            ctx.next()?;
+                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                            ctx.mes("!!!!!!!!!!!!!!!!!!!!!!!!!")?;
+                                                            ctx.call(Function::Emotion, vec![constant(ctx, "ET_HUK")?])?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Baba Yaga]")?;
+                                                            ctx.mes("What, child? Do you feel bad?")?;
+                                                            ctx.next()?;
+                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                            ctx.mes("When will you give me the key?!")?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Baba Yaga]")?;
+                                                            ctx.mes("Huh, I can make it for you right now. You have a violent temper.")?;
+                                                            set(ctx, "rhea_rus_main", n(44))?;
+                                                            ctx.close()?;
+                                                            return Err(END.into());
+                                                        } else {
+                                                            if (op(get(ctx, "rhea_rus_main")?, ">", n(30))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(36))?.truthy()) {
+                                                                ctx.mes("[Baba Yaga]")?;
+                                                                ctx.mes("Can you see a jar next to the cabin? There is a House ghost living in there. Drive him out of there. He irritates me a lot.")?;
+                                                                ctx.next()?;
+                                                                ctx.mes("[Baba Yaga]")?;
+                                                                ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                                ctx.close()?;
+                                                                return Err(END.into());
+                                                            } else {
+                                                                if (op(get(ctx, "rhea_rus_main")?, ">", n(35))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(41))?.truthy()) {
+                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                    ctx.mes("Go to the Broom Grandmother in Payon and buy me a broom. It is best for cleaning but I don't have time to go there.")?;
+                                                                    ctx.next()?;
+                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                    ctx.mes("Ok! Move, move! You better be quick or I will find a way to punish you. Ehehehehehe.")?;
+                                                                    ctx.close()?;
+                                                                    return Err(END.into());
+                                                                } else {
+                                                                    if op(get(ctx, "rhea_rus_main")?, "==", n(41))?.truthy() {
+                                                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                        ctx.mes("I have done your favor! I got the cow!")?;
+                                                                        ctx.next()?;
+                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                        ctx.mes("Oh, great. I just finished making the 'Golden Key'!")?;
+                                                                        ctx.next()?;
+                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                        ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                        set(ctx, "rhea_rus_main", n(47))?;
+                                                                        ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                        ctx.close()?;
+                                                                        return Err(END.into());
+                                                                    } else {
+                                                                        if op(get(ctx, "rhea_rus_main")?, "==", n(42))?.truthy() {
+                                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                            ctx.mes("I have done your favor! The coffin is now silenced!")?;
+                                                                            ctx.next()?;
+                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                            ctx.mes("Oh, yes. I can sleep at night now. Kehehehehe.")?;
+                                                                            ctx.next()?;
+                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                            ctx.mes("You are on time. I just finished making the 'Golden Key'!")?;
+                                                                            ctx.next()?;
+                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                            ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                            set(ctx, "rhea_rus_main", n(47))?;
+                                                                            ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                            ctx.close()?;
+                                                                            return Err(END.into());
+                                                                        } else {
+                                                                            if op(get(ctx, "rhea_rus_main")?, "==", n(43))?.truthy() {
+                                                                                if ctx.call(Function::CountItem, vec![n(7880)])?.truthy() {
+                                                                                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                    ctx.mes("I have done your favor! I found and got the silver spoons!")?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                    ctx.mes("Oh, yes. They are expensive ones. Those bad pirates.. Kehehehehe.")?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                    ctx.mes("You are on time. I just finished making the 'Golden Key'!")?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                    ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                                    ctx.call(Function::DelItem, vec![n(7880), n(1)])?;
+                                                                                    set(ctx, "rhea_rus_main", n(47))?;
+                                                                                    ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                                    ctx.close()?;
+                                                                                    return Err(END.into());
+                                                                                }
+                                                                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                ctx.mes("I have done your favor! I found and got the silver spoons!")?;
+                                                                                ctx.next()?;
+                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                ctx.mes("Oh, yes, yes. Give them to me.")?;
+                                                                                ctx.next()?;
+                                                                                ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                ctx.mes("Here they.. They..?!")?;
+                                                                                ctx.next()?;
+                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                ctx.mes("You fool! Where did you sell my spoons!? Get them for me right now!")?;
+                                                                                ctx.close()?;
+                                                                                return Err(END.into());
+                                                                            } else {
+                                                                                if op(get(ctx, "rhea_rus_main")?, "==", n(44))?.truthy() {
+                                                                                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                    ctx.mes("I have done your favor. Give me the key!")?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                    ctx.mes("Oh, yes, you violent tempered child. I just finished making the 'Golden Key'.")?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                    ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                                    set(ctx, "rhea_rus_main", n(47))?;
+                                                                                    ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                                    ctx.close()?;
+                                                                                    return Err(END.into());
+                                                                                } else {
+                                                                                    if op(get(ctx, "rhea_rus_main")?, "==", n(45))?.truthy() {
+                                                                                        ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                        ctx.mes("I have done your favor! The House ghost is now quiet!")?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                        ctx.mes("Oh, yes. That irritating ghost is gone. Kehehehehe.")?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                        ctx.mes("You are on time. I just finished making the 'Golden Key'!")?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                        ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                                        set(ctx, "rhea_rus_main", n(47))?;
+                                                                                        ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                                        ctx.close()?;
+                                                                                        return Err(END.into());
+                                                                                    } else {
+                                                                                        if op(get(ctx, "rhea_rus_main")?, "==", n(46))?.truthy() {
+                                                                                            ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                            ctx.mes("I have done your favor! Here, the best broom from Payon!")?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                            ctx.mes("Ooh, yes. Well done. My flying broom was getting old. Kehehehehe.")?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                            ctx.mes("You are on time. I just finished making the 'Golden Key'!")?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                            ctx.mes("Here, help Maria with this key and watch out for Koshei. He is very dangerous. Kehehehehehe.")?;
+                                                                                            set(ctx, "rhea_rus_main", n(47))?;
+                                                                                            ctx.call(Function::GetItem, vec![n(7876), n(1)])?;
+                                                                                            ctx.close()?;
+                                                                                            return Err(END.into());
+                                                                                        } else {
+                                                                                            if (op(get(ctx, "rhea_rus_main")?, ">", n(46))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(49))?.truthy()) {
+                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                ctx.mes("You got the key and went to Maria immedately, right?")?;
+                                                                                                ctx.next()?;
+                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                ctx.mes("Take care of yourself. When you release her, Koshei will come out and bring destruction.")?;
+                                                                                                ctx.close()?;
+                                                                                                return Err(END.into());
+                                                                                            } else {
+                                                                                                if op(get(ctx, "rhea_rus_main")?, "==", n(49))?.truthy() {
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("What are you doing here? Kehehehe.")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes(op(op(s("["), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s("]"))?.text())?;
+                                                                                                    ctx.mes("Koshei... suddenly appeared.. and Maria.. Wolf... killed...")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("Calm down and speak slowly. I cannot hear you at all. Drink some water.")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("- You drink some water and -")?;
+                                                                                                    ctx.mes("- tell her the story slowly -")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("You beat Koshei? Did you?")?;
+                                                                                                    ctx.mes("Kehehe, you are no ordinary kid.")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("Water to enliven Maria...")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("'Living Water'... I just need the ingredients.  I need ^0000ff1 Holy Water^000000 and ^0000ff2 Yggdrasil Leaves^000000.")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("And 'Dead Water'.. I need ^0000ff1 Cursed Water^000000 and ^0000ff10 Hinalle Leaflets^000000.")?;
+                                                                                                    ctx.next()?;
+                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                    ctx.mes("Bring them to me quickly! Time is running out!")?;
+                                                                                                    set(ctx, "rhea_rus_main", n(50))?;
+                                                                                                    ctx.close()?;
+                                                                                                    return Err(END.into());
+                                                                                                } else {
+                                                                                                    if op(get(ctx, "rhea_rus_main")?, "==", n(50))?.truthy() {
+                                                                                                        if (((ctx.call(Function::CountItem, vec![n(523)])?.truthy() && ctx.call(Function::CountItem, vec![n(12020)])?.truthy()) && op(ctx.call(Function::CountItem, vec![n(610)])?, ">", n(1))?.truthy()) && op(ctx.call(Function::CountItem, vec![n(520)])?, ">", n(9))?.truthy()) {
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Kehe, you are very quick.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Ok, let's make the 'Living Water' first...")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("- Baba Yaga brings a big pot, -")?;
+                                                                                                            ctx.mes("- pours the Holy Water in it, -")?;
+                                                                                                            ctx.mes("- puts the Yggdrasil Leaves -")?;
+                                                                                                            ctx.mes("- in it and stirs them up -")?;
+                                                                                                            ctx.mes("- as it casts strange spells -")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Yg~ Yg~ Yggdrasil~ Yggdrasil has lots of iron~")?;
+                                                                                                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_PHARMACY_OK")?])?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Here, I made the 'Living Water' so now let's make the 'Dead Water'...")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("- Baba Yaga pours the cursed -")?;
+                                                                                                            ctx.mes("- water in another pot, then -")?;
+                                                                                                            ctx.mes("- pounds the Hinalle leaflets, -")?;
+                                                                                                            ctx.mes("- puts their juice in the pot -")?;
+                                                                                                            ctx.mes("- and stirs them together -")?;
+                                                                                                            ctx.mes("- as it casts strange spells -")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Hi~ hi~ hi~ hi~ na~ lle~ Stir with right hand~ Stir with left hand~ Both hands will be ok~")?;
+                                                                                                            ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_PHARMACY_OK")?])?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Here, it's done.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Take this and help Maria. Kehehehehehe.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("First, pour the 'Dead Water' to remove the wound and curse on her and then pour the 'Living Water' to enliven her.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Go there right now! Kehehehehe")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("- ^0000ffYou get the 'Living Water'^000000 -")?;
+                                                                                                            ctx.mes("- ^0000ffand the 'Dead Water' !!^000000 -")?;
+                                                                                                            ctx.call(Function::DelItem, vec![n(523), n(1)])?;
+                                                                                                            ctx.call(Function::DelItem, vec![n(12020), n(1)])?;
+                                                                                                            ctx.call(Function::DelItem, vec![n(610), n(2)])?;
+                                                                                                            ctx.call(Function::DelItem, vec![n(520), n(10)])?;
+                                                                                                            set(ctx, "rhea_rus_main", n(51))?;
+                                                                                                            ctx.close()?;
+                                                                                                            return Err(END.into());
+                                                                                                        }
+                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                        ctx.mes("'Living Water'... I just need the ingredients.  I need ^0000ff1 Holy Water^000000 and ^0000ff2 Yggdrasil Leaves^000000.")?;
+                                                                                                        ctx.next()?;
+                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                        ctx.mes("And 'Dead Water'.. I need ^0000ff1 Cursed Water^000000 and ^0000ff10 Hinalle Leaflets^000000.")?;
+                                                                                                        ctx.next()?;
+                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                        ctx.mes("Bring them to me quickly! Time is running out!")?;
+                                                                                                        ctx.close()?;
+                                                                                                        return Err(END.into());
+                                                                                                    } else {
+                                                                                                        if op(get(ctx, "rhea_rus_main")?, "==", n(51))?.truthy() {
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Go to Maria to help her.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("First, pour the 'Dead Water' to remove the wound and curse on her and then pour the 'Living Water' to enliven her.")?;
+                                                                                                            ctx.next()?;
+                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                            ctx.mes("Go there right now! Kehehehehe")?;
+                                                                                                            ctx.close()?;
+                                                                                                            return Err(END.into());
+                                                                                                        } else {
+                                                                                                            if op(get(ctx, "rhea_rus_main")?, "==", n(52))?.truthy() {
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("You are more useful than I thought, kid.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("I thank you for helping Maria. To tell the truth, it was me that connected her with Koshei. In order to seal Koshei, I needed a sacrfice...")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("I succeeded in sealing Koshei away by using a girl who was magically strong. Sadly the girl also had to remain in the same condition as Koshei in order to maintain the seal.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("However, after so many years it was impossible to keep him sealed with Maria's power alone.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("So that's when I decided that if you could subdue Koshei, it would be the only way to release Maria instead of using her to maintain the seal.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("So, that is why I helped you out by making the 'Golden Key'.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("Koshei is still alive, but he is weaker than before. So I don't need to use Maria anymore to seal Koshei.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("Thank you so much for helping Maria...")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("I want to give anything helpful for you.")?;
+                                                                                                                ctx.next()?;
+                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                ctx.mes("Whenever you come to me, I will make you potions with just a few materials and a small fee. I hope that this will be of help to you. Kehehehehehe.")?;
+                                                                                                                set(ctx, "rhea_rus_main", n(53))?;
+                                                                                                                ctx.close()?;
+                                                                                                                return Err(END.into());
+                                                                                                            } else {
+                                                                                                                if op(get(ctx, "rhea_rus_main")?, ">", n(52))?.truthy() {
+                                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                                    ctx.mes("Oh, you are back. What can I do for you?")?;
+                                                                                                                    ctx.next()?;
+                                                                                                                    'b1: {
+                                                                                                                        let sw1 = n(select(ctx, &["Condensed Red Potion", "Condensed Yellow Potion", "Cancel"])?);
+                                                                                                                        let mut m1 = false;
+                                                                                                                        let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3));
+                                                                                                                        if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                                                                                                                        if m1 {
+                                                                                                                            l_item = n(545);
+                                                                                                                            l_zeny_req = n(20);
+                                                                                                                            let base = n(0).number_value()?;
+                                                                                                                            local_set(&mut l_item_req, &n(base + 0), n(501), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 1), n(1092), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 2), n(7134), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 3), n(512), false);
+                                                                                                                            let base = n(0).number_value()?;
+                                                                                                                            local_set(&mut l_amount, &n(base + 0), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 1), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 2), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 3), n(5), false);
+                                                                                                                            l_string_s = s("I can only make 100 at a time. If you don't want any, then just say '0'");
+                                                                                                                            break 'b1;
+                                                                                                                        }
+                                                                                                                        if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                                                                                                                        if m1 {
+                                                                                                                            l_item = n(546);
+                                                                                                                            l_zeny_req = n(50);
+                                                                                                                            let base = n(0).number_value()?;
+                                                                                                                            local_set(&mut l_item_req, &n(base + 0), n(503), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 1), n(1092), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 2), n(7134), false);
+                                                                                                                            local_set(&mut l_item_req, &n(base + 3), n(513), false);
+                                                                                                                            let base = n(0).number_value()?;
+                                                                                                                            local_set(&mut l_amount, &n(base + 0), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 1), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 2), n(1), false);
+                                                                                                                            local_set(&mut l_amount, &n(base + 3), n(10), false);
+                                                                                                                            l_string_s = s("Tell me the number less than 100. If you don't want, tell me zero");
+                                                                                                                            break 'b1;
+                                                                                                                        }
+                                                                                                                        if !m1 && eq(&sw1, &n(3)) { m1 = true; }
+                                                                                                                        if m1 {
+                                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                                            ctx.mes("You don't want anything?")?;
+                                                                                                                            ctx.next()?;
+                                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                                            ctx.mes("I don't understand you. What do you want? kehehehehe.")?;
+                                                                                                                            ctx.close()?;
+                                                                                                                            return Err(END.into());
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                                    ctx.mes(sprintf(s("To make %s, I need ^0000ff%d %s, %d %s, %d %s, %d %s and %d Zeny^000000."), vec![ctx.call(Function::GetItemName, vec![l_item.clone()])?, local_get(&l_amount, &n(0), false), ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(0), false)])?, local_get(&l_amount, &n(1), false), ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(1), false)])?, local_get(&l_amount, &n(2), false), ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(2), false)])?, local_get(&l_amount, &n(3), false), ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(3), false)])?, l_zeny_req.clone()])?.text())?;
+                                                                                                                    if ((((op(get(ctx, "Zeny")?, ">=", l_zeny_req.clone())?.truthy() && op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(0), false)])?, ">=", local_get(&l_amount, &n(0), false))?.truthy()) && op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(1), false)])?, ">=", local_get(&l_amount, &n(1), false))?.truthy()) && op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(2), false)])?, ">=", local_get(&l_amount, &n(2), false))?.truthy()) && op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(3), false)])?, ">=", local_get(&l_amount, &n(3), false))?.truthy()) {
+                                                                                                                        l_total = op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(0), false)])?, "/", local_get(&l_amount, &n(0), false))?;
+                                                                                                                        l_total = (if op(l_total.clone(), "<=", op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(1), false)])?, "/", local_get(&l_amount, &n(1), false))?)?.truthy() { l_total.clone() } else { op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(1), false)])?, "/", local_get(&l_amount, &n(1), false))? });
+                                                                                                                        l_total = (if op(l_total.clone(), "<=", op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(2), false)])?, "/", local_get(&l_amount, &n(2), false))?)?.truthy() { l_total.clone() } else { op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(2), false)])?, "/", local_get(&l_amount, &n(2), false))? });
+                                                                                                                        l_total = (if op(l_total.clone(), "<=", op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(3), false)])?, "/", local_get(&l_amount, &n(3), false))?)?.truthy() { l_total.clone() } else { op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(3), false)])?, "/", local_get(&l_amount, &n(3), false))? });
+                                                                                                                        l_total = (if op(l_total.clone(), "<=", op(get(ctx, "Zeny")?, "/", l_zeny_req.clone())?)?.truthy() { l_total.clone() } else { op(get(ctx, "Zeny")?, "/", l_zeny_req.clone())? });
+                                                                                                                        ctx.next()?;
+                                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                                        ctx.mes(op(op(op(op(s("With your materials, I can make ^0000ff"), "+", l_total.clone())?, "+", s("^000000 "))?, "+", ctx.call(Function::GetItemName, vec![l_item.clone()])?)?, "+", s("."))?.text())?;
+                                                                                                                        ctx.next()?;
+                                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                                        ctx.mes(op(op(s("How many do you want me to make? "), "+", l_string_s.clone())?, "+", s(". Kehehehehe."))?.text())?;
+                                                                                                                        ctx.next()?;
+                                                                                                                        'l2: loop {
+                                                                                                                            if !true { break; }
+                                                                                                                            'b2: {
+                                                                                                                                let (input, status) = input_number(ctx, &[])?;
+                                                                                                                                l_input = input;
+                                                                                                                                ctx.mes("[Baba Yaga]")?;
+                                                                                                                                if !l_input.clone().truthy() {
+                                                                                                                                    ctx.mes("You don't want it?")?;
+                                                                                                                                    ctx.next()?;
+                                                                                                                                    ctx.mes("[Baba Yaga]")?;
+                                                                                                                                    ctx.mes("I don't understand you. What do you want? Kehehehehe.")?;
+                                                                                                                                    ctx.close()?;
+                                                                                                                                    return Err(END.into());
+                                                                                                                                } else {
+                                                                                                                                    if op(l_input.clone(), ">", n(100))?.truthy() {
+                                                                                                                                        ctx.mes("I said no more than 100 at a time. Kehehehehe.")?;
+                                                                                                                                        ctx.next()?;
+                                                                                                                                    } else {
+                                                                                                                                        break 'l2;
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                        if ((((op(get(ctx, "Zeny")?, "<", op(l_zeny_req.clone(), "*", l_input.clone())?)?.truthy() || op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(0), false)])?, "<", op(local_get(&l_amount, &n(0), false), "*", l_input.clone())?)?.truthy()) || op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(1), false)])?, "<", op(local_get(&l_amount, &n(1), false), "*", l_input.clone())?)?.truthy()) || op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(2), false)])?, "<", op(local_get(&l_amount, &n(2), false), "*", l_input.clone())?)?.truthy()) || op(ctx.call(Function::CountItem, vec![local_get(&l_item_req, &n(3), false)])?, "<", op(local_get(&l_amount, &n(3), false), "*", l_input.clone())?)?.truthy()) {
+                                                                                                                            ctx.mes("[Baba Yaga]")?;
+                                                                                                                            ctx.mes("Where are the materials?")?;
+                                                                                                                            ctx.mes("They are not enough! Check them and come back again! Kehehehehe.")?;
+                                                                                                                            ctx.close()?;
+                                                                                                                            return Err(END.into());
+                                                                                                                        }
+                                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                                        ctx.mes(op(op(s("Ho, you want "), "+", l_input.clone())?, "+", s(". Ok, wait here for a while."))?.text())?;
+                                                                                                                        ctx.next()?;
+                                                                                                                        ctx.mes(op(op(s("- Baba Yaga grinds the "), "+", ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(3), false)])?)?, "+", s(" -"))?.text())?;
+                                                                                                                        ctx.mes(op(op(s("- and pours the "), "+", ctx.call(Function::GetItemName, vec![local_get(&l_item_req, &n(0), false)])?)?, "+", s(" -"))?.text())?;
+                                                                                                                        ctx.mes("- into the Medicine Bowl, -")?;
+                                                                                                                        ctx.mes("- boils and cools it down -")?;
+                                                                                                                        ctx.mes("- and puts it in the Test Tube -")?;
+                                                                                                                        ctx.next()?;
+                                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                                        ctx.mes("Here, done!")?;
+                                                                                                                        ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_PHARMACY_OK")?])?;
+                                                                                                                        ctx.next()?;
+                                                                                                                        ctx.mes("[Baba Yaga]")?;
+                                                                                                                        ctx.mes("Whenever you want more, come to me.")?;
+                                                                                                                        ctx.call(Function::DelItem, vec![local_get(&l_item_req, &n(0), false), op(local_get(&l_amount, &n(0), false), "*", l_input.clone())?])?;
+                                                                                                                        ctx.call(Function::DelItem, vec![local_get(&l_item_req, &n(1), false), op(local_get(&l_amount, &n(1), false), "*", l_input.clone())?])?;
+                                                                                                                        ctx.call(Function::DelItem, vec![local_get(&l_item_req, &n(2), false), op(local_get(&l_amount, &n(2), false), "*", l_input.clone())?])?;
+                                                                                                                        ctx.call(Function::DelItem, vec![local_get(&l_item_req, &n(3), false), op(local_get(&l_amount, &n(3), false), "*", l_input.clone())?])?;
+                                                                                                                        ctx.write("Zeny", op(get(ctx, "Zeny")?, "-", op(l_input.clone(), "*", l_zeny_req.clone())?)?)?;
+                                                                                                                        ctx.call(Function::GetItem, vec![l_item.clone(), l_input.clone()])?;
+                                                                                                                    }
+                                                                                                                    ctx.close()?;
+                                                                                                                    return Err(END.into());
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    ctx.mes("[Baba Yaga]")?;
+                    ctx.mes("What are you, human child.")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::InitNpcTimer, vec![])?;
+                    ctx.call(Function::DisableNpc, vec![s("Baba Yaga#rus32")])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::StopNpcTimer, vec![])?;
+                    ctx.call(Function::KillMonster, vec![s("mosk_dun02"), s("Baba Yaga#rus32::OnMyMobDead")])?;
+                    pc = 3;
+                }
+                3 => {
+                    ctx.call(Function::EnableNpc, vec![s("Baba Yaga#rus32")])?;
+                    return Err(END.into());
+                    pc = 4;
+                }
+            4 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_12895(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     let mut l_input_s = s("");
     let mut l_npc_num = n(0);
@@ -11056,7 +11825,7 @@ fn npc_12894(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12895(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12896(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_break_while = n(0);
     let _ = pc;
     if op(get(ctx, "rhea_rus_main")?, "<", n(19))?.truthy() {
@@ -11253,7 +12022,7 @@ fn npc_12895(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12896(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12897(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONCALL: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     const LABEL_ONTIMER180000: usize = 3;
@@ -11349,7 +12118,7 @@ fn npc_12896(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12897(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12898(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "rhea_rus_main")?, ">=", n(21))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(26))?.truthy()) {
         ctx.mes("- An old bed covered with dust and must -")?;
@@ -11418,7 +12187,7 @@ fn npc_12897(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12898(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12899(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "rhea_rus_main")?, ">=", n(22))?.truthy() && op(get(ctx, "rhea_rus_main")?, "<", n(26))?.truthy()) {
         ctx.mes("- Something is engraved on the wall -")?;
@@ -11437,7 +12206,7 @@ fn npc_12898(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12899(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12900(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rhea_rus_main")?, "==", n(23))?.truthy() {
         ctx.mes("- Something is glimmering inside of the box -")?;
@@ -11468,7 +12237,7 @@ fn npc_12899(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12900(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12901(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_russ_key02 = n(0);
     let _ = pc;
     if op(get(ctx, "rhea_rus_main")?, "==", n(24))?.truthy() {
@@ -11546,7 +12315,7 @@ fn npc_12900(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12901(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12902(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input_s = s("");
     let _ = pc;
     if op(op(get(ctx, "MaxWeight")?, "-", get(ctx, "Weight")?)?, "<", n(3500))?.truthy() {
@@ -11640,7 +12409,7 @@ fn npc_12901(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12902(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12903(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONDISABLE: usize = 1;
     const LABEL_ONTIMER180000: usize = 2;
     const LABEL_ONMYMOBDEAD: usize = 3;
@@ -11905,7 +12674,7 @@ fn npc_12902(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12903(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12904(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rhea_rus_main")?, "<", n(36))?.truthy() {
         ctx.mes("[Broom Grandma]")?;
@@ -11975,7 +12744,7 @@ fn npc_12903(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12904(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12905(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_QUESTION: usize = 1;
     let mut l_emo: Vec<Value> = Vec::new();
     let mut l_input_s = s("");
@@ -12047,23 +12816,23 @@ fn npc_12904(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                             ctx.mes("[Ghost Tree]")?;
                             ctx.mes("Ok then, who was the first?!")?;
                             ctx.next()?;
-                            l_rus_kafra01 = npc_12904(ctx, LABEL_S_QUESTION, vec![s("Curly Sue")])?;
+                            l_rus_kafra01 = npc_12905(ctx, LABEL_S_QUESTION, vec![s("Curly Sue")])?;
                             ctx.mes("[Ghost Tree]")?;
                             ctx.mes("Who was the second?")?;
                             ctx.next()?;
-                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12904(ctx, LABEL_S_QUESTION, vec![s("Jasmine")])?)?;
+                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12905(ctx, LABEL_S_QUESTION, vec![s("Jasmine")])?)?;
                             ctx.mes("[Ghost Tree]")?;
                             ctx.mes("Who was the third?")?;
                             ctx.next()?;
-                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12904(ctx, LABEL_S_QUESTION, vec![s("Roxie")])?)?;
+                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12905(ctx, LABEL_S_QUESTION, vec![s("Roxie")])?)?;
                             ctx.mes("[Ghost Tree]")?;
                             ctx.mes("And then who was the forth?")?;
                             ctx.next()?;
-                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12904(ctx, LABEL_S_QUESTION, vec![s("Pavianne")])?)?;
+                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12905(ctx, LABEL_S_QUESTION, vec![s("Pavianne")])?)?;
                             ctx.mes("[Ghost Tree]")?;
                             ctx.mes("And who was the last?!")?;
                             ctx.next()?;
-                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12904(ctx, LABEL_S_QUESTION, vec![s("Blossom")])?)?;
+                            l_rus_kafra01 = op(l_rus_kafra01.clone(), "+", npc_12905(ctx, LABEL_S_QUESTION, vec![s("Blossom")])?)?;
                             ctx.mes("[Ghost Tree]")?;
                             if op(l_rus_kafra01.clone(), ">", n(4))?.truthy() {
                                 ctx.mes("Ho, you are good!")?;
@@ -12264,7 +13033,7 @@ fn npc_12904(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12905(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12906(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_i = n(0);
     let _ = pc;
     super::m_other_gm_npcs::fn_66_f_gm_npc(ctx, 0, vec![])?;
@@ -12423,72 +13192,76 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         12903 => npc_call(npc_12903(ctx, 0, vec![])),
         12904 => npc_call(npc_12904(ctx, 0, vec![])),
         12905 => npc_call(npc_12905(ctx, 0, vec![])),
+        12906 => npc_call(npc_12906(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        103699 => npc_call(npc_12829(ctx, 1, vec![])),
-        103700 => npc_call(npc_12831(ctx, 1, vec![])),
-        103701 => npc_call(npc_12832(ctx, 1, vec![])),
-        103702 => npc_call(npc_12832(ctx, 2, vec![])),
-        103703 => npc_call(npc_12832(ctx, 3, vec![])),
-        103704 => npc_call(npc_12832(ctx, 4, vec![])),
-        103705 => npc_call(npc_12833(ctx, 1, vec![])),
-        103706 => npc_call(npc_12833(ctx, 2, vec![])),
-        103707 => npc_call(npc_12833(ctx, 3, vec![])),
-        103708 => npc_call(npc_12833(ctx, 4, vec![])),
-        103709 => npc_call(npc_12833(ctx, 5, vec![])),
-        103710 => npc_call(npc_12838(ctx, 1, vec![])),
-        103711 => npc_call(npc_12838(ctx, 2, vec![])),
-        103712 => npc_call(npc_12842(ctx, 1, vec![])),
-        103713 => npc_call(npc_12846(ctx, 1, vec![])),
-        103714 => npc_call(npc_12848(ctx, 2, vec![])),
-        103715 => npc_call(npc_12868(ctx, 1, vec![])),
-        103716 => npc_call(npc_12872(ctx, 1, vec![])),
-        103717 => npc_call(npc_12872(ctx, 2, vec![])),
-        103718 => npc_call(npc_12872(ctx, 3, vec![])),
-        103719 => npc_call(npc_12872(ctx, 4, vec![])),
-        103720 => npc_call(npc_12873(ctx, 1, vec![])),
-        103721 => npc_call(npc_12873(ctx, 2, vec![])),
-        103722 => npc_call(npc_12873(ctx, 3, vec![])),
-        103723 => npc_call(npc_12873(ctx, 4, vec![])),
-        103724 => npc_call(npc_12874(ctx, 1, vec![])),
-        103725 => npc_call(npc_12874(ctx, 2, vec![])),
-        103726 => npc_call(npc_12874(ctx, 3, vec![])),
-        103727 => npc_call(npc_12874(ctx, 4, vec![])),
-        103728 => npc_call(npc_12874(ctx, 5, vec![])),
-        103729 => npc_call(npc_12874(ctx, 6, vec![])),
-        103730 => npc_call(npc_12874(ctx, 7, vec![])),
-        103731 => npc_call(npc_12875(ctx, 1, vec![])),
-        103732 => npc_call(npc_12875(ctx, 2, vec![])),
-        103733 => npc_call(npc_12875(ctx, 3, vec![])),
-        103734 => npc_call(npc_12875(ctx, 4, vec![])),
-        103735 => npc_call(npc_12881(ctx, 1, vec![])),
-        103736 => npc_call(npc_12881(ctx, 2, vec![])),
-        103737 => npc_call(npc_12881(ctx, 3, vec![])),
-        103738 => npc_call(npc_12884(ctx, 1, vec![])),
-        103739 => npc_call(npc_12885(ctx, 1, vec![])),
-        103740 => npc_call(npc_12885(ctx, 2, vec![])),
-        103741 => npc_call(npc_12885(ctx, 3, vec![])),
-        103742 => npc_call(npc_12885(ctx, 4, vec![])),
-        103743 => npc_call(npc_12889(ctx, 1, vec![])),
-        103744 => npc_call(npc_12889(ctx, 2, vec![])),
-        103745 => npc_call(npc_12889(ctx, 3, vec![])),
-        103746 => npc_call(npc_12889(ctx, 4, vec![])),
-        103747 => npc_call(npc_12890(ctx, 1, vec![])),
-        103748 => npc_call(npc_12891(ctx, 1, vec![])),
-        103749 => npc_call(npc_12891(ctx, 2, vec![])),
-        103750 => npc_call(npc_12891(ctx, 3, vec![])),
-        103751 => npc_call(npc_12894(ctx, 1, vec![])),
-        103752 => npc_call(npc_12896(ctx, 1, vec![])),
-        103753 => npc_call(npc_12896(ctx, 2, vec![])),
-        103754 => npc_call(npc_12896(ctx, 3, vec![])),
-        103755 => npc_call(npc_12896(ctx, 4, vec![])),
-        103756 => npc_call(npc_12902(ctx, 1, vec![])),
-        103757 => npc_call(npc_12902(ctx, 2, vec![])),
-        103758 => npc_call(npc_12902(ctx, 3, vec![])),
+        103701 => npc_call(npc_12829(ctx, 1, vec![])),
+        103702 => npc_call(npc_12831(ctx, 1, vec![])),
+        103703 => npc_call(npc_12832(ctx, 1, vec![])),
+        103704 => npc_call(npc_12832(ctx, 2, vec![])),
+        103705 => npc_call(npc_12832(ctx, 3, vec![])),
+        103706 => npc_call(npc_12832(ctx, 4, vec![])),
+        103707 => npc_call(npc_12833(ctx, 1, vec![])),
+        103708 => npc_call(npc_12833(ctx, 2, vec![])),
+        103709 => npc_call(npc_12833(ctx, 3, vec![])),
+        103710 => npc_call(npc_12833(ctx, 4, vec![])),
+        103711 => npc_call(npc_12833(ctx, 5, vec![])),
+        103712 => npc_call(npc_12838(ctx, 1, vec![])),
+        103713 => npc_call(npc_12838(ctx, 2, vec![])),
+        103714 => npc_call(npc_12842(ctx, 1, vec![])),
+        103715 => npc_call(npc_12846(ctx, 1, vec![])),
+        103716 => npc_call(npc_12848(ctx, 2, vec![])),
+        103717 => npc_call(npc_12868(ctx, 1, vec![])),
+        103718 => npc_call(npc_12872(ctx, 1, vec![])),
+        103719 => npc_call(npc_12872(ctx, 2, vec![])),
+        103720 => npc_call(npc_12872(ctx, 3, vec![])),
+        103721 => npc_call(npc_12872(ctx, 4, vec![])),
+        103722 => npc_call(npc_12873(ctx, 1, vec![])),
+        103723 => npc_call(npc_12873(ctx, 2, vec![])),
+        103724 => npc_call(npc_12873(ctx, 3, vec![])),
+        103725 => npc_call(npc_12873(ctx, 4, vec![])),
+        103726 => npc_call(npc_12874(ctx, 1, vec![])),
+        103727 => npc_call(npc_12874(ctx, 2, vec![])),
+        103728 => npc_call(npc_12874(ctx, 3, vec![])),
+        103729 => npc_call(npc_12874(ctx, 4, vec![])),
+        103730 => npc_call(npc_12874(ctx, 5, vec![])),
+        103731 => npc_call(npc_12874(ctx, 6, vec![])),
+        103732 => npc_call(npc_12874(ctx, 7, vec![])),
+        103733 => npc_call(npc_12875(ctx, 1, vec![])),
+        103734 => npc_call(npc_12875(ctx, 2, vec![])),
+        103735 => npc_call(npc_12875(ctx, 3, vec![])),
+        103736 => npc_call(npc_12875(ctx, 4, vec![])),
+        103737 => npc_call(npc_12881(ctx, 1, vec![])),
+        103738 => npc_call(npc_12881(ctx, 2, vec![])),
+        103739 => npc_call(npc_12881(ctx, 3, vec![])),
+        103740 => npc_call(npc_12884(ctx, 1, vec![])),
+        103741 => npc_call(npc_12885(ctx, 1, vec![])),
+        103742 => npc_call(npc_12885(ctx, 2, vec![])),
+        103743 => npc_call(npc_12885(ctx, 3, vec![])),
+        103744 => npc_call(npc_12885(ctx, 4, vec![])),
+        103745 => npc_call(npc_12889(ctx, 1, vec![])),
+        103746 => npc_call(npc_12889(ctx, 2, vec![])),
+        103747 => npc_call(npc_12889(ctx, 3, vec![])),
+        103748 => npc_call(npc_12889(ctx, 4, vec![])),
+        103749 => npc_call(npc_12890(ctx, 1, vec![])),
+        103750 => npc_call(npc_12891(ctx, 1, vec![])),
+        103751 => npc_call(npc_12891(ctx, 2, vec![])),
+        103752 => npc_call(npc_12891(ctx, 3, vec![])),
+        103753 => npc_call(npc_12894(ctx, 1, vec![])),
+        103754 => npc_call(npc_12894(ctx, 2, vec![])),
+        103755 => npc_call(npc_12894(ctx, 3, vec![])),
+        103756 => npc_call(npc_12895(ctx, 1, vec![])),
+        103757 => npc_call(npc_12897(ctx, 1, vec![])),
+        103758 => npc_call(npc_12897(ctx, 2, vec![])),
+        103759 => npc_call(npc_12897(ctx, 3, vec![])),
+        103760 => npc_call(npc_12897(ctx, 4, vec![])),
+        103761 => npc_call(npc_12903(ctx, 1, vec![])),
+        103762 => npc_call(npc_12903(ctx, 2, vec![])),
+        103763 => npc_call(npc_12903(ctx, 3, vec![])),
         _ => None,
     }
 }

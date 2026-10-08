@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13711(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13712(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Ms. Yoon]")?;
     ctx.mes("A place that takes the vision of the future, and gives it form in the present. Welcome to")?;
@@ -144,7 +144,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13711 => npc_call(npc_13711(ctx, 0, vec![])),
+        13712 => npc_call(npc_13712(ctx, 0, vec![])),
         _ => None,
     }
 }

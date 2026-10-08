@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13471(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13472(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -374,7 +374,7 @@ fn npc_13471(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13472(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13473(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_TAEKWON")?)?.truthy() {
         if op(get(ctx, "stgl_q")?, "==", n(1))?.truthy() {
@@ -873,7 +873,7 @@ fn npc_13472(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13473(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13474(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_sun_point = n(0);
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_TAEKWON")?)?.truthy() {
@@ -1194,7 +1194,7 @@ fn npc_13473(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13474(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13475(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_moon_point = n(0);
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_TAEKWON")?)?.truthy() {
@@ -1538,7 +1538,7 @@ fn npc_13474(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13475(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13476(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_TAEKWON")?)?.truthy() {
         if op(get(ctx, "stgl_q")?, "==", n(6))?.truthy() {
@@ -1780,18 +1780,18 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13471 => npc_call(npc_13471(ctx, 0, vec![])),
         13472 => npc_call(npc_13472(ctx, 0, vec![])),
         13473 => npc_call(npc_13473(ctx, 0, vec![])),
         13474 => npc_call(npc_13474(ctx, 0, vec![])),
         13475 => npc_call(npc_13475(ctx, 0, vec![])),
+        13476 => npc_call(npc_13476(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104487 => npc_call(npc_13471(ctx, 1, vec![])),
+        104492 => npc_call(npc_13472(ctx, 1, vec![])),
         _ => None,
     }
 }

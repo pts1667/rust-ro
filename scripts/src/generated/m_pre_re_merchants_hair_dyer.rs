@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13726(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_NODYE: usize = 1;
     let mut l_choose_success = n(0);
     let mut l_headpalette = n(0);
@@ -132,42 +132,42 @@ fn npc_13726(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                             let d6 = !eq(&sw6, &n(1)) && !eq(&sw6, &n(2)) && !eq(&sw6, &n(3)) && !eq(&sw6, &n(4)) && !eq(&sw6, &n(5)) && !eq(&sw6, &n(6)) && !eq(&sw6, &n(7)) && !eq(&sw6, &n(8));
                                                             if !m6 && eq(&sw6, &n(1)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(976), s("yellow")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(976), s("yellow")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(2)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(978), s("violet")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(978), s("violet")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(3)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(980), s("orange")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(980), s("orange")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(4)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(979), s("green")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(979), s("green")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(5)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(981), s("blue")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(981), s("blue")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(6)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(982), s("white")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(982), s("white")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(7)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(983), s("black")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(983), s("black")])?;
                                                                 break 'b6;
                                                             }
                                                             if !m6 && eq(&sw6, &n(8)) { m6 = true; }
                                                             if m6 {
-                                                                npc_13726(ctx, LABEL_S_NODYE, vec![n(975), s("red")])?;
+                                                                npc_13727(ctx, LABEL_S_NODYE, vec![n(975), s("red")])?;
                                                                 break 'b6;
                                                             }
                                                         }
@@ -285,7 +285,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13726 => npc_call(npc_13726(ctx, 0, vec![])),
+        13727 => npc_call(npc_13727(ctx, 0, vec![])),
         _ => None,
     }
 }

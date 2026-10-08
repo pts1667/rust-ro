@@ -6,7 +6,7 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 FUNCTIONS = {
-    "warpportal": "WarpPortal",
+    "warp": "Warp", "warpportal": "WarpPortal",
     "getmapflag": "GetMapFlag", "setmapflag": "SetMapFlag", "removemapflag": "RemoveMapFlag",
     "setmapflagnosave": "SetMapFlagNoSave", "savepoint": "SavePoint", "save": "SavePoint", "getsavepoint": "GetSavePoint",
     "pvpon": "PvpOn", "pvpoff": "PvpOff", "gvgon": "GvgOn", "gvgoff": "GvgOff",

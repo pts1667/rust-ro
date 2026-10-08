@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13689(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13690(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -166,7 +166,7 @@ fn npc_13689(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13690(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13691(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -365,7 +365,7 @@ fn npc_13690(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13691(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13692(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_SWORDMAN")?)?.truthy() {
         if op(ctx.call(Function::GetSkillLv, vec![s("SM_AUTOBERSERK")])?, "==", n(1))?.truthy() {
@@ -571,17 +571,17 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13689 => npc_call(npc_13689(ctx, 0, vec![])),
         13690 => npc_call(npc_13690(ctx, 0, vec![])),
         13691 => npc_call(npc_13691(ctx, 0, vec![])),
+        13692 => npc_call(npc_13692(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104841 => npc_call(npc_13689(ctx, 1, vec![])),
-        104842 => npc_call(npc_13690(ctx, 1, vec![])),
+        104846 => npc_call(npc_13690(ctx, 1, vec![])),
+        104847 => npc_call(npc_13691(ctx, 1, vec![])),
         _ => None,
     }
 }

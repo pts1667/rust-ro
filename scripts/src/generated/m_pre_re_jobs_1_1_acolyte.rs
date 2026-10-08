@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13779(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13780(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Upper")?, "==", n(1))?.truthy() {
         if (op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_HIGH_PRIEST")?)?.truthy() || op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_CHAMPION")?)?.truthy()) {
@@ -270,7 +270,7 @@ fn npc_13779(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13780(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13781(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Father Rubalkabara]")?;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() {
@@ -353,7 +353,7 @@ fn npc_13780(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13781(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13782(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Mother Mathilda]")?;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() {
@@ -428,7 +428,7 @@ fn npc_13781(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13782(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13783(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Father Yosuke]")?;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() {
@@ -515,10 +515,10 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13779 => npc_call(npc_13779(ctx, 0, vec![])),
         13780 => npc_call(npc_13780(ctx, 0, vec![])),
         13781 => npc_call(npc_13781(ctx, 0, vec![])),
         13782 => npc_call(npc_13782(ctx, 0, vec![])),
+        13783 => npc_call(npc_13783(ctx, 0, vec![])),
         _ => None,
     }
 }

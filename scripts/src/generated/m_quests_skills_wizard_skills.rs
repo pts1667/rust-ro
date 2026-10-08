@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13694(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13695(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_WIZARD")?)?.truthy() {
         if op(get(ctx, "wiz_sk")?, "==", n(100))?.truthy() {
@@ -359,7 +359,7 @@ fn npc_13694(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13695(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13696(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "wiz_sk")?, "==", n(1))?.truthy() {
         ctx.mes("[Simon]")?;
@@ -451,8 +451,8 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13694 => npc_call(npc_13694(ctx, 0, vec![])),
         13695 => npc_call(npc_13695(ctx, 0, vec![])),
+        13696 => npc_call(npc_13696(ctx, 0, vec![])),
         _ => None,
     }
 }

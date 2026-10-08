@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13393(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13394(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_joblvl = n(0);
     let _ = pc;
     if op(get(ctx, "Upper")?, "==", n(1))?.truthy() {
@@ -305,7 +305,7 @@ fn npc_13393(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13394(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13395(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_black_q = n(0);
     let mut l_items: Vec<Value> = Vec::new();
     let mut l_selection = n(0);
@@ -1138,7 +1138,7 @@ fn npc_13394(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13395(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13396(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "bsmith_q")?, "==", n(9))?.truthy() && op(ctx.call(Function::CountItem, vec![n(1610)])?, ">", n(0))?.truthy()) {
         ctx.mes("[Baisulist]")?;
@@ -1219,7 +1219,7 @@ fn npc_13395(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13396(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13397(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "bsmith_q")?, "==", n(10))?.truthy() && op(ctx.call(Function::CountItem, vec![n(1219)])?, ">", n(0))?.truthy()) {
         ctx.call(Function::Cutin, vec![s("Job_Black_hucke01"), n(2)])?;
@@ -1322,7 +1322,7 @@ fn npc_13396(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13397(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13398(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "bsmith_q")?, "==", n(11))?.truthy() && op(ctx.call(Function::CountItem, vec![n(1119)])?, ">", n(0))?.truthy()) {
         ctx.mes("[Krongast]")?;
@@ -1406,7 +1406,7 @@ fn npc_13397(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13398(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13399(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "bsmith_q")?, "==", n(12))?.truthy() && op(ctx.call(Function::CountItem, vec![n(1713)])?, ">", n(0))?.truthy()) {
         ctx.mes("[Talpiz]")?;
@@ -1486,7 +1486,7 @@ fn npc_13398(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13399(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13400(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "bsmith_q")?, "==", n(13))?.truthy() && op(ctx.call(Function::CountItem, vec![n(1122)])?, ">", n(0))?.truthy()) {
         ctx.mes("[Bismarc]")?;
@@ -1589,7 +1589,7 @@ fn npc_13399(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13400(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13401(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_blackss_te = n(0);
     let _ = pc;
     if op(get(ctx, "bsmith_q")?, "==", n(16))?.truthy() {
@@ -1849,7 +1849,7 @@ fn npc_13400(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13401(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13402(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Blacksmith Guildsman]")?;
     ctx.mes("Good day, are you here to visit Blacksmith Guild?")?;
@@ -1917,7 +1917,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13393 => npc_call(npc_13393(ctx, 0, vec![])),
         13394 => npc_call(npc_13394(ctx, 0, vec![])),
         13395 => npc_call(npc_13395(ctx, 0, vec![])),
         13396 => npc_call(npc_13396(ctx, 0, vec![])),
@@ -1926,6 +1925,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13399 => npc_call(npc_13399(ctx, 0, vec![])),
         13400 => npc_call(npc_13400(ctx, 0, vec![])),
         13401 => npc_call(npc_13401(ctx, 0, vec![])),
+        13402 => npc_call(npc_13402(ctx, 0, vec![])),
         _ => None,
     }
 }

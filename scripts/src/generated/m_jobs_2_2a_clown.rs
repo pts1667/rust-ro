@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13602(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13603(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_karma_d = n(0);
     let _ = pc;
     if (op(get(ctx, "advjob")?, "==", n(0))?.truthy() || op(get(ctx, "Upper")?, "!=", n(1))?.truthy()) {
@@ -85,7 +85,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13602 => npc_call(npc_13602(ctx, 0, vec![])),
+        13603 => npc_call(npc_13603(ctx, 0, vec![])),
         _ => None,
     }
 }

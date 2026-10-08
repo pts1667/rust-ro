@@ -1352,6 +1352,69 @@ fn npc_10726(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
+fn npc_10727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONINSTANCEINIT: usize = 1;
+    let mut l_map_s = s("");
+    let mut l_seal_check = n(0);
+    'sm: loop {
+        match pc {
+                0 => {
+                    l_seal_check = ctx.call(Function::CheckQuest, vec![n(3041), constant(ctx, "PLAYTIME")?])?;
+                    if (op(l_seal_check.clone(), "==", n(0))?.truthy() || op(l_seal_check.clone(), "==", n(1))?.truthy()) {
+                        ctx.call(Function::SpecialEffect, vec![constant(ctx, "EF_SILENCEATTACK")?])?;
+                        ctx.call(Function::PercentHeal, vec![n(-50), n(0)])?;
+                        ctx.call(Function::StartStatus, vec![constant(ctx, "SC_STONE")?, n(30000), n(0)])?;
+                        ctx.mes("Your SP has not recovered yet. You lost your SP on the altar, but it seems the power of the seal has returned.")?;
+                        ctx.close()?;
+                        return Err(END.into());
+                    }
+                    if op(l_seal_check.clone(), "==", n(2))?.truthy() {
+                        ctx.call(Function::EraseQuest, vec![n(3041)])?;
+                    }
+                    ctx.call(Function::NpcSpecialEffect, vec![constant(ctx, "EF_LEXDIVINA")?])?;
+                    ctx.call(Function::DisableNpc, vec![])?;
+                    l_map_s = ctx.call(Function::InstanceMapName, vec![s("2@cata")])?;
+                    if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("0"))?.truthy() {
+                        ctx.call(Function::AreaMobUseSkill, vec![l_map_s.clone(), n(79), n(81), n(10), n(1929), s("NPC_INVINCIBLEOFF"), n(1), n(0), n(0), constant(ctx, "ET_HELP")?, n(0)])?;
+                    } else {
+                        if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("2"))?.truthy() {
+                            ctx.call(Function::AreaMobUseSkill, vec![l_map_s.clone(), n(123), n(109), n(10), n(1929), s("NPC_INVINCIBLEOFF"), n(1), n(0), n(0), constant(ctx, "ET_HELP")?, n(0)])?;
+                        } else {
+                            if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("4"))?.truthy() {
+                                ctx.call(Function::AreaMobUseSkill, vec![l_map_s.clone(), n(123), n(22), n(10), n(1929), s("NPC_INVINCIBLEOFF"), n(1), n(0), n(0), constant(ctx, "ET_HELP")?, n(0)])?;
+                            } else {
+                                if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("8"))?.truthy() {
+                                    ctx.call(Function::AreaMobUseSkill, vec![l_map_s.clone(), n(35), n(21), n(10), n(1929), s("NPC_INVINCIBLEOFF"), n(1), n(0), n(0), constant(ctx, "ET_HELP")?, n(0)])?;
+                                } else {
+                                    if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("10"))?.truthy() {
+                                        ctx.call(Function::AreaMobUseSkill, vec![l_map_s.clone(), n(35), n(109), n(10), n(1929), s("NPC_INVINCIBLEOFF"), n(1), n(0), n(0), constant(ctx, "ET_HELP")?, n(0)])?;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    ctx.call(Function::PercentHeal, vec![n(-50), n(0)])?;
+                    ctx.call(Function::StartStatus, vec![constant(ctx, "SC_STONE")?, n(20000), n(0)])?;
+                    ctx.call(Function::SetQuest, vec![n(3041)])?;
+                    ctx.call(Function::MapAnnounce, vec![l_map_s.clone(), s("The seal activated by putting magical power into the altar."), constant(ctx, "BC_MAP")?, s("0x87ceeb")])?;
+                    ctx.mes("I can feel the power of the altar came back by adding magical power.")?;
+                    ctx.next()?;
+                    ctx.mes("But you can't use your magic for 3 minutes because you used your SP on the altar.")?;
+                    ctx.close()?;
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::DisableNpc, vec![])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_10728(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "'ins_baphomet")?, "==", n(5))?.truthy() && op(ctx.call(Function::IsPartyLeader, vec![ctx.call(Function::GetCharacterId, vec![n(1)])?])?, "==", n(1))?.truthy()) {
@@ -1952,6 +2015,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         10724 => npc_call(npc_10724(ctx, 0, vec![])),
         10725 => npc_call(npc_10725(ctx, 0, vec![])),
         10726 => npc_call(npc_10726(ctx, 0, vec![])),
+        10727 => npc_call(npc_10727(ctx, 0, vec![])),
         10728 => npc_call(npc_10728(ctx, 0, vec![])),
         10729 => npc_call(npc_10729(ctx, 0, vec![])),
         10730 => npc_call(npc_10730(ctx, 0, vec![])),
@@ -1999,49 +2063,50 @@ pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         100321 => npc_call(npc_10724(ctx, 1, vec![])),
         100322 => npc_call(npc_10725(ctx, 1, vec![])),
         100323 => npc_call(npc_10726(ctx, 1, vec![])),
-        100324 => npc_call(npc_10729(ctx, 1, vec![])),
-        100325 => npc_call(npc_10730(ctx, 1, vec![])),
-        100326 => npc_call(npc_10730(ctx, 2, vec![])),
-        100327 => npc_call(npc_10730(ctx, 3, vec![])),
-        100328 => npc_call(npc_10730(ctx, 4, vec![])),
-        100329 => npc_call(npc_10730(ctx, 5, vec![])),
-        100330 => npc_call(npc_10730(ctx, 6, vec![])),
-        100331 => npc_call(npc_10730(ctx, 7, vec![])),
-        100332 => npc_call(npc_10730(ctx, 8, vec![])),
-        100333 => npc_call(npc_10731(ctx, 1, vec![])),
-        100334 => npc_call(npc_10731(ctx, 2, vec![])),
-        100335 => npc_call(npc_10731(ctx, 3, vec![])),
-        100336 => npc_call(npc_10731(ctx, 4, vec![])),
-        100337 => npc_call(npc_10732(ctx, 1, vec![])),
-        100338 => npc_call(npc_10732(ctx, 2, vec![])),
-        100339 => npc_call(npc_10732(ctx, 3, vec![])),
-        100340 => npc_call(npc_10732(ctx, 4, vec![])),
-        100341 => npc_call(npc_10732(ctx, 5, vec![])),
-        100342 => npc_call(npc_10732(ctx, 6, vec![])),
-        100343 => npc_call(npc_10732(ctx, 7, vec![])),
-        100344 => npc_call(npc_10732(ctx, 8, vec![])),
-        100345 => npc_call(npc_10732(ctx, 9, vec![])),
-        100346 => npc_call(npc_10732(ctx, 10, vec![])),
-        100347 => npc_call(npc_10733(ctx, 1, vec![])),
-        100348 => npc_call(npc_10733(ctx, 2, vec![])),
-        100349 => npc_call(npc_10733(ctx, 3, vec![])),
-        100350 => npc_call(npc_10733(ctx, 4, vec![])),
-        100351 => npc_call(npc_10733(ctx, 5, vec![])),
-        100352 => npc_call(npc_10734(ctx, 1, vec![])),
-        100353 => npc_call(npc_10734(ctx, 2, vec![])),
-        100354 => npc_call(npc_10734(ctx, 3, vec![])),
-        100355 => npc_call(npc_10734(ctx, 4, vec![])),
-        100356 => npc_call(npc_10735(ctx, 1, vec![])),
-        100357 => npc_call(npc_10735(ctx, 2, vec![])),
-        100358 => npc_call(npc_10735(ctx, 3, vec![])),
-        100359 => npc_call(npc_10735(ctx, 4, vec![])),
-        100360 => npc_call(npc_10735(ctx, 5, vec![])),
-        100361 => npc_call(npc_10735(ctx, 6, vec![])),
-        100362 => npc_call(npc_10736(ctx, 1, vec![])),
-        100363 => npc_call(npc_10736(ctx, 2, vec![])),
-        100364 => npc_call(npc_10736(ctx, 3, vec![])),
-        100365 => npc_call(npc_10736(ctx, 4, vec![])),
-        100366 => npc_call(npc_10737(ctx, 1, vec![])),
+        100324 => npc_call(npc_10727(ctx, 1, vec![])),
+        100325 => npc_call(npc_10729(ctx, 1, vec![])),
+        100326 => npc_call(npc_10730(ctx, 1, vec![])),
+        100327 => npc_call(npc_10730(ctx, 2, vec![])),
+        100328 => npc_call(npc_10730(ctx, 3, vec![])),
+        100329 => npc_call(npc_10730(ctx, 4, vec![])),
+        100330 => npc_call(npc_10730(ctx, 5, vec![])),
+        100331 => npc_call(npc_10730(ctx, 6, vec![])),
+        100332 => npc_call(npc_10730(ctx, 7, vec![])),
+        100333 => npc_call(npc_10730(ctx, 8, vec![])),
+        100334 => npc_call(npc_10731(ctx, 1, vec![])),
+        100335 => npc_call(npc_10731(ctx, 2, vec![])),
+        100336 => npc_call(npc_10731(ctx, 3, vec![])),
+        100337 => npc_call(npc_10731(ctx, 4, vec![])),
+        100338 => npc_call(npc_10732(ctx, 1, vec![])),
+        100339 => npc_call(npc_10732(ctx, 2, vec![])),
+        100340 => npc_call(npc_10732(ctx, 3, vec![])),
+        100341 => npc_call(npc_10732(ctx, 4, vec![])),
+        100342 => npc_call(npc_10732(ctx, 5, vec![])),
+        100343 => npc_call(npc_10732(ctx, 6, vec![])),
+        100344 => npc_call(npc_10732(ctx, 7, vec![])),
+        100345 => npc_call(npc_10732(ctx, 8, vec![])),
+        100346 => npc_call(npc_10732(ctx, 9, vec![])),
+        100347 => npc_call(npc_10732(ctx, 10, vec![])),
+        100348 => npc_call(npc_10733(ctx, 1, vec![])),
+        100349 => npc_call(npc_10733(ctx, 2, vec![])),
+        100350 => npc_call(npc_10733(ctx, 3, vec![])),
+        100351 => npc_call(npc_10733(ctx, 4, vec![])),
+        100352 => npc_call(npc_10733(ctx, 5, vec![])),
+        100353 => npc_call(npc_10734(ctx, 1, vec![])),
+        100354 => npc_call(npc_10734(ctx, 2, vec![])),
+        100355 => npc_call(npc_10734(ctx, 3, vec![])),
+        100356 => npc_call(npc_10734(ctx, 4, vec![])),
+        100357 => npc_call(npc_10735(ctx, 1, vec![])),
+        100358 => npc_call(npc_10735(ctx, 2, vec![])),
+        100359 => npc_call(npc_10735(ctx, 3, vec![])),
+        100360 => npc_call(npc_10735(ctx, 4, vec![])),
+        100361 => npc_call(npc_10735(ctx, 5, vec![])),
+        100362 => npc_call(npc_10735(ctx, 6, vec![])),
+        100363 => npc_call(npc_10736(ctx, 1, vec![])),
+        100364 => npc_call(npc_10736(ctx, 2, vec![])),
+        100365 => npc_call(npc_10736(ctx, 3, vec![])),
+        100366 => npc_call(npc_10736(ctx, 4, vec![])),
+        100367 => npc_call(npc_10737(ctx, 1, vec![])),
         _ => None,
     }
 }

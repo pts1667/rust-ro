@@ -7,7 +7,7 @@ blockers is not emitted.
 import pathlib
 import re
 
-from .parser import (Assign, Binary, Block, Break, Call, Case, Command, Continue, DoWhile, ExprStatement, For, FunctionDefinition, Goto,
+from .parser import (Assign, BackLoop, Binary, Block, Break, Call, Case, Command, Continue, DoWhile, ExprStatement, For, FunctionDefinition, Goto,
                      If, IncDec, Index, Label, Menu, Name, Num, Return, Str, Switch, Ternary, Unary, While)
 
 # rathena command or function -> script-sdk `Function` variant, called with the arguments as written
@@ -115,6 +115,7 @@ class BodyGenerator:
         self.labels = {}
         self.machine = False
         self.targets = []  # stack of (kind, label id) for break and continue
+        self.back_targets = {}  # label name -> loop id of the `BackLoop` being emitted
         self.counter = 0
         self.callsub_labels = set()
         self.helper_functions = []
@@ -482,6 +483,8 @@ class BodyGenerator:
             self.emit(f"return Ok({self.value(node.value) if node.value else 'n(0)'});")
         elif isinstance(node, Goto):
             self.goto(node.label)
+        elif isinstance(node, BackLoop):
+            self.back_loop(node)
         elif isinstance(node, Label):
             self.block(f"construct:label {node.name} inside a block")
         elif isinstance(node, Menu):
@@ -495,7 +498,21 @@ class BodyGenerator:
         else:
             self.block(f"construct:statement {type(node).__name__}")
 
+    def back_loop(self, node):
+        identifier = self.fresh()
+        self.emit(f"'j{identifier}: loop {{")
+        self.back_targets[node.name] = identifier
+        self.depth += 1
+        self.statements(node.body)
+        self.emit(f"break 'j{identifier};")
+        self.depth -= 1
+        self.emit("}")
+        del self.back_targets[node.name]
+
     def goto(self, label):
+        if label in self.back_targets:
+            self.emit(f"continue 'j{self.back_targets[label]};")
+            return
         if not self.machine or not self.known_label(label):
             self.block(f"construct:goto {label}")
             return
@@ -870,7 +887,7 @@ NEW_CALLS = {
     "getattachedrid": "GetAttachedRid", "implode": "Implode", "enablewaitingroomevent": "EnableWaitingRoomEvent",
     "disablewaitingroomevent": "DisableWaitingRoomEvent", "warpwaitingpc": "WarpWaitingPc", "sleep": "Sleep", "sleep2": "Sleep", "progressbar": "ProgressBar",
     "getvariableofnpc": "GetVariableOfNpc",
-    "areamonster": "AreaMonster", "getpartyname": "GetPartyName", "instance_create": "InstanceCreate", "instance_destroy": "InstanceDestroy",
+    "areamonster": "AreaMonster", "areamobuseskill": "AreaMobUseSkill", "getpartyname": "GetPartyName", "instance_create": "InstanceCreate", "instance_destroy": "InstanceDestroy",
     "instance_enter": "InstanceEnter", "instance_npcname": "InstanceNpcName", "instance_mapname": "InstanceMapName", "instance_id": "InstanceId",
     "instance_warpall": "InstanceWarpAll", "instance_announce": "InstanceAnnounce", "instance_check_party": "InstanceCheckParty",
     "instance_check_guild": "InstanceCheckGuild", "instance_info": "InstanceInfo", "instance_live_info": "InstanceLiveInfo", "instance_list": "InstanceList",
@@ -969,11 +986,64 @@ def switch_label_split(switch):
     return None
 
 
+def wrap_backward_labels(statements, root=None, top=True):
+    """A label nested in a block that only `goto`s from after it, inside the same block, jump to is a loop: the rest of the block
+    (up to the next `case`) becomes a `BackLoop` restarted by those jumps. Labels reachable from anywhere else stay as they are."""
+    root = statements if root is None else root
+    for node in list(statements):
+        children = []
+        if isinstance(node, (Block, Switch, BackLoop)):
+            children.append(node.statements if isinstance(node, Block) else node.body)
+        elif isinstance(node, If):
+            children += [branch.statements for branch in (node.then, node.otherwise) if isinstance(branch, Block)]
+        elif isinstance(node, (While, DoWhile, For)) and isinstance(node.body, Block):
+            children.append(node.body.statements)
+        for child in children:
+            wrap_backward_labels(child, root, top=False)
+    if top:
+        return statements
+    index = 0
+    while index < len(statements):
+        item = statements[index]
+        if isinstance(item, Label):
+            end = next((position for position in range(index + 1, len(statements)) if isinstance(statements[position], Case)), len(statements))
+            region = statements[index + 1:end]
+            if label_only_jumped_to_within(item.name, root, region):
+                statements[index:end] = [BackLoop(item.name, region)]
+        index += 1
+    return statements
+
+
+def label_only_jumped_to_within(name, root, region):
+    def references(nodes):
+        found = []
+
+        def visit(node):
+            if isinstance(node, (list, tuple)):
+                for part in node:
+                    visit(part)
+            elif isinstance(node, Goto) and node.label == name:
+                found.append("goto")
+            elif isinstance(node, Menu) and any(label == name for _, label in node.options):
+                found.append("menu")
+            elif isinstance(node, Name) and node.name == name:
+                found.append("name")
+            elif hasattr(node, "__dataclass_fields__"):
+                for field in node.__dataclass_fields__:
+                    visit(getattr(node, field))
+
+        visit(nodes)
+        return found
+
+    inside = references(region)
+    return bool(inside) and set(inside) == {"goto"} and references(root) == inside
+
+
 def generate_function(world, name, body, entry_labels=()):
     """Returns (rust source, blockers, labels). `body` is a statement list."""
     generator = BodyGenerator(world, name)
     statements, generator.local_functions = expand_local_functions(list(body))
-    statements = hoist_nested_labels(statements, [0])
+    statements = wrap_backward_labels(hoist_nested_labels(statements, [0]))
     generator.array_locals = find_array_locals(statements)
     labels = [statement.name for statement in statements if isinstance(statement, Label)]
     generator.labels = {label: index + 1 for index, label in enumerate(labels)}
@@ -1071,5 +1141,5 @@ def walk(statements):
                 stack.append(node.otherwise)
         elif isinstance(node, (While, For, DoWhile)):
             stack.append(node.body)
-        elif isinstance(node, Switch):
+        elif isinstance(node, (Switch, BackLoop)):
             stack.extend(node.body)

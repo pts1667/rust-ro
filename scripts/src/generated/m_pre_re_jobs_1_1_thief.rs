@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13810(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13811(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Upper")?, "==", n(1))?.truthy() {
         if (op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_ASSASSIN_CROSS")?)?.truthy() || op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_STALKER")?)?.truthy()) {
@@ -400,7 +400,7 @@ fn npc_13810(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13811(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13812(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_money_thief = n(0);
     let mut l_thief_item1 = n(0);
     let mut l_thief_item2 = n(0);
@@ -523,7 +523,7 @@ fn npc_13811(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13812(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13813(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_THIEF")?)?.truthy() {
         ctx.mes("[Mr. Irrelevant]")?;
@@ -678,9 +678,9 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13810 => npc_call(npc_13810(ctx, 0, vec![])),
         13811 => npc_call(npc_13811(ctx, 0, vec![])),
         13812 => npc_call(npc_13812(ctx, 0, vec![])),
+        13813 => npc_call(npc_13813(ctx, 0, vec![])),
         _ => None,
     }
 }

@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13713(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13714(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Soldier]")?;
     ctx.mes("Welcome to Luoyang,")?;
@@ -143,7 +143,7 @@ fn npc_13713(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13714(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13715(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_compass_check = n(0);
     let _ = pc;
     ctx.mes("[Representative]")?;
@@ -284,8 +284,8 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13713 => npc_call(npc_13713(ctx, 0, vec![])),
         13714 => npc_call(npc_13714(ctx, 0, vec![])),
+        13715 => npc_call(npc_13715(ctx, 0, vec![])),
         _ => None,
     }
 }

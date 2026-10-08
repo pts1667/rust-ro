@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13636(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13637(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseClass")?, "==", constant(ctx, "JOB_ARCHER")?)?.truthy() {
         if op(ctx.call(Function::GetSkillLv, vec![s("AC_MAKINGARROW")])?, "==", n(1))?.truthy() {
@@ -148,7 +148,7 @@ fn npc_13636(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13637(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13638(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -305,15 +305,15 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13636 => npc_call(npc_13636(ctx, 0, vec![])),
         13637 => npc_call(npc_13637(ctx, 0, vec![])),
+        13638 => npc_call(npc_13638(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104788 => npc_call(npc_13637(ctx, 1, vec![])),
+        104793 => npc_call(npc_13638(ctx, 1, vec![])),
         _ => None,
     }
 }

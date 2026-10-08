@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13483(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13484(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_cru_m1 = n(0);
     let mut l_item1 = n(0);
     let mut l_item2 = n(0);
@@ -330,7 +330,7 @@ fn npc_13483(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13484(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13485(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Murnak Mijoul]")?;
     if op(get(ctx, "BaseJob")?, "!=", constant(ctx, "JOB_SWORDMAN")?)?.truthy() {
@@ -482,7 +482,7 @@ fn npc_13484(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13485(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13486(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_cru_m = n(0);
     let mut l_cru_t = n(0);
     let _ = pc;
@@ -854,7 +854,7 @@ fn npc_13485(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13486(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13487(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Bliant Piyord]")?;
     ctx.mes("Welcome.")?;
@@ -1041,7 +1041,7 @@ fn npc_13486(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13487(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13488(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER300000: usize = 1;
     const LABEL_ONTIMER300500: usize = 2;
     const LABEL_ONTIMER301000: usize = 3;
@@ -1128,7 +1128,7 @@ fn npc_13487(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13488(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13489(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER345000: usize = 1;
     const LABEL_ONTIMER345500: usize = 2;
     const LABEL_ONTIMER346000: usize = 3;
@@ -1205,7 +1205,7 @@ fn npc_13488(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13489(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13490(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER345000: usize = 1;
     const LABEL_ONTIMER345500: usize = 2;
     const LABEL_ONTIMER346000: usize = 3;
@@ -1284,7 +1284,7 @@ fn npc_13489(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13490(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13491(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER345000: usize = 1;
     const LABEL_ONTIMER345500: usize = 2;
     const LABEL_ONTIMER346000: usize = 3;
@@ -1369,7 +1369,7 @@ fn npc_13490(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13491(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13492(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Bliant Piyord]")?;
     ctx.mes("Welcome.")?;
@@ -1389,7 +1389,7 @@ fn npc_13491(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13492(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13493(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONSTARTARENA: usize = 2;
     const LABEL_ONSTART: usize = 3;
@@ -1424,7 +1424,7 @@ fn npc_13492(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13493(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13494(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -1452,7 +1452,7 @@ fn npc_13493(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13494(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13495(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONSTART: usize = 2;
     const LABEL_ONMONSTER1: usize = 3;
@@ -1530,7 +1530,7 @@ fn npc_13494(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13495(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13496(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
     const LABEL_ONSTART: usize = 3;
@@ -1567,7 +1567,7 @@ fn npc_13495(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13496(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13497(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
     const LABEL_ONSTART: usize = 3;
@@ -1604,7 +1604,7 @@ fn npc_13496(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13497(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13498(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
     const LABEL_ONSTART: usize = 3;
@@ -1641,7 +1641,7 @@ fn npc_13497(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13498(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13499(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
     const LABEL_ONDEAD: usize = 3;
@@ -1690,7 +1690,7 @@ fn npc_13498(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13499(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13500(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONDEAD: usize = 1;
     'sm: loop {
         match pc {
@@ -1708,7 +1708,7 @@ fn npc_13499(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13500(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13501(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER241000: usize = 1;
     const LABEL_ONINIT: usize = 2;
     const LABEL_ONSTART: usize = 3;
@@ -1765,7 +1765,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13483 => npc_call(npc_13483(ctx, 0, vec![])),
         13484 => npc_call(npc_13484(ctx, 0, vec![])),
         13485 => npc_call(npc_13485(ctx, 0, vec![])),
         13486 => npc_call(npc_13486(ctx, 0, vec![])),
@@ -1783,80 +1782,81 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13498 => npc_call(npc_13498(ctx, 0, vec![])),
         13499 => npc_call(npc_13499(ctx, 0, vec![])),
         13500 => npc_call(npc_13500(ctx, 0, vec![])),
+        13501 => npc_call(npc_13501(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104488 => npc_call(npc_13487(ctx, 1, vec![])),
-        104489 => npc_call(npc_13487(ctx, 2, vec![])),
-        104490 => npc_call(npc_13487(ctx, 3, vec![])),
-        104491 => npc_call(npc_13487(ctx, 4, vec![])),
-        104492 => npc_call(npc_13487(ctx, 5, vec![])),
-        104493 => npc_call(npc_13487(ctx, 6, vec![])),
-        104494 => npc_call(npc_13487(ctx, 7, vec![])),
-        104495 => npc_call(npc_13487(ctx, 8, vec![])),
-        104496 => npc_call(npc_13488(ctx, 1, vec![])),
-        104497 => npc_call(npc_13488(ctx, 2, vec![])),
-        104498 => npc_call(npc_13488(ctx, 3, vec![])),
-        104499 => npc_call(npc_13488(ctx, 4, vec![])),
-        104500 => npc_call(npc_13488(ctx, 5, vec![])),
-        104501 => npc_call(npc_13488(ctx, 6, vec![])),
-        104502 => npc_call(npc_13488(ctx, 7, vec![])),
-        104503 => npc_call(npc_13488(ctx, 8, vec![])),
-        104504 => npc_call(npc_13489(ctx, 1, vec![])),
-        104505 => npc_call(npc_13489(ctx, 2, vec![])),
-        104506 => npc_call(npc_13489(ctx, 3, vec![])),
-        104507 => npc_call(npc_13489(ctx, 4, vec![])),
-        104508 => npc_call(npc_13489(ctx, 5, vec![])),
-        104509 => npc_call(npc_13489(ctx, 6, vec![])),
-        104510 => npc_call(npc_13489(ctx, 7, vec![])),
-        104511 => npc_call(npc_13489(ctx, 8, vec![])),
-        104512 => npc_call(npc_13490(ctx, 1, vec![])),
-        104513 => npc_call(npc_13490(ctx, 2, vec![])),
-        104514 => npc_call(npc_13490(ctx, 3, vec![])),
-        104515 => npc_call(npc_13490(ctx, 4, vec![])),
-        104516 => npc_call(npc_13490(ctx, 5, vec![])),
-        104517 => npc_call(npc_13490(ctx, 6, vec![])),
-        104518 => npc_call(npc_13490(ctx, 7, vec![])),
-        104519 => npc_call(npc_13490(ctx, 8, vec![])),
-        104520 => npc_call(npc_13492(ctx, 1, vec![])),
-        104521 => npc_call(npc_13492(ctx, 2, vec![])),
-        104522 => npc_call(npc_13492(ctx, 3, vec![])),
-        104523 => npc_call(npc_13493(ctx, 1, vec![])),
-        104524 => npc_call(npc_13494(ctx, 1, vec![])),
-        104525 => npc_call(npc_13494(ctx, 2, vec![])),
-        104526 => npc_call(npc_13494(ctx, 3, vec![])),
-        104527 => npc_call(npc_13494(ctx, 4, vec![])),
-        104528 => npc_call(npc_13494(ctx, 5, vec![])),
-        104529 => npc_call(npc_13494(ctx, 6, vec![])),
-        104530 => npc_call(npc_13494(ctx, 7, vec![])),
-        104531 => npc_call(npc_13494(ctx, 8, vec![])),
-        104532 => npc_call(npc_13495(ctx, 1, vec![])),
-        104533 => npc_call(npc_13495(ctx, 2, vec![])),
-        104534 => npc_call(npc_13495(ctx, 3, vec![])),
-        104535 => npc_call(npc_13495(ctx, 4, vec![])),
-        104536 => npc_call(npc_13496(ctx, 1, vec![])),
-        104537 => npc_call(npc_13496(ctx, 2, vec![])),
-        104538 => npc_call(npc_13496(ctx, 3, vec![])),
-        104539 => npc_call(npc_13496(ctx, 4, vec![])),
-        104540 => npc_call(npc_13497(ctx, 1, vec![])),
-        104541 => npc_call(npc_13497(ctx, 2, vec![])),
-        104542 => npc_call(npc_13497(ctx, 3, vec![])),
-        104543 => npc_call(npc_13497(ctx, 4, vec![])),
-        104544 => npc_call(npc_13498(ctx, 1, vec![])),
-        104545 => npc_call(npc_13498(ctx, 2, vec![])),
-        104546 => npc_call(npc_13498(ctx, 3, vec![])),
-        104547 => npc_call(npc_13498(ctx, 4, vec![])),
-        104548 => npc_call(npc_13498(ctx, 5, vec![])),
-        104549 => npc_call(npc_13498(ctx, 6, vec![])),
-        104550 => npc_call(npc_13499(ctx, 1, vec![])),
-        104551 => npc_call(npc_13500(ctx, 1, vec![])),
-        104552 => npc_call(npc_13500(ctx, 2, vec![])),
-        104553 => npc_call(npc_13500(ctx, 3, vec![])),
-        104554 => npc_call(npc_13500(ctx, 4, vec![])),
-        104555 => npc_call(npc_13500(ctx, 5, vec![])),
+        104493 => npc_call(npc_13488(ctx, 1, vec![])),
+        104494 => npc_call(npc_13488(ctx, 2, vec![])),
+        104495 => npc_call(npc_13488(ctx, 3, vec![])),
+        104496 => npc_call(npc_13488(ctx, 4, vec![])),
+        104497 => npc_call(npc_13488(ctx, 5, vec![])),
+        104498 => npc_call(npc_13488(ctx, 6, vec![])),
+        104499 => npc_call(npc_13488(ctx, 7, vec![])),
+        104500 => npc_call(npc_13488(ctx, 8, vec![])),
+        104501 => npc_call(npc_13489(ctx, 1, vec![])),
+        104502 => npc_call(npc_13489(ctx, 2, vec![])),
+        104503 => npc_call(npc_13489(ctx, 3, vec![])),
+        104504 => npc_call(npc_13489(ctx, 4, vec![])),
+        104505 => npc_call(npc_13489(ctx, 5, vec![])),
+        104506 => npc_call(npc_13489(ctx, 6, vec![])),
+        104507 => npc_call(npc_13489(ctx, 7, vec![])),
+        104508 => npc_call(npc_13489(ctx, 8, vec![])),
+        104509 => npc_call(npc_13490(ctx, 1, vec![])),
+        104510 => npc_call(npc_13490(ctx, 2, vec![])),
+        104511 => npc_call(npc_13490(ctx, 3, vec![])),
+        104512 => npc_call(npc_13490(ctx, 4, vec![])),
+        104513 => npc_call(npc_13490(ctx, 5, vec![])),
+        104514 => npc_call(npc_13490(ctx, 6, vec![])),
+        104515 => npc_call(npc_13490(ctx, 7, vec![])),
+        104516 => npc_call(npc_13490(ctx, 8, vec![])),
+        104517 => npc_call(npc_13491(ctx, 1, vec![])),
+        104518 => npc_call(npc_13491(ctx, 2, vec![])),
+        104519 => npc_call(npc_13491(ctx, 3, vec![])),
+        104520 => npc_call(npc_13491(ctx, 4, vec![])),
+        104521 => npc_call(npc_13491(ctx, 5, vec![])),
+        104522 => npc_call(npc_13491(ctx, 6, vec![])),
+        104523 => npc_call(npc_13491(ctx, 7, vec![])),
+        104524 => npc_call(npc_13491(ctx, 8, vec![])),
+        104525 => npc_call(npc_13493(ctx, 1, vec![])),
+        104526 => npc_call(npc_13493(ctx, 2, vec![])),
+        104527 => npc_call(npc_13493(ctx, 3, vec![])),
+        104528 => npc_call(npc_13494(ctx, 1, vec![])),
+        104529 => npc_call(npc_13495(ctx, 1, vec![])),
+        104530 => npc_call(npc_13495(ctx, 2, vec![])),
+        104531 => npc_call(npc_13495(ctx, 3, vec![])),
+        104532 => npc_call(npc_13495(ctx, 4, vec![])),
+        104533 => npc_call(npc_13495(ctx, 5, vec![])),
+        104534 => npc_call(npc_13495(ctx, 6, vec![])),
+        104535 => npc_call(npc_13495(ctx, 7, vec![])),
+        104536 => npc_call(npc_13495(ctx, 8, vec![])),
+        104537 => npc_call(npc_13496(ctx, 1, vec![])),
+        104538 => npc_call(npc_13496(ctx, 2, vec![])),
+        104539 => npc_call(npc_13496(ctx, 3, vec![])),
+        104540 => npc_call(npc_13496(ctx, 4, vec![])),
+        104541 => npc_call(npc_13497(ctx, 1, vec![])),
+        104542 => npc_call(npc_13497(ctx, 2, vec![])),
+        104543 => npc_call(npc_13497(ctx, 3, vec![])),
+        104544 => npc_call(npc_13497(ctx, 4, vec![])),
+        104545 => npc_call(npc_13498(ctx, 1, vec![])),
+        104546 => npc_call(npc_13498(ctx, 2, vec![])),
+        104547 => npc_call(npc_13498(ctx, 3, vec![])),
+        104548 => npc_call(npc_13498(ctx, 4, vec![])),
+        104549 => npc_call(npc_13499(ctx, 1, vec![])),
+        104550 => npc_call(npc_13499(ctx, 2, vec![])),
+        104551 => npc_call(npc_13499(ctx, 3, vec![])),
+        104552 => npc_call(npc_13499(ctx, 4, vec![])),
+        104553 => npc_call(npc_13499(ctx, 5, vec![])),
+        104554 => npc_call(npc_13499(ctx, 6, vec![])),
+        104555 => npc_call(npc_13500(ctx, 1, vec![])),
+        104556 => npc_call(npc_13501(ctx, 1, vec![])),
+        104557 => npc_call(npc_13501(ctx, 2, vec![])),
+        104558 => npc_call(npc_13501(ctx, 3, vec![])),
+        104559 => npc_call(npc_13501(ctx, 4, vec![])),
+        104560 => npc_call(npc_13501(ctx, 5, vec![])),
         _ => None,
     }
 }

@@ -29313,6 +29313,62 @@
     "interactive": false
   },
   {
+    "id": 13255,
+    "dynamic": false,
+    "source_hash": "3e1abfcc67813dc287378ee2081a7b04",
+    "calls": [
+      "bonus"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 13256,
+    "dynamic": false,
+    "source_hash": "4fc86aca510ea50baf9cd14feb28b90f",
+    "calls": [
+      "bonus"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 13257,
+    "dynamic": false,
+    "source_hash": "3161d09108de33a4da420b6c36e8b9c8",
+    "calls": [
+      "bonus"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 13258,
+    "dynamic": false,
+    "source_hash": "f4259853c713e208f9b8153f68fa195e",
+    "calls": [
+      "bonus"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 13259,
+    "dynamic": false,
+    "source_hash": "44f0feb0908a59edb55b5f94d4355333",
+    "calls": [
+      "bonus",
+      "bonus2"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
     "id": 13300,
     "dynamic": false,
     "source_hash": "45d48e137a9ce91da9361f9310802465",
@@ -29688,6 +29744,28 @@
     "calls": [
       "bonus",
       "bonus2"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 14595,
+    "dynamic": true,
+    "source_hash": "c5e7454a61b374e1025d2ff3409bd803",
+    "calls": [
+      "warp"
+    ],
+    "reads": [],
+    "writes": [],
+    "interactive": false
+  },
+  {
+    "id": 14596,
+    "dynamic": true,
+    "source_hash": "688a407f8e3d3f8b2aff3ae841bea8f3",
+    "calls": [
+      "getgroupitem"
     ],
     "reads": [],
     "writes": [],

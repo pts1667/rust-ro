@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13740(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13741(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -24,7 +24,7 @@ fn npc_13740(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13741(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13742(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -50,16 +50,16 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13740 => npc_call(npc_13740(ctx, 0, vec![])),
         13741 => npc_call(npc_13741(ctx, 0, vec![])),
+        13742 => npc_call(npc_13742(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104843 => npc_call(npc_13740(ctx, 1, vec![])),
-        104844 => npc_call(npc_13741(ctx, 1, vec![])),
+        104848 => npc_call(npc_13741(ctx, 1, vec![])),
+        104849 => npc_call(npc_13742(ctx, 1, vec![])),
         _ => None,
     }
 }

@@ -500,6 +500,7 @@ impl ScriptSkillService {
                 | "NPC_DRAGONFEAR"
                 | "NPC_WIDEHELLDIGNITY"
                 | "NPC_EXPULSION"
+                | "NPC_INVINCIBLEOFF"
                 | "TF_BACKSLIDING"
                 | "HW_GANBANTEIN"
                 | "MO_BODYRELOCATION"

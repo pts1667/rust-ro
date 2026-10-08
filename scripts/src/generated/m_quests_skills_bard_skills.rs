@@ -42,7 +42,7 @@ pub(crate) fn fn_84_f_bardskillyhelle(ctx: &Context, mut pc: usize, args: Vec<Va
     Ok(n(0))
 }
 
-fn npc_13645(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13646(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -415,7 +415,7 @@ fn npc_13645(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13646(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13647(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -962,7 +962,7 @@ fn npc_13646(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13647(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13648(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONENABLE: usize = 2;
     const LABEL_ONDISABLE: usize = 3;
@@ -1015,7 +1015,7 @@ fn npc_13647(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13648(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13649(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     const LABEL_ONTOUCH: usize = 3;
@@ -1059,7 +1059,7 @@ fn npc_13648(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13649(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13650(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     const LABEL_ONTOUCH: usize = 3;
@@ -1103,7 +1103,7 @@ fn npc_13649(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13650(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13651(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     const LABEL_ONTOUCH: usize = 3;
@@ -1147,7 +1147,7 @@ fn npc_13650(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13651(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13652(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     const LABEL_ONTOUCH: usize = 3;
@@ -1189,69 +1189,6 @@ fn npc_13651(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
             _ => return Err("Invalid script position".into()),
         }
     }
-}
-
-fn npc_13652(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    let _ = pc;
-    ctx.mes("[Little Bit Drunken Guy]")?;
-    ctx.mes("What do you think")?;
-    ctx.mes("is the best drink in")?;
-    ctx.mes("all the world? I think")?;
-    ctx.mes("the Tri-- Tristan? What")?;
-    ctx.mes("was it called again?")?;
-    ctx.next()?;
-    ctx.mes("[More Drunken Guy]")?;
-    ctx.mes("Oh! 13 Year Old Tristan?")?;
-    ctx.mes("That's a great drink, sure,")?;
-    ctx.mes("but it's way too expensive for")?;
-    ctx.mes("anything less than a special")?;
-    ctx.mes("occasion. ^333333*Hiccup*^000000 Personally,")?;
-    ctx.mes("I really like Ver... Uh, Ver...")?;
-    ctx.next()?;
-    ctx.mes("[Little Bit Drunken Guy]")?;
-    ctx.mes("Vermilion on the Beach?")?;
-    ctx.mes("Yeah, that's really good,")?;
-    ctx.mes("you'll pass out after just")?;
-    ctx.mes("having one shot! Yeah...")?;
-    ctx.mes("Tro... Tropical! People say")?;
-    ctx.mes("that's good too. Wait, what?")?;
-    ctx.next()?;
-    ctx.mes("[Little Bit Drunken Guy]")?;
-    ctx.mes("H-hey...! ^333333*Hiccup!*^000000")?;
-    ctx.mes("What are you doing?!")?;
-    ctx.mes("K-keep your hands to")?;
-    ctx.mes("yourself! Do I look")?;
-    ctx.mes("like a woman to you?")?;
-    ctx.next()?;
-    ctx.mes("[More Drunken Guy]")?;
-    ctx.mes("What are you talking")?;
-    ctx.mes("about? Wh-what?! Why")?;
-    ctx.mes("are my arms all wrapped")?;
-    ctx.mes("around you? S-sorry, I was")?;
-    ctx.mes("trying to just go that w--")?;
-    ctx.mes("I wasn't trying to hug you!")?;
-    ctx.next()?;
-    ctx.mes("[Little Bit Drunken Guy]")?;
-    ctx.mes("Bumping into me,")?;
-    ctx.mes("I understand. But a full")?;
-    ctx.mes("blown hug? Come on, now!")?;
-    ctx.mes("That was totally on purpose!")?;
-    ctx.mes("Wh-what? My h-hand! It's...")?;
-    ctx.mes("It's moving my itself?!")?;
-    ctx.next()?;
-    ctx.mes("[More Drunken Guy]")?;
-    ctx.mes("Ack! Wh-what are")?;
-    ctx.mes("you doing! S-stop")?;
-    ctx.mes("touching my butt!")?;
-    ctx.next()?;
-    ctx.mes("^3355FFA Bard in the room")?;
-    ctx.mes("watches the two drunk")?;
-    ctx.mes("men intently and giggles")?;
-    ctx.mes("at their stupor. Remember:")?;
-    ctx.mes("drinking too much isn't good!^000000")?;
-    ctx.close()?;
-    return Err(END.into());
-    Ok(n(0))
 }
 
 fn npc_13653(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
@@ -1318,6 +1255,69 @@ fn npc_13653(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_13654(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    ctx.mes("[Little Bit Drunken Guy]")?;
+    ctx.mes("What do you think")?;
+    ctx.mes("is the best drink in")?;
+    ctx.mes("all the world? I think")?;
+    ctx.mes("the Tri-- Tristan? What")?;
+    ctx.mes("was it called again?")?;
+    ctx.next()?;
+    ctx.mes("[More Drunken Guy]")?;
+    ctx.mes("Oh! 13 Year Old Tristan?")?;
+    ctx.mes("That's a great drink, sure,")?;
+    ctx.mes("but it's way too expensive for")?;
+    ctx.mes("anything less than a special")?;
+    ctx.mes("occasion. ^333333*Hiccup*^000000 Personally,")?;
+    ctx.mes("I really like Ver... Uh, Ver...")?;
+    ctx.next()?;
+    ctx.mes("[Little Bit Drunken Guy]")?;
+    ctx.mes("Vermilion on the Beach?")?;
+    ctx.mes("Yeah, that's really good,")?;
+    ctx.mes("you'll pass out after just")?;
+    ctx.mes("having one shot! Yeah...")?;
+    ctx.mes("Tro... Tropical! People say")?;
+    ctx.mes("that's good too. Wait, what?")?;
+    ctx.next()?;
+    ctx.mes("[Little Bit Drunken Guy]")?;
+    ctx.mes("H-hey...! ^333333*Hiccup!*^000000")?;
+    ctx.mes("What are you doing?!")?;
+    ctx.mes("K-keep your hands to")?;
+    ctx.mes("yourself! Do I look")?;
+    ctx.mes("like a woman to you?")?;
+    ctx.next()?;
+    ctx.mes("[More Drunken Guy]")?;
+    ctx.mes("What are you talking")?;
+    ctx.mes("about? Wh-what?! Why")?;
+    ctx.mes("are my arms all wrapped")?;
+    ctx.mes("around you? S-sorry, I was")?;
+    ctx.mes("trying to just go that w--")?;
+    ctx.mes("I wasn't trying to hug you!")?;
+    ctx.next()?;
+    ctx.mes("[Little Bit Drunken Guy]")?;
+    ctx.mes("Bumping into me,")?;
+    ctx.mes("I understand. But a full")?;
+    ctx.mes("blown hug? Come on, now!")?;
+    ctx.mes("That was totally on purpose!")?;
+    ctx.mes("Wh-what? My h-hand! It's...")?;
+    ctx.mes("It's moving my itself?!")?;
+    ctx.next()?;
+    ctx.mes("[More Drunken Guy]")?;
+    ctx.mes("Ack! Wh-what are")?;
+    ctx.mes("you doing! S-stop")?;
+    ctx.mes("touching my butt!")?;
+    ctx.next()?;
+    ctx.mes("^3355FFA Bard in the room")?;
+    ctx.mes("watches the two drunk")?;
+    ctx.mes("men intently and giggles")?;
+    ctx.mes("at their stupor. Remember:")?;
+    ctx.mes("drinking too much isn't good!^000000")?;
+    ctx.close()?;
+    return Err(END.into());
+    Ok(n(0))
+}
+
+fn npc_13655(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?, "==", n(0))?.truthy() {
         ctx.mes("^3355FFHold it right there!")?;
@@ -1421,7 +1421,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13645 => npc_call(npc_13645(ctx, 0, vec![])),
         13646 => npc_call(npc_13646(ctx, 0, vec![])),
         13647 => npc_call(npc_13647(ctx, 0, vec![])),
         13648 => npc_call(npc_13648(ctx, 0, vec![])),
@@ -1431,30 +1430,31 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13652 => npc_call(npc_13652(ctx, 0, vec![])),
         13653 => npc_call(npc_13653(ctx, 0, vec![])),
         13654 => npc_call(npc_13654(ctx, 0, vec![])),
+        13655 => npc_call(npc_13655(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104794 => npc_call(npc_13645(ctx, 1, vec![])),
-        104795 => npc_call(npc_13646(ctx, 1, vec![])),
-        104796 => npc_call(npc_13647(ctx, 1, vec![])),
-        104797 => npc_call(npc_13647(ctx, 2, vec![])),
-        104798 => npc_call(npc_13647(ctx, 3, vec![])),
-        104799 => npc_call(npc_13647(ctx, 4, vec![])),
-        104800 => npc_call(npc_13648(ctx, 1, vec![])),
-        104801 => npc_call(npc_13648(ctx, 2, vec![])),
-        104802 => npc_call(npc_13648(ctx, 3, vec![])),
-        104803 => npc_call(npc_13649(ctx, 1, vec![])),
-        104804 => npc_call(npc_13649(ctx, 2, vec![])),
-        104805 => npc_call(npc_13649(ctx, 3, vec![])),
-        104806 => npc_call(npc_13650(ctx, 1, vec![])),
-        104807 => npc_call(npc_13650(ctx, 2, vec![])),
-        104808 => npc_call(npc_13650(ctx, 3, vec![])),
-        104809 => npc_call(npc_13651(ctx, 1, vec![])),
-        104810 => npc_call(npc_13651(ctx, 2, vec![])),
-        104811 => npc_call(npc_13651(ctx, 3, vec![])),
+        104799 => npc_call(npc_13646(ctx, 1, vec![])),
+        104800 => npc_call(npc_13647(ctx, 1, vec![])),
+        104801 => npc_call(npc_13648(ctx, 1, vec![])),
+        104802 => npc_call(npc_13648(ctx, 2, vec![])),
+        104803 => npc_call(npc_13648(ctx, 3, vec![])),
+        104804 => npc_call(npc_13648(ctx, 4, vec![])),
+        104805 => npc_call(npc_13649(ctx, 1, vec![])),
+        104806 => npc_call(npc_13649(ctx, 2, vec![])),
+        104807 => npc_call(npc_13649(ctx, 3, vec![])),
+        104808 => npc_call(npc_13650(ctx, 1, vec![])),
+        104809 => npc_call(npc_13650(ctx, 2, vec![])),
+        104810 => npc_call(npc_13650(ctx, 3, vec![])),
+        104811 => npc_call(npc_13651(ctx, 1, vec![])),
+        104812 => npc_call(npc_13651(ctx, 2, vec![])),
+        104813 => npc_call(npc_13651(ctx, 3, vec![])),
+        104814 => npc_call(npc_13652(ctx, 1, vec![])),
+        104815 => npc_call(npc_13652(ctx, 2, vec![])),
+        104816 => npc_call(npc_13652(ctx, 3, vec![])),
         _ => None,
     }
 }

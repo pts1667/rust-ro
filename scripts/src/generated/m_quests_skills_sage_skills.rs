@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13688(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13689(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_convert = n(0);
     let mut l_element = n(0);
     let mut l_i = n(0);
@@ -557,7 +557,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13688 => npc_call(npc_13688(ctx, 0, vec![])),
+        13689 => npc_call(npc_13689(ctx, 0, vec![])),
         _ => None,
     }
 }

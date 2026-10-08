@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13834(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13835(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (((op(get(ctx, "Class")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() || op(get(ctx, "Class")?, "==", constant(ctx, "JOB_BABY")?)?.truthy()) && (op(get(ctx, "JobLevel")?, ">", n(3))?.truthy() || op(get(ctx, "BaseLevel")?, ">", n(11))?.truthy())) && op(get(ctx, "skill_nov")?, "<", n(3))?.truthy()) {
         ctx.mes("[Nami]")?;
@@ -203,7 +203,7 @@ fn npc_13834(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13835(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13836(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (((op(get(ctx, "Class")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() || op(get(ctx, "Class")?, "==", constant(ctx, "JOB_BABY")?)?.truthy()) && op(get(ctx, "JobLevel")?, ">", n(6))?.truthy()) && (op(get(ctx, "skill_nov")?, ">=", n(3))?.truthy() && op(get(ctx, "skill_nov")?, "<=", n(5))?.truthy())) {
         ctx.mes("[Bulma]")?;
@@ -387,7 +387,7 @@ fn npc_13835(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13836(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13837(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Dread Lord]")?;
     ctx.mes(". . . . . . . . . .")?;
@@ -527,9 +527,9 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13834 => npc_call(npc_13834(ctx, 0, vec![])),
         13835 => npc_call(npc_13835(ctx, 0, vec![])),
         13836 => npc_call(npc_13836(ctx, 0, vec![])),
+        13837 => npc_call(npc_13837(ctx, 0, vec![])),
         _ => None,
     }
 }

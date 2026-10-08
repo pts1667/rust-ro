@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13483(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_CHANGEJOB: usize = 1;
     let mut l_bard_s = n(0);
     let mut l_selection = n(0);
@@ -915,19 +915,19 @@ fn npc_13482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                         if !m3 && eq(&sw3, &n(5)) { m3 = true; }
                                                         if m3 {
                                                             if op(ctx.call(Function::CountItem, vec![n(1019)])?, ">", n(59))?.truthy() {
-                                                                npc_13482(ctx, LABEL_S_CHANGEJOB, vec![n(1019), n(1901)])?;
+                                                                npc_13483(ctx, LABEL_S_CHANGEJOB, vec![n(1019), n(1901)])?;
                                                             } else {
                                                                 if op(ctx.call(Function::CountItem, vec![n(1068)])?, ">", n(59))?.truthy() {
-                                                                    npc_13482(ctx, LABEL_S_CHANGEJOB, vec![n(1068), n(1903)])?;
+                                                                    npc_13483(ctx, LABEL_S_CHANGEJOB, vec![n(1068), n(1903)])?;
                                                                 } else {
                                                                     if op(ctx.call(Function::CountItem, vec![n(1067)])?, ">", n(59))?.truthy() {
-                                                                        npc_13482(ctx, LABEL_S_CHANGEJOB, vec![n(1067), n(1903)])?;
+                                                                        npc_13483(ctx, LABEL_S_CHANGEJOB, vec![n(1067), n(1903)])?;
                                                                     } else {
                                                                         if op(ctx.call(Function::CountItem, vec![n(1066)])?, ">", n(59))?.truthy() {
                                                                             if op(get(ctx, "JobLevel")?, ">", n(49))?.truthy() {
-                                                                                npc_13482(ctx, LABEL_S_CHANGEJOB, vec![n(1066), n(1910)])?;
+                                                                                npc_13483(ctx, LABEL_S_CHANGEJOB, vec![n(1066), n(1910)])?;
                                                                             } else {
-                                                                                npc_13482(ctx, LABEL_S_CHANGEJOB, vec![n(1066), n(1905)])?;
+                                                                                npc_13483(ctx, LABEL_S_CHANGEJOB, vec![n(1066), n(1905)])?;
                                                                             }
                                                                         }
                                                                     }
@@ -1022,7 +1022,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13482 => npc_call(npc_13482(ctx, 0, vec![])),
+        13483 => npc_call(npc_13483(ctx, 0, vec![])),
         _ => None,
     }
 }

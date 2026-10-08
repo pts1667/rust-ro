@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13725(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13726(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_BULLETTRADE: usize = 1;
     let mut l_amount = n(0);
     let mut l_bullet_id = n(0);
@@ -27,23 +27,23 @@ fn npc_13725(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                             let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3)) && !eq(&sw1, &n(4)) && !eq(&sw1, &n(5)) && !eq(&sw1, &n(6));
                             if !m1 && eq(&sw1, &n(1)) { m1 = true; }
                             if m1 {
-                                npc_13725(ctx, LABEL_S_BULLETTRADE, vec![n(937), n(10), n(13205)])?;
+                                npc_13726(ctx, LABEL_S_BULLETTRADE, vec![n(937), n(10), n(13205)])?;
                             }
                             if !m1 && eq(&sw1, &n(2)) { m1 = true; }
                             if m1 {
-                                npc_13725(ctx, LABEL_S_BULLETTRADE, vec![n(7097), n(2), n(13203)])?;
+                                npc_13726(ctx, LABEL_S_BULLETTRADE, vec![n(7097), n(2), n(13203)])?;
                             }
                             if !m1 && eq(&sw1, &n(3)) { m1 = true; }
                             if m1 {
-                                npc_13725(ctx, LABEL_S_BULLETTRADE, vec![n(7053), n(3), n(13204)])?;
+                                npc_13726(ctx, LABEL_S_BULLETTRADE, vec![n(7053), n(3), n(13204)])?;
                             }
                             if !m1 && eq(&sw1, &n(4)) { m1 = true; }
                             if m1 {
-                                npc_13725(ctx, LABEL_S_BULLETTRADE, vec![n(1024), n(5), n(13206)])?;
+                                npc_13726(ctx, LABEL_S_BULLETTRADE, vec![n(1024), n(5), n(13206)])?;
                             }
                             if !m1 && eq(&sw1, &n(5)) { m1 = true; }
                             if m1 {
-                                npc_13725(ctx, LABEL_S_BULLETTRADE, vec![n(7054), n(2), n(13207)])?;
+                                npc_13726(ctx, LABEL_S_BULLETTRADE, vec![n(7054), n(2), n(13207)])?;
                             }
                             if !m1 && eq(&sw1, &n(6)) { m1 = true; }
                             if m1 {
@@ -150,7 +150,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13725 => npc_call(npc_13725(ctx, 0, vec![])),
+        13726 => npc_call(npc_13726(ctx, 0, vec![])),
         _ => None,
     }
 }

@@ -110,7 +110,7 @@ pub(crate) fn fn_87_f_merckafra(ctx: &Context, mut pc: usize, args: Vec<Value>) 
     Ok(n(0))
 }
 
-fn npc_13787(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13788(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_GIVESERIAL: usize = 1;
     let mut l_quest_id = n(0);
     'sm: loop {
@@ -509,13 +509,13 @@ fn npc_13787(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                         ctx.mes("[Chief Mahnsoo]")?;
                                                         ctx.mes("When you get there, visit the Kafra Employee stationed there. Her name is Blossom. Did you get")?;
                                                         ctx.mes("all of that?")?;
-                                                        npc_13787(ctx, LABEL_S_GIVESERIAL, vec![n(2485741), n(1), n(2328137), n(2), n(1009)])?;
+                                                        npc_13788(ctx, LABEL_S_GIVESERIAL, vec![n(2485741), n(1), n(2328137), n(2), n(1009)])?;
                                                         break 'b5;
                                                     }
                                                     if !m5 && eq(&sw5, &n(2)) { m5 = true; }
                                                     if m5 {
                                                         ctx.mes("First, get the delivery package from the storehouse, and then go to the Mage Guild in Geffen. When you get there, visit the Mage Guildsman in charge.")?;
-                                                        npc_13787(ctx, LABEL_S_GIVESERIAL, vec![n(2989396), n(3), n(2191737), n(4), n(1010)])?;
+                                                        npc_13788(ctx, LABEL_S_GIVESERIAL, vec![n(2989396), n(3), n(2191737), n(4), n(1010)])?;
                                                         break 'b5;
                                                     }
                                                     if !m5 && eq(&sw5, &n(3)) { m5 = true; }
@@ -524,13 +524,13 @@ fn npc_13787(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                         ctx.next()?;
                                                         ctx.mes("[Chief Mahnsoo]")?;
                                                         ctx.mes("He's a bit forgetful, so you should probably give the package to one of his students.")?;
-                                                        npc_13787(ctx, LABEL_S_GIVESERIAL, vec![n(3012685), n(5), n(3487372), n(6), n(1011)])?;
+                                                        npc_13788(ctx, LABEL_S_GIVESERIAL, vec![n(3012685), n(5), n(3487372), n(6), n(1011)])?;
                                                         break 'b5;
                                                     }
                                                     if !m5 && eq(&sw5, &n(4)) { m5 = true; }
                                                     if m5 {
                                                         ctx.mes("First, get the delivery package from the storehouse, and then give it to the Kafra Employee stationed on Byalan Island.")?;
-                                                        npc_13787(ctx, LABEL_S_GIVESERIAL, vec![n(3318702), n(7), n(3543625), n(8), n(1012)])?;
+                                                        npc_13788(ctx, LABEL_S_GIVESERIAL, vec![n(3318702), n(7), n(3543625), n(8), n(1012)])?;
                                                         ctx.next()?;
                                                         ctx.mes("[Chief Mahnsoo]")?;
                                                         ctx.mes("Ummmm...")?;
@@ -645,7 +645,7 @@ fn npc_13787(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13788(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13789(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input = n(0);
     let mut l_where_village = n(0);
     let _ = pc;
@@ -1037,7 +1037,7 @@ fn npc_13788(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13789(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13790(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "job_merchant_q")?, "==", n(4))?.truthy() || op(get(ctx, "job_merchant_q")?, "==", n(3))?.truthy()) {
         ctx.mes("[Dyer's Student]")?;
@@ -1134,7 +1134,7 @@ fn npc_13789(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13790(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13791(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "job_merchant_q")?, "==", n(4))?.truthy() || op(get(ctx, "job_merchant_q")?, "==", n(3))?.truthy()) {
         ctx.mes("[Guild Staff]")?;
@@ -1224,7 +1224,7 @@ fn npc_13790(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13791(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13792(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.call(Function::Cutin, vec![s("kafra_02"), n(2)])?;
     if ((op(get(ctx, "job_merchant_q")?, "==", n(6))?.truthy() || op(get(ctx, "job_merchant_q")?, "==", n(5))?.truthy()) && (op(get(ctx, "job_merchant_q2")?, "==", n(2))?.truthy() || op(get(ctx, "job_merchant_q2")?, "==", n(1))?.truthy())) {
@@ -1355,11 +1355,11 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13787 => npc_call(npc_13787(ctx, 0, vec![])),
         13788 => npc_call(npc_13788(ctx, 0, vec![])),
         13789 => npc_call(npc_13789(ctx, 0, vec![])),
         13790 => npc_call(npc_13790(ctx, 0, vec![])),
         13791 => npc_call(npc_13791(ctx, 0, vec![])),
+        13792 => npc_call(npc_13792(ctx, 0, vec![])),
         _ => None,
     }
 }

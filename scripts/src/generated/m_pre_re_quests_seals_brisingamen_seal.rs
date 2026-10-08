@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13745(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13746(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_bookrand = n(0);
     let _ = pc;
     if op(get(ctx, "$god2")?, "<", get(ctx, "$@god_check1")?)?.truthy() {
@@ -196,7 +196,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13745 => npc_call(npc_13745(ctx, 0, vec![])),
+        13746 => npc_call(npc_13746(ctx, 0, vec![])),
         _ => None,
     }
 }

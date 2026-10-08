@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13476(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13477(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_items: Vec<Value> = Vec::new();
     let _ = pc;
     ctx.mes("[Parmy Gianino]")?;
@@ -367,7 +367,7 @@ fn npc_13476(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13477(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13478(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input = n(0);
     let mut l_w_point = n(0);
     let _ = pc;
@@ -956,7 +956,7 @@ fn npc_13477(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13478(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13479(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_w_point = n(0);
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?, "==", n(0))?.truthy() {
@@ -1581,7 +1581,7 @@ fn npc_13478(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13479(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13480(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_w_point = n(0);
     let _ = pc;
     ctx.mes("[Van Helmont]")?;
@@ -1852,7 +1852,7 @@ fn npc_13479(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13480(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13481(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_jlevel = n(0);
     let _ = pc;
     ctx.call(Function::Cutin, vec![s("job_alche_vincent"), n(2)])?;
@@ -2053,7 +2053,7 @@ fn npc_13480(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13481(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13482(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_alch_t = n(0);
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(1201), n(1)])?, "==", n(0))?.truthy() {
@@ -2315,12 +2315,12 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13476 => npc_call(npc_13476(ctx, 0, vec![])),
         13477 => npc_call(npc_13477(ctx, 0, vec![])),
         13478 => npc_call(npc_13478(ctx, 0, vec![])),
         13479 => npc_call(npc_13479(ctx, 0, vec![])),
         13480 => npc_call(npc_13480(ctx, 0, vec![])),
         13481 => npc_call(npc_13481(ctx, 0, vec![])),
+        13482 => npc_call(npc_13482(ctx, 0, vec![])),
         _ => None,
     }
 }

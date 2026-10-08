@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13657(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13658(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_CRUSADER")?)?.truthy() {
         if (op(get(ctx, "crus_sk")?, "==", n(8))?.truthy() && op(ctx.call(Function::GetSkillLv, vec![s("CR_SHRINK")])?, "==", n(0))?.truthy()) {
@@ -300,7 +300,7 @@ fn npc_13657(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13658(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13659(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_rand = n(0);
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_CRUSADER")?)?.truthy() {
@@ -624,7 +624,7 @@ fn npc_13658(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13659(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13660(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_CRUSADER")?)?.truthy() {
         if (op(get(ctx, "Upper")?, "==", n(1))?.truthy() && ctx.call(Function::GetSkillLv, vec![s("CR_SHRINK")])?.truthy()) {
@@ -881,9 +881,9 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13657 => npc_call(npc_13657(ctx, 0, vec![])),
         13658 => npc_call(npc_13658(ctx, 0, vec![])),
         13659 => npc_call(npc_13659(ctx, 0, vec![])),
+        13660 => npc_call(npc_13660(ctx, 0, vec![])),
         _ => None,
     }
 }

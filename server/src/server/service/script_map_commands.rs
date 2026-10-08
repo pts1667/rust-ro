@@ -1,7 +1,7 @@
 use script_sdk::{Function, Reply, Value};
 
 use crate::server::Server;
-use crate::server::model::events::game_event::{GameEvent, ScriptWarp};
+use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast, ScriptWarp};
 use models::enums::cell::CellType;
 
 use crate::server::model::events::map_event::{CellArea, MapEvent, ScriptMapCommand, ScriptMobCommand};
@@ -18,6 +18,7 @@ pub(crate) fn handles(function: Function) -> bool {
         function,
         Function::BgMonster
             | Function::BgMonsterSetTeam
+            | Function::AreaMobUseSkill
             | Function::KillMonster
             | Function::MobCount
             | Function::SetMobImmunity
@@ -93,6 +94,63 @@ impl Server {
                 let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
                 if let Some(map_instance) = state.get_map_instance(&npc.map, npc.instance) {
                     map_instance.add_to_next_tick(MapEvent::ScriptMobCommand(ScriptMobCommand::SetTeam { mob_id, bg_id }));
+                }
+                Ok(Value::default())
+            }
+            Function::AreaMobUseSkill => {
+                let (map, resolved) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
+                let (x, y, range) = (number(1)?, number(2)?, number(3)?);
+                let class = number(4)?;
+                let skill = GlobalConfigService::instance().find_skill_config(arguments.get(5).ok_or("Missing skill")?).ok_or("Unknown monster skill")?;
+                let level = u16::try_from(number(6)?).ok().filter(|level| *level > 0).ok_or("Invalid monster skill level")?;
+                let cancelable = number(8)? > 0;
+                let target_type = number(10)?;
+                let npc = crate::server::script::unit_data::script_actor(state, context)?;
+                let instance = resolved.unwrap_or_else(|| npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance));
+                let Some(map_instance) = state.get_map_instance(&map, instance) else {
+                    return Ok(Value::default());
+                };
+                let casters: Vec<(u32, Option<u32>)> = map_instance
+                    .state()
+                    .mobs()
+                    .values()
+                    .filter(|mob| {
+                        mob.is_present()
+                            && i32::from(mob.mob_id) == class
+                            && (x - range..=x + range).contains(&i32::from(mob.x))
+                            && (y - range..=y + range).contains(&i32::from(mob.y))
+                    })
+                    .map(|mob| {
+                        let target = match target_type {
+                            0 => Some(mob.id),
+                            1 => mob.target_id,
+                            2 => mob.summon_owner,
+                            _ => None,
+                        };
+                        (mob.id, target)
+                    })
+                    .collect();
+                let random_targets: Vec<u32> = if target_type == 3 {
+                    state.characters().values().filter(|character| character.current_map_name() == &map && character.current_map_instance() == instance).map(|character| character.char_id).collect()
+                } else {
+                    vec![]
+                };
+                for (mob_id, target) in casters {
+                    let target = if target_type == 3 { random_targets.get(fastrand::usize(0..random_targets.len().max(1))).copied() } else { target };
+                    let Some(target_id) = target else { continue };
+                    let request = ScriptSkillCast {
+                        source_id: mob_id,
+                        target_id,
+                        skill_id: skill.id,
+                        level,
+                        cast_cancel: Some(cancelable),
+                        source_map: Some(map.clone()),
+                        source_instance: Some(instance),
+                        ..Default::default()
+                    };
+                    if let Err(error) = self.script_skill_service().cast_script_unit_skill(self, state, request, crate::util::tick::get_tick()) {
+                        warn!("areamobuseskill: monster {mob_id} could not use skill {}: {error}", skill.id);
+                    }
                 }
                 Ok(Value::default())
             }

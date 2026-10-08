@@ -426,6 +426,7 @@ impl ScriptSkillService {
                     cells,
                 }));
             }
+            "NPC_INVINCIBLEOFF" => self.end_actor_target_status(server, state, source, request.target_id, StatusChangeKind::Invincible),
             "NPC_EXPULSION" => {
                 if state
                     .map_flags_for(&source.map, source.instance)

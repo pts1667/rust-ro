@@ -366,6 +366,7 @@ pub enum Function {
     SetInstanceVar,
     GetPartyName,
     AreaMonster,
+    AreaMobUseSkill,
     GetEquipName,
     GetEquipWeaponLevel,
     GetEquipArmorLevel,

@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_12906(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12907(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -35,7 +35,7 @@ fn npc_12906(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12907(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12908(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -54,7 +54,7 @@ fn npc_12907(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12908(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12909(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(2))?.truthy() {
         ctx.mes("[Larjes]")?;
@@ -111,7 +111,7 @@ fn npc_12908(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12909(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12910(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(3))?.truthy() {
         ctx.mes("[Larjes]")?;
@@ -178,7 +178,7 @@ fn npc_12909(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12910(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(7))?.truthy() {
         ctx.mes("[Waiter]")?;
@@ -254,7 +254,7 @@ fn npc_12910(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12912(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Normal-Looking Man]")?;
     ctx.mes("Mmm-Mmm!")?;
@@ -268,7 +268,7 @@ fn npc_12911(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12912(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12913(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Common-Looking Man]")?;
     ctx.mes("The food here isn't bad,")?;
@@ -280,7 +280,7 @@ fn npc_12912(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12913(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12914(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Suspicious-Looking Man]")?;
     ctx.mes("Each dish has its own")?;
@@ -293,7 +293,7 @@ fn npc_12913(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12914(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12915(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -463,7 +463,7 @@ fn npc_12914(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12915(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12916(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(8))?.truthy() {
         ctx.mes("[Al Hamad]")?;
@@ -670,7 +670,7 @@ fn npc_12915(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12916(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12917(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(9))?.truthy() {
         ctx.mes("[Himus]")?;
@@ -739,7 +739,7 @@ fn npc_12916(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12917(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12918(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(14))?.truthy() {
         ctx.mes("[Drunkard]")?;
@@ -791,7 +791,7 @@ fn npc_12917(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12918(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12919(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Drunkard]")?;
     ctx.mes("Hohohoho~")?;
@@ -804,7 +804,7 @@ fn npc_12918(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12919(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12920(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(16))?.truthy() {
         ctx.mes("^3355FFThis boat seems to ")?;
@@ -955,7 +955,7 @@ fn npc_12919(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12920(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12921(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -1010,7 +1010,7 @@ fn npc_12920(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12921(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12922(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1043,7 +1043,7 @@ fn npc_12921(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12922(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12923(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1070,7 +1070,7 @@ fn npc_12922(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12923(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12924(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1096,7 +1096,7 @@ fn npc_12923(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12924(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12925(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(17))?.truthy() {
         ctx.mes("^3355FFThere is a dead crow on the ground.")?;
@@ -1149,7 +1149,7 @@ fn npc_12924(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12925(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12926(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1239,7 +1239,7 @@ fn npc_12925(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12926(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12927(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -1262,7 +1262,7 @@ fn npc_12926(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12927(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12928(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH: usize = 2;
     const LABEL_ONMYMOBDEAD: usize = 3;
@@ -1300,7 +1300,7 @@ fn npc_12927(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12928(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12929(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     const LABEL_ONINIT: usize = 2;
     'sm: loop {
@@ -1328,7 +1328,7 @@ fn npc_12928(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12929(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12930(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1353,7 +1353,7 @@ fn npc_12929(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12930(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12931(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -1390,7 +1390,7 @@ fn npc_12930(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12931(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12932(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -1409,7 +1409,7 @@ fn npc_12931(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12932(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12933(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "<", n(18))?.truthy() {
         ctx.mes("[Larjes]")?;
@@ -1465,7 +1465,7 @@ fn npc_12932(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12933(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12934(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_monas")?, "==", n(24))?.truthy() {
         if op(ctx.call(Function::CountItem, vec![n(7726)])?, "<", n(1))?.truthy() {
@@ -1555,7 +1555,7 @@ fn npc_12933(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12934(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12935(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(7766), n(1)])?, "==", n(0))?.truthy() {
         ctx.mes("^3355FFWait a second!")?;
@@ -1599,7 +1599,7 @@ fn npc_12934(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12935(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12936(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONMYMOBDEAD: usize = 1;
     const LABEL_ONTIMER300000: usize = 2;
     'sm: loop {
@@ -1675,7 +1675,7 @@ fn npc_12935(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12936(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12937(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONINIT: usize = 2;
     const LABEL_ONTIMER150000: usize = 3;
@@ -1738,7 +1738,7 @@ fn npc_12936(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12937(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12938(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -1778,7 +1778,7 @@ fn npc_12937(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12938(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12939(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input = n(0);
     let _ = pc;
     super::m_other_gm_npcs::fn_66_f_gm_npc(ctx, 0, vec![])?;
@@ -1829,7 +1829,7 @@ fn npc_12938(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12939(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12940(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("^3355FFWait a second!")?;
@@ -2535,7 +2535,7 @@ fn npc_12939(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12940(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12941(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Sippie]")?;
     ctx.mes("Now I finally have some")?;
@@ -2587,7 +2587,7 @@ fn npc_12940(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12941(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12942(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -2802,7 +2802,7 @@ fn npc_12941(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12942(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12943(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -2822,7 +2822,7 @@ fn npc_12942(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12943(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12944(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     let mut l_nawara = n(0);
     'sm: loop {
@@ -2852,7 +2852,7 @@ fn npc_12943(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12944(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12945(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -2872,7 +2872,7 @@ fn npc_12944(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12945(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12946(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -2892,7 +2892,7 @@ fn npc_12945(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12946(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12947(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -2988,7 +2988,7 @@ fn npc_12946(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12947(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12948(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "aru_em")?, "<", n(9))?.truthy() {
         ctx.mes("[Sappie]")?;
@@ -3092,7 +3092,7 @@ fn npc_12947(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12948(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12949(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("^3355FFWait a second!")?;
@@ -3308,12 +3308,6 @@ fn npc_12948(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12949(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    let _ = pc;
-    return Err(END.into());
-    Ok(n(0))
-}
-
 fn npc_12950(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     return Err(END.into());
@@ -3327,6 +3321,12 @@ fn npc_12951(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_12952(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    return Err(END.into());
+    Ok(n(0))
+}
+
+fn npc_12953(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -3619,7 +3619,7 @@ fn npc_12952(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12953(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12954(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH_: usize = 2;
     const LABEL_ONTIMER4000: usize = 3;
@@ -3714,7 +3714,7 @@ fn npc_12953(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12954(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12955(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("[Muff]")?;
@@ -4161,7 +4161,7 @@ fn npc_12954(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12955(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12956(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -4300,7 +4300,7 @@ fn npc_12955(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12956(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12957(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "diamond_edq")?, "==", n(1))?.truthy() {
         ctx.mes("^3355FFIt looks like someone")?;
@@ -4387,7 +4387,7 @@ fn npc_12956(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12957(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12958(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     let mut l_input_s = s("");
     'sm: loop {
@@ -4951,7 +4951,7 @@ fn npc_12957(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12958(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12959(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_blue = n(0);
     let mut l_bolt = n(0);
     let mut l_bolt_rand = n(0);
@@ -5403,7 +5403,7 @@ fn npc_12958(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12959(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12960(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -6023,7 +6023,7 @@ fn npc_12959(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12960(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12961(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "diamond_edq")?, "==", n(15))?.truthy() || op(get(ctx, "diamond_edq")?, "==", n(16))?.truthy()) {
         ctx.mes("[Jhonnita]")?;
@@ -6209,7 +6209,7 @@ fn npc_12960(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12961(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12962(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "diamond_edq")?, "==", n(15))?.truthy() {
         ctx.mes("[Kimeunbang]")?;
@@ -6367,7 +6367,7 @@ fn npc_12961(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12962(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12963(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "diamond_edq")?, "==", n(15))?.truthy() || op(get(ctx, "diamond_edq")?, "==", n(16))?.truthy()) {
         ctx.mes("[Leblo]")?;
@@ -6607,7 +6607,7 @@ fn npc_12962(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12963(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12964(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -6982,7 +6982,7 @@ fn npc_12963(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12964(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12965(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "diamond_edq")?, "==", n(22))?.truthy() && op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ROGUE")?)?.truthy()) {
         ctx.mes("[Investigator]")?;
@@ -7211,7 +7211,7 @@ fn npc_12964(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12965(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12966(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "diamond_edq")?, "==", n(22))?.truthy() || op(get(ctx, "diamond_edq")?, "==", n(23))?.truthy()) {
         if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ROGUE")?)?.truthy() {
@@ -7253,7 +7253,7 @@ fn npc_12965(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12966(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12967(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "diamond_edq")?, "==", n(22))?.truthy() || op(get(ctx, "diamond_edq")?, "==", n(23))?.truthy()) {
         ctx.mes("^3355FFThere is a small")?;
@@ -7317,7 +7317,7 @@ fn npc_12966(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12967(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12968(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -7357,7 +7357,7 @@ fn npc_12967(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12968(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12969(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -7398,7 +7398,7 @@ fn npc_12968(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12969(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12970(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONENABLE: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     'sm: loop {
@@ -7498,7 +7498,7 @@ fn npc_12969(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12970(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12971(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("[Chief Officer]")?;
@@ -7753,7 +7753,7 @@ fn npc_12970(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12971(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12972(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -7967,7 +7967,7 @@ fn npc_12971(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12972(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12973(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_a = n(0);
     let mut l_b = n(0);
     let mut l_c = n(0);
@@ -8411,7 +8411,7 @@ fn npc_12972(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12973(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12974(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_amuro = n(0);
     let mut l_input_s = s("");
     let mut l_lose = n(0);
@@ -9014,7 +9014,7 @@ fn npc_12973(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12974(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12975(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "zdan_edq")?, "==", n(12))?.truthy() {
         ctx.mes("[Gooho Ahn]")?;
@@ -9233,7 +9233,7 @@ fn npc_12974(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12975(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12976(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER30000: usize = 1;
     const LABEL_ONINIT: usize = 2;
     const LABEL_ONTOUCH_: usize = 3;
@@ -9243,7 +9243,7 @@ fn npc_12975(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                 0 => {
                     if op(get(ctx, "zdan_edq")?, "==", n(9))?.truthy() {
                         if op(get(ctx, "$@zdan")?, "==", n(0))?.truthy() {
-                            npc_12975(ctx, LABEL_S_QUEST, vec![])?;
+                            npc_12976(ctx, LABEL_S_QUEST, vec![])?;
                         } else {
                             ctx.mes("[Suspicious Man]")?;
                             if op(ctx.call(Function::StrNpcInfo, vec![n(2)])?, "==", s("1"))?.truthy() {
@@ -9418,7 +9418,7 @@ fn npc_12975(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                 }
                 3 => {
                     if (op(get(ctx, "zdan_edq")?, "==", n(9))?.truthy() && op(get(ctx, "$@zdan")?, "==", n(0))?.truthy()) {
-                        npc_12975(ctx, LABEL_S_QUEST, vec![])?;
+                        npc_12976(ctx, LABEL_S_QUEST, vec![])?;
                     }
                     return Err(END.into());
                     pc = 4;
@@ -9479,7 +9479,7 @@ fn npc_12975(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12976(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12977(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONTOUCH: usize = 2;
     let mut l_input_s = s("");
@@ -9686,7 +9686,7 @@ fn npc_12976(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12977(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12978(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -9728,7 +9728,7 @@ fn npc_12977(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12978(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12979(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -9770,7 +9770,7 @@ fn npc_12978(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12979(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12980(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONENABLE: usize = 2;
     const LABEL_ONDISABLE: usize = 3;
@@ -9881,7 +9881,7 @@ fn npc_12979(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12980(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12981(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONENABLE: usize = 2;
     const LABEL_ONDISABLE: usize = 3;
@@ -9976,7 +9976,7 @@ fn npc_12980(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12981(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12982(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -10108,7 +10108,7 @@ fn npc_12981(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12982(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12983(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -10244,7 +10244,7 @@ fn npc_12982(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12983(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12984(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     'sm: loop {
         match pc {
@@ -10376,7 +10376,7 @@ fn npc_12983(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12984(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12985(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "treasure_nd")?, "==", n(0))?.truthy() {
         ctx.mes("[Ragged Man]")?;
@@ -10656,7 +10656,7 @@ fn npc_12984(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12985(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12986(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_joho1 = n(0);
     let mut l_joho2 = n(0);
     let _ = pc;
@@ -11101,7 +11101,7 @@ fn npc_12985(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12986(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12987(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "treasure_nd")?, "<", n(7))?.truthy() {
         ctx.mes("[Man in Hiding]")?;
@@ -11313,7 +11313,7 @@ fn npc_12986(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12987(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12988(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input_s = s("");
     let mut l_partymembercount = n(0);
     let _ = pc;
@@ -11439,7 +11439,7 @@ fn npc_12987(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12988(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12989(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "jewel_nd")?, "<", n(9))?.truthy() {
         ctx.mes("[Scholar]")?;
@@ -11615,7 +11615,7 @@ fn npc_12988(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12989(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12990(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "jewel_nd")?, "==", n(0))?.truthy() {
         ctx.mes("[Shaman]")?;
@@ -12062,7 +12062,7 @@ fn npc_12989(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12990(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12991(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "jewel_nd")?, "<", n(18))?.truthy() {
         ctx.mes("[Archeologist]")?;
@@ -12284,7 +12284,7 @@ fn npc_12990(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12991(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12992(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("[Retired Soldier]")?;
@@ -12641,7 +12641,7 @@ fn npc_12991(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12992(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12993(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONINIT: usize = 1;
     const LABEL_ONENABLE: usize = 2;
     const LABEL_ONTIMER60000: usize = 3;
@@ -13019,7 +13019,7 @@ fn npc_12992(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12993(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12994(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -13060,7 +13060,7 @@ fn npc_12993(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_12994(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12995(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rumour_nd")?, "==", n(0))?.truthy() {
         ctx.mes("[Morocc Traveler]")?;
@@ -13142,7 +13142,7 @@ fn npc_12994(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12995(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12996(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
         ctx.mes("[Guildsman]")?;
@@ -13373,7 +13373,7 @@ fn npc_12995(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12996(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12997(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rumour_nd")?, "<", n(3))?.truthy() {
         ctx.mes("[Agent]")?;
@@ -13516,7 +13516,7 @@ fn npc_12996(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12997(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12998(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rumour_nd")?, "<", n(4))?.truthy() {
         if op(get(ctx, "zdan_edq")?, ">", n(12))?.truthy() {
@@ -13930,7 +13930,7 @@ fn npc_12997(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12998(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_12999(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rumour_nd")?, "<", n(3))?.truthy() {
         ctx.mes("[Agent]")?;
@@ -14461,7 +14461,7 @@ fn npc_12998(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_12999(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13000(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_sorry_item = n(0);
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(907), n(200)])?, "==", n(0))?.truthy() {
@@ -14784,7 +14784,7 @@ fn npc_12999(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13000(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13001(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "rumour_nd")?, "==", n(1))?.truthy() {
         ctx.mes("[Agent]")?;
@@ -14898,7 +14898,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        12906 => npc_call(npc_12906(ctx, 0, vec![])),
         12907 => npc_call(npc_12907(ctx, 0, vec![])),
         12908 => npc_call(npc_12908(ctx, 0, vec![])),
         12909 => npc_call(npc_12909(ctx, 0, vec![])),
@@ -14993,98 +14992,99 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         12998 => npc_call(npc_12998(ctx, 0, vec![])),
         12999 => npc_call(npc_12999(ctx, 0, vec![])),
         13000 => npc_call(npc_13000(ctx, 0, vec![])),
+        13001 => npc_call(npc_13001(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        103759 => npc_call(npc_12906(ctx, 1, vec![])),
-        103760 => npc_call(npc_12907(ctx, 1, vec![])),
-        103761 => npc_call(npc_12914(ctx, 1, vec![])),
-        103762 => npc_call(npc_12920(ctx, 1, vec![])),
-        103763 => npc_call(npc_12921(ctx, 1, vec![])),
-        103764 => npc_call(npc_12922(ctx, 1, vec![])),
-        103765 => npc_call(npc_12923(ctx, 1, vec![])),
-        103766 => npc_call(npc_12925(ctx, 1, vec![])),
-        103767 => npc_call(npc_12926(ctx, 1, vec![])),
-        103768 => npc_call(npc_12927(ctx, 1, vec![])),
-        103769 => npc_call(npc_12927(ctx, 2, vec![])),
-        103770 => npc_call(npc_12927(ctx, 3, vec![])),
-        103771 => npc_call(npc_12928(ctx, 1, vec![])),
-        103772 => npc_call(npc_12928(ctx, 2, vec![])),
-        103773 => npc_call(npc_12929(ctx, 1, vec![])),
-        103774 => npc_call(npc_12930(ctx, 1, vec![])),
-        103775 => npc_call(npc_12931(ctx, 1, vec![])),
-        103776 => npc_call(npc_12935(ctx, 1, vec![])),
-        103777 => npc_call(npc_12935(ctx, 2, vec![])),
-        103778 => npc_call(npc_12936(ctx, 1, vec![])),
-        103779 => npc_call(npc_12936(ctx, 2, vec![])),
-        103780 => npc_call(npc_12936(ctx, 3, vec![])),
-        103781 => npc_call(npc_12937(ctx, 1, vec![])),
-        103782 => npc_call(npc_12941(ctx, 1, vec![])),
-        103783 => npc_call(npc_12942(ctx, 1, vec![])),
-        103784 => npc_call(npc_12943(ctx, 1, vec![])),
-        103785 => npc_call(npc_12944(ctx, 1, vec![])),
-        103786 => npc_call(npc_12945(ctx, 1, vec![])),
-        103787 => npc_call(npc_12946(ctx, 1, vec![])),
-        103788 => npc_call(npc_12952(ctx, 1, vec![])),
-        103789 => npc_call(npc_12953(ctx, 1, vec![])),
-        103790 => npc_call(npc_12953(ctx, 2, vec![])),
-        103791 => npc_call(npc_12953(ctx, 3, vec![])),
-        103792 => npc_call(npc_12953(ctx, 4, vec![])),
-        103793 => npc_call(npc_12953(ctx, 5, vec![])),
-        103794 => npc_call(npc_12953(ctx, 6, vec![])),
-        103795 => npc_call(npc_12953(ctx, 7, vec![])),
-        103796 => npc_call(npc_12953(ctx, 8, vec![])),
-        103797 => npc_call(npc_12953(ctx, 9, vec![])),
-        103798 => npc_call(npc_12953(ctx, 10, vec![])),
-        103799 => npc_call(npc_12953(ctx, 11, vec![])),
-        103800 => npc_call(npc_12953(ctx, 12, vec![])),
-        103801 => npc_call(npc_12953(ctx, 13, vec![])),
-        103802 => npc_call(npc_12955(ctx, 1, vec![])),
-        103803 => npc_call(npc_12957(ctx, 1, vec![])),
-        103804 => npc_call(npc_12959(ctx, 1, vec![])),
-        103805 => npc_call(npc_12963(ctx, 1, vec![])),
-        103806 => npc_call(npc_12967(ctx, 1, vec![])),
-        103807 => npc_call(npc_12968(ctx, 1, vec![])),
-        103808 => npc_call(npc_12969(ctx, 1, vec![])),
-        103809 => npc_call(npc_12969(ctx, 2, vec![])),
-        103810 => npc_call(npc_12971(ctx, 1, vec![])),
-        103811 => npc_call(npc_12975(ctx, 1, vec![])),
-        103812 => npc_call(npc_12975(ctx, 2, vec![])),
-        103813 => npc_call(npc_12975(ctx, 3, vec![])),
-        103814 => npc_call(npc_12976(ctx, 1, vec![])),
-        103815 => npc_call(npc_12976(ctx, 2, vec![])),
-        103816 => npc_call(npc_12977(ctx, 1, vec![])),
-        103817 => npc_call(npc_12978(ctx, 1, vec![])),
-        103818 => npc_call(npc_12979(ctx, 1, vec![])),
-        103819 => npc_call(npc_12979(ctx, 2, vec![])),
-        103820 => npc_call(npc_12979(ctx, 3, vec![])),
-        103821 => npc_call(npc_12979(ctx, 4, vec![])),
-        103822 => npc_call(npc_12979(ctx, 5, vec![])),
-        103823 => npc_call(npc_12979(ctx, 6, vec![])),
-        103824 => npc_call(npc_12979(ctx, 7, vec![])),
-        103825 => npc_call(npc_12979(ctx, 8, vec![])),
-        103826 => npc_call(npc_12979(ctx, 9, vec![])),
-        103827 => npc_call(npc_12979(ctx, 10, vec![])),
-        103828 => npc_call(npc_12979(ctx, 11, vec![])),
-        103829 => npc_call(npc_12979(ctx, 12, vec![])),
-        103830 => npc_call(npc_12979(ctx, 13, vec![])),
-        103831 => npc_call(npc_12979(ctx, 14, vec![])),
-        103832 => npc_call(npc_12980(ctx, 1, vec![])),
-        103833 => npc_call(npc_12980(ctx, 2, vec![])),
-        103834 => npc_call(npc_12980(ctx, 3, vec![])),
-        103835 => npc_call(npc_12980(ctx, 4, vec![])),
-        103836 => npc_call(npc_12980(ctx, 5, vec![])),
-        103837 => npc_call(npc_12980(ctx, 6, vec![])),
-        103838 => npc_call(npc_12981(ctx, 1, vec![])),
-        103839 => npc_call(npc_12982(ctx, 1, vec![])),
-        103840 => npc_call(npc_12983(ctx, 1, vec![])),
-        103841 => npc_call(npc_12992(ctx, 1, vec![])),
-        103842 => npc_call(npc_12992(ctx, 2, vec![])),
-        103843 => npc_call(npc_12992(ctx, 3, vec![])),
-        103844 => npc_call(npc_12993(ctx, 1, vec![])),
+        103764 => npc_call(npc_12907(ctx, 1, vec![])),
+        103765 => npc_call(npc_12908(ctx, 1, vec![])),
+        103766 => npc_call(npc_12915(ctx, 1, vec![])),
+        103767 => npc_call(npc_12921(ctx, 1, vec![])),
+        103768 => npc_call(npc_12922(ctx, 1, vec![])),
+        103769 => npc_call(npc_12923(ctx, 1, vec![])),
+        103770 => npc_call(npc_12924(ctx, 1, vec![])),
+        103771 => npc_call(npc_12926(ctx, 1, vec![])),
+        103772 => npc_call(npc_12927(ctx, 1, vec![])),
+        103773 => npc_call(npc_12928(ctx, 1, vec![])),
+        103774 => npc_call(npc_12928(ctx, 2, vec![])),
+        103775 => npc_call(npc_12928(ctx, 3, vec![])),
+        103776 => npc_call(npc_12929(ctx, 1, vec![])),
+        103777 => npc_call(npc_12929(ctx, 2, vec![])),
+        103778 => npc_call(npc_12930(ctx, 1, vec![])),
+        103779 => npc_call(npc_12931(ctx, 1, vec![])),
+        103780 => npc_call(npc_12932(ctx, 1, vec![])),
+        103781 => npc_call(npc_12936(ctx, 1, vec![])),
+        103782 => npc_call(npc_12936(ctx, 2, vec![])),
+        103783 => npc_call(npc_12937(ctx, 1, vec![])),
+        103784 => npc_call(npc_12937(ctx, 2, vec![])),
+        103785 => npc_call(npc_12937(ctx, 3, vec![])),
+        103786 => npc_call(npc_12938(ctx, 1, vec![])),
+        103787 => npc_call(npc_12942(ctx, 1, vec![])),
+        103788 => npc_call(npc_12943(ctx, 1, vec![])),
+        103789 => npc_call(npc_12944(ctx, 1, vec![])),
+        103790 => npc_call(npc_12945(ctx, 1, vec![])),
+        103791 => npc_call(npc_12946(ctx, 1, vec![])),
+        103792 => npc_call(npc_12947(ctx, 1, vec![])),
+        103793 => npc_call(npc_12953(ctx, 1, vec![])),
+        103794 => npc_call(npc_12954(ctx, 1, vec![])),
+        103795 => npc_call(npc_12954(ctx, 2, vec![])),
+        103796 => npc_call(npc_12954(ctx, 3, vec![])),
+        103797 => npc_call(npc_12954(ctx, 4, vec![])),
+        103798 => npc_call(npc_12954(ctx, 5, vec![])),
+        103799 => npc_call(npc_12954(ctx, 6, vec![])),
+        103800 => npc_call(npc_12954(ctx, 7, vec![])),
+        103801 => npc_call(npc_12954(ctx, 8, vec![])),
+        103802 => npc_call(npc_12954(ctx, 9, vec![])),
+        103803 => npc_call(npc_12954(ctx, 10, vec![])),
+        103804 => npc_call(npc_12954(ctx, 11, vec![])),
+        103805 => npc_call(npc_12954(ctx, 12, vec![])),
+        103806 => npc_call(npc_12954(ctx, 13, vec![])),
+        103807 => npc_call(npc_12956(ctx, 1, vec![])),
+        103808 => npc_call(npc_12958(ctx, 1, vec![])),
+        103809 => npc_call(npc_12960(ctx, 1, vec![])),
+        103810 => npc_call(npc_12964(ctx, 1, vec![])),
+        103811 => npc_call(npc_12968(ctx, 1, vec![])),
+        103812 => npc_call(npc_12969(ctx, 1, vec![])),
+        103813 => npc_call(npc_12970(ctx, 1, vec![])),
+        103814 => npc_call(npc_12970(ctx, 2, vec![])),
+        103815 => npc_call(npc_12972(ctx, 1, vec![])),
+        103816 => npc_call(npc_12976(ctx, 1, vec![])),
+        103817 => npc_call(npc_12976(ctx, 2, vec![])),
+        103818 => npc_call(npc_12976(ctx, 3, vec![])),
+        103819 => npc_call(npc_12977(ctx, 1, vec![])),
+        103820 => npc_call(npc_12977(ctx, 2, vec![])),
+        103821 => npc_call(npc_12978(ctx, 1, vec![])),
+        103822 => npc_call(npc_12979(ctx, 1, vec![])),
+        103823 => npc_call(npc_12980(ctx, 1, vec![])),
+        103824 => npc_call(npc_12980(ctx, 2, vec![])),
+        103825 => npc_call(npc_12980(ctx, 3, vec![])),
+        103826 => npc_call(npc_12980(ctx, 4, vec![])),
+        103827 => npc_call(npc_12980(ctx, 5, vec![])),
+        103828 => npc_call(npc_12980(ctx, 6, vec![])),
+        103829 => npc_call(npc_12980(ctx, 7, vec![])),
+        103830 => npc_call(npc_12980(ctx, 8, vec![])),
+        103831 => npc_call(npc_12980(ctx, 9, vec![])),
+        103832 => npc_call(npc_12980(ctx, 10, vec![])),
+        103833 => npc_call(npc_12980(ctx, 11, vec![])),
+        103834 => npc_call(npc_12980(ctx, 12, vec![])),
+        103835 => npc_call(npc_12980(ctx, 13, vec![])),
+        103836 => npc_call(npc_12980(ctx, 14, vec![])),
+        103837 => npc_call(npc_12981(ctx, 1, vec![])),
+        103838 => npc_call(npc_12981(ctx, 2, vec![])),
+        103839 => npc_call(npc_12981(ctx, 3, vec![])),
+        103840 => npc_call(npc_12981(ctx, 4, vec![])),
+        103841 => npc_call(npc_12981(ctx, 5, vec![])),
+        103842 => npc_call(npc_12981(ctx, 6, vec![])),
+        103843 => npc_call(npc_12982(ctx, 1, vec![])),
+        103844 => npc_call(npc_12983(ctx, 1, vec![])),
+        103845 => npc_call(npc_12984(ctx, 1, vec![])),
+        103846 => npc_call(npc_12993(ctx, 1, vec![])),
+        103847 => npc_call(npc_12993(ctx, 2, vec![])),
+        103848 => npc_call(npc_12993(ctx, 3, vec![])),
+        103849 => npc_call(npc_12994(ctx, 1, vec![])),
         _ => None,
     }
 }

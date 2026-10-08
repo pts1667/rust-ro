@@ -76,7 +76,7 @@ pub(crate) fn fn_91_f_jobswdteststaff2(ctx: &Context, mut pc: usize, args: Vec<V
     }
 }
 
-fn npc_13792(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13793(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Upper")?, "==", n(1))?.truthy() {
         if (op(get(ctx, "Class")?, "==", constant(ctx, "JOB_NOVICE_HIGH")?)?.truthy() && (op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_LORD_KNIGHT")?)?.truthy() || op(get(ctx, "advjob")?, "==", constant(ctx, "JOB_PALADIN")?)?.truthy())) {
@@ -269,7 +269,7 @@ fn npc_13792(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13793(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13794(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Swordman]")?;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_SWORDMAN")?)?.truthy() {
@@ -311,7 +311,7 @@ fn npc_13793(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13794(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13795(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Swordman]")?;
     ctx.mes("I will tell you about the Test! Listen carefully, I won't repeat myself.")?;
@@ -341,7 +341,7 @@ fn npc_13794(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13795(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13796(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Test Hall Staff]")?;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_SWORDMAN")?)?.truthy() {
@@ -380,31 +380,31 @@ fn npc_13795(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13796(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13797(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_88_f_jobswdmedic(ctx, 0, vec![s("1st")])?;
     Ok(n(0))
 }
 
-fn npc_13797(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    let _ = pc;
-    super::m_pre_re_jobs_1_1_swordman::fn_89_f_jobswdstaff(ctx, 0, vec![n(1)])?;
-    Ok(n(0))
-}
-
 fn npc_13798(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
-    super::m_pre_re_jobs_1_1_swordman::fn_88_f_jobswdmedic(ctx, 0, vec![s("2nd")])?;
+    super::m_pre_re_jobs_1_1_swordman::fn_89_f_jobswdstaff(ctx, 0, vec![n(1)])?;
     Ok(n(0))
 }
 
 fn npc_13799(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
-    super::m_pre_re_jobs_1_1_swordman::fn_89_f_jobswdstaff(ctx, 0, vec![n(1)])?;
+    super::m_pre_re_jobs_1_1_swordman::fn_88_f_jobswdmedic(ctx, 0, vec![s("2nd")])?;
     Ok(n(0))
 }
 
 fn npc_13800(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    let _ = pc;
+    super::m_pre_re_jobs_1_1_swordman::fn_89_f_jobswdstaff(ctx, 0, vec![n(1)])?;
+    Ok(n(0))
+}
+
+fn npc_13801(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.call(Function::MapAnnounce, vec![s("job_sword1"), op(op(s("Applicant "), "+", ctx.call(Function::StrCharInfo, vec![n(0)])?)?, "+", s(". You successfully passed the test."))?, constant(ctx, "BC_MAP")?])?;
     set(ctx, "job_sword_q", n(4))?;
@@ -417,44 +417,44 @@ fn npc_13800(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13801(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13802(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_90_f_jobswdteststaff(ctx, 0, vec![n(10), n(245)])?;
     Ok(n(0))
 }
 
-fn npc_13802(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13803(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_90_f_jobswdteststaff(ctx, 0, vec![n(11), n(207)])?;
     Ok(n(0))
 }
 
-fn npc_13803(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13804(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_90_f_jobswdteststaff(ctx, 0, vec![n(11), n(169)])?;
     Ok(n(0))
 }
 
-fn npc_13804(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13805(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_91_f_jobswdteststaff2(ctx, 0, vec![s("1st"), n(215), n(244)])?;
     Ok(n(0))
 }
 
-fn npc_13805(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13806(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_91_f_jobswdteststaff2(ctx, 0, vec![s("2nd"), n(215), n(205)])?;
     ctx.call(Function::Warp, vec![s("job_sword1"), n(215), n(205)])?;
     Ok(n(0))
 }
 
-fn npc_13806(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13807(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     super::m_pre_re_jobs_1_1_swordman::fn_91_f_jobswdteststaff2(ctx, 0, vec![s("3rd"), n(215), n(167)])?;
     Ok(n(0))
 }
 
-fn npc_13807(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13808(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -500,7 +500,7 @@ fn npc_13807(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13808(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13809(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -546,7 +546,7 @@ fn npc_13808(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13809(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13810(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -598,7 +598,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13792 => npc_call(npc_13792(ctx, 0, vec![])),
         13793 => npc_call(npc_13793(ctx, 0, vec![])),
         13794 => npc_call(npc_13794(ctx, 0, vec![])),
         13795 => npc_call(npc_13795(ctx, 0, vec![])),
@@ -616,15 +615,16 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13807 => npc_call(npc_13807(ctx, 0, vec![])),
         13808 => npc_call(npc_13808(ctx, 0, vec![])),
         13809 => npc_call(npc_13809(ctx, 0, vec![])),
+        13810 => npc_call(npc_13810(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104885 => npc_call(npc_13807(ctx, 1, vec![])),
-        104886 => npc_call(npc_13808(ctx, 1, vec![])),
-        104887 => npc_call(npc_13809(ctx, 1, vec![])),
+        104890 => npc_call(npc_13808(ctx, 1, vec![])),
+        104891 => npc_call(npc_13809(ctx, 1, vec![])),
+        104892 => npc_call(npc_13810(ctx, 1, vec![])),
         _ => None,
     }
 }

@@ -2541,6 +2541,11 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> { match id {
 13205 => item_13205(ctx),
 13206 => item_13206(ctx),
 13207 => item_13207(ctx),
+13255 => item_13255(ctx),
+13256 => item_13256(ctx),
+13257 => item_13257(ctx),
+13258 => item_13258(ctx),
+13259 => item_13259(ctx),
 13300 => item_13300(ctx),
 13301 => item_13301(ctx),
 13302 => item_13302(ctx),
@@ -2572,6 +2577,8 @@ pub fn run(ctx: &Context, id: u32) -> Result<(), String> { match id {
 13420 => item_13420(ctx),
 13421 => item_13421(ctx),
 13422 => item_13422(ctx),
+14595 => item_14595(ctx),
+14596 => item_14596(ctx),
 16000 => item_16000(ctx),
 16001 => item_16001(ctx),
 16002 => item_16002(ctx),
@@ -15999,6 +16006,27 @@ fn item_13207(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::B
 Ok(()) }
 #[inline(never)]
 #[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_13255(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Water")?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_13256(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Earth")?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_13257(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Wind")?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_13258(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Fire")?])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_13259(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Poison")?])?;
+let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddEff")?, ctx.constant("Eff_Poison")?, Value::Number(500)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
 fn item_13300(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUnbreakableWeapon")?])?;
 let _ = ctx.call(Function::Bonus, vec![ctx.constant("bAtkEle")?, ctx.constant("Ele_Wind")?])?;
 let _ = ctx.call(Function::Bonus, vec![ctx.constant("bDex")?, Value::Number((Value::Number(2)).number_value()?.wrapping_neg())])?;
@@ -16227,6 +16255,19 @@ Ok(()) }
 #[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
 fn item_13422(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Bonus, vec![ctx.constant("bUnbreakableWeapon")?])?;
 let _ = ctx.call(Function::Bonus2, vec![ctx.constant("bAddSize")?, ctx.constant("Size_All")?, Value::Number(40)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_14595(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::Warp, vec![Value::String("yuno_fild09".into()), Value::Number(255), Value::Number(127)])?;
+Ok(()) }
+#[inline(never)]
+#[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
+fn item_14596(ctx: &Context) -> Result<(),String> { let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
+let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
+let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
+let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
+let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
+let _ = ctx.call(Function::GetGroupItem, vec![ctx.constant("IG_PIERRE_TREASUREBOX")?])?;
 Ok(()) }
 #[inline(never)]
 #[allow(unused_mut, unused_assignments, unused_variables, unreachable_code)]
@@ -17606,4 +17647,4 @@ fn bonus_94(ctx: &Context) -> Result<(), String> { {
 let _ = ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_POTION_BERSERK")?])?;
 }
 Ok(()) }
-pub const CATALOG_HASH: u64 = 8804703369827307706;
+pub const CATALOG_HASH: u64 = 8534562663621506425;

@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13663(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13664(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_KNIGHT")?)?.truthy() {
         if op(get(ctx, "kngt_sk")?, "==", n(10))?.truthy() {
@@ -312,7 +312,7 @@ fn npc_13663(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13664(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13665(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH: usize = 1;
     'sm: loop {
         match pc {
@@ -361,7 +361,7 @@ fn npc_13664(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13665(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13666(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Grand Master]")?;
     if (op(get(ctx, "kngt_sk")?, "==", n(2))?.truthy() || op(get(ctx, "kngt_sk")?, "==", n(3))?.truthy()) {
@@ -400,7 +400,7 @@ fn npc_13665(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13666(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13667(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "kngt_sk")?, "==", n(3))?.truthy() || op(get(ctx, "kngt_sk")?, "==", n(4))?.truthy()) {
         ctx.mes("[Zabi]")?;
@@ -444,7 +444,7 @@ fn npc_13666(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13667(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13668(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "kngt_sk")?, "==", n(4))?.truthy() || op(get(ctx, "kngt_sk")?, "==", n(5))?.truthy()) {
         ctx.mes("[Gon]")?;
@@ -484,7 +484,7 @@ fn npc_13667(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13668(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13669(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Jiya]")?;
     if (op(get(ctx, "kngt_sk")?, "==", n(5))?.truthy() || op(get(ctx, "kngt_sk")?, "==", n(6))?.truthy()) {
@@ -515,7 +515,7 @@ fn npc_13668(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13669(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13670(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Gatack]")?;
     if op(get(ctx, "kngt_sk")?, "==", n(7))?.truthy() {
@@ -565,20 +565,20 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13663 => npc_call(npc_13663(ctx, 0, vec![])),
         13664 => npc_call(npc_13664(ctx, 0, vec![])),
         13665 => npc_call(npc_13665(ctx, 0, vec![])),
         13666 => npc_call(npc_13666(ctx, 0, vec![])),
         13667 => npc_call(npc_13667(ctx, 0, vec![])),
         13668 => npc_call(npc_13668(ctx, 0, vec![])),
         13669 => npc_call(npc_13669(ctx, 0, vec![])),
+        13670 => npc_call(npc_13670(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104812 => npc_call(npc_13664(ctx, 1, vec![])),
+        104817 => npc_call(npc_13665(ctx, 1, vec![])),
         _ => None,
     }
 }

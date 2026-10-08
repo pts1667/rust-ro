@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13365(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13366(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() {
         if op(get(ctx, "JobLevel")?, "==", n(10))?.truthy() {
@@ -74,7 +74,7 @@ fn npc_13365(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13366(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13367(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Upper")?, "==", n(2))?.truthy() {
         ctx.mes("[Kuuga Gai]")?;
@@ -392,7 +392,7 @@ fn npc_13366(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13367(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13368(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "ninj_q")?, "==", n(1))?.truthy() {
         ctx.mes("[Suspicious Man]")?;
@@ -624,9 +624,9 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13365 => npc_call(npc_13365(ctx, 0, vec![])),
         13366 => npc_call(npc_13366(ctx, 0, vec![])),
         13367 => npc_call(npc_13367(ctx, 0, vec![])),
+        13368 => npc_call(npc_13368(ctx, 0, vec![])),
         _ => None,
     }
 }

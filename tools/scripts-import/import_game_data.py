@@ -90,6 +90,21 @@ def missing_item(source):
     return item
 
 
+NPC_ITEM_CALL = re.compile(r"Function::(?:GetItem2?|CountItem2?|DelItem2?|MakeItem|ConsumeItem)(?![A-Za-z0-9])[^;]*?vec!\[n\((\d+)\)")
+SHOP_NPC_ENTRY = 6
+
+
+def npc_item_ids():
+    """Items the NPCs converted from rathena name: shop stock (`config/wasm/npcs.json`) and the first argument of the item commands."""
+    ids = set()
+    for npc in json.loads((ROOT / "config/wasm/npcs.json").read_text(encoding="utf-8")):
+        if npc["entry_id"] == SHOP_NPC_ENTRY:
+            ids.update(argument["Number"] for argument in npc["constructor_args"][1::2] if argument["Number"] > 0)
+    for path in (ROOT / "scripts/src/generated").glob("*.rs"):
+        ids.update(int(match) for match in NPC_ITEM_CALL.findall(path.read_text(encoding="utf-8")))
+    return ids
+
+
 def main():
     parser = argparse.ArgumentParser(description="Import pre-renewal script reward, summon and crafting data.")
     parser.add_argument("--rathena", type=pathlib.Path, default=ROOT.parent / "rathena")
@@ -146,6 +161,7 @@ def main():
     for group in group_sources:
         if group["Group"] in needed:
             required_ids.update(aliases[entry["Item"]] for subgroup in group.get("SubGroups", []) for entry in subgroup.get("List", []))
+    required_ids.update(npc_item_ids() & source_items.keys())
     added = []
     for item_id in sorted(required_ids - items.keys()):
         source = source_items.get(item_id)

@@ -73,10 +73,10 @@ const SOUND_NAME_BYTES: usize = 24;
 /// What rathena answers `openauction` with while `feature.auction` is off; there is no auction house here.
 const AUCTION_DISABLED: &str = "Auction System is disabled.";
 
-const EMOTIONS: [&str; 62] = [
+const EMOTIONS: [&str; 64] = [
     "SURPRISE", "QUESTION", "DELIGHT", "THROB", "SWEAT", "AHA", "FRET", "ANGER", "MONEY", "THINK", "SCISSOR", "ROCK", "WRAP", "FLAG", "BIGTHROB", "THANKS", "KEK",
     "SORRY", "SMILE", "PROFUSELY_SWEAT", "SCRATCH", "BEST", "STARE_ABOUT", "HUK", "O", "X", "HELP", "GO", "CRY", "KIK", "CHUP", "CHUPCHUP", "HNG", "OK",
-    "CHAT_PROHIBIT", "INDONESIA_FLAG", "STARE", "HUNGRY", "COOL", "MERONG", "SHY", "GOODBOY", "SPTIME", "SEXY", "COMEON", "SLEEPY", "CONGRATULATION", "HPTIME", "PH_FLAG", "MY_FLAG", "SI_FLAG", "BR_FLAG", "SPARK", "CONFUSE", "OHNO", "HUM", "BLABLA", "OTL", "DICE1", "DICE2", "DICE3", "DICE4",
+    "CHAT_PROHIBIT", "INDONESIA_FLAG", "STARE", "HUNGRY", "COOL", "MERONG", "SHY", "GOODBOY", "SPTIME", "SEXY", "COMEON", "SLEEPY", "CONGRATULATION", "HPTIME", "PH_FLAG", "MY_FLAG", "SI_FLAG", "BR_FLAG", "SPARK", "CONFUSE", "OHNO", "HUM", "BLABLA", "OTL", "DICE1", "DICE2", "DICE3", "DICE4", "DICE5", "DICE6",
 ];
 
 const HIGH_JOBS: [&str; 22] = [
@@ -168,7 +168,10 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
         "VIP_SCRIPT" => return Some(Value::Number(0)),
         "MAX_LEVEL" => return Some(Value::Number(crate::server::model::waiting_room::MAX_LEVEL as i32)),
         "PACKETVER" => return Some(Value::Number(TARGET_PACKETVER)),
+        "VAR_HEAD" => return Some(Value::Number(LookType::Hair.value() as i32)),
         "VAR_HEADPALETTE" => return Some(Value::Number(LookType::HairColor.value() as i32)),
+        // rathena does not export it, so the script reads an empty variable: effect 0
+        "PF_FOGWALL" => return Some(Value::Number(0)),
         "SPEAR_MERC_GUILD" => return Some(Value::Number(0)),
         "SWORD_MERC_GUILD" => return Some(Value::Number(1)),
         "ARCH_MERC_GUILD" => return Some(Value::Number(2)),
@@ -198,7 +201,10 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
     }
     if let Some(job) = name.strip_prefix("JOB_") {
         match job {
+            "CRUSADER2" => return Some(Value::Number(21)),
             "BABY" => return Some(Value::Number(4023)),
+            "BABY_ARCHER" => return Some(Value::Number(4026)),
+            "SUPER_BABY" => return Some(Value::Number(4045)),
             "SUPER_NOVICE" => return Some(Value::Number(23)),
             "SUMMONER" => return Some(Value::Number(4218)),
             "TAEKWON" => return Some(Value::Number(4046)),

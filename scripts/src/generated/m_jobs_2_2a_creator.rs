@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13603(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13604(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_karma_d = n(0);
     let _ = pc;
     if ((op(get(ctx, "Class")?, "==", constant(ctx, "JOB_CREATOR")?)?.truthy() && op(get(ctx, "bioeth")?, "==", n(13))?.truthy()) && op(ctx.call(Function::GetSkillLv, vec![s("AM_BIOETHICS")])?, "==", n(0))?.truthy()) {
@@ -144,7 +144,7 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13603 => npc_call(npc_13603(ctx, 0, vec![])),
+        13604 => npc_call(npc_13604(ctx, 0, vec![])),
         _ => None,
     }
 }

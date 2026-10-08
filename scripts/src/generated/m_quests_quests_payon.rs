@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13012(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13013(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CheckWeight, vec![n(908), n(1)])?, "==", n(0))?.truthy() {
         ctx.mes("^3355FFWait a second! Right now, you're carrying too many items with you. Please come back after putting some of your things into Kafra Storage.^000000")?;
@@ -66,7 +66,7 @@ fn npc_13012(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13013(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13014(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Mystic Lady]")?;
     ctx.mes("My family has produced and sold the special Winter product ^3355FFEar Muffs^000000 for many years. We just moved here, but the weather is always warm so we can hardly make a living.")?;
@@ -123,7 +123,7 @@ fn npc_13013(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13014(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13015(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(ctx.call(Function::CountItem, vec![n(701)])?, ">", n(4))?.truthy() {
         ctx.mes("[Young Man]")?;
@@ -238,7 +238,7 @@ fn npc_13014(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13015(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13016(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Young man]")?;
     ctx.mes("...What is it?")?;
@@ -379,10 +379,10 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13012 => npc_call(npc_13012(ctx, 0, vec![])),
         13013 => npc_call(npc_13013(ctx, 0, vec![])),
         13014 => npc_call(npc_13014(ctx, 0, vec![])),
         13015 => npc_call(npc_13015(ctx, 0, vec![])),
+        13016 => npc_call(npc_13016(ctx, 0, vec![])),
         _ => None,
     }
 }

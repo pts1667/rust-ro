@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13815(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13816(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("^FF0000=================================^000000")?;
     ctx.mes("^FF0000 ^000000 ^E40CAA[Welcome]^CC0000 to ^FF9000Novice^7FFF00 Training ^00FF00Grounds ^E40CAA[Welcome]^FF0000^000000")?;
@@ -14,7 +14,7 @@ fn npc_13815(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13816(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13817(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Training Grounds Guard]")?;
     ctx.mes("Welcome to the Training Grounds.")?;
@@ -24,7 +24,7 @@ fn npc_13816(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13817(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13818(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Training Grounds Guard]")?;
     if ctx.call(Function::Rand, vec![n(2)])?.truthy() {
@@ -47,7 +47,7 @@ fn npc_13817(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13818(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13819(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_charname_s = s("");
     let _ = pc;
     ctx.mes("[Training Grounds Receptionist]")?;
@@ -199,7 +199,7 @@ fn npc_13818(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13819(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13820(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "nov_get_item04")?, ">", n(9))?.truthy() || op(get(ctx, "nov_get_item05")?, ">", n(9))?.truthy()) {
         ctx.mes("[Shion]")?;
@@ -389,7 +389,7 @@ fn npc_13819(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13820(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13821(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if ((op(get(ctx, "nov_get_item02")?, ">", n(9))?.truthy() && op(get(ctx, "nov_get_item03")?, ">", n(9))?.truthy()) && op(get(ctx, "nov_get_item04")?, ">", n(9))?.truthy()) {
         ctx.mes("[Kris]")?;
@@ -769,7 +769,7 @@ fn npc_13820(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13821(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13822(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if ((op(get(ctx, "nov_get_item02")?, ">", n(9))?.truthy() && op(get(ctx, "nov_get_item03")?, ">", n(9))?.truthy()) && op(get(ctx, "nov_get_item04")?, ">", n(9))?.truthy()) {
         ctx.mes("[Cecil]")?;
@@ -1167,7 +1167,7 @@ fn npc_13821(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13822(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13823(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if ((op(get(ctx, "nov_get_item02")?, ">", n(9))?.truthy() && op(get(ctx, "nov_get_item03")?, ">", n(9))?.truthy()) && op(get(ctx, "nov_get_item04")?, ">", n(9))?.truthy()) {
         ctx.mes("[Alice]")?;
@@ -1715,7 +1715,7 @@ fn npc_13822(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13823(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13824(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_dest_s = s("");
     let mut l_mapn_s = s("");
     let mut l_savex = n(0);
@@ -2141,7 +2141,7 @@ fn npc_13823(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13824(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13825(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Edwin]")?;
     ctx.mes("Welcome to my class.")?;
@@ -2330,7 +2330,7 @@ fn npc_13824(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13825(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13826(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Jare Riotte]")?;
     ctx.mes("Welcome, new adventurer.")?;
@@ -2538,7 +2538,7 @@ fn npc_13825(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13826(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13827(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_end = n(0);
     let _ = pc;
     ctx.mes("[Leo Handerson]")?;
@@ -2834,7 +2834,7 @@ fn npc_13826(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13827(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13828(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Guide Soldier]")?;
     ctx.mes("We Guide Soldiers provide location information at the entrance of every town. You can easily find us by our special uniforms.")?;
@@ -2850,7 +2850,7 @@ fn npc_13827(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13828(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13829(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "nov_2nd_cos")?, "<", n(11))?.truthy() {
         ctx.mes("[Elmeen]")?;
@@ -3181,7 +3181,7 @@ fn npc_13828(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13829(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13830(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "nov_2nd_cos")?, "==", n(0))?.truthy() {
         ctx.mes("[Muriel]")?;
@@ -3391,7 +3391,7 @@ fn npc_13829(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13830(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13831(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Hoffman]")?;
     ctx.mes("Hey there~")?;
@@ -3471,7 +3471,7 @@ fn npc_13830(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13831(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Keyman]")?;
     ctx.mes("Good!!")?;
@@ -3506,7 +3506,7 @@ fn npc_13831(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13833(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_USERJOBCHOICE: usize = 1;
     let mut l_acolyte_p = n(0);
     let mut l_archer_p = n(0);
@@ -4295,7 +4295,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                         }
                                         if !m24 && eq(&sw24, &n(2)) { m24 = true; }
                                         if m24 {
-                                            npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Swordsman")])?;
+                                            npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Swordsman")])?;
                                             return Err(END.into());
                                         }
                                     }
@@ -4370,7 +4370,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                             }
                                             if !m25 && eq(&sw25, &n(2)) { m25 = true; }
                                             if m25 {
-                                                npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Mage")])?;
+                                                npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Mage")])?;
                                                 return Err(END.into());
                                             }
                                         }
@@ -4444,7 +4444,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                 }
                                                 if !m26 && eq(&sw26, &n(2)) { m26 = true; }
                                                 if m26 {
-                                                    npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Merchant")])?;
+                                                    npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Merchant")])?;
                                                     return Err(END.into());
                                                 }
                                             }
@@ -4515,7 +4515,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                     }
                                                     if !m27 && eq(&sw27, &n(2)) { m27 = true; }
                                                     if m27 {
-                                                        npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Thief")])?;
+                                                        npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Thief")])?;
                                                         return Err(END.into());
                                                     }
                                                 }
@@ -4587,7 +4587,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                         }
                                                         if !m28 && eq(&sw28, &n(2)) { m28 = true; }
                                                         if m28 {
-                                                            npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Archer")])?;
+                                                            npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Archer")])?;
                                                             return Err(END.into());
                                                         }
                                                     }
@@ -4662,7 +4662,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                                             }
                                                             if !m29 && eq(&sw29, &n(2)) { m29 = true; }
                                                             if m29 {
-                                                                npc_13832(ctx, LABEL_S_USERJOBCHOICE, vec![s("Acolyte")])?;
+                                                                npc_13833(ctx, LABEL_S_USERJOBCHOICE, vec![s("Acolyte")])?;
                                                                 return Err(END.into());
                                                             }
                                                         }
@@ -4953,7 +4953,7 @@ fn npc_13832(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13833(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13834(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "Class")?, "==", constant(ctx, "JOB_NOVICE")?)?.truthy() {
         if op(get(ctx, "nov_3_swordman")?, "==", n(20))?.truthy() {
@@ -5291,7 +5291,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13815 => npc_call(npc_13815(ctx, 0, vec![])),
         13816 => npc_call(npc_13816(ctx, 0, vec![])),
         13817 => npc_call(npc_13817(ctx, 0, vec![])),
         13818 => npc_call(npc_13818(ctx, 0, vec![])),
@@ -5310,6 +5309,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13831 => npc_call(npc_13831(ctx, 0, vec![])),
         13832 => npc_call(npc_13832(ctx, 0, vec![])),
         13833 => npc_call(npc_13833(ctx, 0, vec![])),
+        13834 => npc_call(npc_13834(ctx, 0, vec![])),
         _ => None,
     }
 }

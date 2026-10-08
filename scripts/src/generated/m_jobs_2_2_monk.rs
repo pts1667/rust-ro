@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13517(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13518(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -372,7 +372,7 @@ fn npc_13517(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13518(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13519(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_items: Vec<Value> = Vec::new();
     let mut l_jlevel = n(0);
     let _ = pc;
@@ -1120,7 +1120,7 @@ fn npc_13518(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13519(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13520(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_monk_t = n(0);
     let mut l_rand = n(0);
     let _ = pc;
@@ -3087,7 +3087,7 @@ fn npc_13519(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13520(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13521(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "monk_q")?, "==", n(14))?.truthy() && op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ACOLYTE")?)?.truthy()) {
         ctx.mes("[Boohae]")?;
@@ -3288,7 +3288,7 @@ fn npc_13520(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13521(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13522(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Keeper Chorip]")?;
     ctx.mes("....this place is for those")?;
@@ -3327,7 +3327,7 @@ fn npc_13521(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13522(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13523(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "monk_q")?, ">", n(14))?.truthy() && op(get(ctx, "monk_q")?, "<", n(25))?.truthy()) {
         if op(get(ctx, "monk_q")?, "==", n(15))?.truthy() {
@@ -3380,7 +3380,7 @@ fn npc_13522(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13523(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13524(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Monk Apprentice]")?;
     ctx.mes("W... welcome!")?;
@@ -3418,7 +3418,7 @@ fn npc_13523(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13524(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13525(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -3457,7 +3457,7 @@ fn npc_13524(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13525(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13526(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -3476,7 +3476,7 @@ fn npc_13525(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13526(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13527(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (((op(ctx.call(Function::CountItem, vec![n(1069)])?, ">", n(0))?.truthy() || op(ctx.call(Function::CountItem, vec![n(1070)])?, ">", n(0))?.truthy()) && op(ctx.call(Function::CountItem, vec![n(1069)])?, "<", n(30))?.truthy()) && op(ctx.call(Function::CountItem, vec![n(1070)])?, "<", n(30))?.truthy()) {
         ctx.mes("[Hyunmoo]")?;
@@ -3581,7 +3581,7 @@ fn npc_13526(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13527(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13528(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "monk_q")?, "<", n(25))?.truthy() {
         ctx.mes("[Hyunmoo]")?;
@@ -3627,7 +3627,7 @@ fn npc_13527(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13528(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13529(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "monk_q")?, "==", n(25))?.truthy() {
         ctx.mes("[Tomoon]")?;
@@ -3705,7 +3705,7 @@ fn npc_13528(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13529(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13530(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Proctor]")?;
     ctx.mes("So, are you ready to undergo the spiritual training?")?;
@@ -3750,33 +3750,6 @@ fn npc_13529(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13530(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    const LABEL_ONTOUCH_: usize = 1;
-    const LABEL_ONDISABLE: usize = 2;
-    'sm: loop {
-        match pc {
-                0 => {
-                    pc = 1;
-                }
-                1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
-                    return Err(END.into());
-                    pc = 2;
-                }
-                2 => {
-                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
-                    return Err(END.into());
-                    pc = 3;
-                }
-            3 => return Ok(n(0)),
-            _ => return Err("Invalid script position".into()),
-        }
-    }
-}
-
 fn npc_13531(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
@@ -3786,10 +3759,10 @@ fn npc_13531(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(144), n(277), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -3813,7 +3786,10 @@ fn npc_13532(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(157), n(284), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(134), n(291), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -3837,7 +3813,7 @@ fn npc_13533(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(156), n(261), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(157), n(284), s("Mummy"), n(1041), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -3853,6 +3829,30 @@ fn npc_13533(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_13534(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    const LABEL_ONDISABLE: usize = 2;
+    'sm: loop {
+        match pc {
+                0 => {
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(156), n(261), s("Mummy"), n(1041), n(1)])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
+                    return Err(END.into());
+                    pc = 3;
+                }
+            3 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_13535(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     'sm: loop {
@@ -3880,7 +3880,7 @@ fn npc_13534(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13535(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13536(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -3907,7 +3907,7 @@ fn npc_13535(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13536(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13537(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Proctor]")?;
     ctx.mes("So, are you ready to undergo this spiritual training?")?;
@@ -3952,33 +3952,6 @@ fn npc_13536(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13537(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    const LABEL_ONTOUCH_: usize = 1;
-    const LABEL_ONDISABLE: usize = 2;
-    'sm: loop {
-        match pc {
-                0 => {
-                    pc = 1;
-                }
-                1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
-                    return Err(END.into());
-                    pc = 2;
-                }
-                2 => {
-                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
-                    return Err(END.into());
-                    pc = 3;
-                }
-            3 => return Ok(n(0)),
-            _ => return Err("Invalid script position".into()),
-        }
-    }
-}
-
 fn npc_13538(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
@@ -3988,10 +3961,10 @@ fn npc_13538(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(140), n(181), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -4015,7 +3988,10 @@ fn npc_13539(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(158), n(192), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(150), n(164), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -4039,7 +4015,7 @@ fn npc_13540(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(165), n(186), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(158), n(192), s("Mummy"), n(1041), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -4055,6 +4031,30 @@ fn npc_13540(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_13541(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    const LABEL_ONDISABLE: usize = 2;
+    'sm: loop {
+        match pc {
+                0 => {
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(165), n(186), s("Mummy"), n(1041), n(1)])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
+                    return Err(END.into());
+                    pc = 3;
+                }
+            3 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_13542(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     'sm: loop {
@@ -4082,7 +4082,7 @@ fn npc_13541(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13542(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13543(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -4109,7 +4109,7 @@ fn npc_13542(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13543(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13544(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Proctor]")?;
     ctx.mes("So, are you ready to undergo this spiritual training?")?;
@@ -4154,32 +4154,6 @@ fn npc_13543(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13544(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
-    const LABEL_ONTOUCH_: usize = 1;
-    const LABEL_ONDISABLE: usize = 2;
-    'sm: loop {
-        match pc {
-                0 => {
-                    pc = 1;
-                }
-                1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
-                    return Err(END.into());
-                    pc = 2;
-                }
-                2 => {
-                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
-                    pc = 3;
-                }
-            3 => return Ok(n(0)),
-            _ => return Err("Invalid script position".into()),
-        }
-    }
-}
-
 fn npc_13545(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
@@ -4189,16 +4163,15 @@ fn npc_13545(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(249), n(277), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
                 2 => {
                     ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
-                    return Err(END.into());
                     pc = 3;
                 }
             3 => return Ok(n(0)),
@@ -4216,7 +4189,10 @@ fn npc_13546(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(264), n(292), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(231), n(296), s("Zombie"), n(1015), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -4240,7 +4216,7 @@ fn npc_13547(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                     pc = 1;
                 }
                 1 => {
-                    ctx.call(Function::Monster, vec![s("monk_test"), n(252), n(284), s("Mummy"), n(1041), n(1)])?;
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(264), n(292), s("Mummy"), n(1041), n(1)])?;
                     return Err(END.into());
                     pc = 2;
                 }
@@ -4256,6 +4232,30 @@ fn npc_13547(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
 }
 
 fn npc_13548(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    const LABEL_ONDISABLE: usize = 2;
+    'sm: loop {
+        match pc {
+                0 => {
+                    pc = 1;
+                }
+                1 => {
+                    ctx.call(Function::Monster, vec![s("monk_test"), n(252), n(284), s("Mummy"), n(1041), n(1)])?;
+                    return Err(END.into());
+                    pc = 2;
+                }
+                2 => {
+                    ctx.call(Function::KillMonster, vec![s("monk_test"), s("All")])?;
+                    return Err(END.into());
+                    pc = 3;
+                }
+            3 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
+fn npc_13549(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONDISABLE: usize = 2;
     'sm: loop {
@@ -4284,7 +4284,7 @@ fn npc_13548(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13549(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13550(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -4311,7 +4311,7 @@ fn npc_13549(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13550(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13551(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTIMER500000: usize = 1;
     const LABEL_ONINIT: usize = 2;
     const LABEL_ONENABLE: usize = 3;
@@ -4354,7 +4354,7 @@ fn npc_13550(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13551(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13552(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("Grrrr...")?;
     ctx.mes("All monsters in the monk job chance place have been reset.")?;
@@ -4386,7 +4386,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13517 => npc_call(npc_13517(ctx, 0, vec![])),
         13518 => npc_call(npc_13518(ctx, 0, vec![])),
         13519 => npc_call(npc_13519(ctx, 0, vec![])),
         13520 => npc_call(npc_13520(ctx, 0, vec![])),
@@ -4421,51 +4420,52 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13549 => npc_call(npc_13549(ctx, 0, vec![])),
         13550 => npc_call(npc_13550(ctx, 0, vec![])),
         13551 => npc_call(npc_13551(ctx, 0, vec![])),
+        13552 => npc_call(npc_13552(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104618 => npc_call(npc_13517(ctx, 1, vec![])),
-        104619 => npc_call(npc_13524(ctx, 1, vec![])),
-        104620 => npc_call(npc_13525(ctx, 1, vec![])),
-        104621 => npc_call(npc_13530(ctx, 1, vec![])),
-        104622 => npc_call(npc_13530(ctx, 2, vec![])),
-        104623 => npc_call(npc_13531(ctx, 1, vec![])),
-        104624 => npc_call(npc_13531(ctx, 2, vec![])),
-        104625 => npc_call(npc_13532(ctx, 1, vec![])),
-        104626 => npc_call(npc_13532(ctx, 2, vec![])),
-        104627 => npc_call(npc_13533(ctx, 1, vec![])),
-        104628 => npc_call(npc_13533(ctx, 2, vec![])),
-        104629 => npc_call(npc_13534(ctx, 1, vec![])),
-        104630 => npc_call(npc_13534(ctx, 2, vec![])),
-        104631 => npc_call(npc_13535(ctx, 1, vec![])),
-        104632 => npc_call(npc_13537(ctx, 1, vec![])),
-        104633 => npc_call(npc_13537(ctx, 2, vec![])),
-        104634 => npc_call(npc_13538(ctx, 1, vec![])),
-        104635 => npc_call(npc_13538(ctx, 2, vec![])),
-        104636 => npc_call(npc_13539(ctx, 1, vec![])),
-        104637 => npc_call(npc_13539(ctx, 2, vec![])),
-        104638 => npc_call(npc_13540(ctx, 1, vec![])),
-        104639 => npc_call(npc_13540(ctx, 2, vec![])),
-        104640 => npc_call(npc_13541(ctx, 1, vec![])),
-        104641 => npc_call(npc_13541(ctx, 2, vec![])),
-        104642 => npc_call(npc_13542(ctx, 1, vec![])),
-        104643 => npc_call(npc_13544(ctx, 1, vec![])),
-        104644 => npc_call(npc_13544(ctx, 2, vec![])),
-        104645 => npc_call(npc_13545(ctx, 1, vec![])),
-        104646 => npc_call(npc_13545(ctx, 2, vec![])),
-        104647 => npc_call(npc_13546(ctx, 1, vec![])),
-        104648 => npc_call(npc_13546(ctx, 2, vec![])),
-        104649 => npc_call(npc_13547(ctx, 1, vec![])),
-        104650 => npc_call(npc_13547(ctx, 2, vec![])),
-        104651 => npc_call(npc_13548(ctx, 1, vec![])),
-        104652 => npc_call(npc_13548(ctx, 2, vec![])),
-        104653 => npc_call(npc_13549(ctx, 1, vec![])),
-        104654 => npc_call(npc_13550(ctx, 1, vec![])),
-        104655 => npc_call(npc_13550(ctx, 2, vec![])),
-        104656 => npc_call(npc_13550(ctx, 3, vec![])),
+        104623 => npc_call(npc_13518(ctx, 1, vec![])),
+        104624 => npc_call(npc_13525(ctx, 1, vec![])),
+        104625 => npc_call(npc_13526(ctx, 1, vec![])),
+        104626 => npc_call(npc_13531(ctx, 1, vec![])),
+        104627 => npc_call(npc_13531(ctx, 2, vec![])),
+        104628 => npc_call(npc_13532(ctx, 1, vec![])),
+        104629 => npc_call(npc_13532(ctx, 2, vec![])),
+        104630 => npc_call(npc_13533(ctx, 1, vec![])),
+        104631 => npc_call(npc_13533(ctx, 2, vec![])),
+        104632 => npc_call(npc_13534(ctx, 1, vec![])),
+        104633 => npc_call(npc_13534(ctx, 2, vec![])),
+        104634 => npc_call(npc_13535(ctx, 1, vec![])),
+        104635 => npc_call(npc_13535(ctx, 2, vec![])),
+        104636 => npc_call(npc_13536(ctx, 1, vec![])),
+        104637 => npc_call(npc_13538(ctx, 1, vec![])),
+        104638 => npc_call(npc_13538(ctx, 2, vec![])),
+        104639 => npc_call(npc_13539(ctx, 1, vec![])),
+        104640 => npc_call(npc_13539(ctx, 2, vec![])),
+        104641 => npc_call(npc_13540(ctx, 1, vec![])),
+        104642 => npc_call(npc_13540(ctx, 2, vec![])),
+        104643 => npc_call(npc_13541(ctx, 1, vec![])),
+        104644 => npc_call(npc_13541(ctx, 2, vec![])),
+        104645 => npc_call(npc_13542(ctx, 1, vec![])),
+        104646 => npc_call(npc_13542(ctx, 2, vec![])),
+        104647 => npc_call(npc_13543(ctx, 1, vec![])),
+        104648 => npc_call(npc_13545(ctx, 1, vec![])),
+        104649 => npc_call(npc_13545(ctx, 2, vec![])),
+        104650 => npc_call(npc_13546(ctx, 1, vec![])),
+        104651 => npc_call(npc_13546(ctx, 2, vec![])),
+        104652 => npc_call(npc_13547(ctx, 1, vec![])),
+        104653 => npc_call(npc_13547(ctx, 2, vec![])),
+        104654 => npc_call(npc_13548(ctx, 1, vec![])),
+        104655 => npc_call(npc_13548(ctx, 2, vec![])),
+        104656 => npc_call(npc_13549(ctx, 1, vec![])),
+        104657 => npc_call(npc_13549(ctx, 2, vec![])),
+        104658 => npc_call(npc_13550(ctx, 1, vec![])),
+        104659 => npc_call(npc_13551(ctx, 1, vec![])),
+        104660 => npc_call(npc_13551(ctx, 2, vec![])),
+        104661 => npc_call(npc_13551(ctx, 3, vec![])),
         _ => None,
     }
 }

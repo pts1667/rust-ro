@@ -125,6 +125,13 @@ class Goto:
 
 
 @dataclass
+class BackLoop:
+    """Statements that follow a label up to the end of their block, restarted by a `goto` to it from inside."""
+    name: str
+    body: list
+
+
+@dataclass
 class Break:
     pass
 
@@ -339,6 +346,8 @@ class Parser:
         following = self.peek()
         if following.kind == "op" and following.value in ASSIGN_OPERATORS | {"++", "--", "["}:
             expression = self.expression()
+            # rathena skips whatever ends an assignment, so one stray `)` before the `;` loads (Baba Yaga#rus32)
+            self.accept(")")
             self.expect(";")
             return ExprStatement(expression)
         self.advance()

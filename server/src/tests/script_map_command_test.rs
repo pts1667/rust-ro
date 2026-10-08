@@ -122,6 +122,34 @@ fn bg_monster_returns_the_spawned_id_and_set_team_reassigns_it() {
     assert_eq!(instance.state().get_mob(id).map(|mob| mob.bg_id), Some(9));
 }
 
+#[test]
+fn area_mob_use_skill_makes_the_matching_monsters_of_the_area_cast_and_invincible_off_ends_the_status() {
+    use crate::server::model::events::map_event::MobEndStatus;
+    use models::enums::skill_enums::SkillEnum;
+
+    const MOB_ID: u32 = 80_002;
+    const PORING: i32 = 1002;
+    let (context, instance, service, _) = super::actor_unit_skill_tests::fixture();
+    let area = |class: i32, x: i32, range: i32| -> Vec<Value> {
+        vec!["empty".into(), x.into(), 50.into(), range.into(), class.into(), "NPC_INVINCIBLEOFF".into(), 1.into(), 0.into(), 0.into(), 0.into(), 0.into()]
+    };
+    let queued = |instance: &MapInstance| -> Vec<MapEvent> { std::iter::from_fn(|| instance.task_queue().pop()).flatten().collect() };
+
+    call(&context, Function::AreaMobUseSkill, area(PORING + 1, 50, 3)).unwrap();
+    call(&context, Function::AreaMobUseSkill, area(PORING, 60, 3)).unwrap();
+    assert!(queued(&instance).is_empty(), "another class or a mob outside the area casts nothing");
+
+    call(&context, Function::AreaMobUseSkill, area(PORING, 52, 3)).unwrap();
+    let mut casts: Vec<_> = queued(&instance).into_iter().filter_map(|event| if let MapEvent::ActorSkillCast(cast) = event { Some(cast) } else { None }).collect();
+    assert_eq!(casts.len(), 1);
+    let cast = casts.remove(0);
+    assert_eq!((cast.request.source_id, cast.request.target_id, cast.request.skill_id), (MOB_ID, MOB_ID, SkillEnum::NpcInvincibleoff.id()));
+
+    service.start_actor_skill(&mut instance.state_mut(), cast, 1000).unwrap();
+    super::actor_unit_skill_tests::complete(&context, &instance, &service, 1000).unwrap();
+    assert!(queued(&instance).iter().any(|event| matches!(event, MapEvent::MobEndStatus(MobEndStatus { mob_id: MOB_ID, kind: Some(StatusChangeKind::Invincible) }))));
+}
+
 mod alchemist_summons {
     use super::*;
     use models::enums::skill_enums::SkillEnum;

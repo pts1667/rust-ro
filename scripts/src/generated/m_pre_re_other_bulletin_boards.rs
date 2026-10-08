@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13729(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13730(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Izlude: The Satellite City]")?;
     ctx.mes("Welcome to Izlude, the satellite of Prontera. Izlude was built to support Prontera's defense and to accommodate its burgeoning population.")?;
@@ -23,7 +23,7 @@ fn npc_13729(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13730(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13731(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Geffen Dungeon]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -43,7 +43,7 @@ fn npc_13730(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13731(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13732(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[The Magma Dungeon, Nogg Road]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -59,7 +59,7 @@ fn npc_13731(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13732(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13733(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Coal Mine]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -72,7 +72,7 @@ fn npc_13732(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13733(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13734(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Sphinx]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -96,7 +96,7 @@ fn npc_13733(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13734(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13735(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Clock Tower]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -121,7 +121,7 @@ fn npc_13734(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13735(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13736(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Orc Dungeon]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -140,7 +140,7 @@ fn npc_13735(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13736(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13737(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Toy Factory]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -158,7 +158,7 @@ fn npc_13736(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13737(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13738(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Payon Cave]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -171,7 +171,7 @@ fn npc_13737(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13738(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13739(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Pyramids]")?;
     ctx.mes("^6B1312Caution!^000000")?;
@@ -187,7 +187,7 @@ fn npc_13738(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13739(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13740(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Culvert]")?;
     ctx.mes("Culvert is comprised of a total of")?;
@@ -219,7 +219,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13729 => npc_call(npc_13729(ctx, 0, vec![])),
         13730 => npc_call(npc_13730(ctx, 0, vec![])),
         13731 => npc_call(npc_13731(ctx, 0, vec![])),
         13732 => npc_call(npc_13732(ctx, 0, vec![])),
@@ -230,6 +229,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13737 => npc_call(npc_13737(ctx, 0, vec![])),
         13738 => npc_call(npc_13738(ctx, 0, vec![])),
         13739 => npc_call(npc_13739(ctx, 0, vec![])),
+        13740 => npc_call(npc_13740(ctx, 0, vec![])),
         _ => None,
     }
 }

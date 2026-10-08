@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13624(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13625(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() {
         if op(get(ctx, "JobLevel")?, "<", n(40))?.truthy() {
@@ -1165,7 +1165,7 @@ fn npc_13624(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13625(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13626(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Irache]")?;
     ctx.mes("Heh heh heh...!")?;
@@ -1186,7 +1186,7 @@ fn npc_13625(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13626(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13627(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Degas]")?;
     ctx.mes("It's such a pain working")?;
@@ -1207,7 +1207,7 @@ fn npc_13626(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13627(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13628(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("^3355FFIt's simply a pile")?;
     ctx.mes("of scattered documents.")?;
@@ -1219,7 +1219,7 @@ fn npc_13627(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13628(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13629(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_input_s = s("");
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, "==", n(13))?.truthy()) {
@@ -1832,7 +1832,7 @@ fn npc_13628(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13629(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13630(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, ">", n(4))?.truthy()) {
         ctx.mes("[Skrajjad]")?;
@@ -1952,7 +1952,7 @@ fn npc_13629(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13630(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13631(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, ">", n(5))?.truthy()) {
         ctx.mes("[Keshibien]")?;
@@ -2069,7 +2069,7 @@ fn npc_13630(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13631(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13632(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, ">", n(6))?.truthy()) {
         ctx.mes("[Broncher]")?;
@@ -2166,7 +2166,7 @@ fn npc_13631(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13632(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13633(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if ((op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, "==", n(8))?.truthy()) || op(get(ctx, "bioeth")?, "==", n(9))?.truthy()) {
         ctx.mes("[Koring]")?;
@@ -2218,7 +2218,7 @@ fn npc_13632(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13633(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13634(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if ((op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ALCHEMIST")?)?.truthy() && op(get(ctx, "bioeth")?, "==", n(8))?.truthy()) || op(get(ctx, "bioeth")?, "==", n(9))?.truthy()) {
         ctx.mes("[Beninne]")?;
@@ -2266,7 +2266,7 @@ fn npc_13633(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13634(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13635(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Nannan]")?;
     ctx.mes("You know, I always thought that all Alchemists were bookish,")?;
@@ -2291,7 +2291,7 @@ fn npc_13634(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13635(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13636(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     ctx.mes("[Alchemist]")?;
     ctx.mes("Out of all humans,")?;
@@ -2327,7 +2327,6 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13624 => npc_call(npc_13624(ctx, 0, vec![])),
         13625 => npc_call(npc_13625(ctx, 0, vec![])),
         13626 => npc_call(npc_13626(ctx, 0, vec![])),
         13627 => npc_call(npc_13627(ctx, 0, vec![])),
@@ -2339,6 +2338,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         13633 => npc_call(npc_13633(ctx, 0, vec![])),
         13634 => npc_call(npc_13634(ctx, 0, vec![])),
         13635 => npc_call(npc_13635(ctx, 0, vec![])),
+        13636 => npc_call(npc_13636(ctx, 0, vec![])),
         _ => None,
     }
 }

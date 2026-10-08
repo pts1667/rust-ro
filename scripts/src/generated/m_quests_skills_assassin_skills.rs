@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13638(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13639(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_teach = n(0);
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ASSASSIN")?)?.truthy() && op(get(ctx, "assn_sk2")?, "==", n(1))?.truthy()) {
@@ -301,7 +301,7 @@ fn npc_13638(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13639(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13640(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "BaseJob")?, "==", constant(ctx, "JOB_ASSASSIN")?)?.truthy() && op(get(ctx, "assn_sk")?, "==", n(7))?.truthy()) {
         if op(ctx.call(Function::GetSkillLv, vec![s("AS_SONICACCEL")])?, "==", n(0))?.truthy() {
@@ -792,7 +792,7 @@ fn npc_13639(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13640(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13641(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -886,7 +886,7 @@ fn npc_13640(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13641(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13642(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -999,7 +999,7 @@ fn npc_13641(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13642(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13643(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -1048,7 +1048,7 @@ fn npc_13642(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13643(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13644(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -1096,7 +1096,7 @@ fn npc_13643(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13644(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13645(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     'sm: loop {
         match pc {
@@ -1150,24 +1150,24 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13638 => npc_call(npc_13638(ctx, 0, vec![])),
         13639 => npc_call(npc_13639(ctx, 0, vec![])),
         13640 => npc_call(npc_13640(ctx, 0, vec![])),
         13641 => npc_call(npc_13641(ctx, 0, vec![])),
         13642 => npc_call(npc_13642(ctx, 0, vec![])),
         13643 => npc_call(npc_13643(ctx, 0, vec![])),
         13644 => npc_call(npc_13644(ctx, 0, vec![])),
+        13645 => npc_call(npc_13645(ctx, 0, vec![])),
         _ => None,
     }
 }
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104789 => npc_call(npc_13640(ctx, 1, vec![])),
-        104790 => npc_call(npc_13641(ctx, 1, vec![])),
-        104791 => npc_call(npc_13642(ctx, 1, vec![])),
-        104792 => npc_call(npc_13643(ctx, 1, vec![])),
-        104793 => npc_call(npc_13644(ctx, 1, vec![])),
+        104794 => npc_call(npc_13641(ctx, 1, vec![])),
+        104795 => npc_call(npc_13642(ctx, 1, vec![])),
+        104796 => npc_call(npc_13643(ctx, 1, vec![])),
+        104797 => npc_call(npc_13644(ctx, 1, vec![])),
+        104798 => npc_call(npc_13645(ctx, 1, vec![])),
         _ => None,
     }
 }

@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13728(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_L_CUTIN: usize = 1;
     let mut l_num = n(0);
     let mut l_pallete = n(0);
@@ -48,7 +48,7 @@ fn npc_13727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                     ctx.close()?;
                                     return Err(END.into());
                                 } else {
-                                    npc_13727(ctx, LABEL_L_CUTIN, vec![l_style.clone()])?;
+                                    npc_13728(ctx, LABEL_L_CUTIN, vec![l_style.clone()])?;
                                     ctx.mes("[Veronica]")?;
                                     'b2: {
                                         let sw2 = l_style.clone();
@@ -542,7 +542,7 @@ fn npc_13727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                                     }
                                 }
                             }
-                            npc_13727(ctx, LABEL_L_CUTIN, vec![l_style.clone()])?;
+                            npc_13728(ctx, LABEL_L_CUTIN, vec![l_style.clone()])?;
                             ctx.mes("[Veronica]")?;
                             ctx.mes(op(op(s("You have chosen style no. ("), "+", l_style.clone())?, "+", s(")."))?.text())?;
                             ctx.mes("I shall proceed with your request.")?;
@@ -692,7 +692,7 @@ fn npc_13727(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     }
 }
 
-fn npc_13728(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13729(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let mut l_headpalette = n(0);
     let mut l_input = n(0);
     let _ = pc;
@@ -1224,8 +1224,8 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13727 => npc_call(npc_13727(ctx, 0, vec![])),
         13728 => npc_call(npc_13728(ctx, 0, vec![])),
+        13729 => npc_call(npc_13729(ctx, 0, vec![])),
         _ => None,
     }
 }

@@ -10971,6 +10971,190 @@ fn npc_12700(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
+fn npc_12701(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+    const LABEL_ONTOUCH_: usize = 1;
+    'sm: loop {
+        match pc {
+                0 => {
+                    return Err(END.into());
+                    pc = 1;
+                }
+                1 => {
+                    if (op(get(ctx, "lhz_boss")?, ">", n(27))?.truthy() && op(get(ctx, "lhz_boss")?, "<", n(35))?.truthy()) {
+                        set(ctx, "@sneaktime", op(ctx.call(Function::GetTimeTick, vec![n(0)])?, "%", n(100))?)?;
+                        if ((op(get(ctx, "@sneaktime")?, ">", n(10))?.truthy() && op(get(ctx, "@sneaktime")?, "<", n(59))?.truthy()) || (op(get(ctx, "@sneaktime")?, "<", n(-10))?.truthy() && op(get(ctx, "@sneaktime")?, ">", n(-59))?.truthy())) {
+                            ctx.mes("^3355FFAs you approach")?;
+                            ctx.mes("the corner, you can")?;
+                            ctx.mes("hear hushed whispers")?;
+                            ctx.mes("just over the wall.^000000")?;
+                            ctx.next()?;
+                            ctx.mes("[Senior Guard]")?;
+                            ctx.mes("Hey, my shift is over.")?;
+                            ctx.mes("Hurry and get the next")?;
+                            ctx.mes("guy to relieve me, will you?")?;
+                            ctx.next()?;
+                            ctx.mes("[Rookie Guard]")?;
+                            ctx.mes("Already?")?;
+                            ctx.mes("Wow, time sure")?;
+                            ctx.mes("flies fast. Fine,")?;
+                            ctx.mes("wait here a bit.")?;
+                            ctx.next()?;
+                            ctx.mes("^3355FFOne of the guards left")?;
+                            ctx.mes("his post, and now there")?;
+                            ctx.mes("is only one remaining")?;
+                            ctx.mes("guard monitoring this area.^000000")?;
+                            ctx.next()?;
+                            ctx.mes("[Senior Guard]")?;
+                            ctx.mes("Criminy...")?;
+                            ctx.mes("I need to go to")?;
+                            ctx.mes("the bathroom. Well,")?;
+                            ctx.mes("I'm sure nothing will")?;
+                            ctx.mes("happen while I'm gone.")?;
+                            ctx.next()?;
+                            ctx.mes("^3355FFYou listen to the")?;
+                            ctx.mes("guard's footsteps as")?;
+                            ctx.mes("they grow fainter and")?;
+                            ctx.mes("fainter into the distance.^000000")?;
+                            ctx.next()?;
+                            'b1: {
+                                let sw1 = n(select(ctx, &["Sneak in now.", "Wait for another chance."])?);
+                                let mut m1 = false;
+                                let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2));
+                                if !m1 && eq(&sw1, &n(1)) { m1 = true; }
+                                if m1 {
+                                    ctx.mes("^3355FFThis is the perfect")?;
+                                    ctx.mes("opportunity to infiltrate")?;
+                                    ctx.mes("the Secret Archive! You")?;
+                                    ctx.mes("approach the door and")?;
+                                    ctx.mes("find a device where you")?;
+                                    ctx.mes("can insert Lestin's card pass.^000000")?;
+                                    ctx.next()?;
+                                    'b2: {
+                                        let sw2 = n(select(ctx, &["Insert Card", "Retreat"])?);
+                                        let mut m2 = false;
+                                        let d2 = !eq(&sw2, &n(1)) && !eq(&sw2, &n(2));
+                                        if !m2 && eq(&sw2, &n(1)) { m2 = true; }
+                                        if m2 {
+                                            if !ctx.call(Function::CountItem, vec![n(7349)])?.truthy() {
+                                                ctx.mes("^3355FFYou forgot to bring")?;
+                                                ctx.mes("the card pass that")?;
+                                                ctx.mes("you got from Lestin.")?;
+                                                ctx.mes("You need it in order")?;
+                                                ctx.mes("to open this door.^000000")?;
+                                                ctx.close()?;
+                                                return Err(END.into());
+                                            }
+                                            ctx.mes("^3355FFAfter inserting the")?;
+                                            ctx.mes("pass, a panel within")?;
+                                            ctx.mes("the door slides open,")?;
+                                            ctx.mes("revealing a numeric keypad.")?;
+                                            ctx.mes("You need to input the correct")?;
+                                            ctx.mes("password to open the door.^000000")?;
+                                            ctx.next()?;
+                                            'j3: loop {
+                                                let (input, status) = input_number(ctx, &[])?;
+                                                set(ctx, "@sneakpass", input)?;
+                                                if op(get(ctx, "@sneakpass")?, "==", n(738495))?.truthy() {
+                                                    ctx.mes("^3355FF*Beep~*")?;
+                                                    ctx.mes("You hear a pleasant")?;
+                                                    ctx.mes("sounding electronic chirp,")?;
+                                                    ctx.mes("signaling that you have input")?;
+                                                    ctx.mes("the correct password. The door")?;
+                                                    ctx.mes("automatically slides open.")?;
+                                                    ctx.next()?;
+                                                    'b4: {
+                                                        let sw4 = n(select(ctx, &["Enter", "Retreat"])?);
+                                                        let mut m4 = false;
+                                                        let d4 = !eq(&sw4, &n(1)) && !eq(&sw4, &n(2));
+                                                        if !m4 && eq(&sw4, &n(1)) { m4 = true; }
+                                                        if m4 {
+                                                            ctx.mes("[Security System]")?;
+                                                            ctx.mes("You have 3 minutes to")?;
+                                                            ctx.mes("search the Information Archive.")?;
+                                                            ctx.mes("When this time elapses, you")?;
+                                                            ctx.mes("will be automatically sent")?;
+                                                            ctx.mes("outside for security reasons.")?;
+                                                            ctx.close()?;
+                                                            set(ctx, "lhz_boss", n(29))?;
+                                                            ctx.call(Function::DoNpcEvent, vec![s("Timer_Sneak::OnEnter")])?;
+                                                            ctx.call(Function::Warp, vec![s("lhz_in01"), n(177), n(35)])?;
+                                                            return Err(END.into());
+                                                        }
+                                                        if !m4 && eq(&sw4, &n(2)) { m4 = true; }
+                                                        if m4 {
+                                                            ctx.mes("^3355FFPerhaps now would")?;
+                                                            ctx.mes("not be the best time to")?;
+                                                            ctx.mes("enter the Secret Archive.")?;
+                                                            ctx.mes("Or at least, that's what")?;
+                                                            ctx.mes("you've decided for yourself.^000000")?;
+                                                            ctx.close()?;
+                                                            return Err(END.into());
+                                                        }
+                                                    }
+                                                }
+                                                ctx.mes("^3355FF*Eeeeeee*")?;
+                                                ctx.mes("The door emits an")?;
+                                                ctx.mes("unnerving, high pitched")?;
+                                                ctx.mes("screech after you input")?;
+                                                ctx.mes("the password. You really")?;
+                                                ctx.mes("should try to input it again.^000000")?;
+                                                set(ctx, "@sneakerror", op(get(ctx, "@sneakerror")?, "+", n(1))?)?;
+                                                ctx.next()?;
+                                                if op(get(ctx, "@sneakerror")?, ">", n(2))?.truthy() {
+                                                    ctx.mes("[Security System]")?;
+                                                    ctx.mes("*Gzzzzz*")?;
+                                                    ctx.mes("You have entered the")?;
+                                                    ctx.mes("password incorrectly")?;
+                                                    ctx.mes("3 times. Please stand by")?;
+                                                    ctx.mes("for managerial assistance.")?;
+                                                    ctx.next()?;
+                                                    ctx.mes("^3355FFUh oh!")?;
+                                                    ctx.mes("You better get")?;
+                                                    ctx.mes("out of here before")?;
+                                                    ctx.mes("you get caught!^000000")?;
+                                                    ctx.close()?;
+                                                    ctx.call(Function::Warp, vec![s("lhz_in01"), n(191), n(49)])?;
+                                                    return Err(END.into());
+                                                }
+                                                continue 'j3;
+                                                break 'j3;
+                                            }
+                                        }
+                                        if !m2 && eq(&sw2, &n(2)) { m2 = true; }
+                                        if m2 {
+                                            ctx.mes("^3355FFPerhaps now would")?;
+                                            ctx.mes("not be the best time to")?;
+                                            ctx.mes("enter the Secret Archive.")?;
+                                            ctx.mes("Or at least, that's what")?;
+                                            ctx.mes("you've decided for yourself.^000000")?;
+                                            ctx.close()?;
+                                            return Err(END.into());
+                                        }
+                                    }
+                                }
+                                if !m1 && eq(&sw1, &n(2)) { m1 = true; }
+                                if m1 {
+                                    ctx.mes("^3355FFPerhaps now would")?;
+                                    ctx.mes("not be the best time to")?;
+                                    ctx.mes("enter the Secret Archive.")?;
+                                    ctx.mes("Or at least, that's what")?;
+                                    ctx.mes("you've decided for yourself.^000000")?;
+                                    ctx.close()?;
+                                    return Err(END.into());
+                                }
+                            }
+                            ctx.call(Function::DoNpcEvent, vec![s("Door#sneak::OnSneak")])?;
+                            return Err(END.into());
+                        }
+                    }
+                    pc = 2;
+                }
+            2 => return Ok(n(0)),
+            _ => return Err("Invalid script position".into()),
+        }
+    }
+}
+
 fn npc_12702(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_ONTOUCH_: usize = 1;
     const LABEL_ONINIT: usize = 2;
@@ -13551,6 +13735,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
         12698 => npc_call(npc_12698(ctx, 0, vec![])),
         12699 => npc_call(npc_12699(ctx, 0, vec![])),
         12700 => npc_call(npc_12700(ctx, 0, vec![])),
+        12701 => npc_call(npc_12701(ctx, 0, vec![])),
         12702 => npc_call(npc_12702(ctx, 0, vec![])),
         12703 => npc_call(npc_12703(ctx, 0, vec![])),
         12704 => npc_call(npc_12704(ctx, 0, vec![])),
@@ -13579,63 +13764,64 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        103601 => npc_call(npc_12627(ctx, 1, vec![])),
-        103602 => npc_call(npc_12627(ctx, 2, vec![])),
-        103603 => npc_call(npc_12627(ctx, 3, vec![])),
-        103604 => npc_call(npc_12646(ctx, 1, vec![])),
-        103605 => npc_call(npc_12647(ctx, 1, vec![])),
-        103606 => npc_call(npc_12648(ctx, 1, vec![])),
-        103607 => npc_call(npc_12648(ctx, 2, vec![])),
-        103608 => npc_call(npc_12649(ctx, 1, vec![])),
-        103609 => npc_call(npc_12649(ctx, 2, vec![])),
-        103610 => npc_call(npc_12655(ctx, 1, vec![])),
-        103611 => npc_call(npc_12656(ctx, 1, vec![])),
-        103612 => npc_call(npc_12657(ctx, 1, vec![])),
-        103613 => npc_call(npc_12658(ctx, 1, vec![])),
-        103614 => npc_call(npc_12659(ctx, 1, vec![])),
-        103615 => npc_call(npc_12660(ctx, 1, vec![])),
-        103616 => npc_call(npc_12661(ctx, 1, vec![])),
-        103617 => npc_call(npc_12662(ctx, 1, vec![])),
-        103618 => npc_call(npc_12663(ctx, 1, vec![])),
-        103619 => npc_call(npc_12664(ctx, 1, vec![])),
-        103620 => npc_call(npc_12667(ctx, 1, vec![])),
-        103621 => npc_call(npc_12669(ctx, 1, vec![])),
-        103622 => npc_call(npc_12672(ctx, 1, vec![])),
-        103623 => npc_call(npc_12673(ctx, 1, vec![])),
-        103624 => npc_call(npc_12679(ctx, 1, vec![])),
-        103625 => npc_call(npc_12680(ctx, 1, vec![])),
-        103626 => npc_call(npc_12684(ctx, 1, vec![])),
-        103627 => npc_call(npc_12688(ctx, 1, vec![])),
-        103628 => npc_call(npc_12690(ctx, 1, vec![])),
-        103629 => npc_call(npc_12691(ctx, 1, vec![])),
-        103630 => npc_call(npc_12692(ctx, 1, vec![])),
-        103631 => npc_call(npc_12695(ctx, 1, vec![])),
-        103632 => npc_call(npc_12696(ctx, 1, vec![])),
-        103633 => npc_call(npc_12697(ctx, 1, vec![])),
-        103634 => npc_call(npc_12698(ctx, 1, vec![])),
-        103635 => npc_call(npc_12702(ctx, 1, vec![])),
-        103636 => npc_call(npc_12702(ctx, 2, vec![])),
-        103637 => npc_call(npc_12702(ctx, 3, vec![])),
-        103638 => npc_call(npc_12702(ctx, 4, vec![])),
-        103639 => npc_call(npc_12702(ctx, 5, vec![])),
-        103640 => npc_call(npc_12716(ctx, 1, vec![])),
-        103641 => npc_call(npc_12716(ctx, 2, vec![])),
-        103642 => npc_call(npc_12718(ctx, 1, vec![])),
-        103643 => npc_call(npc_12718(ctx, 2, vec![])),
-        103644 => npc_call(npc_12718(ctx, 3, vec![])),
-        103645 => npc_call(npc_12718(ctx, 4, vec![])),
-        103646 => npc_call(npc_12718(ctx, 5, vec![])),
-        103647 => npc_call(npc_12719(ctx, 1, vec![])),
-        103648 => npc_call(npc_12719(ctx, 2, vec![])),
-        103649 => npc_call(npc_12719(ctx, 3, vec![])),
-        103650 => npc_call(npc_12719(ctx, 4, vec![])),
-        103651 => npc_call(npc_12719(ctx, 5, vec![])),
-        103652 => npc_call(npc_12720(ctx, 1, vec![])),
-        103653 => npc_call(npc_12720(ctx, 2, vec![])),
-        103654 => npc_call(npc_12720(ctx, 3, vec![])),
-        103655 => npc_call(npc_12720(ctx, 4, vec![])),
-        103656 => npc_call(npc_12721(ctx, 1, vec![])),
-        103657 => npc_call(npc_12722(ctx, 1, vec![])),
+        103602 => npc_call(npc_12627(ctx, 1, vec![])),
+        103603 => npc_call(npc_12627(ctx, 2, vec![])),
+        103604 => npc_call(npc_12627(ctx, 3, vec![])),
+        103605 => npc_call(npc_12646(ctx, 1, vec![])),
+        103606 => npc_call(npc_12647(ctx, 1, vec![])),
+        103607 => npc_call(npc_12648(ctx, 1, vec![])),
+        103608 => npc_call(npc_12648(ctx, 2, vec![])),
+        103609 => npc_call(npc_12649(ctx, 1, vec![])),
+        103610 => npc_call(npc_12649(ctx, 2, vec![])),
+        103611 => npc_call(npc_12655(ctx, 1, vec![])),
+        103612 => npc_call(npc_12656(ctx, 1, vec![])),
+        103613 => npc_call(npc_12657(ctx, 1, vec![])),
+        103614 => npc_call(npc_12658(ctx, 1, vec![])),
+        103615 => npc_call(npc_12659(ctx, 1, vec![])),
+        103616 => npc_call(npc_12660(ctx, 1, vec![])),
+        103617 => npc_call(npc_12661(ctx, 1, vec![])),
+        103618 => npc_call(npc_12662(ctx, 1, vec![])),
+        103619 => npc_call(npc_12663(ctx, 1, vec![])),
+        103620 => npc_call(npc_12664(ctx, 1, vec![])),
+        103621 => npc_call(npc_12667(ctx, 1, vec![])),
+        103622 => npc_call(npc_12669(ctx, 1, vec![])),
+        103623 => npc_call(npc_12672(ctx, 1, vec![])),
+        103624 => npc_call(npc_12673(ctx, 1, vec![])),
+        103625 => npc_call(npc_12679(ctx, 1, vec![])),
+        103626 => npc_call(npc_12680(ctx, 1, vec![])),
+        103627 => npc_call(npc_12684(ctx, 1, vec![])),
+        103628 => npc_call(npc_12688(ctx, 1, vec![])),
+        103629 => npc_call(npc_12690(ctx, 1, vec![])),
+        103630 => npc_call(npc_12691(ctx, 1, vec![])),
+        103631 => npc_call(npc_12692(ctx, 1, vec![])),
+        103632 => npc_call(npc_12695(ctx, 1, vec![])),
+        103633 => npc_call(npc_12696(ctx, 1, vec![])),
+        103634 => npc_call(npc_12697(ctx, 1, vec![])),
+        103635 => npc_call(npc_12698(ctx, 1, vec![])),
+        103636 => npc_call(npc_12701(ctx, 1, vec![])),
+        103637 => npc_call(npc_12702(ctx, 1, vec![])),
+        103638 => npc_call(npc_12702(ctx, 2, vec![])),
+        103639 => npc_call(npc_12702(ctx, 3, vec![])),
+        103640 => npc_call(npc_12702(ctx, 4, vec![])),
+        103641 => npc_call(npc_12702(ctx, 5, vec![])),
+        103642 => npc_call(npc_12716(ctx, 1, vec![])),
+        103643 => npc_call(npc_12716(ctx, 2, vec![])),
+        103644 => npc_call(npc_12718(ctx, 1, vec![])),
+        103645 => npc_call(npc_12718(ctx, 2, vec![])),
+        103646 => npc_call(npc_12718(ctx, 3, vec![])),
+        103647 => npc_call(npc_12718(ctx, 4, vec![])),
+        103648 => npc_call(npc_12718(ctx, 5, vec![])),
+        103649 => npc_call(npc_12719(ctx, 1, vec![])),
+        103650 => npc_call(npc_12719(ctx, 2, vec![])),
+        103651 => npc_call(npc_12719(ctx, 3, vec![])),
+        103652 => npc_call(npc_12719(ctx, 4, vec![])),
+        103653 => npc_call(npc_12719(ctx, 5, vec![])),
+        103654 => npc_call(npc_12720(ctx, 1, vec![])),
+        103655 => npc_call(npc_12720(ctx, 2, vec![])),
+        103656 => npc_call(npc_12720(ctx, 3, vec![])),
+        103657 => npc_call(npc_12720(ctx, 4, vec![])),
+        103658 => npc_call(npc_12721(ctx, 1, vec![])),
+        103659 => npc_call(npc_12722(ctx, 1, vec![])),
         _ => None,
     }
 }

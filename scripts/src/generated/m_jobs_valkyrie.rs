@@ -4,7 +4,7 @@ use script_sdk::{Context, Function, Value};
 use crate::rt::*;
 
 
-fn npc_13618(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13619(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "advjob")?, "!=", n(0))?.truthy() || op(get(ctx, "Upper")?, "==", n(1))?.truthy()) {
         ctx.mes("[Valkyrie]")?;
@@ -204,7 +204,7 @@ fn npc_13618(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13619(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13620(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (((op(get(ctx, "BaseLevel")?, ">", n(98))?.truthy() && op(get(ctx, "JobLevel")?, ">", n(49))?.truthy()) && op(get(ctx, "Class")?, ">=", constant(ctx, "JOB_KNIGHT")?)?.truthy()) && op(get(ctx, "Class")?, "<=", constant(ctx, "JOB_CRUSADER2")?)?.truthy()) {
         if op(get(ctx, "valkyrie_q")?, "==", n(0))?.truthy() {
@@ -258,7 +258,7 @@ fn npc_13619(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13620(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13621(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (op(get(ctx, "advjob")?, "!=", n(0))?.truthy() || op(get(ctx, "Upper")?, "==", n(1))?.truthy()) {
         ctx.mes("[The Book of Ymir]")?;
@@ -351,7 +351,7 @@ fn npc_13620(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13621(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13622(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     let _ = pc;
     if (((op(get(ctx, "BaseLevel")?, ">", n(98))?.truthy() && op(get(ctx, "JobLevel")?, ">", n(49))?.truthy()) && op(get(ctx, "Class")?, ">=", constant(ctx, "JOB_KNIGHT")?)?.truthy()) && op(get(ctx, "Class")?, "<=", constant(ctx, "JOB_CRUSADER2")?)?.truthy()) {
         if op(get(ctx, "valkyrie_q")?, "==", n(2))?.truthy() {
@@ -362,7 +362,7 @@ fn npc_13621(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
     Ok(n(0))
 }
 
-fn npc_13622(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
+fn npc_13623(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, String> {
     const LABEL_S_WARPCHAR: usize = 1;
     let mut l_karma_d = n(0);
     'sm: loop {
@@ -395,39 +395,39 @@ fn npc_13622(ctx: &Context, mut pc: usize, args: Vec<Value>) -> Result<Value, St
                             let d1 = !eq(&sw1, &n(1)) && !eq(&sw1, &n(2)) && !eq(&sw1, &n(3)) && !eq(&sw1, &n(4)) && !eq(&sw1, &n(5)) && !eq(&sw1, &n(6)) && !eq(&sw1, &n(7)) && !eq(&sw1, &n(8)) && !eq(&sw1, &n(9));
                             if !m1 && eq(&sw1, &n(1)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("prontera"), n(116), n(72)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("prontera"), n(116), n(72)])?;
                             }
                             if !m1 && eq(&sw1, &n(2)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("morocc"), n(156), n(46)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("morocc"), n(156), n(46)])?;
                             }
                             if !m1 && eq(&sw1, &n(3)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("payon"), n(69), n(100)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("payon"), n(69), n(100)])?;
                             }
                             if !m1 && eq(&sw1, &n(4)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("geffen"), n(120), n(39)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("geffen"), n(120), n(39)])?;
                             }
                             if !m1 && eq(&sw1, &n(5)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("alberta"), n(117), n(56)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("alberta"), n(117), n(56)])?;
                             }
                             if !m1 && eq(&sw1, &n(6)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("izlude"), n(94), n(103)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("izlude"), n(94), n(103)])?;
                             }
                             if !m1 && eq(&sw1, &n(7)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("aldebaran"), n(91), n(105)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("aldebaran"), n(91), n(105)])?;
                             }
                             if !m1 && eq(&sw1, &n(8)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("comodo"), n(209), n(143)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("comodo"), n(209), n(143)])?;
                             }
                             if !m1 && eq(&sw1, &n(9)) { m1 = true; }
                             if m1 {
-                                npc_13622(ctx, LABEL_S_WARPCHAR, vec![s("yuno"), n(328), n(101)])?;
+                                npc_13623(ctx, LABEL_S_WARPCHAR, vec![s("yuno"), n(328), n(101)])?;
                             }
                         }
                     }
@@ -454,11 +454,11 @@ fn npc_call(result: Result<Value, String>) -> Option<Result<(), String>> {
 
 pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        13618 => npc_call(npc_13618(ctx, 0, vec![])),
         13619 => npc_call(npc_13619(ctx, 0, vec![])),
         13620 => npc_call(npc_13620(ctx, 0, vec![])),
         13621 => npc_call(npc_13621(ctx, 0, vec![])),
         13622 => npc_call(npc_13622(ctx, 0, vec![])),
+        13623 => npc_call(npc_13623(ctx, 0, vec![])),
         _ => None,
     }
 }
