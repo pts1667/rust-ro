@@ -92,6 +92,39 @@ mod tests {
     }
 
     #[test]
+    fn first_aid_is_sent_as_a_self_skill_next_to_basic_skill() {
+        use packets::packets::PacketZcSkillinfoList;
+
+        use crate::server::service::global_config_service::GlobalConfigService;
+        let context = before_each();
+        let mut character = create_character();
+        character.status.known_skills = vec![
+            KnownSkill {
+                value: SkillEnum::NvBasic,
+                level: 2,
+            },
+            KnownSkill {
+                value: SkillEnum::NvFirstaid,
+                level: 1,
+            },
+        ];
+        context.skill_tree_service.send_skill_tree(&character);
+        context
+            .test_context
+            .increment_latch()
+            .wait_expected_count_with_timeout(1, std::time::Duration::from_millis(200));
+        let packets = context.test_context.get_sent_packet(
+            vec![PacketZcSkillinfoList::packet_id(GlobalConfigService::instance().packetver())],
+            GlobalConfigService::instance().packetver(),
+        );
+        let list = packets[0].as_any().downcast_ref::<PacketZcSkillinfoList>().unwrap();
+        let first_aid = list.skill_list.iter().find(|skill| skill.skid as u32 == SkillEnum::NvFirstaid.id()).unwrap();
+        assert_eq!(first_aid.atype, 4);
+        let basic = list.skill_list.iter().find(|skill| skill.skid as u32 == SkillEnum::NvBasic.id()).unwrap();
+        assert_eq!(basic.level, 2);
+    }
+
+    #[test]
     fn test_skilllist_should_return_list_of_skill_for_character_job() {
         // Given
         let context = before_each();

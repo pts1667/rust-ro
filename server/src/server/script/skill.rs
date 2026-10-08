@@ -1527,6 +1527,12 @@ mod tests {
     }
 
     #[test]
+    fn first_aid_is_listed_as_a_self_skill_not_a_passive_one() {
+        let object = skills::skill_enums::to_object(SkillEnum::NvFirstaid, 1).unwrap();
+        assert_eq!(object.client_type(), 4);
+    }
+
+    #[test]
     fn unrouted_skills_only_shrink() {
         let unrouted: Vec<_> = metadata::SkillMetadata::all()
             .iter()

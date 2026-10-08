@@ -163,7 +163,7 @@ impl SkillBase for FirstAid {
        3
     }
     fn _target_type(&self) -> SkillTargetType {
-        SkillTargetType::Passive
+        SkillTargetType::MySelf
     }
     fn _is_magic(&self) -> bool {
         false
