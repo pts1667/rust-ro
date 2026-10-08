@@ -422,7 +422,7 @@ impl GameEventHandler for CharacterAttack {
         {
             return Ok(());
         }
-        if !character.is_attacking() {
+        if !character.is_attacking() || character.attack().target != character_attack.target_id {
             // last_attack_tick = 0 allows first attack to happen immediately
             // canmove_tick is set in basic_attack() when attack animation starts
             character.set_attack(character_attack.target_id, character_attack.repeat, 0);

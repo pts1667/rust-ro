@@ -327,7 +327,7 @@ impl Character {
         });
         // Sync state machine - only if in valid state
         match self.action {
-            CharacterAction::Idle | CharacterAction::Moving => {
+            CharacterAction::Idle | CharacterAction::Moving | CharacterAction::Attacking { .. } => {
                 self.action = CharacterAction::Attacking { target_id, repeat };
             }
             _ => {}

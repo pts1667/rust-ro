@@ -253,6 +253,19 @@ mod tests {
     }
 
     #[test]
+    fn test_set_attack_while_attacking_switches_to_the_new_target() {
+        let mut character = create_character();
+        character.set_attack(82322, true, 0);
+        character.set_attack(82323, true, 0);
+        assert!(character.is_attacking());
+        assert_eq!(character.attack().target, 82323);
+        assert!(matches!(
+            character.action,
+            crate::server::state::character::CharacterAction::Attacking { target_id: 82323, repeat: true }
+        ));
+    }
+
+    #[test]
     fn test_attack_when_repeat_attack_is_false_should_clear_attack() {
         // Given
         let context = before_each();
