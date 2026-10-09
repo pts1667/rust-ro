@@ -80,12 +80,13 @@ mod tests {
     use models::status::KnownSkill;
     use movement::position::Position;
     use packets::packets::{
-        PacketZcLongparChange, PacketZcNotifyEffect, PacketZcParChange, PacketZcSkillinfoList, PacketZcSpriteChange2,
+        PacketZcLongparChange, PacketZcNotifyEffect, PacketZcNotifyVanish, PacketZcParChange, PacketZcSkillinfoList, PacketZcSpriteChange2,
         PacketZcStatusChangeAck,
     };
 
     use crate::repository::{CharacterRepository, Error};
     use crate::server::model::events::game_event::{CharacterKillMonster, CharacterLook, CharacterUpdateStat, CharacterZeny, CharacterUpdateClientSideStats};
+    use crate::server::model::events::client_notification::Notification;
     use crate::server::model::events::map_event::{MapEvent, MobDropItems};
     use crate::server::model::events::persistence_event::{
         PersistenceEvent, SavePositionUpdate, StatusUpdate,
@@ -349,6 +350,35 @@ mod tests {
                 PacketZcSpriteChange2::packet_id(GlobalConfigService::instance().packetver())
             )])
         );
+    }
+
+    #[test]
+    fn test_lethal_damage_broadcasts_death_and_resurrection_clears_it() {
+        // Given
+        let context = before_each(mocked_repository());
+        let mut character = create_character();
+        character.status.hp = 10;
+        // When
+        assert!(context.character_service.take_damage(&mut character, 10));
+        // Then
+        assert!(character.is_dead());
+        context.test_context.increment_latch().wait_expected_count_with_timeout(2, Duration::from_millis(200));
+        assert_sent_packet_in_current_packetver!(
+            context,
+            NotificationExpectation::of_fov(character.x, character.y, vec![SentPacket::with_id(
+                PacketZcNotifyVanish::packet_id(GlobalConfigService::instance().packetver())
+            )])
+        );
+        // When
+        context.character_service.send_resurrection(&character);
+        // Then
+        context.test_context.increment_latch().wait_expected_count_with_timeout(3, Duration::from_millis(200));
+        let received = context.test_context.received_notification();
+        let received = received.lock().unwrap();
+        let Some(Notification::Area(resurrection)) = received.last() else {
+            panic!("resurrection was not sent to the area");
+        };
+        assert_eq!(resurrection.packet[..2], [0x48, 0x01]);
     }
 
     #[test]

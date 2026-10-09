@@ -12,6 +12,7 @@ use models::enums::effect::Effect;
 use models::enums::look::LookType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::status::StatusTypes;
+use models::enums::vanish::VanishType;
 use models::status::{KnownSkill, Status, StatusSnapshot};
 use movement::position::Position;
 use packets::packets::{
@@ -330,8 +331,12 @@ impl CharacterService {
             StatusEffectService::send_icon(character, StatusChangeKind::Kyrie, true, tick, &self.client_notification_sender);
             self.reload_client_side_status(character);
         }
+        let died = new_hp == 0 && current_hp > 0;
         if new_hp == 0 {
             character.transition_to_dead();
+        }
+        if died {
+            self.send_death(character);
         }
 
         let mut packet_hp_change = PacketZcParChange::new(self.configuration_service.packetver());
@@ -346,6 +351,23 @@ impl CharacterService {
             .unwrap_or_else(|_| error!("Failed to send notification packet_status_change(damage) to client"));
 
         new_hp == 0
+    }
+
+    /// The Die vanish opens the death screen on the owner's client and shows the corpse to everyone else.
+    pub fn send_death(&self, character: &Character) {
+        let mut packet = PacketZcNotifyVanish::new(self.configuration_service.packetver());
+        packet.set_gid(character.char_id);
+        packet.set_atype(VanishType::Die.value() as u8);
+        packet.fill_raw();
+        self.send_area_notification_around_characters(character, packet.raw);
+    }
+
+    /// Clears the corpse and the death screen; sent to the owner and everyone in view (ZC_RESURRECTION).
+    pub fn send_resurrection(&self, character: &Character) {
+        let mut packet = 0x0148_u16.to_le_bytes().to_vec();
+        packet.extend_from_slice(&character.char_id.to_le_bytes());
+        packet.extend_from_slice(&0u16.to_le_bytes());
+        self.send_area_notification_around_characters(character, packet);
     }
 
     pub fn sit(&self, character: &mut Character) {
@@ -1619,7 +1641,7 @@ impl CharacterService {
                             .set_packet_length(PacketZcNotifyStandentry7::base_len(self.configuration_service.packetver()) as i16);
                         packet_zc_notify_standentry.set_pos_dir(position.to_pos());
                         packet_zc_notify_standentry.set_objecttype(0_u8);
-                        packet_zc_notify_standentry.set_aid(map_item.id());
+                        packet_zc_notify_standentry.set_aid(other_character.account_id);
                         packet_zc_notify_standentry.set_gid(map_item.id());
                         packet_zc_notify_standentry.set_clevel(other_character.status.base_level() as i16);
                         packet_zc_notify_standentry.set_speed(other_character.status.speed() as i16);
@@ -1647,6 +1669,8 @@ impl CharacterService {
                         packet_zc_notify_standentry.set_x_size(5);
                         packet_zc_notify_standentry.set_y_size(5);
                         packet_zc_notify_standentry.set_sex(other_character.sex);
+                        // Posture 1 is the client's dead pose; viewers who arrive after the death still need to see it.
+                        packet_zc_notify_standentry.set_state(if other_character.is_dead() { 1 } else { 0 });
                         packet_zc_notify_standentry.fill_raw_with_packetver(Some(self.configuration_service.packetver()));
                         packets.extend(packet_zc_notify_standentry.raw);
                         if other_character.game_systems.guild_id != 0 {
@@ -1921,7 +1945,6 @@ impl CharacterService {
             }
         }
 
-        info!("[rubberband-debug] stop char {} at ({}, {}) tick {} head {:?}", character.char_id, character.x, character.y, tick, character.peek_movement());
         character.clear_movement();
 
         let mut packet_zc_stop_move = PacketZcStopmove::new(GlobalConfigService::instance().packetver());

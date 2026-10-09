@@ -201,6 +201,7 @@ impl Server {
         character.action = crate::server::state::character::CharacterAction::Idle;
         character.loaded_from_client_side = false;
         self.character_service().update_hp_sp(&mut character, hp, sp);
+        self.character_service().send_resurrection(&character);
         character.refresh_script_context();
         state.insert_character(character);
         self.server_service().schedule_warp_to_walkable_cell(state, &map, x, y, char_id);

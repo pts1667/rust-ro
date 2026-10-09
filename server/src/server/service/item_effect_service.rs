@@ -299,6 +299,7 @@ impl ItemService {
                 server.script_skill_service().cancel_queued_cast(character);
                 for kind in StatusEffectService::remove_on_death(&mut character.status) { StatusEffectService::send_icon(character, kind, false, tick, &self.client_notification_sender); }
                 character.transition_to_dead();
+                server.character_service().send_death(character);
                 StatusEffectService::send_visual_status(character, &self.client_notification_sender);
             }
             if plan.zeny > 0 {
