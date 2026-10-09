@@ -39,7 +39,7 @@ impl Skill for FirstAid {
     }
 
     fn skill_type(&self) -> SkillType {
-        SkillType::Passive
+        SkillType::Support
     }
 
     fn level(&self) -> u8 {
