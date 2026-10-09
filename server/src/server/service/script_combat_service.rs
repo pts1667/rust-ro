@@ -690,7 +690,7 @@ fn prepare_drop_item(
     })))
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum BreakSlot {
     Weapon,
     Armor,

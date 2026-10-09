@@ -3,6 +3,7 @@ use models::status::StatusSnapshot;
 use script_sdk::Value;
 
 use super::ScriptSkillService;
+use super::monster::MonsterSkill;
 use super::actor::{self, MapActorSkillCast, NpcSkillState, ScriptActorSkillCompletion, ScriptSkillActor};
 use super::metadata::SkillMetadata;
 use super::requirements::DeferredSkillPayment;
@@ -489,28 +490,14 @@ impl ScriptSkillService {
                 | "ST_FULLSTRIP"
                 | "BA_FROSTJOKER"
                 | "DC_SCREAM"
-                | "NPC_WIDEBLEEDING"
-                | "NPC_WIDECONFUSE"
-                | "NPC_WIDECURSE"
-                | "NPC_WIDESILENCE"
-                | "NPC_WIDESLEEP"
-                | "NPC_WIDESTONE"
-                | "NPC_WIDEFREEZE"
-                | "NPC_WIDESTUN"
-                | "NPC_DRAGONFEAR"
-                | "NPC_WIDEHELLDIGNITY"
-                | "NPC_EXPULSION"
-                | "NPC_INVINCIBLEOFF"
                 | "TF_BACKSLIDING"
                 | "HW_GANBANTEIN"
                 | "MO_BODYRELOCATION"
                 | "AL_CRUCIS"
-                | "NPC_WIDESOULDRAIN"
-                | "NPC_SELFDESTRUCTION"
-                | "NPC_DARKBREATH"
                 | "BS_HAMMERFALL"
                 | "RG_CLEANER"
-        ) || metadata.name == "AL_TELEPORT" && matches!(source.object_type, MapItemType::Mob | MapItemType::Npc);
+        ) || metadata.name == "AL_TELEPORT" && matches!(source.object_type, MapItemType::Mob | MapItemType::Npc)
+            || metadata.monster_skill().is_some_and(MonsterSkill::is_direct_support);
         if direct_support
             || Self::status_for_skill(&metadata.name).is_some()
             || Self::uses_metadata_magic(&metadata.name)

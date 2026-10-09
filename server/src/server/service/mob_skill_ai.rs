@@ -4,6 +4,7 @@ use std::sync::OnceLock;
 use models::status_bonus::BattleFlag;
 use models::status_change::StatusChangeKind;
 use models::enums::cell::CellType;
+use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
 use serde::Deserialize;
 
@@ -50,6 +51,69 @@ pub struct MobSkillEntry {
     pub emotion: Option<u8>,
     #[serde(default)]
     pub chat: Option<u16>,
+    /// Set by `resolve` at load; the entry's monster skill, if the enum knows it.
+    #[serde(skip)]
+    skill: Option<SkillEnum>,
+    /// What the AI does instead of casting, derived from `skill` and `values` at load.
+    #[serde(skip)]
+    special: Option<SpecialMobSkill>,
+}
+
+impl MobSkillEntry {
+    fn resolve(mut self) -> Self {
+        self.skill = SkillEnum::try_from_value(self.skill_id).ok();
+        self.special = self.skill.and_then(|skill| special_of(&self, skill));
+        self
+    }
+}
+
+fn parse_classes(values: &[String]) -> Vec<i32> {
+    values.iter().filter_map(|value| value.parse().ok()).filter(|class| *class > 0).collect()
+}
+
+fn special_of(entry: &MobSkillEntry, skill: SkillEnum) -> Option<SpecialMobSkill> {
+    Some(match skill {
+        SkillEnum::NpcEmotion | SkillEnum::NpcEmotionOn => {
+            let mode = entry.values.get(1).and_then(|value| parse_mode(value)).filter(|mode| *mode != 0).map(|mode| {
+                if skill == SkillEnum::NpcEmotion { crate::server::state::mob::ModeChange::Set(mode) } else { crate::server::state::mob::ModeChange::Add(mode) }
+            });
+            SpecialMobSkill::Emotion { emotion: entry.values.first()?.parse().ok()?, mode }
+        }
+        SkillEnum::NpcSmoking => SpecialMobSkill::SelfDamage(3),
+        SkillEnum::NpcSummonslave | SkillEnum::NpcSummonmonster => {
+            let classes = parse_classes(&entry.values);
+            if classes.is_empty() {
+                return None;
+            }
+            SpecialMobSkill::SummonSlaves {
+                classes,
+                amount: entry.level.max(1),
+                slaves: skill == SkillEnum::NpcSummonslave,
+            }
+        }
+        SkillEnum::NpcCallslave => SpecialMobSkill::CallSlaves,
+        SkillEnum::NpcMetamorphosis | SkillEnum::NpcTransformation => {
+            let classes = parse_classes(&entry.values);
+            if classes.is_empty() {
+                return None;
+            }
+            SpecialMobSkill::ClassChange {
+                classes,
+                extra: entry.level.saturating_sub(1),
+            }
+        }
+        SkillEnum::NpcTalk => SpecialMobSkill::Idle,
+        SkillEnum::NpcProvocation => SpecialMobSkill::LoseTarget,
+        SkillEnum::NpcSuicide => SpecialMobSkill::Suicide,
+        SkillEnum::NpcAllheal if entry.target == "self" => SpecialMobSkill::FullHeal,
+        SkillEnum::NpcRun => SpecialMobSkill::Run {
+            distance: if entry.level > 1 { entry.level } else { NPC_RUN_DEFAULT_DISTANCE },
+        },
+        SkillEnum::NpcRevenge => SpecialMobSkill::Revenge,
+        SkillEnum::NpcRandommove => SpecialMobSkill::RandomMove { skill_id: entry.skill_id as u16 },
+        SkillEnum::NpcSpeedup => SpecialMobSkill::SpeedUp,
+        _ => return None,
+    })
 }
 
 #[derive(Default)]
@@ -69,7 +133,7 @@ impl MobSkillDatabase {
         let revive_level = self
             .entries_for(mob)
             .filter(|entry| entry.state == "dead" && entry.condition == "always")
-            .filter(|entry| SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name == "NPC_REBIRTH"))
+            .filter(|entry| entry.skill == Some(SkillEnum::NpcRebirth))
             .find(|entry| entry.rate >= 10_000 || fastrand::u32(0..10_000) < entry.rate)
             .map(|entry| u32::from(entry.level));
         let Some(level) = revive_level else {
@@ -83,7 +147,7 @@ impl MobSkillDatabase {
 
     pub fn from_entries(entries: Vec<MobSkillEntry>) -> Self {
         let mut database = Self::default();
-        for entry in entries {
+        for entry in entries.into_iter().map(MobSkillEntry::resolve) {
             match entry.mob_id {
                 -1 => database.boss.push(entry),
                 -2 => database.normal.push(entry),
@@ -193,6 +257,7 @@ fn parse_mode(value: &str) -> Option<u32> {
     }
 }
 
+#[derive(Debug, Clone)]
 enum SpecialMobSkill {
     Emotion { emotion: u8, mode: Option<crate::server::state::mob::ModeChange> },
     SummonSlaves { classes: Vec<i32>, amount: u16, slaves: bool },
@@ -282,10 +347,10 @@ impl MapInstanceService {
                 let Some(metadata) = SkillMetadata::find(entry.skill_id) else {
                     continue;
                 };
-                if let Some(special) = Self::special_action(mob, entry, metadata) {
+                if let Some(special) = Self::special_action(mob, entry) {
                     if Self::condition_met(mob, entry, first_pass, slaves, nearby, master_attacked, &characters, tick) {
                         selected = Some((key, None, entry.delay));
-                        specials.push((id, special));
+                        specials.push((id, special.clone()));
                         break;
                     }
                     continue;
@@ -319,7 +384,7 @@ impl MapInstanceService {
                 let emotion = database
                     .entries_for(mob)
                     .nth(key / 1_000_000)
-                    .filter(|entry| !SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name.starts_with("NPC_EMOTION")))
+                    .filter(|entry| !matches!(entry.skill, Some(SkillEnum::NpcEmotion | SkillEnum::NpcEmotionOn)))
                     .and_then(|entry| entry.emotion);
                 if let Some(emotion) = emotion {
                     specials.push((id, SpecialMobSkill::Emotion { emotion, mode: None }));
@@ -351,52 +416,11 @@ impl MapInstanceService {
         }
     }
 
-    fn special_action(mob: &Mob, entry: &MobSkillEntry, metadata: &SkillMetadata) -> Option<SpecialMobSkill> {
-        match metadata.name.as_str() {
-            "NPC_EMOTION" | "NPC_EMOTION_ON" => {
-                let mode = entry.values.get(1).and_then(|value| parse_mode(value)).filter(|mode| *mode != 0).map(|mode| {
-                    if metadata.name == "NPC_EMOTION" { crate::server::state::mob::ModeChange::Set(mode) } else { crate::server::state::mob::ModeChange::Add(mode) }
-                });
-                Some(SpecialMobSkill::Emotion { emotion: entry.values.first()?.parse().ok()?, mode })
-            }
-            "NPC_SMOKING" => Some(SpecialMobSkill::SelfDamage(3)),
-            "NPC_SUMMONSLAVE" | "NPC_SUMMONMONSTER" => {
-                let classes: Vec<i32> = entry
-                    .values
-                    .iter()
-                    .filter_map(|value| value.parse().ok())
-                    .filter(|class| *class > 0)
-                    .collect();
-                (!classes.is_empty() && mob.summon_owner.is_none()).then_some(SpecialMobSkill::SummonSlaves {
-                    classes,
-                    amount: entry.level.max(1),
-                    slaves: metadata.name == "NPC_SUMMONSLAVE",
-                })
-            }
-            "NPC_CALLSLAVE" => Some(SpecialMobSkill::CallSlaves),
-            "NPC_METAMORPHOSIS" | "NPC_TRANSFORMATION" => {
-                let classes: Vec<i32> = entry
-                    .values
-                    .iter()
-                    .filter_map(|value| value.parse().ok())
-                    .filter(|class| *class > 0)
-                    .collect();
-                (!classes.is_empty()).then_some(SpecialMobSkill::ClassChange {
-                    classes,
-                    extra: entry.level.saturating_sub(1),
-                })
-            }
-            "NPC_TALK" => Some(SpecialMobSkill::Idle),
-            "NPC_PROVOCATION" => Some(SpecialMobSkill::LoseTarget),
-            "NPC_SUICIDE" => Some(SpecialMobSkill::Suicide),
-            "NPC_ALLHEAL" if entry.target == "self" => Some(SpecialMobSkill::FullHeal),
-            "NPC_RUN" => Some(SpecialMobSkill::Run {
-                distance: if entry.level > 1 { entry.level } else { NPC_RUN_DEFAULT_DISTANCE },
-            }),
-            "NPC_REVENGE" => Some(SpecialMobSkill::Revenge),
-            "NPC_RANDOMMOVE" => Some(SpecialMobSkill::RandomMove { skill_id: entry.skill_id as u16 }),
-            "NPC_SPEEDUP" => Some(SpecialMobSkill::SpeedUp),
-            _ => None,
+    /// A summon needs a free master: slaves never summon their own slaves.
+    fn special_action<'a>(mob: &Mob, entry: &'a MobSkillEntry) -> Option<&'a SpecialMobSkill> {
+        match entry.special.as_ref()? {
+            SpecialMobSkill::SummonSlaves { .. } if mob.summon_owner.is_some() => None,
+            special => Some(special),
         }
     }
 
@@ -765,19 +789,20 @@ mod tests {
         mob
     }
 
-    fn entry(skill_name: &str) -> MobSkillEntry {
+    fn entry(skill: SkillEnum) -> MobSkillEntry {
         let entries: Vec<MobSkillEntry> = serde_json::from_str(include_str!("../../../../config/mob_skills.json")).unwrap();
         entries
             .into_iter()
-            .find(|entry| entry.mob_id == 1142 && SkillMetadata::find(entry.skill_id).is_some_and(|metadata| metadata.name == skill_name))
-            .unwrap_or_else(|| panic!("Marine Sphere has no {skill_name} entry"))
+            .map(MobSkillEntry::resolve)
+            .find(|entry| entry.mob_id == 1142 && entry.skill == Some(skill))
+            .unwrap_or_else(|| panic!("Marine Sphere has no {skill:?} entry"))
     }
 
     #[test]
     fn trickcasting_gates_the_alchemist_and_speed_up_entries() {
         let mut mob = marine_sphere();
-        let random_move = entry("NPC_RANDOMMOVE");
-        let speed_up = entry("NPC_SPEEDUP");
+        let random_move = entry(SkillEnum::NpcRandommove);
+        let speed_up = entry(SkillEnum::NpcSpeedup);
         let met = |mob: &Mob, entry: &MobSkillEntry| MapInstanceService::condition_met(mob, entry, false, 0, 0, false, &[], 0);
         assert!(!met(&mob, &random_move) && !met(&mob, &speed_up));
         let max_hp = mob.status.max_hp();
@@ -785,8 +810,8 @@ mod tests {
         assert!(met(&mob, &random_move) && !met(&mob, &speed_up));
         mob.trickcasting_until = 3000;
         assert!(!met(&mob, &random_move) && met(&mob, &speed_up));
-        assert!(MapInstanceService::special_action(&mob, &random_move, SkillMetadata::find(random_move.skill_id).unwrap()).is_some());
-        assert!(MapInstanceService::special_action(&mob, &speed_up, SkillMetadata::find(speed_up.skill_id).unwrap()).is_some());
+        assert!(MapInstanceService::special_action(&mob, &random_move).is_some());
+        assert!(MapInstanceService::special_action(&mob, &speed_up).is_some());
     }
 
     #[test]

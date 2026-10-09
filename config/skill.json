@@ -16253,7 +16253,7 @@
       "name": "HT_BLITZBEAT",
       "range": 5,
       "splashArea": 1,
-      "type": "Passive",
+      "type": "Offensive",
       "hitCountPerLevel": [
         {
           "count": 1,
@@ -18160,6 +18160,7 @@
       "id": 142,
       "maxLevel": 1,
       "name": "NV_FIRSTAID",
+      "targetType": "Self",
       "damageflags": {},
       "flags": {
         "isQuest": true
@@ -32460,8 +32461,9 @@
       "maxLevel": 5,
       "name": "PA_SACRIFICE",
       "targetType": "Self",
-      "type": "Support",
+      "type": "Offensive",
       "damageflags": {
+        "isPhysical": true,
         "ignoreDefense": true,
         "ignoreFlee": true,
         "noDamage": true
@@ -34021,8 +34023,7 @@
       "targetType": "Target",
       "type": "Offensive",
       "damageflags": {
-        "ignoreFlee": true,
-        "isPhysical": true
+        "ignoreFlee": true
       },
       "requires": {
         "state": "Falcon",
@@ -35069,7 +35070,6 @@
   "type": "Interactive"
 },
 {
-      "afterCastWalkDelay": 2000,
       "castCancel": true,
       "description": "Vulcan Arrow",
       "element": "Ammo",
@@ -35078,51 +35078,93 @@
       "id": 394,
       "maxLevel": 10,
       "name": "CG_ARROWVULCAN",
-      "range": 9,
-      "targetType": "Target",
-      "type": "Offensive",
       "afterCastActDelayPerLevel": [
         {
           "level": 1,
-          "time": 2800
+          "time": 800
         },
         {
           "level": 2,
-          "time": 2800
+          "time": 800
         },
         {
           "level": 3,
-          "time": 2800
+          "time": 800
         },
         {
           "level": 4,
-          "time": 2800
+          "time": 800
         },
         {
           "level": 5,
-          "time": 2800
+          "time": 800
         },
         {
           "level": 6,
-          "time": 3000
+          "time": 1000
         },
         {
           "level": 7,
-          "time": 3000
+          "time": 1000
         },
         {
           "level": 8,
-          "time": 3000
+          "time": 1000
         },
         {
           "level": 9,
-          "time": 3000
+          "time": 1000
         },
         {
           "level": 10,
-          "time": 3000
+          "time": 1000
         }
       ],
+      "afterCastWalkDelayPerLevel": [
+        {
+          "level": 1,
+          "time": 800
+        },
+        {
+          "level": 2,
+          "time": 800
+        },
+        {
+          "level": 3,
+          "time": 800
+        },
+        {
+          "level": 4,
+          "time": 800
+        },
+        {
+          "level": 5,
+          "time": 800
+        },
+        {
+          "level": 6,
+          "time": 1000
+        },
+        {
+          "level": 7,
+          "time": 1000
+        },
+        {
+          "level": 8,
+          "time": 1000
+        },
+        {
+          "level": 9,
+          "time": 1000
+        },
+        {
+          "level": 10,
+          "time": 1000
+        }
+      ],
+      "range": 9,
+      "targetType": "Target",
+      "type": "Offensive",
       "castTimePerLevel": [
         {
           "level": 1,
@@ -51170,6 +51212,7 @@
     "reproduce": true
   },
   "damageflags": {
+    "isPhysical": true,
     "ignoreAtkCard": true
   },
   "flags": {
@@ -51184,7 +51227,7 @@
       "dagger": true
     }
   },
-  "type": "Support"
+  "type": "Offensive"
 },
 {
   "description": "Close Confine",
@@ -51456,6 +51499,7 @@
   "splashArea": 1,
   "targetType": "Target",
   "damageflags": {
+    "isPhysical": true,
     "splash": true
   },
   "flags": {
@@ -51465,7 +51509,7 @@
     "hpcost": 10,
     "spcost": 20
   },
-  "type": "Support"
+  "type": "Offensive"
 },
 {
   "afterCastActDelay": 1000,

@@ -14,7 +14,7 @@ use models::enums::weapon::WeaponType;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue, EnumWithStringValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::{BattleFlag, StatusBonus};
-use skills::OffensiveSkill;
+use skills::Skill;
 
 use crate::server::model::action::Damage;
 use crate::server::model::events::client_notification::Notification;
@@ -1727,16 +1727,16 @@ mod equipment_bonus_tests {
             inherited_from: None,
         }]);
         assert_eq!(service.attack_element(&source, None), Element::Wind);
-        let bash = skills::skill_enums::to_offensive_skill(SkillEnum::SmBash, 1).unwrap();
+        let bash = skills::skill_enums::to_object(SkillEnum::SmBash, 1).unwrap();
         assert_eq!(service.attack_element(&source, Some(bash.as_ref())), Element::Wind);
-        let fire = skills::skill_enums::to_offensive_skill(SkillEnum::MgFirebolt, 1).unwrap();
+        let fire = skills::skill_enums::to_object(SkillEnum::MgFirebolt, 1).unwrap();
         assert_eq!(service.attack_element(&source, Some(fire.as_ref())), Element::Fire);
         source.set_active_statuses(vec![]);
         raw.ammo.as_mut().unwrap().element = Element::Fire;
         source.set_ammo(raw.ammo.as_ref().map(|ammo| ammo.to_snapshot()));
-        let back_stab = skills::skill_enums::to_offensive_skill(SkillEnum::RgBackstap, 1).unwrap();
+        let back_stab = skills::skill_enums::to_object(SkillEnum::RgBackstap, 1).unwrap();
         assert_eq!(service.attack_element(&source, Some(back_stab.as_ref())), Element::Holy);
-        let musical_strike = skills::skill_enums::to_offensive_skill(SkillEnum::BaMusicalstrike, 1).unwrap();
+        let musical_strike = skills::skill_enums::to_object(SkillEnum::BaMusicalstrike, 1).unwrap();
         assert_eq!(service.attack_element(&source, Some(musical_strike.as_ref())), Element::Fire);
         let demon_shock = crate::server::script::skill::metadata::SkillMetadata::find(SkillEnum::NpcMagicalattack.id()).unwrap();
         assert_eq!(service.skill_attack_element(&source, demon_shock, 1), Element::Holy);
@@ -2533,7 +2533,7 @@ impl BattleService {
         &self,
         source_status: &StatusSnapshot,
         target_status: &StatusSnapshot,
-        skill: Option<&dyn OffensiveSkill>,
+        skill: Option<&dyn Skill>,
     ) -> i32 {
         self.calculate_damage_with_context(source_status, target_status, skill).0
     }
@@ -2542,7 +2542,7 @@ impl BattleService {
         &self,
         source_status: &StatusSnapshot,
         target_status: &StatusSnapshot,
-        skill: Option<&dyn OffensiveSkill>,
+        skill: Option<&dyn Skill>,
     ) -> (i32, Option<MagicAttackContext>) {
         let mut damage = 0;
         let mut magic_context = None;
@@ -2664,7 +2664,7 @@ impl BattleService {
         (u32::from(source.dex() / 10 + source.int() / 2) + 3 * u32::from(source.known_skill_level(SkillEnum::HtSteelcrow)) + 40) * 2
     }
 
-    pub fn is_weapon_skill(skill: &dyn OffensiveSkill) -> bool {
+    pub fn is_weapon_skill(skill: &dyn Skill) -> bool {
         skill.id() == SkillEnum::NjIssen.id() || skill.is_physical()
     }
 
@@ -3269,12 +3269,11 @@ impl BattleService {
         level: u8,
     ) -> Result<(i32, MagicAttackContext), String> {
         let modifier = match metadata.name.as_str() {
-            "NPC_MAGICALATTACK" => 1.0,
             "SL_STUN" => 1.0 + 0.05 * f32::from(level),
             "SL_STIN" if *target.size() == Size::Small => 1.0 + 0.1 * f32::from(level),
             "SL_STIN" => 0.01,
             "SL_SMA" => (40.0 + source.base_level() as f32) / 100.0,
-            name if name.starts_with("NPC_") => 1.0,
+            _ if metadata.is_monster() => 1.0,
             _ => return Err("Skill has no metadata magic damage formula".into()),
         };
         let mut context = self.magic_attack_context(source, modifier, self.skill_attack_element(source, metadata, level));
@@ -3601,7 +3600,7 @@ impl BattleService {
         self.resolve_attack_element(source_status, element, skill_id, false, true)
     }
 
-    pub fn attack_element(&self, source_status: &StatusSnapshot, skill: Option<&dyn OffensiveSkill>) -> Element {
+    pub fn attack_element(&self, source_status: &StatusSnapshot, skill: Option<&dyn Skill>) -> Element {
         self.resolve_attack_element(
             source_status,
             skill.map(|skill| skill.element()),

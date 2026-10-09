@@ -76,6 +76,8 @@ mod ground_unit_effects;
 mod magic;
 #[path = "skill_metadata.rs"]
 pub mod metadata;
+#[path = "monster_skill.rs"]
+pub(crate) mod monster;
 #[path = "skill_party_support.rs"]
 mod party_support;
 #[path = "skill_requirements.rs"]
@@ -1279,6 +1281,9 @@ impl ScriptSkillService {
 
     fn status_for_skill(name: &str) -> Option<StatusChangeKind> {
         use StatusChangeKind::*;
+        if let Some(monster::MonsterSkill::SelfStatus(kind)) = monster::MonsterSkill::of_name(name) {
+            return Some(kind);
+        }
         match name {
             "SM_PROVOKE" | "SM_SELFPROVOKE" => Some(Provoke),
             "AL_DECAGI" => Some(DecreaseAgi),
@@ -1287,11 +1292,7 @@ impl ScriptSkillService {
             "ALL_ANGEL_PROTECT" => Some(IncAllStatus),
             "PR_LEXDIVINA" => Some(Silence),
             "AL_PNEUMA" => Some(Pneuma),
-            "NPC_POWERUP" => Some(IncAttackRate),
-            "NPC_WEAPONBRAKER" => Some(WeaponBreaker),
             "KN_AUTOCOUNTER" => Some(AutoCounter),
-            "NPC_CRITICALWOUND" => Some(CriticalWound),
-            "NPC_HELLPOWER" => Some(HellPower),
             "WZ_QUAGMIRE" => Some(Quagmire),
             "RG_CLOSECONFINE" => Some(CloseConfine2),
             _ => Self::metadata_buff_status(name),
@@ -1333,7 +1334,7 @@ impl ScriptSkillService {
         if kind == StatusChangeKind::AutoBerserk {
             request.duration_ms = -1;
         }
-        if skill.name() == "NPC_ANTIMAGIC" {
+        if monster::MonsterSkill::of_name(skill.name()) == Some(monster::MonsterSkill::AntiMagic) {
             request.values[1] = skill.id as i32;
         }
         if matches!(kind, StatusChangeKind::Sight | StatusChangeKind::Ruwach) {

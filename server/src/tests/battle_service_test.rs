@@ -72,7 +72,7 @@ mod tests {
     use models::enums::{EnumWithNumberValue, EnumWithStringValue};
     use models::item::{WearGear, WearWeapon};
     use models::status::Status;
-    use skills::OffensiveSkill;
+    use skills::Skill;
 
     use crate::server::model::map_item::ToMapItemSnapshot;
     use crate::server::service::battle_service::BattleService;
@@ -633,7 +633,7 @@ mod tests {
             weapon: &'a str,
             ammo: Option<&'a str>,
             expected_element: Element,
-            skill: Option<Box<dyn OffensiveSkill>>,
+            skill: Option<Box<dyn Skill>>,
         }
         let scenario = vec![
             Scenarii {
@@ -694,7 +694,7 @@ mod tests {
                 weapon: "Lute",
                 ammo: Some("Arrow_Of_Wind"),
                 expected_element: Element::Wind,
-                skill: skills::skill_enums::to_offensive_skill(SkillEnum::BaMusicalstrike, 1),
+                skill: skills::skill_enums::to_object(SkillEnum::BaMusicalstrike, 1),
             },
         ];
         // When

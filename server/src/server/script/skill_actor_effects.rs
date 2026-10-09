@@ -12,6 +12,7 @@ use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::actor::{self, ScriptSkillActor};
 use super::ground::GroundKind;
 use super::metadata::SkillMetadata;
+use super::monster::MonsterSkill;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterEndStatus, CharacterStatusChange, GameEvent, ScriptSkillCast};
@@ -224,26 +225,10 @@ impl ScriptSkillService {
             self.notify_actor_support(source, request, true);
             return Ok(());
         }
-        if matches!(
-            metadata.name.as_str(),
-            "BA_FROSTJOKER"
-                | "DC_SCREAM"
-                | "NPC_WIDEBLEEDING"
-                | "NPC_WIDECONFUSE"
-                | "NPC_WIDECURSE"
-                | "NPC_WIDESILENCE"
-                | "NPC_WIDESLEEP"
-                | "NPC_WIDESTONE"
-                | "NPC_WIDEFREEZE"
-                | "NPC_WIDESTUN"
-                | "NPC_WIDEHELLDIGNITY"
-                | "NPC_DRAGONFEAR"
-                | "AL_CRUCIS"
-                | "NPC_WIDESOULDRAIN"
-        ) {
+        if matches!(metadata.name.as_str(), "BA_FROSTJOKER" | "DC_SCREAM" | "AL_CRUCIS") || metadata.monster_skill().is_some_and(MonsterSkill::is_area) {
             return self.cast_actor_area_status(server, state, source, metadata, level, source.x, source.y, tick);
         }
-        if metadata.name == "NPC_SELFDESTRUCTION" {
+        if metadata.monster_skill() == Some(MonsterSkill::SelfDestruction) {
             return self.execute_actor_self_destruct(server, state, source, request, metadata, tick);
         }
         let (target, status) = self.actor_target_status(state, source, request.target_id)?;
@@ -426,8 +411,10 @@ impl ScriptSkillService {
                     cells,
                 }));
             }
-            "NPC_INVINCIBLEOFF" => self.end_actor_target_status(server, state, source, request.target_id, StatusChangeKind::Invincible),
-            "NPC_EXPULSION" => {
+            _ if metadata.monster_skill() == Some(MonsterSkill::InvincibleOff) => {
+                self.end_actor_target_status(server, state, source, request.target_id, StatusChangeKind::Invincible)
+            }
+            _ if metadata.monster_skill() == Some(MonsterSkill::Expulsion) => {
                 if state
                     .map_flags_for(&source.map, source.instance)
                     .enabled(crate::server::model::map_flags::MapFlag::NoTeleport)
@@ -471,7 +458,7 @@ impl ScriptSkillService {
                 };
                 if kind == StatusChangeKind::ElementalChange {
                     effect.values[0] = if level <= 1 { fastrand::i32(1..=4) } else { i32::from(level).min(4) };
-                    effect.values[1] = Self::npc_element_change(name);
+                    effect.values[1] = Self::element_change_value(metadata, level);
                 }
                 if kind == StatusChangeKind::Provoke && level == 10 {
                     effect.values[1] = 0;
@@ -499,21 +486,13 @@ impl ScriptSkillService {
         Ok(())
     }
 
-    fn npc_element_change(skill_name: &str) -> i32 {
-        use models::enums::element::Element;
+    /// Element-change skills name their element in metadata; any other skill picks one at random.
+    fn element_change_value(metadata: &SkillMetadata, level: u8) -> i32 {
         use models::enums::EnumWithNumberValue;
-        let element = match skill_name {
-            "NPC_CHANGEWATER" => Element::Water,
-            "NPC_CHANGEGROUND" => Element::Earth,
-            "NPC_CHANGEFIRE" => Element::Fire,
-            "NPC_CHANGEWIND" => Element::Wind,
-            "NPC_CHANGEPOISON" => Element::Poison,
-            "NPC_CHANGEHOLY" => Element::Holy,
-            "NPC_CHANGEDARKNESS" => Element::Dark,
-            "NPC_CHANGETELEKINESIS" => Element::Ghost,
-            _ => return fastrand::i32(0..10),
-        };
-        element.value() as i32
+        match metadata.element(level).and_then(|name| <Element as models::enums::EnumWithStringValue>::try_from_string(name).ok()) {
+            Some(element) => element.value() as i32,
+            None => fastrand::i32(0..10),
+        }
     }
 
     pub(super) fn start_actor_target_status(
@@ -655,7 +634,7 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill metadata is unavailable")?;
-        if metadata.name == "NPC_DARKBREATH" {
+        if metadata.monster_skill() == Some(MonsterSkill::DarkBreath) {
             let level = u32::from(request.level).max(1);
             let percent = if level <= 5 { 100 / (2 * (6 - level)) } else { 50 };
             let raw = (u64::from(target.hp()) * u64::from(percent) / 100).min(u64::from(u32::MAX)) as u32;
@@ -679,7 +658,7 @@ impl ScriptSkillService {
             damage.magic_context = Some(context);
             damage.set_signed_damage(amount);
             self.queue_actor_damage(server, state, source, damage)?;
-            if metadata.name == "NPC_MAGICALATTACK" {
+            if metadata.monster_skill() == Some(MonsterSkill::MagicalAttack) {
                 self.start_actor_target_status(
                     server,
                     state,
@@ -725,10 +704,8 @@ impl ScriptSkillService {
         }
         let landed = damage.landed;
         self.queue_actor_damage(server, state, source, damage)?;
-        let slot = match metadata.name.as_str() {
-            "NPC_ARMORBRAKE" => Some(BreakSlot::Armor),
-            "NPC_HELMBRAKE" => Some(BreakSlot::Helm),
-            "NPC_SHIELDBRAKE" => Some(BreakSlot::Shield),
+        let slot = match metadata.monster_skill() {
+            Some(MonsterSkill::Break(slot)) => Some(slot),
             _ => None,
         };
         if let Some(slot) = slot.filter(|_| landed && player && fastrand::i32(0..10_000) < 150 * i32::from(request.level)) {
@@ -738,7 +715,7 @@ impl ScriptSkillService {
     }
 
     pub(super) fn actor_npc_weapon(metadata: &SkillMetadata) -> bool {
-        metadata.name.starts_with("NPC_")
+        metadata.is_monster()
             && metadata.damage_type.as_deref() == Some("Weapon")
             && matches!(metadata.target_type.as_deref(), Some("Attack" | "Self"))
     }
@@ -775,15 +752,15 @@ impl ScriptSkillService {
 
     pub(super) fn actor_metadata_status(metadata: &SkillMetadata) -> bool {
         metadata.damage_flags.get("NoDamage").copied().unwrap_or(false)
-            && (metadata.name.starts_with("NPC_") && !metadata.name.starts_with("NPC_WIDE") || metadata.name == "SA_REVERSEORCISH")
+            && (metadata.is_monster() && !metadata.is_wide_monster() || metadata.name == "SA_REVERSEORCISH")
             && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_some()
     }
 
     pub(super) fn actor_npc_magic(metadata: &SkillMetadata) -> bool {
-        metadata.name.starts_with("NPC_")
+        metadata.is_monster()
             && metadata.damage_type.as_deref() == Some("Magic")
             && metadata.target_type.as_deref() == Some("Attack")
-            && !matches!(metadata.name.as_str(), "NPC_DARKBREATH" | "NPC_GRANDDARKNESS" | "NPC_EARTHQUAKE")
+            && !matches!(metadata.monster_skill(), Some(MonsterSkill::DarkBreath | MonsterSkill::GrandDarkness | MonsterSkill::EarthQuake))
     }
 
     fn actor_splash_radius(metadata: &SkillMetadata, level: u8) -> Option<u16> {
@@ -848,7 +825,7 @@ impl ScriptSkillService {
             let landed = damage.landed;
             let dealt = damage.damage;
             self.queue_actor_damage(server, state, source, damage)?;
-            if metadata.name == "NPC_VAMPIRE_GIFT" && landed && dealt > 0 {
+            if metadata.monster_skill() == Some(MonsterSkill::VampireGift) && landed && dealt > 0 {
                 self.heal_actor_target(server, state, source, source.id, dealt as u32, 0, tick)?;
             }
             if metadata.name == "SM_MAGNUM" && landed {
@@ -975,9 +952,9 @@ impl ScriptSkillService {
         Ok(damage)
     }
 
-    fn npc_weapon_skill_ratio(name: &str, level: u8) -> f32 {
-        match name {
-            "NPC_VAMPIRE_GIFT" => 1.0 + ((level.max(1) - 1) % 5 + 1) as f32,
+    fn npc_weapon_skill_ratio(metadata: &SkillMetadata, level: u8) -> f32 {
+        match metadata.monster_skill() {
+            Some(MonsterSkill::VampireGift) => 1.0 + ((level.max(1) - 1) % 5 + 1) as f32,
             _ => 1.0,
         }
     }
@@ -998,7 +975,7 @@ impl ScriptSkillService {
         let flags = BattleFlag::Weapon.as_flag()
             | (if long_range { BattleFlag::Long } else { BattleFlag::Short }).as_flag()
             | BattleFlag::Skill.as_flag();
-        let landed = metadata.name == "NPC_CRITICALSLASH"
+        let landed = metadata.monster_skill() == Some(MonsterSkill::CriticalSlash)
             || server.battle_service().skill_hits(&source.status, target, request.skill_id, level);
         let mut damage = Self::actor_damage(source, request, target_id, tick, flags, landed);
         let hits = metadata
@@ -1015,7 +992,7 @@ impl ScriptSkillService {
                 &source.status,
                 target,
                 player,
-                Self::npc_weapon_skill_ratio(&metadata.name, level),
+                Self::npc_weapon_skill_ratio(metadata, level),
                 hits,
                 &server.battle_service().metadata_weapon_element(&source.status, element, request.skill_id),
                 flags,

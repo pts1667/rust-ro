@@ -15,6 +15,8 @@ mod map_instance_service_test;
 #[cfg(test)]
 mod mob_service_test;
 #[cfg(test)]
+mod npc_skill_object_test;
+#[cfg(test)]
 mod server_service_test;
 #[cfg(test)]
 mod skill_service_test;

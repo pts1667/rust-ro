@@ -328,7 +328,7 @@ impl ScriptSkillService {
             metadata.damage_type.as_deref() != Some("Weapon") || server.battle_service().skill_hits(source, target, actual_skill, level);
         let (damage, magic_context, battle_flags) = if Self::uses_metadata_magic(&metadata.name) {
             let (damage, context) = server.battle_service().metadata_magic_damage(source, target, metadata, level)?;
-            if metadata.name == "NPC_MAGICALATTACK" {
+            if metadata.monster_skill() == Some(super::monster::MonsterSkill::MagicalAttack) {
                 effects.push(Status { target_id: source_id,
                     request: StatusChangeRequest::guaranteed(StatusChangeKind::MagicalAttack, metadata.duration(level, false).unwrap_or(0), i32::from(level)) });
             } else if metadata.name == "SL_SMA" {

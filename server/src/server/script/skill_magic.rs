@@ -21,7 +21,7 @@ use crate::server::state::server::ServerState;
 
 impl ScriptSkillService {
     pub(crate) fn uses_metadata_magic(name: &str) -> bool {
-        matches!(name, "NPC_MAGICALATTACK" | "SL_STIN" | "SL_STUN" | "SL_SMA")
+        matches!(name, "SL_STIN" | "SL_STUN" | "SL_SMA") || super::monster::MonsterSkill::of_name(name) == Some(super::monster::MonsterSkill::MagicalAttack)
     }
 
     pub(super) fn validate_magic_target(
@@ -161,7 +161,7 @@ impl ScriptSkillService {
                 u128::from(motion),
             );
         }
-        if metadata.name == "NPC_MAGICALATTACK" {
+        if metadata.monster_skill() == Some(super::monster::MonsterSkill::MagicalAttack) {
             StatusEffectService::start(
                 server,
                 character,

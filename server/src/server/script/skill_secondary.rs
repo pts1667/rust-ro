@@ -186,7 +186,7 @@ impl ScriptSkillService {
                     .map_item(hit.target_id, &map, instance_id)
                     .and_then(|item| state.map_item_mob_status(&item, &map, instance_id))
             });
-        if metadata.name == "NPC_VAMPIRE_GIFT" {
+        if metadata.monster_skill() == Some(super::monster::MonsterSkill::VampireGift) {
             if let Some(source) = state.characters_mut().get_mut(&hit.source_id) {
                 if source.status.hp > 0 && !source.status.has_status_change(StatusChangeKind::NoRecovery) {
                     server.character_service().update_hp_sp(

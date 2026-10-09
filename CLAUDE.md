@@ -75,7 +75,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
   - `lib/configuration`: Structure for configuration the server. This is where configuration entry should be added 
   - `lib/models`: Structures shared accross crates
   - `lib/packets`: Structures of all packets exchanged between client and server
-  - `lib/skills`: Structures containing implementation of all class skills
+  - `lib/skills`: Implementation of all class skills, one file per skill under `skills/<job>/` (player) and `npc/` (monster). Each skill implements the `Skill` trait, which holds its behaviour as default-overridable hooks. These files are hand-maintained: do not run `tools/skills` without `--overwrite-hand-written-skills`, it overwrites them.
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)
 - Embedded sled database for persistent data (accounts, characters, etc.)
@@ -96,17 +96,8 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - Stores that only need character ids or are read from several threads are cloneable handles with their own lock, not `ServerState` fields: `Server::duels()`, `Server::map_flag_overrides()`, `Server::siege()`, `Server::battlegrounds()` (team definitions, scores, queues), `ScriptWorldService`'s party bookings and guild alliance requests. Battleground membership lives on the character (`Character::bg_id`, `bg_tracking`) and rosters are derived by scanning characters. `ServerState` keeps clones of the map flag and siege handles so `state.map_flags()` and `state.siege_active()` still work.
 
 
-## Files to read or to avoid
-### Read
-**Only read** files and directory listed in **Major modules** section, if file or directory path does not start with ones listed in Major modules section, ignore them
-
-### Avoid
-Never read files/directory belows because they are too big
-
-- `lib/packets`
-- `lib/skills`
-
-- when reading documentation never read for "re" (or "renewal") version of the game
+## Documentation
+- When reading documentation, never read for "re" (or "renewal") version of the game
 
 # How to 
 This section contains guidance for common implementation tasks
@@ -130,6 +121,7 @@ This section contains guidance for common implementation tasks
 - A plain buff (no damage, no unit, `Self`/`Support` target, a `Status` that exists in `StatusChangeKind`) needs no `Route` and no Rust: add the status kind in `lib/models/src/status_change.rs` (`bonuses()` for stat effects, `apply_status_for_target` for start values, `adjust_snapshot_for_target` for ASPD/speed) and regenerate the status metadata.
 - Anything else: set the `Route`, then add the bespoke code in the matching `server/src/server/script/skill_*.rs` file (name branches live there). Lowering the number of `Unrouted` skills means editing `UNROUTED_BASELINE` in the tests of `script/skill.rs`.
 - Passive effects are read through `known_skill_level`/`learned_level`: stat effects in `StatusService::passive_skill_bonuses` (`status_service.rs`), damage effects in `battle_service.rs`.
+- Monster (`NPC_*`) skills with bespoke server behavior are `MonsterSkill` variants in `server/src/server/script/monster_skill.rs`. Read them with `metadata.monster_skill()`; do not compare skill names.
 
 ## How to implement a bitflag?
 - Create the enum in `lib/models/src/enums/` (add to existing file or create new one)

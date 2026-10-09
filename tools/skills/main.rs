@@ -58,6 +58,16 @@ lazy_static! {
         ("ninja", "nj"),
     ]);
     static ref NON_ALPHA_REGEX: Regex = Regex::new(r"[^A-Za-z0-9]*").unwrap();
+    static ref NO_DAMAGE_SKILL_IDS: BTreeSet<u32> = {
+        let config: serde_json::Value = serde_json::from_str(&fs::read_to_string("./config/skill.json").unwrap()).unwrap();
+        config["skills"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|skill| skill["damageflags"]["noDamage"].as_bool() == Some(true))
+            .filter_map(|skill| skill["id"].as_u64().map(|id| id as u32))
+            .collect()
+    };
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -84,6 +94,12 @@ impl From<ItemModels> for Vec<ItemModel> {
 }
 
 pub fn main() {
+    // lib/skills is hand-maintained now: one file per skill holds its behaviour, so regenerating
+    // overwrites that code. Run this only to rebuild the models skill enum from config.
+    if !std::env::args().any(|arg| arg == "--overwrite-hand-written-skills") {
+        eprintln!("lib/skills is hand-maintained; pass --overwrite-hand-written-skills to regenerate it (this overwrites per-skill code)");
+        std::process::exit(1);
+    }
     let path = Path::new("./config/skill.json");
     let skill_tree_path = Path::new("./config/skill_tree.json");
     let output_path = Path::new("lib/skills/src");
@@ -121,6 +137,11 @@ pub fn main() {
     items.iter().for_each(|item| {
         items_name_id.insert(item.name_aegis.clone(), item.id as u32);
     });
+
+    if std::env::args().any(|arg| arg == "--npc-only") {
+        generate_npc_skills(output_path, &skills, &items_name_id);
+        return;
+    }
 
     let mut skills_already_generated: BTreeSet<String> = BTreeSet::new();
     let mut jobs_with_skills: BTreeSet<String> = BTreeSet::new();
@@ -233,49 +254,7 @@ fn generate_skills_impl(
                     .expect(format!("Expected to find a skills with name [{}]", skill.name()).as_str());
                 write_skills(&mut job_skills_file_base, skill_config, item_name_ids);
                 #[cfg(feature = "generate_override_stub")]
-                {
-                    job_skills_file
-                        .write_all(format!("impl Skill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                        .unwrap();
-                    generate_new(&mut job_skills_file, skill_config);
-                    job_skills_file.write_all(b"}\n").unwrap();
-                    if is_offensive(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl OffensiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                    if is_support(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl SupportiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                    if is_interactive(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl InteractiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                    if is_ground(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl GroundSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                    if is_performance(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl PerformanceSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                    if is_passive(skill_config) {
-                        job_skills_file
-                            .write_all(format!("impl PassiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
-                            .unwrap();
-                        job_skills_file.write_all(b"}\n").unwrap();
-                    }
-                }
+                write_skill_stub(&mut job_skills_file, skill_config);
 
                 skills_already_generated.insert(skill.name().clone());
                 jobs_with_skills.insert(file_name.clone());
@@ -294,6 +273,100 @@ fn generate_skills_impl(
     //     }
     //     write_skills(&mut file, skill_config);
     // }
+}
+
+fn write_skill_stub(file: &mut File, skill_config: &SkillConfig) {
+    file.write_all(format!("impl Skill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+        .unwrap();
+    generate_new(file, skill_config);
+    file.write_all(b"}\n").unwrap();
+    if is_offensive(skill_config) {
+        file.write_all(format!("impl OffensiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+    if is_support(skill_config) {
+        file.write_all(format!("impl SupportiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+    if is_interactive(skill_config) {
+        file.write_all(format!("impl InteractiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+    if is_ground(skill_config) {
+        file.write_all(format!("impl GroundSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+    if is_performance(skill_config) {
+        file.write_all(format!("impl PerformanceSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+    if is_passive(skill_config) {
+        file.write_all(format!("impl PassiveSkill for {} {{\n", to_struct_name(skill_config)).as_bytes())
+            .unwrap();
+        file.write_all(b"}\n").unwrap();
+    }
+}
+
+// Monster skills are in no class tree, so they get their own module instead of one of the job files.
+// Run with `--npc-only`: a full run would regenerate every class file and skill_enums.rs.
+fn generate_npc_skills(output_path: &Path, skills: &Vec<SkillConfig>, item_name_ids: &BTreeMap<String, u32>) {
+    let npc_path = output_path.join("npc");
+    fs::create_dir_all(&npc_path).unwrap();
+    let npc_skills: Vec<&SkillConfig> = skills.iter().filter(|skill_config| is_npc(skill_config)).collect();
+
+    let mut base_file = File::create(npc_path.join("base.rs")).unwrap();
+    write_file_header(&mut base_file);
+    for skill_config in npc_skills.iter() {
+        write_skills(&mut base_file, skill_config, item_name_ids);
+    }
+
+    let mut skills_file = File::create(npc_path.join("skills.rs")).unwrap();
+    write_file_header_comments(&mut skills_file);
+    skills_file
+        .write_all(b"use crate::{Skill, PassiveSkill, SupportiveSkill, OffensiveSkill, GroundSkill, InteractiveSkill};\n")
+        .unwrap();
+    skills_file.write_all(b"use super::base::*;\n\n").unwrap();
+    for skill_config in npc_skills.iter() {
+        write_skill_stub(&mut skills_file, skill_config);
+    }
+
+    let mut mod_file = File::create(npc_path.join("mod.rs")).unwrap();
+    write_file_header_comments(&mut mod_file);
+    mod_file
+        .write_all(
+            b"pub mod base;\npub mod skills;\n\nuse models::enums::skill_enums::SkillEnum;\nuse crate::{Skill, OffensiveSkill};\nuse self::base::*;\n\n",
+        )
+        .unwrap();
+    for (signature, trait_name) in [
+        ("pub fn to_object(skill_enum: SkillEnum, level: u8) -> Option<Box<dyn Skill>>", "Skill"),
+        ("pub fn to_offensive_object(skill_enum: SkillEnum, level: u8) -> Option<Box<dyn OffensiveSkill>>", "OffensiveSkill"),
+    ] {
+        mod_file.write_all(format!("{} {{\n    match skill_enum {{\n", signature).as_bytes()).unwrap();
+        for skill_config in npc_skills.iter() {
+            if trait_name == "OffensiveSkill" && !is_offensive(skill_config) {
+                continue;
+            }
+            mod_file
+                .write_all(
+                    format!(
+                        "        SkillEnum::{} => {}::new(level).map(|s| Box::new(s) as Box<dyn {}>),\n",
+                        to_enum_name(skill_config),
+                        to_struct_name(skill_config),
+                        trait_name
+                    )
+                    .as_bytes(),
+                )
+                .unwrap();
+        }
+        mod_file.write_all(b"        _ => None,\n    }\n}\n\n").unwrap();
+    }
+
+    println!("NPC skills generated at {}", npc_path.to_str().unwrap());
 }
 
 fn write_file_header(file: &mut File) {
@@ -468,8 +541,7 @@ fn generate_getters(job_skills_file: &mut File, skill_config: &SkillConfig) {
         .write_all(
             format!(
                 "        SkillType::{:?}\n",
-                skill_config
-                    .skill_type()
+                skill_type_of(skill_config)
                     .expect(format!("Expected a skill type for skill {}", skill_config.name()).as_str())
             )
             .as_bytes(),
@@ -1578,6 +1650,10 @@ fn to_enum_name(skill: &SkillConfig) -> String {
 }
 
 fn to_struct_name(skill: &SkillConfig) -> String {
+    // Descriptions are not unique across monster skills (NPC_SUICIDE and SA_INSTANTDEATH are both "Suicide").
+    if is_npc(skill) {
+        return to_enum_name(skill);
+    }
     NON_ALPHA_REGEX.replace_all(&skill.description, "").to_case(Case::UpperCamel)
 }
 
@@ -1613,16 +1689,34 @@ fn class_name(skill_config: &SkillConfig, skill_tree: &Vec<JobSkillTree>) -> Opt
     None
 }
 
+fn skill_type_of(skill_config: &SkillConfig) -> Option<SkillType> {
+    skill_config.skill_type().or_else(|| {
+        is_npc(skill_config).then(|| {
+            if has_damage(skill_config) {
+                SkillType::Offensive
+            } else {
+                SkillType::Support
+            }
+        })
+    })
+}
+
+// Four NPC_ skills (COMET, JACKFROST, LEX_AETERNA, ARROWSTORM) are missing the isNpc flag.
+fn is_npc(skill_config: &SkillConfig) -> bool {
+    skill_config.name.starts_with("NPC_") || skill_config.flags.unwrap_or(0) & SkillFlags::Isnpc.as_flag() > 0
+}
+
+// Monster skills have no `type` in the config. SkillDamageFlags::Nodamage has mask 0, so the loader drops it.
+fn has_damage(skill_config: &SkillConfig) -> bool {
+    !NO_DAMAGE_SKILL_IDS.contains(&skill_config.id)
+}
+
 fn is_offensive(skill_config: &SkillConfig) -> bool {
-    skill_config
-        .skill_type()
-        .map_or(false, |skill_type| matches!(skill_type, SkillType::Offensive))
+    skill_type_of(skill_config).map_or(false, |skill_type| matches!(skill_type, SkillType::Offensive))
 }
 
 fn is_passive(skill_config: &SkillConfig) -> bool {
-    skill_config
-        .skill_type()
-        .map_or(false, |skill_type| matches!(skill_type, SkillType::Passive))
+    skill_type_of(skill_config).map_or(false, |skill_type| matches!(skill_type, SkillType::Passive))
 }
 
 fn is_ground(skill_config: &SkillConfig) -> bool {
@@ -1630,18 +1724,12 @@ fn is_ground(skill_config: &SkillConfig) -> bool {
 }
 
 fn is_support(skill_config: &SkillConfig) -> bool {
-    skill_config
-        .skill_type()
-        .map_or(false, |skill_type| matches!(skill_type, SkillType::Support))
+    skill_type_of(skill_config).map_or(false, |skill_type| matches!(skill_type, SkillType::Support))
 }
 
 fn is_performance(skill_config: &SkillConfig) -> bool {
-    skill_config
-        .skill_type()
-        .map_or(false, |skill_type| matches!(skill_type, SkillType::Performance))
+    skill_type_of(skill_config).map_or(false, |skill_type| matches!(skill_type, SkillType::Performance))
 }
 fn is_interactive(skill_config: &SkillConfig) -> bool {
-    skill_config
-        .skill_type()
-        .map_or(false, |skill_type| matches!(skill_type, SkillType::Interactive))
+    skill_type_of(skill_config).map_or(false, |skill_type| matches!(skill_type, SkillType::Interactive))
 }

@@ -6,6 +6,7 @@ use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 
 use super::metadata::SkillMetadata;
+use super::monster::MonsterSkill;
 use super::{ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::action::Damage;
@@ -42,39 +43,29 @@ impl ScriptSkillService {
         }
     }
 
-    pub fn area_status_request(
-        name: &str,
-        skill_id: u32,
-        level: u8,
-        party_member: bool,
-        dragon_choice: usize,
-    ) -> Option<(StatusChangeRequest, u128)> {
+    pub fn area_status_request(skill_id: u32, level: u8, party_member: bool, dragon_choice: usize) -> Option<(StatusChangeRequest, u128)> {
         use StatusChangeKind::*;
         let metadata = SkillMetadata::find(skill_id)?;
-        let (kind, chance, delay) = match name {
-            "BA_FROSTJOKER" => (Freeze, 1500 + 500 * level as i32, 3000),
-            "DC_SCREAM" => (Stun, 2500 + 500 * level as i32, 3000),
-            "NPC_WIDEBLEEDING" => (Bleeding, 10_000, 0),
-            "NPC_WIDECONFUSE" => (Confusion, 10_000, 0),
-            "NPC_WIDECURSE" => (Curse, 10_000, 0),
-            "NPC_WIDESILENCE" => (Silence, 10_000, 0),
-            "NPC_WIDESLEEP" => (Sleep, 10_000, 0),
-            "NPC_WIDESTONE" => (Stone, 10_000, 0),
-            "NPC_WIDEFREEZE" => (Freeze, 10_000, 0),
-            "NPC_WIDESTUN" => (Stun, 10_000, 0),
-            "NPC_WIDEHELLDIGNITY" => (HellPower, 10_000, 0),
-            "NPC_DRAGONFEAR" => ([Stun, Silence, Confusion, Bleeding][dragon_choice % 4], 10_000, 0),
-            "AL_CRUCIS" => (SignumCrucis, 2500 + 400 * level as i32, 0),
-            "BS_HAMMERFALL" => (Stun, (2000 + 1000 * level as i32).min(5000 + 500 * level as i32), 1000),
-            "PR_BENEDICTIO" => (Benedictio, 10_000, 0),
-            _ => return None,
+        let monster = metadata.monster_skill();
+        let (kind, chance, delay) = match monster {
+            Some(MonsterSkill::AreaStatus(kind)) => (kind, 10_000, 0),
+            Some(MonsterSkill::DragonFear) => ([Stun, Silence, Confusion, Bleeding][dragon_choice % 4], 10_000, 0),
+            _ => match metadata.name.as_str() {
+                "BA_FROSTJOKER" => (Freeze, 1500 + 500 * level as i32, 3000),
+                "DC_SCREAM" => (Stun, 2500 + 500 * level as i32, 3000),
+                "AL_CRUCIS" => (SignumCrucis, 2500 + 400 * level as i32, 0),
+                "BS_HAMMERFALL" => (Stun, (2000 + 1000 * level as i32).min(5000 + 500 * level as i32), 1000),
+                "PR_BENEDICTIO" => (Benedictio, 10_000, 0),
+                _ => return None,
+            },
         };
+        let name = metadata.name.as_str();
         let party_exception = party_member && matches!(name, "BA_FROSTJOKER" | "DC_SCREAM");
         let duration = if name == "AL_CRUCIS" {
             Some(-1)
         } else if party_exception || name == "PR_BENEDICTIO" {
             metadata.duration(level, false)
-        } else if name == "NPC_DRAGONFEAR" {
+        } else if monster == Some(MonsterSkill::DragonFear) {
             metadata.duration((dragon_choice % 4 + 1) as u8, true)
         } else {
             metadata.duration(level, true)
@@ -107,7 +98,7 @@ impl ScriptSkillService {
     pub fn dragon_fear_requests(skill_id: u32, level: u8, source_id: u32, first_choice: usize) -> Vec<StatusChangeRequest> {
         (0..4)
             .filter_map(|offset| {
-                let (mut request, _) = Self::area_status_request("NPC_DRAGONFEAR", skill_id, level, false, (first_choice + offset) % 4)?;
+                let (mut request, _) = Self::area_status_request(skill_id, level, false, (first_choice + offset) % 4)?;
                 request.values[1] = source_id as i32;
                 Some(request)
             })
@@ -135,7 +126,7 @@ impl ScriptSkillService {
         let instance = state
             .get_map_instance_from_character(character)
             .ok_or("Map instance is unavailable")?;
-        let (request, delay) = Self::area_status_request("PR_BENEDICTIO", skill_id, level, false, 0)
+        let (request, delay) = Self::area_status_request(skill_id, level, false, 0)
             .ok_or("Benedictio status is unavailable")?;
         let source = StatusService::instance().to_snapshot(&character.status);
         let lower = source.matk_min().min(source.matk_max());
@@ -233,7 +224,8 @@ impl ScriptSkillService {
             {
                 continue;
             }
-            if metadata.name == "NPC_WIDESOULDRAIN" {
+            let monster = metadata.monster_skill();
+            if monster == Some(MonsterSkill::WideSoulDrain) {
                 instance.add_to_next_tick(MapEvent::ScriptMobCombat(ScriptMobCombat {
                     source_id: character.char_id,
                     target_id: mob.id,
@@ -242,18 +234,18 @@ impl ScriptSkillService {
                         sp: Self::wide_soul_drain(level, mob.status.sp()),
                     },
                 }));
-            } else if metadata.name == "NPC_DRAGONFEAR" {
+            } else if monster == Some(MonsterSkill::DragonFear) {
                 instance.add_to_next_tick(MapEvent::MobStatusAlternatives(MobStatusAlternatives {
                     mob_id: mob.id,
                     requests: Self::dragon_fear_requests(skill_id, level, character.char_id, fastrand::usize(0..4)),
                 }));
             } else if let Some((mut request, delay)) =
-                Self::area_status_request(&metadata.name, skill_id, level, false, fastrand::usize(0..4))
+                Self::area_status_request(skill_id, level, false, fastrand::usize(0..4))
             {
                 if metadata.name == "AL_CRUCIS" {
                     request.rate = Self::signum_crucis_rate(level, character.status.base_level, mob.status_effects.base_level);
                 }
-                if metadata.name.starts_with("NPC_") {
+                if metadata.is_monster() {
                     request.values[1] = character.char_id as i32;
                 }
                 instance.add_to_delayed_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: mob.id, request }), delay);
@@ -266,7 +258,7 @@ impl ScriptSkillService {
         }) {
             let same_party = character.game_systems.party_id != 0 && target.game_systems.party_id == character.game_systems.party_id;
             if same_party && matches!(metadata.name.as_str(), "BA_FROSTJOKER" | "DC_SCREAM") {
-                if let Some((request, delay)) = Self::area_status_request(&metadata.name, skill_id, level, true, 0) {
+                if let Some((request, delay)) = Self::area_status_request(skill_id, level, true, 0) {
                     server.add_to_delayed_tick(
                         GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange {
                             char_id: target.char_id,
@@ -367,9 +359,9 @@ mod tests {
     fn joker_and_scream_preserve_different_classic_probabilities() {
         let joker = SkillMetadata::all().iter().find(|skill| skill.name == "BA_FROSTJOKER").unwrap();
         let scream = SkillMetadata::all().iter().find(|skill| skill.name == "DC_SCREAM").unwrap();
-        let (enemy_joker, delay) = ScriptSkillService::area_status_request(&joker.name, joker.id, 1, false, 0).unwrap();
-        let (party_joker, _) = ScriptSkillService::area_status_request(&joker.name, joker.id, 1, true, 0).unwrap();
-        let (enemy_scream, _) = ScriptSkillService::area_status_request(&scream.name, scream.id, 1, false, 0).unwrap();
+        let (enemy_joker, delay) = ScriptSkillService::area_status_request(joker.id, 1, false, 0).unwrap();
+        let (party_joker, _) = ScriptSkillService::area_status_request(joker.id, 1, true, 0).unwrap();
+        let (enemy_scream, _) = ScriptSkillService::area_status_request(scream.id, 1, false, 0).unwrap();
         assert_eq!(enemy_joker.rate, 2000);
         assert_eq!(enemy_scream.rate, 3000);
         assert_eq!(party_joker.rate, 500);

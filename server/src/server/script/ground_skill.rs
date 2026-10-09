@@ -81,7 +81,6 @@ impl GroundKind {
             "PR_SANCTUARY" => Self::Sanctuary,
             "AS_VENOMDUST" => Self::VenomDust,
             "PF_SPIDERWEB" => Self::SpiderWeb,
-            "NPC_EVILLAND" => Self::EvilLand,
             "WZ_FIREPILLAR" => Self::FirePillar,
             "AM_DEMONSTRATION" => Self::Demonstration,
             "HP_BASILICA" => Self::Basilica,
@@ -98,7 +97,6 @@ impl GroundKind {
             "WZ_STORMGUST" => Self::StormGust,
             "WZ_VERMILION" => Self::Vermilion,
             "CR_GRANDCROSS" => Self::GrandCross,
-            "NPC_GRANDDARKNESS" => Self::GrandDarkness,
             "MA_SKIDTRAP" | "HT_SKIDTRAP" => Self::SkidTrap,
             "HT_ANKLESNARE" => Self::AnkleSnare,
             "MA_LANDMINE" | "HT_LANDMINE" => Self::LandMine,
@@ -111,7 +109,16 @@ impl GroundKind {
             "HT_TALKIEBOX" => Self::TalkieBox,
             "RG_GRAFFITI" => Self::Graffiti,
             "MA_SHOWER" => Self::ArrowShower,
-            "NPC_EARTHQUAKE" => Self::Earthquake,
+            _ => return Self::from_monster(super::monster::MonsterSkill::of_name(name)?),
+        })
+    }
+
+    fn from_monster(skill: super::monster::MonsterSkill) -> Option<Self> {
+        use super::monster::MonsterSkill;
+        Some(match skill {
+            MonsterSkill::EvilLand => Self::EvilLand,
+            MonsterSkill::GrandDarkness => Self::GrandDarkness,
+            MonsterSkill::EarthQuake => Self::Earthquake,
             _ => return None,
         })
     }

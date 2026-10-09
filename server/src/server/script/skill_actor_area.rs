@@ -6,6 +6,7 @@ use super::ScriptSkillService;
 use super::actor::ScriptSkillActor;
 use super::ground::{GroundKind, GroundSkillSource};
 use super::metadata::SkillMetadata;
+use super::monster::MonsterSkill;
 use crate::server::Server;
 use crate::server::model::events::game_event::{CharacterStatusAlternatives, GameEvent, ScriptSkillCast};
 use crate::server::model::events::map_event::{MapEvent, MobStatusAlternatives, ScriptMobCombat};
@@ -113,7 +114,8 @@ impl ScriptSkillService {
             {
                 continue;
             }
-            if metadata.name == "NPC_WIDESOULDRAIN" {
+            let monster = metadata.monster_skill();
+            if monster == Some(MonsterSkill::WideSoulDrain) {
                 let drain = Self::wide_soul_drain(level, status.sp());
                 if let Some(character) = state.characters_mut().get_mut(&id) {
                     server
@@ -128,7 +130,7 @@ impl ScriptSkillService {
                 }
                 continue;
             }
-            if metadata.name == "NPC_DRAGONFEAR" {
+            if monster == Some(MonsterSkill::DragonFear) {
                 let requests = Self::dragon_fear_requests(metadata.id, level, source.id, fastrand::usize(0..4));
                 if player {
                     server.add_to_next_tick(GameEvent::CharacterStatusAlternatives(CharacterStatusAlternatives {
@@ -138,11 +140,11 @@ impl ScriptSkillService {
                 } else {
                     instance.add_to_next_tick(MapEvent::MobStatusAlternatives(MobStatusAlternatives { mob_id: id, requests }));
                 }
-            } else if let Some((mut request, delay)) = Self::area_status_request(&metadata.name, metadata.id, level, false, 0) {
+            } else if let Some((mut request, delay)) = Self::area_status_request(metadata.id, level, false, 0) {
                 if metadata.name == "AL_CRUCIS" {
                     request.rate = Self::signum_crucis_rate(level, source.status.base_level(), status.base_level());
                 }
-                if metadata.name.starts_with("NPC_") {
+                if metadata.is_monster() {
                     request.values[1] = source.id as i32;
                 }
                 self.start_actor_target_status(server, state, source, id, request, delay, tick)?;

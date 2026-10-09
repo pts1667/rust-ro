@@ -9,7 +9,7 @@ use models::item::NormalInventoryItem;
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use packets::packets::{PacketZcAckTouseskill, PacketZcActionFailure, PacketZcMsgStateChange2, PacketZcUseSkill, PacketZcUseskillAck2};
-use skills::OffensiveSkill;
+use skills::Skill;
 
 use crate::packets::packets::Packet;
 use crate::server::model::action::{SkillCasted, SkillUsed};
@@ -409,7 +409,7 @@ impl SkillService {
             .is_some_and(|cast| self.force_no_delay || tick >= cast.start_skill_tick + cast.skill.cast_time() as u128)
     }
 
-    pub fn calculate_damage(&self, source_status: &StatusSnapshot, target_status: &StatusSnapshot, skill: &dyn OffensiveSkill) -> i32 {
+    pub fn calculate_damage(&self, source_status: &StatusSnapshot, target_status: &StatusSnapshot, skill: &dyn Skill) -> i32 {
         self.battle_service.calculate_damage(source_status, target_status, Some(skill))
     }
 }

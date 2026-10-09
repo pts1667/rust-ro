@@ -75,7 +75,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
   - `lib/configuration`: Structure for configuration the server. This is where configuration entry should be added 
   - `lib/models`: Structures shared accross crates
   - `lib/packets`: Structures of all packets exchanged between client and server
-  - `lib/skills`: Structures containing implementation of all class skills
+  - `lib/skills`: Implementation of all class skills, one file per skill under `skills/<job>/` (player) and `npc/` (monster). Each skill implements the `Skill` trait, which holds its behaviour as default-overridable hooks. These files are hand-maintained: do not run `tools/skills` without `--overwrite-hand-written-skills`, it overwrites them.
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)
 - Embedded sled database for persistent data (accounts, characters, etc.), seeded from repository assets on a fresh start
@@ -89,19 +89,11 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 ### Server state
 
 
-## Files to read or to avoid
-### Read
-**Only read** files and directory listed in **Major modules** section, if file or directory path does not start with ones listed in Major modules section, ignore them
+## Task-specific reading
 
 Task-specific exceptions: read applicable `AGENTS.md` files and relevant `.agents/skills/` instructions. When using `$feature`, also read the task file supplied by the user under `doc/tasks/`. When using `$ragnarok-pre-renewal-research`, also read relevant pre-renewal documentation and source files under `../rathena/doc` and `../rathena`.
 
-### Avoid
-Never read files/directory belows because they are too big
-
-- `lib/packets`
-- `lib/skills`
-
-- when reading documentation never read for "re" (or "renewal") version of the game
+- When reading documentation, never read for "re" (or "renewal") version of the game
 
 # How to 
 This section contains guidance for common implementation tasks
