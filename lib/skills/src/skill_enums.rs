@@ -32,6 +32,8 @@ use crate::skills::sniper::{*};
 use crate::skills::stalker::{*};
 use crate::skills::swordsman::{*};
 use crate::skills::taekwon::{*};
+use crate::skills::mercenary::{*};
+use crate::skills::soul_linker::{*};
 use crate::skills::thief::{*};
 use crate::skills::whitesmith::{*};
 use crate::skills::wizard::{*};
@@ -453,6 +455,14 @@ pub fn to_object(skill_enum: SkillEnum, level: u8) -> Option<Box<dyn Skill>> {
         SkillEnum::SaElementground => ElementalChangeEarth::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::SaElementfire => ElementalChangeFire::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
         SkillEnum::SaElementwind => ElementalChangeWind::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::SlStun => SlStun::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::SlStin => SlStin::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::SlSma => SlSma::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::AllResurrection => Resurrection::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::MerCrash => MerCrash::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::MaLandmine => MaLandmine::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::MaFreezingtrap => MaFreezingTrap::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
+        SkillEnum::MlSpiralpierce => MlSpiralPierce::new(level).map(|s| Box::new(s) as Box<dyn Skill>),
     _ => None
     }
 }

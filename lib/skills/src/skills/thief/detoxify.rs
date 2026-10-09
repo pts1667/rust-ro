@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // TF_DETOXIFY - Detoxify
@@ -115,5 +116,10 @@ impl Skill for Detoxify {
     #[inline(always)]
     fn client_type(&self) -> usize {
         16
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Cure { kinds: &[StatusChangeKind::Poison, StatusChangeKind::DeadlyPoison], undead_follow_up: false }
     }
 }

@@ -201,4 +201,16 @@ impl Skill for MagnumBreak {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Splash(SplashProfile {
+            element: Some(models::enums::element::Element::Fire),
+            single_hit: true,
+            distance_ratio: true,
+            knockback_cells: 2,
+            self_element_buff: true,
+            ..SplashProfile::default()
+        })
+    }
 }

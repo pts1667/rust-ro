@@ -17,6 +17,16 @@ pub mod skills;
 
 type SkillRequirementResult<T> = std::result::Result<T, ()>;
 
+/// When a status infliction starts, relative to the hit that caused it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StatusDelay {
+    Immediate,
+    /// Milliseconds after the hit.
+    Ms(u32),
+    /// Milliseconds after the target's attack motion, computed from the attacker's status.
+    AfterAttackMotion(u32),
+}
+
 /// A status a hit can inflict. The server rolls `chance` against the target's resistances.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StatusInfliction {
@@ -26,6 +36,9 @@ pub struct StatusInfliction {
     /// Takes the skill's secondary duration instead of its primary one.
     pub secondary_duration: bool,
     pub values: [i32; 4],
+    pub delay: StatusDelay,
+    /// Skips character targets.
+    pub monsters_only: bool,
 }
 
 impl StatusInfliction {
@@ -35,11 +48,21 @@ impl StatusInfliction {
             chance: chance.clamp(0, i32::from(u16::MAX)) as u16,
             secondary_duration: false,
             values: [i32::from(level), 0, 0, 0],
+            delay: StatusDelay::Immediate,
+            monsters_only: false,
         }
     }
 
     pub fn secondary(kind: StatusChangeKind, chance: i32, level: u8) -> Self {
         Self { secondary_duration: true, ..Self::primary(kind, chance, level) }
+    }
+
+    pub fn delayed(self, delay: StatusDelay) -> Self {
+        Self { delay, ..self }
+    }
+
+    pub fn monsters_only(self) -> Self {
+        Self { monsters_only: true, ..self }
     }
 }
 
@@ -49,6 +72,79 @@ pub struct HitContext<'a> {
     pub target: &'a StatusSnapshot,
     /// Hits this skill has landed on the target in the current Storm Gust window. Only Storm Gust counts them.
     pub hits_on_target: u8,
+    /// False for monsters and companions, which Stone Fling treats differently.
+    pub caster_is_player: bool,
+}
+
+/// What an actor (monster or NPC) does with a skill beyond its damage and inflicted statuses. The server runs the
+/// variant with the parameters the skill sets, so it never matches on the skill name.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ActorBehaviour {
+    /// Damage and statuses from the other hooks.
+    Default,
+    /// Applies the skill's statuses to every enemy around a centre: the actor, or the skill's ground point.
+    AreaStatus { at_target_point: bool },
+    /// Clears the ground graffiti around the skill's ground point.
+    EraseGraffiti,
+    /// Clears ground units around the actor with a fixed success chance.
+    Ganbantein,
+    /// Moves a monster to the skill's point.
+    BodyRelocation,
+    /// Restores the target's HP by the skill's heal amount; undead targets take Holy damage instead.
+    Heal,
+    /// Restores a fixed amount of HP.
+    FixedHeal(u32),
+    /// Revives a dead player.
+    Resurrect,
+    /// Ends the listed statuses on the target. `undead_follow_up`: an undead monster target gets Blind, any other
+    /// monster target loses its aggro.
+    Cure { kinds: &'static [StatusChangeKind], undead_follow_up: bool },
+    /// Ends all the target's status effects, with `chance` percent.
+    Dispel { chance: u8 },
+    /// Ends the status if the target has it, otherwise applies it for the skill's duration.
+    Toggle(StatusChangeKind),
+    /// Stone Curse, with the caster's id in the status.
+    StoneCurse,
+    /// Strips the listed equipment slots from the target. `full` uses the Full Strip success rate.
+    Strip { kinds: &'static [StatusChangeKind], full: bool },
+    /// Random warp for the actor.
+    Teleport,
+    /// Pushes a monster back by the metadata's knockback distance.
+    BackSlide,
+    /// Weapon or magic damage around a centre.
+    Splash(SplashProfile),
+    /// Damage that lands after `delay_ms` instead of at the attack motion.
+    Delayed { delay_ms: u32, always_lands: bool },
+    /// Flat weapon damage, with no attack formula.
+    FixedWeapon { amount: u32 },
+    /// Magic damage from the metadata formula, with Soul Linker's Sma side effects.
+    Magic(MagicProfile),
+}
+
+/// Parameters of [`ActorBehaviour::Splash`].
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct SplashProfile {
+    /// Element the actor's weapon hits with instead of its own.
+    pub element: Option<models::enums::element::Element>,
+    /// Each recipient takes one blow instead of the skill's hit count.
+    pub single_hit: bool,
+    /// Weapon damage scales with the distance from the centre.
+    pub distance_ratio: bool,
+    /// Cells each landed hit pushes the recipient back.
+    pub knockback_cells: u16,
+    /// Gives the actor a weapon attack element buff before the area hits.
+    pub self_element_buff: bool,
+    /// Magic damage multiplier for recipients two cells from the centre.
+    pub far_magic_scale: Option<f32>,
+}
+
+/// Parameters of [`ActorBehaviour::Magic`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct MagicProfile {
+    /// Ends the actor's Sma before the damage.
+    pub consumes_sma: bool,
+    /// From this skill level, the actor gains Sma after the hit unless it already has it.
+    pub grants_sma_from_level: Option<u8>,
 }
 
 /// One skill: its identity, requirements, timings, damage and effects.
@@ -152,6 +248,32 @@ pub trait Skill: Send + Sync {
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
+    }
+    /// Whether the statuses from [`inflict_status_effect_to_target`](Skill::inflict_status_effect_to_target) are
+    /// alternatives: the first one that lands is the only one applied.
+    #[inline(always)]
+    fn status_alternatives(&self) -> bool {
+        false
+    }
+    /// Whether the server counts consecutive hits on each target for this skill, passed as `hits_on_target`.
+    #[inline(always)]
+    fn counts_hits_on_target(&self) -> bool {
+        false
+    }
+    /// Whether a landed hit pushes the target back by the metadata's knockback distance.
+    #[inline(always)]
+    fn knocks_back_on_hit(&self) -> bool {
+        true
+    }
+    /// How an actor (monster or NPC) executes this skill beyond damage and statuses. Read only by the actor path.
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Default
+    }
+    /// The status a self or support skill applies, when its metadata does not name one.
+    #[inline(always)]
+    fn status_kind(&self) -> Option<StatusChangeKind> {
+        None
     }
     /// Status effect this skill inflicts on the caster, if any. Not read by the server yet.
     #[inline(always)]

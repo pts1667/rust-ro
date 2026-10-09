@@ -472,35 +472,19 @@ impl ScriptSkillService {
 
     pub(crate) fn validate_script_actor_operation(metadata: &SkillMetadata, source: &ScriptSkillActor, level: u8) -> Result<(), String> {
         use super::ground::GroundKind;
-        let direct_support = matches!(
-            metadata.name.as_str(),
-            "AL_HEAL"
-                | "ALL_RESURRECTION"
-                | "NV_FIRSTAID"
-                | "AL_CURE"
-                | "TF_DETOXIFY"
-                | "PR_STRECOVERY"
-                | "SA_DISPELL"
-                | "PR_LEXDIVINA"
-                | "MG_STONECURSE"
-                | "RG_STRIPWEAPON"
-                | "RG_STRIPSHIELD"
-                | "RG_STRIPARMOR"
-                | "RG_STRIPHELM"
-                | "ST_FULLSTRIP"
-                | "BA_FROSTJOKER"
-                | "DC_SCREAM"
-                | "TF_BACKSLIDING"
-                | "HW_GANBANTEIN"
-                | "MO_BODYRELOCATION"
-                | "AL_CRUCIS"
-                | "BS_HAMMERFALL"
-                | "RG_CLEANER"
-        ) || metadata.name == "AL_TELEPORT" && matches!(source.object_type, MapItemType::Mob | MapItemType::Npc)
-            || metadata.monster_skill().is_some_and(MonsterSkill::is_direct_support);
+        use skills::ActorBehaviour;
+        let direct_support = match Self::actor_behaviour(metadata, level) {
+            ActorBehaviour::Default
+            | ActorBehaviour::Splash(_)
+            | ActorBehaviour::Delayed { .. }
+            | ActorBehaviour::FixedWeapon { .. }
+            | ActorBehaviour::Magic(_) => false,
+            ActorBehaviour::Teleport => matches!(source.object_type, MapItemType::Mob | MapItemType::Npc),
+            _ => true,
+        } || metadata.monster_skill().is_some_and(MonsterSkill::is_direct_support);
         if direct_support
-            || Self::status_for_skill(&metadata.name).is_some()
-            || Self::uses_metadata_magic(&metadata.name)
+            || Self::status_for_metadata(metadata).is_some()
+            || Self::metadata_magic(metadata)
             || Self::actor_npc_magic(metadata)
             || Self::actor_npc_weapon(metadata)
             || Self::actor_metadata_status(metadata)
@@ -535,7 +519,8 @@ impl ScriptSkillService {
             .is_some_and(|offensive| {
                 crate::server::service::battle_service::BattleService::is_weapon_skill(offensive)
                     || offensive.is_magic()
-                    || matches!(metadata.name.as_str(), "TF_THROWSTONE" | "PA_PRESSURE")
+                    || matches!(Self::actor_behaviour(metadata, level), skills::ActorBehaviour::FixedWeapon { .. })
+                    || metadata.name == "PA_PRESSURE"
             })
         {
             return Ok(());

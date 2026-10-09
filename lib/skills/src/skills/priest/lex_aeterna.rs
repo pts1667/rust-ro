@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // PR_LEXAETERNA - Lex Aeterna
@@ -120,5 +121,10 @@ impl Skill for LexAeterna {
     #[inline(always)]
     fn client_type(&self) -> usize {
         16
+    }
+
+    #[inline(always)]
+    fn status_kind(&self) -> Option<StatusChangeKind> {
+        Some(StatusChangeKind::LexAeterna)
     }
 }

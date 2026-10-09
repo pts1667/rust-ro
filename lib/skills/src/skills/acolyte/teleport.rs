@@ -123,4 +123,9 @@ impl Skill for Teleport {
         }
         Err(())
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Teleport
+    }
 }

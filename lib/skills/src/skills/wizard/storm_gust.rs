@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // WZ_STORMGUST - Storm Gust
 pub struct StormGust {
@@ -204,5 +205,13 @@ impl Skill for StormGust {
         }
         // Above 10_000 so MDEF reduction still leaves a likely freeze.
         vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 15_000, self.level)]
+    }
+    #[inline(always)]
+    fn counts_hits_on_target(&self) -> bool {
+        true
+    }
+    #[inline(always)]
+    fn knocks_back_on_hit(&self) -> bool {
+        false
     }
 }

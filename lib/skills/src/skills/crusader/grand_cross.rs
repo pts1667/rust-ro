@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // CR_GRANDCROSS - Grand Cross
 pub struct GrandCross {
@@ -275,6 +276,6 @@ impl Skill for GrandCross {
                 if !undead {
                     return vec![];
                 }
-                vec![StatusInfliction::secondary(StatusChangeKind::Blind, 10_000, self.level)]
+                vec![StatusInfliction::secondary(StatusChangeKind::Blind, 10_000, self.level).monsters_only()]
     }
 }

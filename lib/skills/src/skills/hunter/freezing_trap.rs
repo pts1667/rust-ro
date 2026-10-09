@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // HT_FREEZINGTRAP - Freezing Trap
 pub struct FreezingTrap {
@@ -168,6 +169,6 @@ impl Skill for FreezingTrap {
 
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
-        vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, self.level)]
+        vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, self.level).delayed(StatusDelay::AfterAttackMotion(100))]
     }
 }

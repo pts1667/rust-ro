@@ -1280,23 +1280,20 @@ impl ScriptSkillService {
     }
 
     fn status_for_skill(name: &str) -> Option<StatusChangeKind> {
-        use StatusChangeKind::*;
         if let Some(monster::MonsterSkill::SelfStatus(kind)) = monster::MonsterSkill::of_name(name) {
             return Some(kind);
         }
-        match name {
-            "SM_PROVOKE" | "SM_SELFPROVOKE" => Some(Provoke),
-            "AL_DECAGI" => Some(DecreaseAgi),
-            "BA_PANGVOICE" => Some(Confusion),
-            "PR_LEXAETERNA" => Some(LexAeterna),
-            "ALL_ANGEL_PROTECT" => Some(IncAllStatus),
-            "PR_LEXDIVINA" => Some(Silence),
-            "AL_PNEUMA" => Some(Pneuma),
-            "KN_AUTOCOUNTER" => Some(AutoCounter),
-            "WZ_QUAGMIRE" => Some(Quagmire),
-            "RG_CLOSECONFINE" => Some(CloseConfine2),
-            _ => Self::metadata_buff_status(name),
+        metadata::SkillMetadata::find_by_name(name).and_then(Self::status_for_metadata)
+    }
+
+    /// The status a skill applies: its monster self-status, else the status its object declares, else its metadata.
+    pub(crate) fn status_for_metadata(metadata: &metadata::SkillMetadata) -> Option<StatusChangeKind> {
+        if let Some(monster::MonsterSkill::SelfStatus(kind)) = metadata.monster_skill() {
+            return Some(kind);
         }
+        Self::skill_object(metadata, 1)
+            .and_then(|skill| skill.status_kind())
+            .or_else(|| Self::metadata_buff_status(&metadata.name))
     }
 
     /// The caster's half of Close Confine: a lock and flee bonus that outlives the target's hold by one second.

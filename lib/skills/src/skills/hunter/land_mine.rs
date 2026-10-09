@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // HT_LANDMINE - Land Mine
 pub struct LandMine {
@@ -163,6 +164,6 @@ impl Skill for LandMine {
 
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
-        vec![StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, self.level)]
+        vec![StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, self.level).delayed(StatusDelay::Ms(1_000))]
     }
 }

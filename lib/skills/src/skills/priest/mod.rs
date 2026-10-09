@@ -30,3 +30,5 @@ pub mod magnus_exorcismus;
 pub use magnus_exorcismus::*;
 pub mod redemptio;
 pub use redemptio::*;
+pub mod resurrection;
+pub use resurrection::*;

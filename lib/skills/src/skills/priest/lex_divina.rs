@@ -191,4 +191,14 @@ impl Skill for LexDivina {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Toggle(StatusChangeKind::Silence)
+    }
+
+    #[inline(always)]
+    fn status_kind(&self) -> Option<StatusChangeKind> {
+        Some(StatusChangeKind::Silence)
+    }
 }

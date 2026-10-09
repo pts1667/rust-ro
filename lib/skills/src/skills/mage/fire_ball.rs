@@ -266,4 +266,9 @@ impl Skill for FireBall {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Splash(SplashProfile { far_magic_scale: Some(0.75), ..SplashProfile::default() })
+    }
 }

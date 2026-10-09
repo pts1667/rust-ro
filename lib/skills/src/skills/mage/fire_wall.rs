@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // MG_FIREWALL - Fire Wall
 pub struct FireWall {
@@ -165,5 +166,9 @@ impl Skill for FireWall {
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
+    }
+    #[inline(always)]
+    fn knocks_back_on_hit(&self) -> bool {
+        false
     }
 }

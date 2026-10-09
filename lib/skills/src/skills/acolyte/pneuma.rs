@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // AL_PNEUMA - Pneuma
@@ -115,5 +116,10 @@ impl Skill for Pneuma {
     #[inline(always)]
     fn client_type(&self) -> usize {
         2
+    }
+
+    #[inline(always)]
+    fn status_kind(&self) -> Option<StatusChangeKind> {
+        Some(StatusChangeKind::Pneuma)
     }
 }

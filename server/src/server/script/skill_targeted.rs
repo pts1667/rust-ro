@@ -468,15 +468,18 @@ impl ScriptSkillService {
                 }
             }
             "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
-                let requests = Self::strip_requests(
-                    skill.name(),
-                    effect.skill_id,
-                    effect.level,
-                    source_status.dex(),
-                    target_status.dex(),
-                    true,
-                    fastrand::u16(0..1000),
-                );
+                let requests = Self::strip_profile(effect.skill_id, effect.level).map_or_else(Vec::new, |(kinds, full)| {
+                    Self::strip_requests(
+                        kinds,
+                        full,
+                        effect.skill_id,
+                        effect.level,
+                        source_status.dex(),
+                        target_status.dex(),
+                        true,
+                        fastrand::u16(0..1000),
+                    )
+                });
                 for request in requests {
                     StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
                 }
@@ -723,15 +726,18 @@ impl ScriptSkillService {
                 }
                 "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
                     let source = StatusService::instance().to_snapshot(&character.status);
-                    for request in Self::strip_requests(
-                        skill.name(),
-                        effect.skill_id,
-                        effect.level,
-                        source.dex(),
-                        target.status.dex(),
-                        false,
-                        fastrand::u16(0..1000),
-                    ) {
+                    for request in Self::strip_profile(effect.skill_id, effect.level).map_or_else(Vec::new, |(kinds, full)| {
+                        Self::strip_requests(
+                            kinds,
+                            full,
+                            effect.skill_id,
+                            effect.level,
+                            source.dex(),
+                            target.status.dex(),
+                            false,
+                            fastrand::u16(0..1000),
+                        )
+                    }) {
                         instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: target.id,
                             request,
@@ -849,8 +855,17 @@ impl ScriptSkillService {
         }
     }
 
+    /// The equipment slots a strip skill removes, and whether it uses the Full Strip success rate.
+    pub(super) fn strip_profile(skill_id: u32, level: u8) -> Option<(&'static [StatusChangeKind], bool)> {
+        match SkillMetadata::find(skill_id).map(|metadata| Self::actor_behaviour(metadata, level)) {
+            Some(skills::ActorBehaviour::Strip { kinds, full }) => Some((kinds, full)),
+            _ => None,
+        }
+    }
+
     pub(super) fn strip_requests(
-        name: &str,
+        kinds: &[StatusChangeKind],
+        full: bool,
         skill_id: u32,
         level: u8,
         source_dex: u16,
@@ -858,9 +873,8 @@ impl ScriptSkillService {
         player: bool,
         roll: u16,
     ) -> Vec<StatusChangeRequest> {
-        use StatusChangeKind::*;
         let difference = source_dex as i32 - target_dex as i32;
-        let rate = if name == "ST_FULLSTRIP" {
+        let rate = if full {
             let minimum = 50 + 20 * level as i32;
             (minimum + 2 * difference).max(minimum)
         } else {
@@ -874,16 +888,9 @@ impl ScriptSkillService {
             .unwrap_or(0)
             .saturating_add(if player { 0 } else { 15000 })
             .saturating_add((level as i32 + 500 * difference).max(1));
-        let kinds = match name {
-            "RG_STRIPWEAPON" => vec![StripWeapon],
-            "RG_STRIPSHIELD" => vec![StripShield],
-            "RG_STRIPARMOR" => vec![StripArmor],
-            "RG_STRIPHELM" => vec![StripHelm],
-            _ => vec![StripWeapon, StripShield, StripArmor, StripHelm],
-        };
         kinds
-            .into_iter()
-            .map(|kind| StatusChangeRequest::guaranteed(kind, duration, level as i32))
+            .iter()
+            .map(|kind| StatusChangeRequest::guaranteed(*kind, duration, level as i32))
             .collect()
     }
 
@@ -1100,14 +1107,12 @@ mod tests {
     #[test]
     fn full_strip_has_one_shared_roll_and_dex_scaled_duration() {
         let metadata = SkillMetadata::all().iter().find(|skill| skill.name == "ST_FULLSTRIP").unwrap();
-        let requests = ScriptSkillService::strip_requests(&metadata.name, metadata.id, 5, 100, 80, false, 189);
+        let (kinds, full) = ScriptSkillService::strip_profile(metadata.id, 5).unwrap();
+        let requests = ScriptSkillService::strip_requests(kinds, full, metadata.id, 5, 100, 80, false, 189);
         assert_eq!(requests.len(), 4);
         assert_eq!(requests[0].duration_ms, metadata.duration(5, false).unwrap() + 15000 + 10005);
-        assert!(ScriptSkillService::strip_requests(&metadata.name, metadata.id, 5, 100, 80, false, 190).is_empty());
-        assert_eq!(
-            ScriptSkillService::strip_requests(&metadata.name, metadata.id, 5, 1, 200, true, 149).len(),
-            4
-        );
+        assert!(ScriptSkillService::strip_requests(kinds, full, metadata.id, 5, 100, 80, false, 190).is_empty());
+        assert_eq!(ScriptSkillService::strip_requests(kinds, full, metadata.id, 5, 1, 200, true, 149).len(), 4);
     }
     #[test]
     fn stone_curse_has_petrification_wait_before_stone_duration() {

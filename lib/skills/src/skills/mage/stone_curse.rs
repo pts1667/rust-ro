@@ -212,4 +212,9 @@ impl Skill for StoneCurse {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::StoneCurse
+    }
 }

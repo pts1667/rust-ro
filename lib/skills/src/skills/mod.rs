@@ -7,6 +7,7 @@ pub mod mage;
 pub mod merchant;
 pub mod bard;
 pub mod soul_linker;
+pub mod mercenary;
 pub mod baby;
 pub mod thief;
 pub mod acolyte;

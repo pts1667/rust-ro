@@ -130,4 +130,9 @@ impl Skill for Dispell {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Dispel { chance: 50 + 10 * self.level }
+    }
 }

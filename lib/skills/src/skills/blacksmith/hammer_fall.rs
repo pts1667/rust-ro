@@ -140,4 +140,9 @@ impl Skill for HammerFall {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::AreaStatus { at_target_point: true }
+    }
 }

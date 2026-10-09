@@ -1,8 +1,7 @@
 use models::enums::EnumWithMaskValueU32;
 use models::enums::skill_enums::SkillEnum;
-use models::status::StatusSnapshot;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
-use skills::{HitContext, StatusInfliction};
+use skills::{ActorBehaviour, HitContext, StatusDelay, StatusInfliction};
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillHit, ScriptSkillService};
@@ -42,60 +41,45 @@ impl ScriptSkillService {
         self.apply_knockback(server, state, character, source_x, source_y, cells.clamp(0, i32::from(u16::MAX)) as u16, tick)
     }
 
-    pub fn stone_fling_status_requests(player_source: bool, level: u8) -> Vec<StatusChangeRequest> {
-        let Some(metadata) = SkillMetadata::find(SkillEnum::TfThrowstone.id()) else {
-            return vec![];
+    /// The implementation of a skill. Monster skills live in `npc`.
+    pub(crate) fn skill_object(metadata: &SkillMetadata, level: u8) -> Option<Box<dyn skills::Skill>> {
+        let skill_enum = SkillEnum::from_id(metadata.id);
+        skills::skill_enums::to_object(skill_enum, level).or_else(|| skills::npc::to_object(skill_enum, level))
+    }
+
+    /// What an actor does with the skill beyond damage and statuses. Monster skills without an object are `Default`.
+    pub(crate) fn actor_behaviour(metadata: &SkillMetadata, level: u8) -> ActorBehaviour {
+        Self::skill_object(metadata, level).map_or(ActorBehaviour::Default, |skill| skill.actor_behaviour())
+    }
+
+    /// The statuses a damaging hit inflicts, as the skill object declares them.
+    pub(crate) fn hit_statuses(object: Option<&dyn skills::Skill>, hit: &HitContext) -> HitStatuses {
+        let Some(skill) = object else {
+            return HitStatuses { inflictions: vec![], alternatives: false };
         };
-        let request = |kind, rate, secondary| StatusChangeRequest {
-            kind,
-            rate,
-            values: [i32::from(level), 0, 0, 0],
-            flags: 0,
-            duration_ms: metadata.duration(level, secondary).unwrap_or(0),
-        };
-        if player_source {
-            vec![
-                request(StatusChangeKind::Stun, 500, false),
-                request(StatusChangeKind::Blind, 500, true),
-            ]
-        } else {
-            vec![request(StatusChangeKind::Stun, 500, false)]
+        HitStatuses {
+            inflictions: skill.inflict_status_effect_to_target(hit),
+            alternatives: skill.status_alternatives(),
         }
     }
 
-    /// Statuses the skill object declares for a damaging hit. The server rolls each chance against the target.
-    pub(crate) fn trait_status_requests(
-        metadata: &SkillMetadata,
-        level: u8,
-        source: &StatusSnapshot,
-        target: &StatusSnapshot,
-        hits_on_target: u8,
-    ) -> Vec<StatusChangeRequest> {
-        let skill_enum = SkillEnum::from_id(metadata.id);
-        let Some(skill) = skills::skill_enums::to_object(skill_enum, level).or_else(|| skills::npc::to_object(skill_enum, level)) else {
-            return vec![];
-        };
-        let hit = HitContext { source, target, hits_on_target };
-        skill
-            .inflict_status_effect_to_target(&hit)
-            .into_iter()
-            .map(|infliction| status_change_request(metadata, level, infliction))
-            .collect()
+    pub(crate) fn status_change_request(metadata: &SkillMetadata, level: u8, infliction: StatusInfliction) -> StatusChangeRequest {
+        StatusChangeRequest {
+            kind: infliction.kind,
+            duration_ms: metadata.duration(level, infliction.secondary_duration).unwrap_or(0),
+            values: infliction.values,
+            rate: infliction.chance,
+            flags: 0,
+        }
     }
 
-    /// Statuses of skills that have no `lib/skills` object yet. Move each arm into its skill's hook once the object exists.
-    pub(crate) fn objectless_status_requests(metadata: &SkillMetadata, level: u8, target: &StatusSnapshot) -> Vec<StatusChangeRequest> {
-        let infliction = match metadata.name.as_str() {
-            "MER_CRASH" => StatusInfliction::secondary(StatusChangeKind::Stun, 600 * i32::from(level), level),
-            "MA_LANDMINE" => StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, level),
-            "MA_FREEZINGTRAP" => StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, level),
-            "ML_SPIRALPIERCE" => StatusInfliction::secondary(StatusChangeKind::Ankle, 10_000, level),
-            "SL_STUN" if *target.size() == models::enums::size::Size::Medium => {
-                StatusInfliction::primary(StatusChangeKind::Stun, (30 + 10 * i32::from(level)) * 100, level)
-            }
-            _ => return vec![],
-        };
-        vec![status_change_request(metadata, level, infliction)]
+    /// Milliseconds after the hit. `attack_motion` is only evaluated for `AfterAttackMotion`.
+    pub(crate) fn status_delay(delay: StatusDelay, attack_motion: impl FnOnce() -> u32) -> u128 {
+        match delay {
+            StatusDelay::Immediate => 0,
+            StatusDelay::Ms(ms) => u128::from(ms),
+            StatusDelay::AfterAttackMotion(extra) => u128::from(attack_motion()) + u128::from(extra),
+        }
     }
 
     pub fn after_skill_damage(&self, server: &Server, state: &mut ServerState, hit: ScriptSkillHit, tick: u128) -> Result<(), String> {
@@ -197,8 +181,9 @@ impl ScriptSkillService {
                 );
             }
         }
+        let object = Self::skill_object(metadata, hit.skill_level);
         let key = (map.clone(), instance_id, hit.target_id);
-        let gust_hits = if metadata.name == "WZ_STORMGUST" {
+        let gust_hits = if object.as_deref().is_some_and(|skill| skill.counts_hits_on_target()) {
             let mut counters = self.storm_gust_hits.lock().map_err(|_| "Storm Gust counter state is unavailable")?;
             if target.hp() == 0 {
                 counters.remove(&key);
@@ -220,8 +205,20 @@ impl ScriptSkillService {
             0
         };
         if target.hp() > 0 {
-            if metadata.name == "TF_THROWSTONE" {
-                let requests = Self::stone_fling_status_requests(!companion, hit.skill_level);
+            let HitStatuses { inflictions, alternatives } = Self::hit_statuses(
+                object.as_deref(),
+                &HitContext {
+                    source: &snapshot,
+                    target: &target,
+                    hits_on_target: gust_hits,
+                    caster_is_player: !companion,
+                },
+            );
+            if alternatives {
+                let requests = inflictions
+                    .iter()
+                    .map(|infliction| Self::status_change_request(metadata, hit.skill_level, *infliction))
+                    .collect::<Vec<_>>();
                 if let Some(target) = state.characters_mut().get_mut(&hit.target_id) {
                     StatusEffectService::start_alternatives(server, target, requests, tick, &self.client_notification_sender)?;
                 } else if state.companion_owner(hit.target_id, &map, instance_id).is_some() {
@@ -240,18 +237,12 @@ impl ScriptSkillService {
                     ));
                 }
             }
-            let requests = Self::trait_status_requests(metadata, hit.skill_level, &snapshot, &target, gust_hits)
-                .into_iter()
-                .chain(Self::objectless_status_requests(metadata, hit.skill_level, &target));
-            for request in requests {
-                if metadata.name == "CR_GRANDCROSS" && state.get_character(hit.target_id).is_some() {
+            for infliction in if alternatives { vec![] } else { inflictions } {
+                if infliction.monsters_only && state.get_character(hit.target_id).is_some() {
                     continue;
                 }
-                let delay = match metadata.name.as_str() {
-                    "MA_LANDMINE" | "HT_LANDMINE" => 1000,
-                    "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => StatusService::instance().attack_motion(&snapshot) as u128 + 100,
-                    _ => 0,
-                };
+                let delay = Self::status_delay(infliction.delay, || StatusService::instance().attack_motion(&snapshot));
+                let request = Self::status_change_request(metadata, hit.skill_level, infliction);
                 if state.get_character(hit.target_id).is_some() || state.companion_owner(hit.target_id, &map, instance_id).is_some() {
                     if delay > 0 {
                         server.add_to_delayed_tick(
@@ -308,7 +299,7 @@ impl ScriptSkillService {
                 }));
             }
         }
-        if metadata.name != "WZ_STORMGUST" && metadata.name != "MG_FIREWALL" {
+        if object.as_deref().map_or(true, |skill| skill.knocks_back_on_hit()) {
             if let Some(cells) = metadata
                 .knockback
                 .as_ref()
@@ -340,51 +331,67 @@ impl ScriptSkillService {
     }
 }
 
-fn status_change_request(metadata: &SkillMetadata, level: u8, infliction: StatusInfliction) -> StatusChangeRequest {
-    StatusChangeRequest {
-        kind: infliction.kind,
-        duration_ms: metadata.duration(level, infliction.secondary_duration).unwrap_or(0),
-        values: infliction.values,
-        rate: infliction.chance,
-        flags: 0,
-    }
+/// Statuses a hit inflicts. With `alternatives`, only the first one that lands is applied.
+pub(crate) struct HitStatuses {
+    pub(crate) inflictions: Vec<StatusInfliction>,
+    pub(crate) alternatives: bool,
 }
 
 #[cfg(test)]
 mod tests {
+    use models::status::StatusSnapshot;
+    use skills::{MagicProfile, SplashProfile};
+
     use super::*;
 
-    #[test]
-    fn classic_additional_effects_keep_independent_probabilities_and_gust_threshold() {
+    fn hit_statuses_for(metadata: &SkillMetadata, level: u8, hits_on_target: u8, caster_is_player: bool) -> HitStatuses {
         let source = StatusSnapshot::_from(&models::status::Status::default());
         let target = StatusSnapshot::_from(&models::status::Status::default());
+        let object = ScriptSkillService::skill_object(metadata, level);
+        ScriptSkillService::hit_statuses(
+            object.as_deref(),
+            &HitContext {
+                source: &source,
+                target: &target,
+                hits_on_target,
+                caster_is_player,
+            },
+        )
+    }
+
+    fn hit_requests_for(metadata: &SkillMetadata, level: u8, hits_on_target: u8) -> Vec<StatusChangeRequest> {
+        hit_statuses_for(metadata, level, hits_on_target, true)
+            .inflictions
+            .into_iter()
+            .map(|infliction| ScriptSkillService::status_change_request(metadata, level, infliction))
+            .collect()
+    }
+
+    #[test]
+    fn storm_gust_freezes_only_from_the_third_hit() {
         let gust = SkillMetadata::find(SkillEnum::WzStormgust.id()).unwrap();
-        assert!(ScriptSkillService::trait_status_requests(gust, 10, &source, &target, 2).is_empty());
-        assert_eq!(ScriptSkillService::trait_status_requests(gust, 10, &source, &target, 3)[0].rate, 15_000);
+        assert!(hit_requests_for(gust, 10, 2).is_empty());
+        assert_eq!(hit_requests_for(gust, 10, 3)[0].rate, 15_000);
     }
 
     #[test]
     fn hit_statuses_come_from_the_skill_object_with_its_chance() {
-        let source = StatusSnapshot::_from(&models::status::Status::default());
-        let target = StatusSnapshot::_from(&models::status::Status::default());
         let frost = SkillMetadata::find(SkillEnum::MgFrostdiver.id()).unwrap();
-        let requests = ScriptSkillService::trait_status_requests(frost, 10, &source, &target, 0);
+        let requests = hit_requests_for(frost, 10, 0);
         assert_eq!(
             requests.iter().map(|request| (request.kind, request.rate)).collect::<Vec<_>>(),
             vec![(StatusChangeKind::Freeze, 6500)]
         );
         assert_eq!(requests[0].duration_ms, frost.duration(10, true).unwrap());
         let holy_cross = SkillMetadata::find(SkillEnum::CrHolycross.id()).unwrap();
-        let blind = ScriptSkillService::trait_status_requests(holy_cross, 10, &source, &target, 0);
+        let blind = hit_requests_for(holy_cross, 10, 0);
         assert_eq!(blind.iter().map(|request| (request.kind, request.rate)).collect::<Vec<_>>(), vec![(StatusChangeKind::Blind, 3000)]);
     }
 
     #[test]
     fn rogue_intimidate_stuns_for_the_primary_duration_and_blinds_for_the_secondary() {
-        let source = StatusSnapshot::_from(&models::status::Status::default());
-        let target = StatusSnapshot::_from(&models::status::Status::default());
         let raid = SkillMetadata::find(SkillEnum::RgRaid.id()).unwrap();
-        let requests = ScriptSkillService::trait_status_requests(raid, 5, &source, &target, 0);
+        let requests = hit_requests_for(raid, 5, 0);
         assert_eq!(
             requests
                 .iter()
@@ -398,10 +405,12 @@ mod tests {
     }
 
     #[test]
-    fn objectless_arms_apply_their_secondary_statuses() {
-        let target = StatusSnapshot::_from(&models::status::Status::default());
+    fn land_mine_stuns_one_second_after_the_hit() {
         let landmine = SkillMetadata::find(SkillEnum::MaLandmine.id()).unwrap();
-        let requests = ScriptSkillService::objectless_status_requests(landmine, 1, &target);
+        let inflictions = hit_statuses_for(landmine, 1, 0, false).inflictions;
+        assert_eq!(inflictions.len(), 1);
+        assert!(matches!(inflictions[0].delay, StatusDelay::Ms(1_000)));
+        let requests = hit_requests_for(landmine, 1, 0);
         assert_eq!(
             requests.iter().map(|request| (request.kind, request.rate, request.duration_ms)).collect::<Vec<_>>(),
             vec![(StatusChangeKind::Stun, 1000, landmine.duration(1, true).unwrap())]
@@ -409,11 +418,43 @@ mod tests {
     }
 
     #[test]
+    fn freezing_trap_freezes_after_the_attack_motion_plus_its_delay() {
+        let trap = SkillMetadata::find(SkillEnum::MaFreezingtrap.id()).unwrap();
+        let inflictions = hit_statuses_for(trap, 1, 0, false).inflictions;
+        assert_eq!(inflictions.len(), 1);
+        assert!(matches!(inflictions[0].delay, StatusDelay::AfterAttackMotion(100)));
+        assert_eq!(ScriptSkillService::status_delay(StatusDelay::AfterAttackMotion(100), || 500), 600);
+        assert_eq!(ScriptSkillService::status_delay(StatusDelay::Ms(1_000), || 0), 1_000);
+    }
+
+    #[test]
+    fn stone_fling_stuns_players_and_falls_back_to_blind_while_other_actors_only_stun() {
+        let stone = SkillMetadata::find(SkillEnum::TfThrowstone.id()).unwrap();
+        let player = hit_statuses_for(stone, 1, 0, true);
+        assert!(player.alternatives);
+        assert_eq!(
+            player.inflictions.iter().map(|infliction| (infliction.kind, infliction.chance)).collect::<Vec<_>>(),
+            vec![(StatusChangeKind::Stun, 500), (StatusChangeKind::Blind, 500)]
+        );
+        assert_eq!(
+            hit_requests_for(stone, 1, 0)
+                .iter()
+                .map(|request| (request.kind, request.rate, request.duration_ms))
+                .collect::<Vec<_>>(),
+            vec![(StatusChangeKind::Stun, 500, 5000), (StatusChangeKind::Blind, 500, 30000)]
+        );
+        let other = hit_statuses_for(stone, 1, 0, false);
+        assert!(other.alternatives);
+        assert_eq!(
+            other.inflictions.iter().map(|infliction| (infliction.kind, infliction.chance)).collect::<Vec<_>>(),
+            vec![(StatusChangeKind::Stun, 500)]
+        );
+    }
+
+    #[test]
     fn npc_poison_applies_its_secondary_duration_and_level_chance_after_a_hit() {
         let metadata = SkillMetadata::all().iter().find(|skill| skill.name == "NPC_POISON").unwrap();
-        let source = StatusSnapshot::_from(&models::status::Status::default());
-        let target = StatusSnapshot::_from(&models::status::Status::default());
-        let requests = ScriptSkillService::trait_status_requests(metadata, 3, &source, &target, 0);
+        let requests = hit_requests_for(metadata, 3, 0);
         assert_eq!(requests.len(), 1);
         assert_eq!(requests[0].kind, StatusChangeKind::Poison);
         assert_eq!(requests[0].rate, 6000);
@@ -421,20 +462,36 @@ mod tests {
     }
 
     #[test]
-    fn stone_fling_falls_back_from_player_stun_to_blind_but_other_actors_only_stun() {
-        let player = ScriptSkillService::stone_fling_status_requests(true, 1);
-        assert_eq!(
-            player
-                .iter()
-                .map(|request| (request.kind, request.rate, request.duration_ms))
-                .collect::<Vec<_>>(),
-            vec![(StatusChangeKind::Stun, 500, 5000), (StatusChangeKind::Blind, 500, 30000)]
-        );
-        let other = ScriptSkillService::stone_fling_status_requests(false, 1);
-        assert_eq!(other.len(), 1);
-        assert_eq!(
-            (other[0].kind, other[0].rate, other[0].duration_ms),
-            (StatusChangeKind::Stun, 500, 5000)
-        );
+    fn actor_behaviour_comes_from_the_skill_object() {
+        let behaviour = |skill: SkillEnum, level: u8| ScriptSkillService::actor_behaviour(SkillMetadata::find(skill.id()).unwrap(), level);
+        assert_eq!(behaviour(SkillEnum::AlHeal, 1), ActorBehaviour::Heal);
+        assert_eq!(behaviour(SkillEnum::AlTeleport, 1), ActorBehaviour::Teleport);
+        assert_eq!(behaviour(SkillEnum::TfThrowstone, 1), ActorBehaviour::FixedWeapon { amount: 30 });
+        assert_eq!(behaviour(SkillEnum::SaDispell, 5), ActorBehaviour::Dispel { chance: 100 });
+        assert_eq!(behaviour(SkillEnum::SlSma, 1), ActorBehaviour::Magic(MagicProfile { consumes_sma: true, grants_sma_from_level: None }));
+        assert_eq!(behaviour(SkillEnum::SlStun, 7), ActorBehaviour::Magic(MagicProfile { consumes_sma: false, grants_sma_from_level: Some(7) }));
+        assert!(matches!(
+            behaviour(SkillEnum::SmMagnum, 1),
+            ActorBehaviour::Splash(profile) if profile.single_hit && profile.distance_ratio && profile.knockback_cells == 2
+        ));
+        assert_eq!(behaviour(SkillEnum::WzFrostnova, 1), ActorBehaviour::Splash(SplashProfile::default()));
+    }
+
+    #[test]
+    fn strip_profiles_name_their_slots_and_full_strip_rate() {
+        let (kinds, full) = ScriptSkillService::strip_profile(SkillEnum::RgStripweapon.id(), 1).unwrap();
+        assert_eq!((kinds, full), (&[StatusChangeKind::StripWeapon][..], false));
+        let (kinds, full) = ScriptSkillService::strip_profile(SkillEnum::StFullstrip.id(), 1).unwrap();
+        assert_eq!(kinds.len(), 4);
+        assert!(full);
+        assert_eq!(ScriptSkillService::strip_profile(SkillEnum::AlHeal.id(), 1), None);
+    }
+
+    #[test]
+    fn status_kinds_come_from_objects_or_metadata() {
+        assert_eq!(ScriptSkillService::status_for_skill("SM_PROVOKE"), Some(StatusChangeKind::Provoke));
+        assert_eq!(ScriptSkillService::status_for_skill("PR_LEXDIVINA"), Some(StatusChangeKind::Silence));
+        assert_eq!(ScriptSkillService::status_for_skill("SM_SELFPROVOKE"), Some(StatusChangeKind::Provoke));
+        assert_eq!(ScriptSkillService::status_for_skill("AL_HEAL"), None);
     }
 }

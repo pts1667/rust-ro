@@ -4,6 +4,7 @@ use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFlag};
 use packets::packets::{Packet, PacketZcAckTouseskill};
+use skills::ActorBehaviour;
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillEffect, ScriptSkillService};
@@ -21,7 +22,13 @@ use crate::server::state::server::ServerState;
 
 impl ScriptSkillService {
     pub(crate) fn uses_metadata_magic(name: &str) -> bool {
-        matches!(name, "SL_STIN" | "SL_STUN" | "SL_SMA") || super::monster::MonsterSkill::of_name(name) == Some(super::monster::MonsterSkill::MagicalAttack)
+        SkillMetadata::find_by_name(name).is_some_and(Self::metadata_magic)
+    }
+
+    /// Whether the actor path deals this skill's damage with the metadata magic formula.
+    pub(crate) fn metadata_magic(metadata: &SkillMetadata) -> bool {
+        matches!(Self::actor_behaviour(metadata, 1), ActorBehaviour::Magic(_))
+            || metadata.monster_skill() == Some(super::monster::MonsterSkill::MagicalAttack)
     }
 
     pub(super) fn validate_magic_target(

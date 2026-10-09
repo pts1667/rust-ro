@@ -2,6 +2,7 @@ use models::enums::element::Element;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
+use skills::{ActorBehaviour, HitContext, MagicProfile, SplashProfile};
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use packets::packets::{Packet, PacketZcUseSkill};
@@ -13,6 +14,7 @@ use super::actor::{self, ScriptSkillActor};
 use super::ground::GroundKind;
 use super::metadata::SkillMetadata;
 use super::monster::MonsterSkill;
+use super::secondary::HitStatuses;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterEndStatus, CharacterStatusChange, GameEvent, ScriptSkillCast};
@@ -25,7 +27,6 @@ use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::server::ServerState;
 
-const PALM_STRIKE_DELAY: u128 = 1000;
 const INTIMIDATE_WARP_DELAY_MS: u128 = 800;
 const RANDOM_CELL_ATTEMPTS: usize = 64;
 
@@ -62,8 +63,21 @@ impl ScriptSkillService {
         if metadata.name == "RG_INTIMIDATE" && source.object_type == MapItemType::Mob && hit.damage > 0 {
             self.actor_intimidate_warp(server, state, &source, &hit, &target, tick);
         }
-        if metadata.name == "TF_THROWSTONE" {
-            let requests = Self::stone_fling_status_requests(false, hit.skill_level);
+        let object = Self::skill_object(metadata, hit.skill_level);
+        let HitStatuses { inflictions, alternatives } = Self::hit_statuses(
+            object.as_deref(),
+            &HitContext {
+                source: &source.status,
+                target: &target,
+                hits_on_target: 0,
+                caster_is_player: false,
+            },
+        );
+        if alternatives {
+            let requests = inflictions
+                .iter()
+                .map(|infliction| Self::status_change_request(metadata, hit.skill_level, *infliction))
+                .collect::<Vec<_>>();
             if state.get_character(hit.target_id).is_some() || state.companion_owner(hit.target_id, &source.map, source.instance).is_some()
             {
                 server.add_to_next_tick(GameEvent::CharacterStatusAlternatives(
@@ -84,11 +98,13 @@ impl ScriptSkillService {
                     ));
             }
         }
-        let requests = Self::trait_status_requests(metadata, hit.skill_level, &source.status, &target, 0)
-            .into_iter()
-            .chain(Self::objectless_status_requests(metadata, hit.skill_level, &target));
-        for request in requests {
-            self.start_actor_target_status(server, state, &source, hit.target_id, request, 0, tick)?;
+        for infliction in if alternatives { vec![] } else { inflictions } {
+            if infliction.monsters_only && state.get_character(hit.target_id).is_some() {
+                continue;
+            }
+            let delay = Self::status_delay(infliction.delay, || StatusService::instance().attack_motion(&source.status));
+            let request = Self::status_change_request(metadata, hit.skill_level, infliction);
+            self.start_actor_target_status(server, state, &source, hit.target_id, request, delay, tick)?;
         }
         Ok(())
     }
@@ -166,36 +182,42 @@ impl ScriptSkillService {
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill has no pre-renewal definition")?;
         let level = request.level as u8;
-        if matches!(metadata.name.as_str(), "HW_GANBANTEIN" | "MO_BODYRELOCATION") {
-            let (x, y) = request.ground.unwrap_or((source.x, source.y));
-            if metadata.name == "HW_GANBANTEIN" {
+        let behaviour = Self::actor_behaviour(metadata, level);
+        match behaviour {
+            ActorBehaviour::Ganbantein => {
+                let (x, y) = request.ground.unwrap_or((source.x, source.y));
                 if fastrand::u8(0..100) < GANBANTEIN_SUCCESS_PERCENT {
                     self.clear_ground_units_at(&source.map, source.instance, x, y);
                 }
-            } else if source.object_type == MapItemType::Mob {
+                self.notify_actor_support(source, request, true);
+                return Ok(());
+            }
+            ActorBehaviour::BodyRelocation => {
+                if source.object_type != MapItemType::Mob {
+                    return Err("Only monsters can use Body Relocation as actors".into());
+                }
+                let (x, y) = request.ground.unwrap_or((source.x, source.y));
                 state
                     .get_map_instance(&source.map, source.instance)
                     .ok_or("Unit skill map is unavailable")?
                     .add_to_next_tick(MapEvent::MobWarpTo(crate::server::model::events::map_event::MobWarpTo { mob_id: source.id, x, y }));
-            } else {
-                return Err("Only monsters can use Body Relocation as actors".into());
+                self.notify_actor_support(source, request, true);
+                return Ok(());
             }
-            self.notify_actor_support(source, request, true);
-            return Ok(());
-        }
-        if request.ground.is_some() || GroundKind::from_name(&metadata.name).is_some() {
-            let (x, y) = if let Some(ground) = request.ground {
-                ground
-            } else if metadata.target_type.as_deref() == Some("Self") {
-                (source.x, source.y)
-            } else {
-                let (target, _) = self.actor_target_status(state, source, request.target_id)?;
-                (target.x(), target.y())
-            };
-            if metadata.name == "BS_HAMMERFALL" {
+            ActorBehaviour::AreaStatus { at_target_point } => {
+                let (x, y) = if at_target_point {
+                    self.actor_skill_point(state, source, request, metadata)?
+                } else {
+                    (source.x, source.y)
+                };
                 return self.cast_actor_area_status(server, state, source, metadata, level, x, y, tick);
             }
-            if metadata.name == "RG_CLEANER" {
+            _ => {}
+        }
+        // Ground units are registered per skill name in GroundKind, not by the skill's target type.
+        if request.ground.is_some() || GroundKind::from_name(&metadata.name).is_some() {
+            let (x, y) = self.actor_skill_point(state, source, request, metadata)?;
+            if behaviour == ActorBehaviour::EraseGraffiti {
                 self.erase_graffiti(
                     &source.map,
                     source.instance,
@@ -204,29 +226,28 @@ impl ScriptSkillService {
                     metadata.splash(level).unwrap_or(5).max(0) as u16,
                     tick,
                 )?;
-                self.notify_actor_support(source, request, true);
-                return Ok(());
+            } else {
+                self.place_script_actor_ground(server, state, source, request, x, y, tick)?;
             }
-            self.place_script_actor_ground(server, state, source, request, x, y, tick)?;
             self.notify_actor_support(source, request, true);
             return Ok(());
         }
-        if matches!(metadata.name.as_str(), "BA_FROSTJOKER" | "DC_SCREAM" | "AL_CRUCIS") || metadata.monster_skill().is_some_and(MonsterSkill::is_area) {
+        if metadata.monster_skill().is_some_and(MonsterSkill::is_area) {
             return self.cast_actor_area_status(server, state, source, metadata, level, source.x, source.y, tick);
         }
         if metadata.monster_skill() == Some(MonsterSkill::SelfDestruction) {
             return self.execute_actor_self_destruct(server, state, source, request, metadata, tick);
         }
         let (target, status) = self.actor_target_status(state, source, request.target_id)?;
-        if status.hp() == 0 && metadata.name != "ALL_RESURRECTION" {
+        if status.hp() == 0 && behaviour != ActorBehaviour::Resurrect {
             return Err("Unit skill target died".into());
         }
         let player = *target.map_item().object_type() == MapItemType::Character;
         let instance = state
             .get_map_instance(&source.map, source.instance)
             .ok_or("Unit skill map is unavailable")?;
-        match metadata.name.as_str() {
-            "AL_HEAL" => {
+        match behaviour {
+            ActorBehaviour::Heal => {
                 let amount = Self::heal_amount(&source.status, source.status.base_level(), level);
                 if Self::undead_target(&status) {
                     let context = crate::server::service::map_combat_service::MagicAttackContext::new(
@@ -259,8 +280,8 @@ impl ScriptSkillService {
                     )?;
                 }
             }
-            "NV_FIRSTAID" => self.heal_actor_target(server, state, source, request.target_id, 5, 0, tick)?,
-            "ALL_RESURRECTION" => {
+            ActorBehaviour::FixedHeal(hp) => self.heal_actor_target(server, state, source, request.target_id, hp, 0, tick)?,
+            ActorBehaviour::Resurrect => {
                 if !player || status.hp() > 0 || status.has_status_change(StatusChangeKind::HellPower) {
                     return Err("Resurrection requires a dead player without Hell Power".into());
                 }
@@ -276,23 +297,11 @@ impl ScriptSkillService {
                 packet.extend_from_slice(&0_u16.to_le_bytes());
                 actor::notify_actor(&self.client_notification_sender, source, packet);
             }
-            "TF_DETOXIFY" | "AL_CURE" | "PR_STRECOVERY" => {
-                let kinds: &[StatusChangeKind] = match metadata.name.as_str() {
-                    "TF_DETOXIFY" => &[StatusChangeKind::Poison, StatusChangeKind::DeadlyPoison],
-                    "AL_CURE" => &[StatusChangeKind::Silence, StatusChangeKind::Blind, StatusChangeKind::Confusion],
-                    _ => &[
-                        StatusChangeKind::Stone,
-                        StatusChangeKind::StoneWait,
-                        StatusChangeKind::Freeze,
-                        StatusChangeKind::Stun,
-                        StatusChangeKind::Sleep,
-                        StatusChangeKind::NoRecovery,
-                    ],
-                };
+            ActorBehaviour::Cure { kinds, undead_follow_up } => {
                 for kind in kinds {
                     self.end_actor_target_status(server, state, source, request.target_id, *kind);
                 }
-                if metadata.name == "PR_STRECOVERY" && !player {
+                if undead_follow_up && !player {
                     if Self::undead_target(&status) {
                         self.start_actor_target_status(
                             server,
@@ -312,8 +321,8 @@ impl ScriptSkillService {
                     }
                 }
             }
-            "SA_DISPELL" => {
-                if fastrand::u8(0..100) < 50 + 10 * level {
+            ActorBehaviour::Dispel { chance } => {
+                if fastrand::u8(0..100) < chance {
                     if let Some(character) = state.characters_mut().get_mut(&request.target_id) {
                         if character.status.job != models::enums::class::JobName::SoulLinker.value() as u32 {
                             for kind in StatusEffectService::dispel_statuses(&mut character.status, false) {
@@ -327,26 +336,22 @@ impl ScriptSkillService {
                     }
                 }
             }
-            "PR_LEXDIVINA" => {
-                if status.has_status_change(StatusChangeKind::Silence) {
-                    self.end_actor_target_status(server, state, source, request.target_id, StatusChangeKind::Silence);
+            ActorBehaviour::Toggle(kind) => {
+                if status.has_status_change(kind) {
+                    self.end_actor_target_status(server, state, source, request.target_id, kind);
                 } else {
                     self.start_actor_target_status(
                         server,
                         state,
                         source,
                         request.target_id,
-                        StatusChangeRequest::guaranteed(
-                            StatusChangeKind::Silence,
-                            metadata.duration(level, true).unwrap_or(0),
-                            i32::from(level),
-                        ),
+                        StatusChangeRequest::guaranteed(kind, metadata.duration(level, true).unwrap_or(0), i32::from(level)),
                         1000,
                         tick,
                     )?;
                 }
             }
-            "MG_STONECURSE" => self.start_actor_target_status(
+            ActorBehaviour::StoneCurse => self.start_actor_target_status(
                 server,
                 state,
                 source,
@@ -355,9 +360,10 @@ impl ScriptSkillService {
                 0,
                 tick,
             )?,
-            "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
+            ActorBehaviour::Strip { kinds, full } => {
                 for effect in Self::strip_requests(
-                    &metadata.name,
+                    kinds,
+                    full,
                     request.skill_id,
                     level,
                     source.status.dex(),
@@ -368,7 +374,7 @@ impl ScriptSkillService {
                     self.start_actor_target_status(server, state, source, request.target_id, effect, 0, tick)?;
                 }
             }
-            "AL_TELEPORT" => {
+            ActorBehaviour::Teleport => {
                 if state
                     .map_flags_for(&source.map, source.instance)
                     .enabled(crate::server::model::map_flags::MapFlag::NoTeleport)
@@ -384,7 +390,7 @@ impl ScriptSkillService {
                     }));
                 }
             }
-            "TF_BACKSLIDING" => {
+            ActorBehaviour::BackSlide => {
                 if source.object_type != MapItemType::Mob {
                     return Err("Only monsters can back slide as actors".into());
                 }
@@ -419,10 +425,10 @@ impl ScriptSkillService {
                     instance.add_to_next_tick(MapEvent::MobRandomWarp(MobRandomWarp { mob_id: request.target_id }));
                 }
             }
-            name if Self::status_for_skill(name).is_some()
+            _ if Self::status_for_metadata(metadata).is_some()
                 || metadata.damage_flags.get("NoDamage").copied().unwrap_or(false) && metadata.status.is_some() =>
             {
-                let kind = Self::status_for_skill(name)
+                let kind = Self::status_for_metadata(metadata)
                     .or_else(|| metadata.status.as_deref().and_then(StatusChangeKind::from_name))
                     .ok_or("Unit skill status is unavailable")?;
                 if kind == StatusChangeKind::Provoke && Self::undead_target(&status) {
@@ -470,6 +476,24 @@ impl ScriptSkillService {
         }
         self.notify_actor_support(source, request, true);
         Ok(())
+    }
+
+    /// The point a skill acts on: its ground target, its own position for self skills, or the target's position.
+    fn actor_skill_point(
+        &self,
+        state: &ServerState,
+        source: &ScriptSkillActor,
+        request: &ScriptSkillCast,
+        metadata: &SkillMetadata,
+    ) -> Result<(u16, u16), String> {
+        if let Some(ground) = request.ground {
+            return Ok(ground);
+        }
+        if metadata.target_type.as_deref() == Some("Self") {
+            return Ok((source.x, source.y));
+        }
+        let (target, _) = self.actor_target_status(state, source, request.target_id)?;
+        Ok((target.x(), target.y()))
     }
 
     /// Element-change skills name their element in metadata; any other skill picks one at random.
@@ -620,6 +644,8 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unit skill metadata is unavailable")?;
+        let level = request.level as u8;
+        let behaviour = Self::actor_behaviour(metadata, level);
         if metadata.monster_skill() == Some(MonsterSkill::DarkBreath) {
             let level = u32::from(request.level).max(1);
             let percent = if level <= 5 { 100 / (2 * (6 - level)) } else { 50 };
@@ -632,9 +658,12 @@ impl ScriptSkillService {
             damage.set_signed_damage(amount);
             return self.queue_actor_damage(server, state, source, damage);
         }
-        if Self::uses_metadata_magic(&metadata.name) || Self::actor_npc_magic(metadata) {
-            let level = request.level as u8;
-            if metadata.name == "SL_SMA" {
+        if Self::metadata_magic(metadata) || Self::actor_npc_magic(metadata) {
+            let magic = match behaviour {
+                ActorBehaviour::Magic(profile) => profile,
+                _ => MagicProfile::default(),
+            };
+            if magic.consumes_sma {
                 self.end_actor_target_status(server, state, source, source.id, StatusChangeKind::Sma);
             }
             let (amount, context) = server
@@ -658,8 +687,7 @@ impl ScriptSkillService {
                     0,
                     tick,
                 )?;
-            } else if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN")
-                && level >= 7
+            } else if magic.grants_sma_from_level.is_some_and(|min_level| level >= min_level)
                 && !source
                     .status
                     .status_change(StatusChangeKind::Sma)
@@ -680,13 +708,21 @@ impl ScriptSkillService {
             }
             return Ok(());
         }
-        if let Some(radius) = Self::actor_splash_radius(metadata, request.level as u8) {
-            return self.execute_actor_splash(server, state, source, request, metadata, radius, tick);
+        let splash = match behaviour {
+            ActorBehaviour::Splash(profile) => Some(profile),
+            _ if Self::actor_npc_weapon(metadata) => Some(SplashProfile::default()),
+            _ => None,
+        };
+        if let Some(profile) = splash {
+            if let Some(radius) = Self::splash_radius(metadata, level) {
+                return self.execute_actor_splash(server, state, source, request, metadata, radius, profile, tick);
+            }
         }
         let mut damage = self.build_actor_offensive_damage(server, source, request, request.target_id, target, player, tick, None)?;
-        if request.skill_id == SkillEnum::ChPalmstrike.id() {
-            damage.attacked_at += PALM_STRIKE_DELAY;
-            return self.queue_actor_damage_after(server, state, source, damage, PALM_STRIKE_DELAY);
+        if let ActorBehaviour::Delayed { delay_ms, .. } = behaviour {
+            let delay = u128::from(delay_ms);
+            damage.attacked_at += delay;
+            return self.queue_actor_damage_after(server, state, source, damage, delay);
         }
         let landed = damage.landed;
         self.queue_actor_damage(server, state, source, damage)?;
@@ -749,10 +785,8 @@ impl ScriptSkillService {
             && !matches!(metadata.monster_skill(), Some(MonsterSkill::DarkBreath | MonsterSkill::GrandDarkness | MonsterSkill::EarthQuake))
     }
 
-    fn actor_splash_radius(metadata: &SkillMetadata, level: u8) -> Option<u16> {
-        if !matches!(metadata.name.as_str(), "MG_FIREBALL" | "WZ_FROSTNOVA" | "SM_MAGNUM") && !Self::actor_npc_weapon(metadata) {
-            return None;
-        }
+    /// The radius of an area skill, when its metadata gives one above zero.
+    fn splash_radius(metadata: &SkillMetadata, level: u8) -> Option<u16> {
         metadata
             .splash(level)
             .filter(|radius| *radius > 0)
@@ -767,6 +801,7 @@ impl ScriptSkillService {
         request: &ScriptSkillCast,
         metadata: &SkillMetadata,
         radius: u16,
+        profile: SplashProfile,
         tick: u128,
     ) -> Result<(), String> {
         let self_centered = metadata.target_type.as_deref() == Some("Self");
@@ -777,7 +812,7 @@ impl ScriptSkillService {
             (target.x(), target.y())
         };
         let level = request.level as u8;
-        if metadata.name == "SM_MAGNUM" {
+        if let (true, Some(element)) = (profile.self_element_buff, profile.element) {
             self.start_actor_target_status(
                 server,
                 state,
@@ -786,7 +821,7 @@ impl ScriptSkillService {
                 StatusChangeRequest::guaranteed(
                     StatusChangeKind::WeaponAttackElement,
                     metadata.duration(level, true).unwrap_or(10000),
-                    Element::Fire.value() as i32,
+                    element.value() as i32,
                 ),
                 0,
                 tick,
@@ -814,8 +849,8 @@ impl ScriptSkillService {
             if metadata.monster_skill() == Some(MonsterSkill::VampireGift) && landed && dealt > 0 {
                 self.heal_actor_target(server, state, source, source.id, dealt as u32, 0, tick)?;
             }
-            if metadata.name == "SM_MAGNUM" && landed {
-                self.knock_back_actor_target(server, state, source, id, player, 2);
+            if profile.knockback_cells > 0 && landed {
+                self.knock_back_actor_target(server, state, source, id, player, profile.knockback_cells);
             }
         }
         self.notify_actor_support(source, request, true);
@@ -865,7 +900,14 @@ impl ScriptSkillService {
         let offensive = object
             .as_offensive_skill()
             .ok_or("Unit skill requires an additional actor-specific handler")?;
+        let behaviour = object.actor_behaviour();
+        let profile = match behaviour {
+            ActorBehaviour::Splash(profile) => profile,
+            _ => SplashProfile::default(),
+        };
         let weapon = BattleService::is_weapon_skill(offensive);
+        let thrown = matches!(behaviour, ActorBehaviour::FixedWeapon { .. });
+        let always_lands = matches!(behaviour, ActorBehaviour::Delayed { always_lands: true, .. });
         let flags = (if weapon {
             BattleFlag::Weapon
         } else if offensive.is_magic() {
@@ -874,11 +916,7 @@ impl ScriptSkillService {
             BattleFlag::Misc
         })
         .as_flag()
-            | if request.skill_id == SkillEnum::TfThrowstone.id() {
-                BattleFlag::Weapon.as_flag()
-            } else {
-                0
-            }
+            | if thrown { BattleFlag::Weapon.as_flag() } else { 0 }
             | (if offensive.is_magic() || offensive.is_ranged() {
                 BattleFlag::Long
             } else {
@@ -887,36 +925,34 @@ impl ScriptSkillService {
             .as_flag()
             | BattleFlag::Skill.as_flag();
         let landed = !weapon
-            || request.skill_id == SkillEnum::ChPalmstrike.id()
+            || always_lands
             || server
                 .battle_service()
                 .skill_hits(&source.status, target, request.skill_id, request.level as u8);
         let mut damage = Self::actor_damage(source, request, target_id, tick, flags, landed);
         let amount = if !landed {
             0
-        } else if request.skill_id == SkillEnum::TfThrowstone.id() {
+        } else if let ActorBehaviour::FixedWeapon { amount } = behaviour {
             server
                 .battle_service()
-                .actor_misc_skill_damage(30, &source.status, target, &Element::Neutral, flags, request.skill_id)
+                .actor_misc_skill_damage(amount, &source.status, target, &Element::Neutral, flags, request.skill_id)
                 .min(i32::MAX as u32) as i32
         } else if weapon {
-            let magnum = request.skill_id == SkillEnum::SmMagnum.id();
-            let ratio = match (magnum, distance) {
+            let ratio = match (profile.distance_ratio, distance) {
                 (true, Some(distance)) => 1.0 + f32::from(request.level) * if distance <= 1 { 0.2 } else { 0.1 },
                 _ => offensive.dmg_atk().unwrap_or(1.0),
             };
+            let element = profile
+                .element
+                .unwrap_or_else(|| server.battle_service().attack_element(&source.status, Some(offensive)));
             server.battle_service().actor_physical_skill_damage_signed(
                 source.raw_attack,
                 &source.status,
                 target,
                 player,
                 ratio,
-                if magnum { 1 } else { offensive.hit_count() as i16 },
-                &if magnum {
-                    Element::Fire
-                } else {
-                    server.battle_service().attack_element(&source.status, Some(offensive))
-                },
+                if profile.single_hit { 1 } else { offensive.hit_count() as i16 },
+                &element,
                 flags,
                 request.skill_id,
             )
@@ -925,9 +961,9 @@ impl ScriptSkillService {
                 .battle_service()
                 .calculate_damage_with_context(&source.status, target, Some(offensive));
             damage.magic_context = context;
-            match damage.magic_context {
-                Some(mut context) if request.skill_id == SkillEnum::MgFireball.id() && distance == Some(2) => {
-                    context.modifier *= 0.75;
+            match (damage.magic_context, profile.far_magic_scale.filter(|_| distance == Some(2))) {
+                (Some(mut context), Some(scale)) => {
+                    context.modifier *= scale;
                     damage.magic_context = Some(context);
                     server.battle_service().magic_damage_from_context(&source.status, target, context)
                 }

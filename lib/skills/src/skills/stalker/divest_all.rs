@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // ST_FULLSTRIP - Divest All
@@ -160,5 +161,18 @@ impl Skill for DivestAll {
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Strip {
+            kinds: &[
+                StatusChangeKind::StripWeapon,
+                StatusChangeKind::StripShield,
+                StatusChangeKind::StripArmor,
+                StatusChangeKind::StripHelm,
+            ],
+            full: true,
+        }
     }
 }

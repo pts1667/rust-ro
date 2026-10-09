@@ -166,4 +166,9 @@ impl Skill for Dazzler {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::AreaStatus { at_target_point: false }
+    }
 }

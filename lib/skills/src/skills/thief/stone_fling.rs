@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // TF_THROWSTONE - Stone Fling
 pub struct StoneFling {
@@ -131,4 +132,21 @@ impl Skill for StoneFling {
         Element::Neutral
     }
 
+    #[inline(always)]
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![StatusInfliction::primary(StatusChangeKind::Stun, 500, self.level)];
+        if hit.caster_is_player {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Blind, 500, self.level));
+        }
+        effects
+    }
+    #[inline(always)]
+    fn status_alternatives(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::FixedWeapon { amount: 30 }
+    }
 }

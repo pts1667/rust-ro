@@ -126,4 +126,9 @@ impl Skill for SignumCrucis {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::AreaStatus { at_target_point: false }
+    }
 }

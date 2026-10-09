@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // PR_STRECOVERY - Status Recovery
@@ -120,5 +121,20 @@ impl Skill for StatusRecovery {
     #[inline(always)]
     fn client_type(&self) -> usize {
         16
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Cure {
+            kinds: &[
+                StatusChangeKind::Stone,
+                StatusChangeKind::StoneWait,
+                StatusChangeKind::Freeze,
+                StatusChangeKind::Stun,
+                StatusChangeKind::Sleep,
+                StatusChangeKind::NoRecovery,
+            ],
+            undead_follow_up: true,
+        }
     }
 }

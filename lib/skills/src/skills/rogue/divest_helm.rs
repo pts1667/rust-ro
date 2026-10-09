@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // RG_STRIPHELM - Divest Helm
@@ -150,5 +151,10 @@ impl Skill for DivestHelm {
     #[inline(always)]
     fn base_after_cast_act_delay(&self) -> u32 {
        1000
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Strip { kinds: &[StatusChangeKind::StripHelm], full: false }
     }
 }

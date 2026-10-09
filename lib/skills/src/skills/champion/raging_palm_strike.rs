@@ -191,4 +191,9 @@ impl Skill for RagingPalmStrike {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Delayed { delay_ms: 1000, always_lands: true }
+    }
 }
