@@ -16,7 +16,7 @@ use model::events::persistence_event::PersistenceEvent;
 use packets::packets_parser::parse;
 use script::ScriptVm;
 use script::skill::ScriptSkillService;
-use script_runtime::WasmRuntime;
+use crate::server::script::ItemVm;
 use tokio::runtime::Runtime;
 
 use crate::repository::Repository;
@@ -208,7 +208,7 @@ impl Server {
         repository: Arc<dyn Repository>,
         map_items: MapItems,
         npc_script_vm: Arc<ScriptVm>,
-        item_script_vm: Arc<WasmRuntime>,
+        item_script_vm: Arc<ItemVm>,
         client_notification_sender: SyncSender<Notification>,
         persistence_event_sender: SyncSender<PersistenceEvent>,
         runtime: Arc<Runtime>,

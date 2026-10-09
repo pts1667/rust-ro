@@ -14,6 +14,7 @@ use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::{CharacterZeny, GameEvent, CharacterDamage};
 use crate::server::model::events::map_event::{MapEvent, MobDamage, ScriptDropItem, ScriptMobCombat};
 use crate::server::model::status::StatusFromDb;
+use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::service::combat_trigger_service::{CombatEffect, CombatEffectTarget, CombatEvent, resolve};
 use crate::server::service::global_config_service::GlobalConfigService;
 pub use crate::server::service::item_healing_service::scale_item_healing;
@@ -542,11 +543,17 @@ fn run_auto_bonus(server: &Server, state: &mut ServerState, character: &mut Char
         return Ok(());
     }
     let pet_bonus = definition.source_pet_id != 0;
-    let entry = if pet_bonus { "run_pet_auto_bonus" } else { "run_bonus" };
+    let run_program = |host: ItemScriptHost, program_id: u32| {
+        if pet_bonus {
+            futures::executor::block_on(server.script_service().vm.execute(host, "run_pet_auto_bonus", program_id))
+        } else {
+            futures::executor::block_on(server.item_service().item_script_vm.run_program(host, program_id))
+        }
+    };
     let host = server
         .item_service()
         .prepare_host(server, character, definition.source_item_id, !pet_bonus);
-    let (host, result) = futures::executor::block_on(server.script_service().vm.execute(host, entry, definition.program_id));
+    let (host, result) = run_program(host, definition.program_id);
     result.map_err(|error| host.error.clone().unwrap_or(error))?;
     let bonuses = host.bonuses.drain();
     let mut effects = host.effects;
@@ -555,7 +562,7 @@ fn run_auto_bonus(server: &Server, state: &mut ServerState, character: &mut Char
             .item_service()
             .prepare_host(server, character, definition.source_item_id, true);
         visual.variables.extend(host.variables);
-        let (visual, result) = futures::executor::block_on(server.script_service().vm.execute(visual, entry, definition.visual_program_id));
+        let (visual, result) = run_program(visual, definition.visual_program_id);
         result.map_err(|error| visual.error.clone().unwrap_or(error))?;
         effects.extend(visual.effects);
     }

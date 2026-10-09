@@ -154,7 +154,7 @@ cargo run --package tools --bin scripts-build
 
 The `scripting` configuration specifies `module_path`, `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. Restart after rebuilding executable script code. [Script architecture and migration details](docs/adr/3-wasmtime.md).
 
-The legacy NPC text files are offline import inputs. New behavior is written in `scripts/src/npcs.rs`; item implementations are in `scripts/src/items.rs`. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
+The legacy NPC text files are offline import inputs. New behavior is written in `scripts/src/npcs.rs`; item implementations are in `scripts/items/src/generated.rs`. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
 
 Run from the repository root:
 

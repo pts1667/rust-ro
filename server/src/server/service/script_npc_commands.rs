@@ -167,6 +167,11 @@ pub(crate) fn rathena_constant(name: &str) -> Option<Value> {
         return Some(Value::Number(location.as_flag() as i32));
     }
     match name {
+        "EQP_SHADOW_ACC_RL" => return Some(Value::Number((EquipmentLocation::ShadowAccR.as_flag() | EquipmentLocation::ShadowAccL.as_flag()) as i32)),
+        "CD_GUILD_ID" => return Some(Value::Number(i32::from(crate::server::service::castle_service::CD_GUILD_ID))),
+        // card slots per item; enchant cards are not modelled, so no item reports this subtype
+        "MAX_SLOTS" => return Some(Value::Number(4)),
+        "CARD_ENCHANT" => return Some(Value::Number(1)),
         "SKILL_PERM" => return Some(Value::Number(0)),
         "SKILL_TEMP" => return Some(Value::Number(1)),
         "SKILL_TEMPLEVEL" => return Some(Value::Number(2)),

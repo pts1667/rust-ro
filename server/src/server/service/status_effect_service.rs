@@ -1239,7 +1239,7 @@ mod tests {
         crate::tests::common::before_all();
         crate::server::service::status_service::StatusService::init(
             crate::server::service::global_config_service::GlobalConfigService::instance(),
-            crate::tests::common::test_script_vm(),
+            crate::tests::common::test_item_vm(),
         );
         let mut status = Status { hp: 100, max_hp: 100, ..Default::default() };
         let mut elemental = StatusChangeRequest::guaranteed(StatusChangeKind::ElementalChange, 60000, 2);

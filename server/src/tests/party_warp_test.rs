@@ -113,7 +113,7 @@ fn compiled_giant_fly_wing_commits_source_then_routes_filtered_party_warps() {
     }).unwrap();
     character.add_items(context.runtime().block_on(repository.character_inventory_fetch(character.char_id as i32)).unwrap());
     let host = context.server.item_service().prepare_host(&context.server, &character, 12212, true);
-    let (host, outcome) = context.runtime().block_on(crate::tests::common::test_script_vm().execute(host, "run_item", 12212));
+    let (host, outcome) = context.runtime().block_on(crate::tests::common::test_item_vm().run_item(host, 12212));
     outcome.unwrap();
     let action = CharacterUseItem { char_id: character.char_id, target_char_id: character.char_id, index: 0 };
     let source = character.get_item_from_inventory(0).unwrap().clone();

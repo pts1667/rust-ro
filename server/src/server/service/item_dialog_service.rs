@@ -37,7 +37,7 @@ impl ItemService {
         let timeout = std::time::Duration::from_secs(server.configuration.scripting.conversation_timeout_secs.max(1));
         let task_server = server.clone();
         server.runtime().spawn(async move {
-            let (effects, error) = match tokio::time::timeout(timeout, vm.execute(host, "run_item", entry)).await {
+            let (effects, error) = match tokio::time::timeout(timeout, vm.run_item(host, entry)).await {
                 Ok((host, result)) => (host.item.effects, result.err().map(|error| host.item.error.unwrap_or(error))),
                 Err(_) => (vec![], Some("Item conversation timed out".into())),
             };

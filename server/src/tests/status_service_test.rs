@@ -30,7 +30,7 @@ fn before_each_with_latch(latch_size: usize) -> StatusServiceTestContext {
             persistence_event_receiver,
             count_down_latch,
         ),
-        status_service: StatusService::new(GlobalConfigService::instance(), crate::tests::common::test_script_vm()),
+        status_service: StatusService::new(GlobalConfigService::instance(), crate::tests::common::test_item_vm()),
     }
 }
 

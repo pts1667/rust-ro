@@ -87,18 +87,50 @@ Out-of-range numbers are clamped to the nearest bound. Long text is cut to `max`
 
 ## Game actions
 
-Actions are grouped by domain. Each group is a thin typed wrapper over one `Function` variant, and checks the argument order against the server handler:
+Actions are grouped by domain. Each group is a thin typed wrapper over one or more `Function` variants. Argument order is taken from the server handler. The main wrappers have unit tests that assert the arguments sent; none of these calls has been run against a live client yet.
 
-- `ctx.items()`: `count(item)`, `give(item, amount)`, `take(item, amount)`, `is_equipped(item)`.
+- `ctx.items()`: `count(item)`, `give(item, amount)`, `take(item, amount)`, `is_equipped(item)`, `check_weight(&[(item, amount)])`, `name(item)`, `place(item, amount, map, x, y)` (rathena `makeitem`, dropped on the floor for everyone).
 - `ctx.quests()`: `start`, `complete`, `erase`, `change(old, new)`, `check(quest)`, `progress(quest)`.
-- `ctx.timers()`: `init`, `start`, `stop`, for the current NPC's timer.
-- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`.
-- `ctx.fx()`: `cutin(image, position)`, `special_effect(effect)`.
-- `ctx.instance()`: `npc_name(npc, id)`, `map_name(map, id)`, `id()`. The `id` argument is optional: `None` means the player's own instance.
-- `ctx.party()`: `is_leader(party_id)`.
+- `ctx.timers()`: `init`, `start`, `stop`, for the current NPC's timer, and `set_elapsed(ms, npc)` for the timer of `npc` (`None` for the current NPC).
+- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`, `id(npc)` (`None` for the current NPC), `name()`, `visible_name()`, `hidden_name()`, `map_name()` for the current NPC, `variable(".name", npc, index)` and `set_variable(".name", npc, index, value)` for another NPC's variables.
+- `ctx.fx()`: `cutin(image, position)`, `special_effect(effect)`, `sound_effect(file, kind)`, `sound_effect_all(file, kind, map, area)`.
+- `ctx.party()`: `is_leader(party_id)`, `name(party_id)`.
+- `ctx.player()` also has `char_id()`, `party_id()`, `guild_id()`, `account_id()` for the attached player, `skill_level(skill)`, and `give_experience(base, job)`.
+- `ctx.guild()`: `name(guild)`, `master_name(guild)`, `is_master(guild)`, `skill_level(guild, skill)`, `experience(amount)`, `open_storage()`.
+- `ctx.instance()`: `create(name, mode)`, `enter(name, position)`, `warp_all(map, x, y, id, flags)`, `destroy(id)`, `announce(id, message)`, `npc_name(npc, id)`, `map_name(map, id)`, `id()`, `check_party(party, amount)`, `check_guild(guild, amount)`, `info(name, kind)`, `info_at(name, index)`, `live_info(kind, id)`, `list(map, mode)`, `var(name, id)`, `set_var(name, value, id)`. An `id` of `None` means the player's own instance. `enter_with(name, EnterOptions)` also picks the character and an explicit instance.
+- `ctx.battleground()`: `create(cemetery, events)`, `join(bg, char, destination)`, `leave(char)`, `desert(char)`, `destroy(bg)`, `warp(bg, spot)`, `set_cemetery(bg, x, y)`, `members(bg)`, `member_count(bg)`, `count_in_area(bg, map, area)`, `update_score(map, first, second)`, `reserve(map, ended)`, `unbook(map)`, `info(name, kind)`, `monster(bg, spot, name, class, event)`, `set_monster_team(mob, bg)`. A `char` of `0` means the attached player.
+- `ctx.waiting_room()`: `open(title, limit, rules)`, `delete(npc)`, `kick(npc, name)`, `kick_all(npc)`, `enable_event(npc)`, `disable_event(npc)`, `state(kind, npc)`, `title(npc)`, `event(npc)`, `warp(map, x, y, count)`. `npc` of `None` means the current NPC. `title` and `event` return `None` when the NPC has no room.
 - `ctx.warp(map, x, y)`, `ctx.set_npc_visible(npc, visible)`.
-- `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.announce(message, flag)`.
+- `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.kill_monster(map, label)`, `ctx.announce(message, flag)`.
+- `ctx.map_announce(map, message, flag, color)`, `ctx.view_point(action, x, y, number, color)`, `ctx.map_users(map)`, `ctx.mob_count(map, label)`, `ctx.time_string(format, limit)`.
 - `ctx.rand(max)` for `0..max - 1`, and `ctx.rand_range(min, max)` for both ends included, as rathena's `rand`.
+- `ctx.map_warp(source, destination)`, `ctx.area_warp(source, area, destination)`, `ctx.area_heal(map, area, hp, sp)` (percentages), `ctx.time_field(field)`, `ctx.time_tick(kind)`.
+- `ctx.sleep(ms)` and `ctx.progress_bar(color, seconds)`: both pause the script while the game keeps running.
+- `ctx.npc().set_display(npc, sprite)`.
+- `ctx.set_cell(map, area, cell, enabled)` (`constants::CELL_*`), `ctx.set_map_flag(map, flag, values)` and `ctx.remove_map_flag(map, flag, values)` (`constants::MF_*`; `values` are the flag's own arguments, such as a skill id).
+- `ctx.player()` also has `equipped_in(slot)` and `equipped_card(slot, card)` (`constants::EQI_*` slots), `save_point(map, x, y, range, char_id)`, `grant_skill(skill, level, SkillGrant)` (the `SkillGrant` variants are rathena's `skill` flags 0 to 3), `hire_mercenary(class, milliseconds)` and `map_xy()` for the attached player's map and position.
+- `ctx.pet()`: `info(PetInfo, char_id)` for the active pet of the attached player (or of `char_id`), and `catch(lure, PetCatch)` to start taming with a lure item or a pet class.
+- `ctx.guardian(map, x, y, name, class, event)` spawns a castle guardian. rathena's guardian index is not sent yet, see [script-server-gaps.md](script-server-gaps.md).
+- `ctx.player()` also has `has_cart(target)`, `has_falcon(target)`, `is_riding(target)`, `is_mounting(target)`, `read_param(name)`, `change_job(job)`, `end_status(kind, target)`, `set_look(type, value)`, `equipped_item_id(slot)`, `equipped_refine(slot)`, `partner_id(target)`. A `target` of `None` means the attached player.
+
+### Bonuses
+
+`ctx.bonus()` applies item and effect bonuses. Names are enum variants, so a typo is a compile error:
+
+```rust
+ctx.bonus().apply(Bonus::Str(5))?;               // bonus bStr, 5;
+ctx.bonus().apply(Bonus::NoCastCancel)?;         // bonus bNoCastCancel;  (flags take no value)
+ctx.bonus().apply2(Bonus2::AddRace(constants::RC_DemiHuman, 5))?;  // bonus2 bAddRace, race, 5;
+ctx.bonus().auto_spell(AutoSpell::new("MC_LOUD", 1, 10))?; // bonus3 bAutoSpell, skill, level, rate;
+ctx.bonus().auto_bonus(AutoBonus { program: 1, rate: 10, duration: 5000, battle_flags: None, visual_program: None })?;
+```
+
+- `Bonus`, `Bonus2` and `Bonus3` are generated from the names the scripts use (`tools/scripts-import/gen_sdk2_bonus.py`). A name used as a flag takes no value; every other name takes a value (`Bonus`) or a key and a value (`Bonus2`) or three values (`Bonus3`).
+- `AutoSpell`, `AutoSpellOnSkill`, `AutoBonus` and `AutoSkillBonus` are hand-written. The auto-spell struct picks `bonus3`, `bonus4` or `bonus5` from which optional fields are set, and `battle_flags` requires `flags`.
+- Key arguments of `Bonus2` and `Bonus3` are plain numbers or constants such as `RC_DemiHuman`. Their meaning comes from the bonus name, so check the rathena reference for the name you use.
+- `bUnbreakableHelm` is written as a flag. Four converted scripts also pass `0` to it; the server ignores the value, so the typed form drops it too.
+
+Some calls take a positional list of optional values. The wrappers fill any gap with the server's default, so passing only the later options still sends a correct list.
 
 ## Constants
 
@@ -124,11 +156,34 @@ assert_eq!(transport.calls(Function::Mes).len(), 2);
 
 `MockTransport::silent()` answers everything with `0`. `transport.requests()` and `transport.calls(function)` return what the script asked for.
 
+## Item scripts
+
+Item scripts have two typed contexts, as [ADR 5](adr/5-item-script-api.md) explains. `ItemBonus` runs when the item is worn or refined and can only read the wearer and describe bonuses. `ItemUse` runs when the item is consumed and also has effects and dialogue:
+
+```rust
+fn red_potion(item: &ItemUse) -> Script {
+    item.heal(45, 0)?;                        // queued, applied when the script returns Ok
+    if item.menu(&["Keep it", "Use it now"])? == 1 {
+        item.mes("Your wounds close.")?;
+    }
+    item.close()
+}
+```
+
+- Effects are queued. A cancelled conversation applies none of them and does not consume the item.
+- `ItemUse::read` and `write` take character variables only. Scoped names (`#`, `$`, `@`, `'`, `.`) are refused.
+- `read_any` and `write_any` take the name as the script spells it, scope prefix included. The host answers a scoped read from the value it loaded before the script ran, and every name a script reads is listed in its manifest entry, so the generator writes these calls for converted items.
+- `.@` names are Rust locals.
+
+The item layer is `lib/script-sdk-2/src/item.rs`. Every item is in the items module, `scripts/items`, which `scripts/items/src/generated.rs` generates from the item sources with `tools/scripts-import/import_items.py`. A body without effects is an `ItemBonus` function and the rest are `ItemUse` functions. `item_module!` registers them by item id, and the server runs an item through `Entry::Item(id)`, which falls back to the bonus table for passive items.
+
 ## Not covered yet
 
-- Typed groups for `battleground`, `guild`, the waiting room, and the instance enter, create and warp calls. Those take several arguments, so they need their own pass over the server handlers.
-- `KillMonster`, `CheckWeight` and the sound effects. Their argument handling is not yet verified.
-- Most of the roughly 250 `Function` variants. Use `ctx.call` for them until they are added.
+- `Function` variants that only an item script can use. The item script queues them, and the server applies them when the item is used. An NPC script that calls one gets `Unsupported game request`, so they have no wrapper here:
+  - `PercentHeal`, `ItemHeal`, `Heal`, `ItemSkill`, `SkillEffect`, `Produce`, `Cooking`.
+  - `GetRefine` and `RandomGroupItem`, which read the item being used.
+- Items are still generated by the legacy converter, so this list is what an item-script API would have to cover.
+- Text fields of the waiting room state other than `title` and `event` (kind `5`), which the server leaves empty.
 - Registering scripts by name with a module. The host still calls the generated dispatch.
 
 Known server gaps that affect these calls are listed in [script-server-gaps.md](script-server-gaps.md). The design is recorded in [ADR 4](adr/4-typed-script-sdk.md).

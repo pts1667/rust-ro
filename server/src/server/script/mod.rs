@@ -2,7 +2,7 @@ use std::mem;
 
 pub use script_runtime::WasmRuntime;
 pub use script_sdk::Value;
-pub use vm::ScriptVm;
+pub use vm::{ItemVm, ScriptVm};
 
 pub(crate) mod bonus;
 pub mod constant;

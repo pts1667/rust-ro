@@ -26,7 +26,7 @@ use std::time::Instant;
 
 use configuration::configuration::Config;
 use server::Server;
-use server::script::ScriptVm;
+use server::script::{ItemVm, ScriptVm};
 use tokio::runtime::Runtime;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::time::ChronoLocal;
@@ -86,8 +86,11 @@ pub async fn main() {
     update_item_and_mob_static_db(&mut items, &mobs);
 
     // Setup script virtual machine for NPC
-    let item_script_vm = create_script_vm();
-    let npc_script_vm = Arc::new(ScriptVm::new(item_script_vm.clone(), create_script_modules()));
+    let legacy_script_vm = create_script_vm();
+    let script_modules = create_script_modules();
+    let items_module = script_modules.get("items").cloned().expect("scripting.modules must list the items module");
+    let item_script_vm = Arc::new(ItemVm::new(legacy_script_vm.clone(), items_module));
+    let npc_script_vm = Arc::new(ScriptVm::new(legacy_script_vm, script_modules));
     let scripts = load_scripts();
 
     // Loading configs

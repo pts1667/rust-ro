@@ -11,6 +11,10 @@ fn runtime() -> Arc<WasmRuntime> {
     crate::tests::common::test_script_vm()
 }
 
+fn item_vm() -> Arc<crate::server::script::ItemVm> {
+    crate::tests::common::test_item_vm()
+}
+
 #[test]
 fn compiled_potion_stages_healing_without_mutating_character_status() {
     let status = Status {
@@ -18,7 +22,7 @@ fn compiled_potion_stages_healing_without_mutating_character_status() {
         sp: 4,
         ..Status::default()
     };
-    let (host, result) = futures::executor::block_on(runtime().execute(ItemScriptHost::consumable(status, 501), "run_item", 501));
+    let (host, result) = futures::executor::block_on(item_vm().run_item(ItemScriptHost::consumable(status, 501), 501));
     assert!(result.is_ok(), "{:?}", host.error);
     assert_eq!(host.status.hp, 10);
     assert_eq!(host.status.sp, 4);
@@ -33,7 +37,7 @@ fn compiled_potion_stages_healing_without_mutating_character_status() {
 
 #[test]
 fn equipment_context_rejects_consumable_healing_effects() {
-    let (host, result) = futures::executor::block_on(runtime().execute(
+    let (host, result) = futures::executor::block_on(item_vm().run_item(
         ItemScriptHost::bonuses(
             Status {
                 hp: 10,
@@ -41,7 +45,6 @@ fn equipment_context_rejects_consumable_healing_effects() {
             },
             526,
         ),
-        "run_item",
         526,
     ));
     assert!(result.is_err());
@@ -63,7 +66,7 @@ fn generated_static_bonus_matches_original_item() {
         .unwrap()["id"]
         .as_u64()
         .unwrap() as u32;
-    let (host, result) = futures::executor::block_on(runtime().execute(ItemScriptHost::bonuses(Status::default(), id), "run_item", id));
+    let (host, result) = futures::executor::block_on(item_vm().run_item(ItemScriptHost::bonuses(Status::default(), id), id));
     assert!(result.is_ok(), "{:?}", host.error);
     assert_eq!(host.bonuses.drain(), vec![BonusType::Str(1)]);
 }
@@ -74,7 +77,7 @@ fn item_catalog_fingerprint_rejects_stale_bundle_metadata() {
     let bytes: Vec<_> = bytes.into_iter().filter(|byte| *byte != b'\r').collect();
     let digest = md5::compute(&bytes);
     let fingerprint = u64::from_le_bytes(digest.0[..8].try_into().unwrap());
-    assert_eq!(runtime().catalog_hash().unwrap(), fingerprint);
+    assert_eq!(item_vm().catalog_hash().unwrap(), fingerprint);
     let mut changed = bytes;
     changed.push(b' ');
     let nonce = std::time::SystemTime::now()
@@ -84,7 +87,7 @@ fn item_catalog_fingerprint_rejects_stale_bundle_metadata() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("../target/stale-script-manifest-{nonce}.json"));
     std::fs::write(&path, changed).unwrap();
     let rejected = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        crate::server::service::item_service::ItemService::load_item_scripts(&mut vec![], runtime(), &path)
+        crate::server::service::item_service::ItemService::load_item_scripts(&mut vec![], item_vm(), &path)
     }));
     std::fs::remove_file(path).unwrap();
     assert!(rejected.is_err());
@@ -99,7 +102,7 @@ fn compiled_catalog_accepts_windows_line_endings() {
         .as_nanos();
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("../target/crlf-script-manifest-{nonce}.json"));
     std::fs::write(&path, source.replace("\r\n", "\n").replace('\n', "\r\n")).unwrap();
-    let counts = crate::server::service::item_service::ItemService::load_item_scripts(&mut vec![], runtime(), &path);
+    let counts = crate::server::service::item_service::ItemService::load_item_scripts(&mut vec![], item_vm(), &path);
     std::fs::remove_file(path).unwrap();
     assert_eq!(counts, (0, 0));
 }

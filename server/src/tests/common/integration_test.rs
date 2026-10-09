@@ -32,7 +32,7 @@ pub async fn before_all() -> Arc<Server> {
         let runtime = Arc::new(Runtime::new().unwrap());
 
         let npc_script_vm = crate::tests::common::test_npc_vm();
-        let item_script_vm = crate::tests::common::test_script_vm();
+        let item_script_vm = crate::tests::common::test_item_vm();
 
         let database_config = DatabaseConfig {
             items_path: "../config/items.json".into(),

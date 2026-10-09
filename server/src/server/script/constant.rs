@@ -34,6 +34,24 @@ fn quest_constant(name: &str) -> Option<i32> {
     })
 }
 
+/// rathena matches constant names without regard to case, so `Ele_fire` and `Ele_Fire` are the same element.
+fn element_constant(name: &str) -> Option<Element> {
+    Some(match name.to_ascii_lowercase().as_str() {
+        "ele_neutral" => Element::Neutral,
+        "ele_water" => Element::Water,
+        "ele_earth" => Element::Earth,
+        "ele_fire" => Element::Fire,
+        "ele_wind" => Element::Wind,
+        "ele_poison" => Element::Poison,
+        "ele_holy" => Element::Holy,
+        "ele_dark" => Element::Dark,
+        "ele_ghost" => Element::Ghost,
+        "ele_undead" => Element::Undead,
+        "ele_all" => Element::AllElement,
+        _ => return None,
+    })
+}
+
 pub fn load_constant(constant_name: &String) -> Option<Value> {
     if constant_name.starts_with("MF_") {
         return crate::server::model::map_flags::MapFlag::from_name(constant_name).ok().map(|flag| Value::Number(flag as i32));
@@ -52,6 +70,9 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
     }
     if let Some(value) = quest_constant(constant_name) {
         return Some(Value::Number(value));
+    }
+    if let Some(element) = element_constant(constant_name) {
+        return Some(Value::new_number(element.value() as i32));
     }
     if constant_name.starts_with("SKILLDMG_") {
         return Some(Value::Number(match constant_name.as_str() {"SKILLDMG_PC"=>0,"SKILLDMG_MOB"=>1,"SKILLDMG_BOSS"=>2,"SKILLDMG_OTHER"=>3,"SKILLDMG_CASTER"=>5,_=>return None}));
@@ -1302,16 +1323,6 @@ pub fn load_constant(constant_name: &String) -> Option<Value> {
             "PORTAL" => Value::new_number(10007),
             "THANATOS_BATTLE" => Value::new_number(10008),
             "THANATOS_KEEP" => Value::new_number(10009),
-            "Ele_Neutral" => Value::new_number(Element::Neutral.value() as i32),
-            "Ele_Water" => Value::new_number(Element::Water.value() as i32),
-            "Ele_Earth" => Value::new_number(Element::Earth.value() as i32),
-            "Ele_Fire" => Value::new_number(Element::Fire.value() as i32),
-            "Ele_Wind" => Value::new_number(Element::Wind.value() as i32),
-            "Ele_Poison" => Value::new_number(Element::Poison.value() as i32),
-            "Ele_Holy" => Value::new_number(Element::Holy.value() as i32),
-            "Ele_Dark" => Value::new_number(Element::Dark.value() as i32),
-            "Ele_Ghost" => Value::new_number(Element::Ghost.value() as i32),
-            "Ele_Undead" => Value::new_number(Element::Undead.value() as i32),
             "Class_Normal" => Value::new_number(MobClass::Normal.value() as i32),
             "Class_Boss" => Value::new_number(MobClass::Boss.value() as i32),
             "Class_Guardian" => Value::new_number(MobClass::Guardian.value() as i32),
@@ -1453,5 +1464,17 @@ pub fn get_battle_flag(flag_name: &String) -> Value {
         // The 20120307 client has no refine window.
         "feature.refineui" => Value::new_number(0),
         &_ => panic!("unknown battle flag {flag_name}"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn element_names_ignore_case_and_include_all_elements() {
+        assert_eq!(load_constant(&"Ele_fire".into()), Some(Value::new_number(Element::Fire.value() as i32)));
+        assert_eq!(load_constant(&"Ele_earth".into()), Some(Value::new_number(Element::Earth.value() as i32)));
+        assert_eq!(load_constant(&"Ele_All".into()), Some(Value::new_number(10)));
     }
 }

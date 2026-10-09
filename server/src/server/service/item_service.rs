@@ -3,13 +3,13 @@ use std::sync::mpsc::SyncSender;
 
 use models::enums::bonus::BonusType;
 use models::status::Status;
-use script_runtime::WasmRuntime;
 use serde::Deserialize;
 
 use crate::repository::ItemRepository;
 use crate::repository::model::item_model::ItemModel;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::persistence_event::PersistenceEvent;
+use crate::server::script::ItemVm;
 use crate::server::script::item_script_handler::ItemScriptHost;
 use crate::server::service::global_config_service::GlobalConfigService;
 
@@ -19,7 +19,7 @@ pub struct ItemService {
     pub(crate) persistence_event_sender: SyncSender<PersistenceEvent>,
     pub(crate) repository: Arc<dyn ItemRepository>,
     pub(crate) configuration_service: &'static GlobalConfigService,
-    pub(crate) item_script_vm: Arc<WasmRuntime>,
+    pub(crate) item_script_vm: Arc<ItemVm>,
 }
 
 #[derive(Deserialize)]
@@ -46,7 +46,7 @@ impl ItemService {
         client_notification_sender: SyncSender<Notification>,
         persistence_event_sender: SyncSender<PersistenceEvent>,
         repository: Arc<dyn ItemRepository>,
-        item_script_vm: Arc<WasmRuntime>,
+        item_script_vm: Arc<ItemVm>,
         configuration_service: &'static GlobalConfigService,
     ) -> Self {
         Self {
@@ -58,7 +58,7 @@ impl ItemService {
         }
     }
 
-    pub fn convert_script_into_bonuses(items: &mut Vec<ItemModel>, vm: Arc<WasmRuntime>) -> (i32, i32) {
+    pub fn convert_script_into_bonuses(items: &mut Vec<ItemModel>, vm: Arc<ItemVm>) -> (i32, i32) {
         Self::load_item_scripts(
             items,
             vm,
@@ -66,7 +66,7 @@ impl ItemService {
         )
     }
 
-    pub fn load_item_scripts(items: &mut Vec<ItemModel>, vm: Arc<WasmRuntime>, path: impl AsRef<std::path::Path>) -> (i32, i32) {
+    pub fn load_item_scripts(items: &mut Vec<ItemModel>, vm: Arc<ItemVm>, path: impl AsRef<std::path::Path>) -> (i32, i32) {
         let metadata_bytes: Vec<u8> = std::fs::read(path)
             .expect("Cannot load item script manifest")
             .into_iter()
@@ -104,11 +104,7 @@ impl ItemService {
                 dynamic += 1;
                 continue;
             }
-            let (host, result) = futures::executor::block_on(vm.execute(
-                ItemScriptHost::bonuses(Status::default(), item.id as u32),
-                "run_item",
-                item.id as u32,
-            ));
+            let (host, result) = futures::executor::block_on(vm.run_item(ItemScriptHost::bonuses(Status::default(), item.id as u32), item.id as u32));
             if let Err(error) = result {
                 panic!("Cannot load static item bonuses {}: {}", item.id, host.error.unwrap_or(error));
             }

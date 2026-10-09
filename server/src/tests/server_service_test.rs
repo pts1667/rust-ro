@@ -23,7 +23,7 @@ use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::mocked_repository::MockedRepository;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{TestContext, create_mpsc, test_script_vm};
+use crate::tests::common::{TestContext, create_mpsc, test_item_vm};
 
 #[path = "native_skill_payment_test.rs"]
 mod native_payment_tests;
@@ -127,7 +127,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
     let server_task_queue = Arc::new(TasksQueue::new());
     let movement_task_queue = Arc::new(TasksQueue::new());
     let count_down_latch = CountDownLatch::new(latch_size);
-    StatusService::init(GlobalConfigService::instance(), test_script_vm());
+    StatusService::init(GlobalConfigService::instance(), test_item_vm());
     let skill_service = SkillService::new(
         client_notification_sender.clone(), persistence_event_sender.clone(),
         BattleService::new(client_notification_sender.clone(), StatusService::instance(), GlobalConfigService::instance(), BattleResultMode::Normal),
@@ -175,7 +175,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
             client_notification_sender.clone(),
             persistence_event_sender.clone(),
             repository.clone(),
-            test_script_vm(),
+            test_item_vm(),
             GlobalConfigService::instance(),
         ),
         ScriptSkillService::new(

@@ -1,6 +1,5 @@
 use script_sdk::{ABI_VERSION, Context, Request};
 
-mod items;
 mod battleground_arena;
 mod battleground_kvm;
 mod battleground_npcs;
@@ -8,7 +7,6 @@ mod battleground_tierra;
 mod castle_npcs;
 mod wedding_npcs;
 mod npcs;
-mod functions;
 mod events;
 mod pets;
 mod rt;
@@ -17,11 +15,6 @@ mod generated;
 #[no_mangle]
 pub extern "C" fn script_abi() -> u32 {
     ABI_VERSION
-}
-
-#[no_mangle]
-pub extern "C" fn script_catalog_hash() -> u64 {
-    items::CATALOG_HASH
 }
 
 fn finish(result: Result<(), String>) -> i32 {
@@ -35,18 +28,8 @@ fn finish(result: Result<(), String>) -> i32 {
 }
 
 #[no_mangle]
-pub extern "C" fn run_item(id: u32) -> i32 {
-    finish(items::run(&Context, id))
-}
-
-#[no_mangle]
 pub extern "C" fn run_npc(id: u32) -> i32 {
     finish(npcs::run(&Context, id))
-}
-
-#[no_mangle]
-pub extern "C" fn run_bonus(id: u32) -> i32 {
-    finish(items::run_bonus(&Context, id))
 }
 
 #[no_mangle]

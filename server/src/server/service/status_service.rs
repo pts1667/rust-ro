@@ -7,7 +7,7 @@ use models::enums::{EnumStackable, EnumWithMaskValueU32, EnumWithMaskValueU64, E
 use models::item::Wearable;
 use models::status::{Status, StatusSnapshot};
 use models::status_bonus::StatusBonus;
-use script_runtime::WasmRuntime;
+use crate::server::script::ItemVm;
 
 use crate::repository::model::item_model::ItemModel;
 use crate::server::model::item_combos;
@@ -21,11 +21,11 @@ static SERVICE_INSTANCE_INIT: Once = Once::new();
 #[allow(dead_code)]
 pub struct StatusService {
     configuration_service: &'static GlobalConfigService,
-    item_script_vm: Arc<WasmRuntime>,
+    item_script_vm: Arc<ItemVm>,
 }
 
 impl StatusService {
-    pub fn new(configuration_service: &'static GlobalConfigService, item_script_vm: Arc<WasmRuntime>) -> StatusService {
+    pub fn new(configuration_service: &'static GlobalConfigService, item_script_vm: Arc<ItemVm>) -> StatusService {
         StatusService {
             configuration_service,
             item_script_vm,
@@ -36,7 +36,7 @@ impl StatusService {
         unsafe { (*&raw const SERVICE_INSTANCE).as_ref().unwrap() }
     }
 
-    pub fn init(configuration_service: &'static GlobalConfigService, item_script_vm: Arc<WasmRuntime>) {
+    pub fn init(configuration_service: &'static GlobalConfigService, item_script_vm: Arc<ItemVm>) {
         SERVICE_INSTANCE_INIT.call_once(|| unsafe {
             SERVICE_INSTANCE = Some(StatusService::new(configuration_service, item_script_vm));
         });
@@ -404,7 +404,7 @@ impl StatusService {
         let mut script_status = status.clone();
         script_status.equipment_bonuses = models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(StatusBonus::new).collect());
         let host = ItemScriptHost::bonuses(script_status, script_id);
-        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", script_id));
+        let (host, result) = futures::executor::block_on(self.item_script_vm.run_item(host, script_id));
         if let Err(error) = result {
             error!("Failed to execute Wasm combo script {}: {}", script_id, error);
         } else {
@@ -435,7 +435,7 @@ impl StatusService {
         script_status.equipment_bonuses =
             models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(models::status_bonus::StatusBonus::new).collect());
         let host = ItemScriptHost::bonuses(script_status, item_model.id as u32);
-        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", item_model.id as u32));
+        let (host, result) = futures::executor::block_on(self.item_script_vm.run_item(host, item_model.id as u32));
         if let Err(error) = result {
             error!("Failed to execute Wasm item script {}: {}", item_model.id, error);
         } else {
@@ -920,7 +920,7 @@ mod tests {
     fn test_snapshot_bonuses_have_temporary_bonuses() {
         // Given
         common::before_all();
-        let service = StatusService::new(GlobalConfigService::instance(), common::test_script_vm());
+        let service = StatusService::new(GlobalConfigService::instance(), common::test_item_vm());
         let mut status = Status::default();
         status.temporary_bonuses.add(TemporaryStatusBonus::with_duration(
             BonusType::Agi(10),

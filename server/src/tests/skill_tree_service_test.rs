@@ -19,7 +19,7 @@ fn before_each() -> SkillTreeServiceTestContext {
 
 fn before_each_with_latch(latch_size: usize) -> SkillTreeServiceTestContext {
     common::before_all();
-    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_script_vm());
+    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_item_vm());
     let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
     let count_down_latch = CountDownLatch::new(latch_size);

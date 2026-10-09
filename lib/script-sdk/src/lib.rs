@@ -14,6 +14,10 @@ pub enum Entry {
     Npc(String),
     /// A labelled event, as `"<npc name>::<label>"`.
     Event(String),
+    /// An item, by item id: its use script, or a passive script that only describes bonuses.
+    Item(u32),
+    /// An automatic bonus or visual program of an item, by program id.
+    Program(u32),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

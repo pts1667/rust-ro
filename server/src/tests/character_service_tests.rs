@@ -15,7 +15,7 @@ use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::status_service::StatusService;
 use crate::tests::common;
 use crate::tests::common::sync_helper::CountDownLatch;
-use crate::tests::common::{TestContext, create_mpsc, test_script_vm};
+use crate::tests::common::{TestContext, create_mpsc, test_item_vm};
 
 struct CharacterServiceTestContext {
     test_context: TestContext,
@@ -40,7 +40,7 @@ fn before_each_with_latch(character_repository: Arc<dyn CharacterRepository + Sy
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
     let count_down_latch = CountDownLatch::new(latch_size);
     let server_task_queue = Arc::new(TasksQueue::new());
-    StatusService::init(GlobalConfigService::instance(), test_script_vm());
+    StatusService::init(GlobalConfigService::instance(), test_item_vm());
     CharacterServiceTestContext {
         test_context: TestContext::new(
             client_notification_sender.clone(),

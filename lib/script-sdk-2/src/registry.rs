@@ -2,6 +2,7 @@ use script_sdk::{Entry, NAMED_ABI_VERSION, Request};
 
 use crate::ctx::Ctx;
 use crate::flow::{Script, finish};
+use crate::item::{ItemBonus, ItemUse};
 use crate::transport::{Transport, WasmTransport};
 
 /// A script as a module exports it. Plain functions coerce to this, so scripts need no wrapping.
@@ -34,16 +35,24 @@ const fn less(left: &str, right: &str) -> bool {
     left.len() < right.len()
 }
 
+/// A use item script or a program. It runs in an [`ItemUse`], so its effects are queued.
+pub type ItemFn = fn(&ItemUse<'_, '_>) -> Script;
+
+/// A passive item script. It runs in an [`ItemBonus`], so it can describe bonuses and nothing else.
+pub type BonusFn = fn(&ItemBonus<'_, '_>) -> Script;
+
 /// Runs the entry the host named and returns the status it expects: `0` on success.
-pub fn run(npcs: &[(&str, ScriptFn)], events: &[(&str, ScriptFn)]) -> i32 {
+pub fn run(npcs: &[(&str, ScriptFn)], events: &[(&str, ScriptFn)], items: &[(u32, ItemFn)], bonuses: &[(u32, BonusFn)], programs: &[(u32, ItemFn)]) -> i32 {
     let transport = WasmTransport;
     let ctx = Ctx::new(&transport);
-    let result = current_entry().and_then(|entry| {
-        let script = match &entry {
-            Entry::Npc(name) => find(npcs, name)?,
-            Entry::Event(name) => find(events, name)?,
-        };
-        finish(script(&ctx))
+    let result = current_entry().and_then(|entry| match &entry {
+        Entry::Npc(name) => finish(find(npcs, name)?(&ctx)),
+        Entry::Event(name) => finish(find(events, name)?(&ctx)),
+        Entry::Item(id) => match find_id(items, *id) {
+            Ok(script) => finish(script(&ItemUse::new(&ctx))),
+            Err(_) => finish(find_id(bonuses, *id)?(&ItemBonus::new(&ctx))),
+        },
+        Entry::Program(id) => finish(find_id(programs, *id)?(&ItemUse::new(&ctx))),
     });
     match result {
         Ok(()) => 0,
@@ -52,6 +61,22 @@ pub fn run(npcs: &[(&str, ScriptFn)], events: &[(&str, ScriptFn)]) -> i32 {
             1
         }
     }
+}
+
+/// Whether the item ids are strictly increasing, for the same reason as [`is_strictly_sorted`].
+pub const fn is_strictly_sorted_ids(ids: &[u32]) -> bool {
+    let mut index = 1;
+    while index < ids.len() {
+        if ids[index - 1] >= ids[index] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+fn find_id<T: Copy>(table: &[(u32, T)], id: u32) -> Result<T, String> {
+    table.binary_search_by_key(&id, |entry| entry.0).map(|index| table[index].1).map_err(|_| format!("Unknown item script {id}"))
 }
 
 fn find(table: &[(&str, ScriptFn)], name: &str) -> Result<ScriptFn, String> {
@@ -82,7 +107,7 @@ pub fn current_entry() -> Result<Entry, String> {
 
 #[cfg(test)]
 mod tests {
-    use super::is_strictly_sorted;
+    use super::{is_strictly_sorted, is_strictly_sorted_ids};
 
     #[test]
     fn table_order_is_strict() {
@@ -91,5 +116,12 @@ mod tests {
         assert!(!is_strictly_sorted(&["b", "a"]));
         assert!(!is_strictly_sorted(&["a", "a"]));
         assert!(!is_strictly_sorted(&["ab", "a"]));
+    }
+
+    #[test]
+    fn item_ids_must_be_strictly_increasing() {
+        assert!(is_strictly_sorted_ids(&[1, 5, 9]));
+        assert!(!is_strictly_sorted_ids(&[1, 1]));
+        assert!(!is_strictly_sorted_ids(&[3, 2]));
     }
 }

@@ -20,6 +20,11 @@ Status as of the blocker-clearing pass: the converter reports 4133 converted and
 - **Clear-slot-on-death is not implemented.** rathena clears the guardian slot when a guardian dies. Here the slot stays occupied, so a respawn command can't reuse it.
 - **Agit scripts are not active.** The nguild and `guild2/agit_*` scripts convert, but all nguild lines are commented out in `npc/scripts_athena.conf`, and the castle definitions are in `db/pre-re/castle_db.yml`. They are untested in play.
 
+## Constant names
+
+- **Constant lookup is case-sensitive, rathena's is not.** rathena matches identifiers with `strcasecmp`, so `Ele_fire` and `Ele_Fire` are the same constant. The server's table matches the exact spelling, except the element names, which match in any case (`element_constant` in `server/src/server/script/constant.rs`). Any other spelling mismatch fails at run time with `Unknown script constant`, which stops the script. `gen_sdk2_constants.py` reports the names it cannot resolve, so run it after changing scripts.
+- **Enchant cards are not modelled.** `ITEMINFO_SUBTYPE` reports weapon or ammo type only, so no item has the `CARD_ENCHANT` subtype. Scripts that skip enchant cards behave as if none exist.
+
 ## Attached players (`attachrid` / `detachrid`)
 
 - `attachrid` makes character commands (`set`, `getitem`, `equip`, `delequip`, `warpchar`, `isloggedin`) act on the attached player. The attached player is stored in `NpcScriptHost::attached` (`server/src/server/script/host.rs`).

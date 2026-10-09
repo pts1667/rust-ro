@@ -34,7 +34,7 @@ fn before_each(inventory_repository: Arc<dyn InventoryRepository + Sync>) -> Inv
 
 fn before_each_with_latch(inventory_repository: Arc<dyn InventoryRepository + Sync>, latch_size: usize) -> InventoryServiceTestContext {
     common::before_all();
-    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_script_vm());
+    crate::server::service::status_service::StatusService::init(GlobalConfigService::instance(), common::test_item_vm());
     let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
     let server_task_queue = Arc::new(TasksQueue::new());

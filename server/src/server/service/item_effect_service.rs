@@ -161,7 +161,7 @@ impl ItemService {
             return Err("consumeitem cannot run an interactive item".into());
         }
         let host = self.prepare_host(server, character, item_id, true);
-        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", item_id));
+        let (host, result) = futures::executor::block_on(self.item_script_vm.run_item(host, item_id));
         result.map_err(|error| host.error.clone().unwrap_or(error))?;
         self.apply_effects(server, state, server.runtime(), character, host.effects)
     }
@@ -202,7 +202,7 @@ impl ItemService {
             }
             return;
         }
-        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_item", item.item_id as u32));
+        let (host, result) = futures::executor::block_on(self.item_script_vm.run_item(host, item.item_id as u32));
         let result = result.and_then(|_| self.finish_item_effects_in_state(server, state, runtime, character, &action, &item, host.effects));
         if let Err(error) = &result { error!("Wasm item {} failed: {}", item.item_id, host.error.as_deref().unwrap_or(error)); }
         let count = character.get_item_from_inventory(action.index).filter(|current| current.id == item.id).map_or(0, |current| current.amount);

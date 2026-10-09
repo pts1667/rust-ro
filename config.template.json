@@ -20,6 +20,7 @@
   "scripting": {
     "module_path": "config/wasm/game_scripts.wasm",
     "modules": {
+      "items": "config/wasm/items.wasm",
       "jobs": "config/wasm/jobs.wasm",
       "misc": "config/wasm/misc.wasm",
       "quests": "config/wasm/quests.wasm",

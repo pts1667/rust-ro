@@ -740,7 +740,7 @@ mod tests {
         });
         let service = crate::server::service::status_service::StatusService::new(
             GlobalConfigService::instance(),
-            crate::tests::common::test_script_vm(),
+            crate::tests::common::test_item_vm(),
         );
         let snapshot = service.to_snapshot(&status);
         let flags = BattleFlag::Magic.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();

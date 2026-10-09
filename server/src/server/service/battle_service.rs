@@ -109,7 +109,7 @@ mod equipment_bonus_tests {
 
     fn context() -> BattleService {
         crate::tests::common::before_all();
-        StatusService::init(GlobalConfigService::instance(), crate::tests::common::test_script_vm());
+        StatusService::init(GlobalConfigService::instance(), crate::tests::common::test_item_vm());
         let (sender, _) = std::sync::mpsc::sync_channel(64);
         BattleService::new(
             sender,

@@ -851,7 +851,7 @@ mod tests {
 
     fn character() -> Character {
         common::before_all();
-        StatusService::init(GlobalConfigService::instance(), common::test_script_vm());
+        StatusService::init(GlobalConfigService::instance(), common::test_item_vm());
         let mut character = common::character_helper::create_character();
         character.status.base_level = 40;
         character.status.job_level = 20;

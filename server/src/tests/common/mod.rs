@@ -164,7 +164,7 @@ pub fn before_all() {
 
         let item_models = serde_json::from_str::<ItemModels>(&fs::read_to_string("../config/items.json").unwrap());
         let mut items: Vec<ItemModel> = item_models.unwrap().into();
-        ItemService::convert_script_into_bonuses(&mut items, test_script_vm());
+        ItemService::convert_script_into_bonuses(&mut items, test_item_vm());
 
         let mob_models = serde_json::from_str::<MobModels>(&fs::read_to_string("../config/mobs.json").unwrap());
         let mobs: Vec<MobModel> = mob_models.unwrap().into();
@@ -188,6 +188,12 @@ pub fn before_all() {
 
 pub fn mocked_repository() -> Arc<MockedRepository> {
     Arc::new(MockedRepository)
+}
+
+pub fn test_item_vm() -> Arc<crate::server::script::ItemVm> {
+    static ITEMS: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
+    let items = ITEMS.get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/items.wasm")).unwrap()).clone();
+    Arc::new(crate::server::script::ItemVm::new(test_script_vm(), items))
 }
 
 pub fn test_script_vm() -> Arc<WasmRuntime> {
