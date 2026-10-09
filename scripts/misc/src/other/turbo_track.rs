@@ -7277,6 +7277,191 @@ pub fn turbo_track_guide_entran(ctx: &Ctx) -> Script {
     turbo_track_guide_entran_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    let mut l_i = Val::from(0);
+    let mut l_mount_s = Val::from("");
+    let mut l_n_s = Val::from("");
+    let mut l_riding = Val::from(0);
+    let mut l_skill = Val::from(0);
+    let mut l_skill_s = Val::from("");
+    let mut l_zeny = Val::from(0);
+    let mut l_zeny_s = Val::from("");
+    l_n_s = ((Val::from("[") + ctx.call(Function::StrNpcInfo, vec![Val::from(1)])?) + Val::from("]"));
+    ctx.lines(args![l_n_s.clone()])?;
+    if ctx.call(Function::IsMounting, vec![])?.is_true() {
+        ctx.lines(args![
+            "Please get off of that creature you're riding on.",
+            "Then talk to me again."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?))
+    {
+        if !(runtime::op(&ctx.call(Function::EaClass, vec![])?, "&", &ctx.constant("EAJL_THIRD")?)?.is_true()) {
+            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
+                l_zeny = Val::from(2500);
+                l_zeny_s = Val::from("2,500");
+                l_mount_s = Val::from("Peco Peco");
+            } else {
+                l_zeny = Val::from(3500);
+                l_zeny_s = Val::from("3,500");
+                l_mount_s = Val::from("Grand Peco");
+            }
+            l_skill = Val::from(63);
+            l_skill_s = Val::from("Peco Peco Ride");
+            l_riding = ctx.call(Function::CheckRiding, vec![])?;
+            l_i = Val::from(1);
+        } else {
+            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
+                l_mount_s = Val::from("Dragon");
+                l_skill = Val::from(63);
+                l_skill_s = Val::from("Dragon Training");
+                l_riding = Val::from(0);
+                l_i = Val::from(2);
+            } else {
+                l_mount_s = Val::from("Gryphon");
+                l_skill = Val::from(63);
+                l_skill_s = Val::from("Peco Peco Ride");
+                l_riding = ctx.call(Function::CheckRiding, vec![])?;
+                l_i = Val::from(1);
+            }
+        }
+    } else {
+        if ((ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_MECHANIC")?)
+            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_MECHANIC_T")?))
+            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BABY_MECHANIC")?))
+        {
+            l_mount_s = Val::from("Magic Gear");
+            l_skill = Val::from(2255);
+            l_skill_s = Val::from("Magic Gear License");
+            l_riding = ctx.call(Function::CheckMadogear, vec![])?;
+            l_i = Val::from(3);
+        } else {
+            ctx.lines(args!["Thank you for", "visiting Al De Baran's", "Turbo Track~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    ctx.lines(args![
+        "Welcome, would you like",
+        ((Val::from("to retrieve your ") + l_mount_s.clone()) + Val::from("?"))
+    ])?;
+    if l_zeny.clone().is_true() {
+        ctx.lines(args![
+            "Please show me your Free",
+            "Ticket for Peco Ride. You",
+            "may also pay a rental fee",
+            ((Val::from("of ") + l_zeny_s.clone()) + Val::from(" zeny."))
+        ])?;
+    }
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:Cancel")])?);
+        let mut matched1 = false;
+        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            if ctx.call(Function::GetSkillLv, vec![l_skill.clone()])? == 0 {
+                ctx.lines(args![
+                    l_n_s.clone(),
+                    "I'm sorry, but you're",
+                    "not eligible for this",
+                    "service. Please go learn",
+                    ((Val::from("the ") + l_skill_s.clone()) + Val::from(" skill first."))
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                if l_riding.clone().is_true() {
+                    ctx.lines(args![
+                        l_n_s.clone(),
+                        "You're already",
+                        "mounted on a",
+                        (l_mount_s.clone() + Val::from(".")),
+                        "Thank you~"
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    if l_zeny.clone().is_true() {
+                        if (ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? < 1
+                            && runtime::op(&ctx.var("Zeny").get()?, "<", &l_zeny.clone())?.is_true())
+                        {
+                            ctx.lines(args![
+                                l_n_s.clone(),
+                                "I'm sorry, but you",
+                                "don't have a Free Ticket",
+                                ((Val::from("for Peco Ride or ") + l_zeny_s.clone()) + Val::from(" zeny.")),
+                                "to use the Peco rental service."
+                            ])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            if ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? > 0 {
+                                ctx.call(Function::DelItem, vec![Val::from(7310), Val::from(1)])?;
+                            } else {
+                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_zeny.clone())?))?;
+                            }
+                        }
+                    }
+                    'b2: {
+                        let subject2 = l_i.clone();
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                            && !subject2.loosely_equals(&Val::from(2))
+                            && !subject2.loosely_equals(&Val::from(3));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.call(Function::SetRiding, vec![])?;
+                            break 'b2;
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            break 'b2;
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            break 'b2;
+                        }
+                    }
+                    ctx.lines(args![l_n_s.clone(), "Thank you for", "your patronage~"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines(args![
+                l_n_s.clone(),
+                "Are you going",
+                "back to race in",
+                "the Turbo Track?",
+                "Good luck!"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn mountmanager_turbo(ctx: &Ctx) -> Script {
+    mountmanager_turbo_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn sign_tbt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Al De Baran Turbo Track",

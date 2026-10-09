@@ -30,7 +30,7 @@ macro_rules! script_module {
         pub extern "C" fn script_run() -> i32 {
             const NPCS: &[(&str, $crate::registry::ScriptFn)] = &[$(($npc, $npc_script)),*];
             const EVENTS: &[(&str, $crate::registry::ScriptFn)] = &[$(($event, $event_script)),*];
-            $crate::registry::run(NPCS, EVENTS, &[], &[], &[])
+            $crate::registry::run($crate::registry::Tables { npcs: NPCS, events: EVENTS, ..Default::default() })
         }
     };
 }
@@ -73,7 +73,43 @@ macro_rules! item_module {
             const ITEMS: &[(u32, $crate::registry::ItemFn)] = &[$(($item, $item_script)),*];
             const BONUSES: &[(u32, $crate::registry::BonusFn)] = &[$(($bonus, $bonus_script)),*];
             const PROGRAMS: &[(u32, $crate::registry::ItemFn)] = &[$(($program, $program_script)),*];
-            $crate::registry::run(&[], &[], ITEMS, BONUSES, PROGRAMS)
+            $crate::registry::run($crate::registry::Tables { items: ITEMS, bonuses: BONUSES, programs: PROGRAMS, ..Default::default() })
+        }
+    };
+}
+
+/// Exports a pet module: the passive bonus script, the support script and the automatic bonus programs of pets, by monster class
+/// (programs by program id).
+///
+/// ```ignore
+/// script_sdk_2::pet_module! {
+///     pets { 1002 => pet_bonus_1002, }
+///     supports { 1002 => pet_support_1002, }
+///     programs { 1 => pet_program_1, }
+/// }
+/// ```
+#[macro_export]
+macro_rules! pet_module {
+    (
+        pets { $($pet:literal => $pet_script:path),* $(,)? }
+        supports { $($support:literal => $support_script:path),* $(,)? }
+        programs { $($program:literal => $program_script:path),* $(,)? }
+    ) => {
+        const _: () = assert!($crate::registry::is_strictly_sorted_ids(&[$($pet),*]), "Pet classes must be unique and sorted");
+        const _: () = assert!($crate::registry::is_strictly_sorted_ids(&[$($support),*]), "Pet support classes must be unique and sorted");
+        const _: () = assert!($crate::registry::is_strictly_sorted_ids(&[$($program),*]), "Pet program ids must be unique and sorted");
+
+        #[no_mangle]
+        pub extern "C" fn script_abi() -> u32 {
+            $crate::registry::ABI
+        }
+
+        #[no_mangle]
+        pub extern "C" fn script_run() -> i32 {
+            const PETS: &[(u32, $crate::registry::ItemFn)] = &[$(($pet, $pet_script)),*];
+            const SUPPORTS: &[(u32, $crate::registry::ItemFn)] = &[$(($support, $support_script)),*];
+            const PROGRAMS: &[(u32, $crate::registry::ItemFn)] = &[$(($program, $program_script)),*];
+            $crate::registry::run($crate::registry::Tables { pets: PETS, pet_supports: SUPPORTS, pet_programs: PROGRAMS, ..Default::default() })
         }
     };
 }

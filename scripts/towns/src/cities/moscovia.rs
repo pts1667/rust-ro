@@ -11,6 +11,143 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn pr_officer_moscovia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Moscovia P.R. Officer",
+        args![
+            "Moscovia! Do you know Moscovia?",
+            "the paradise spreading on the endless seas...",
+            "Welcome to Moscovia",
+            "It's adventurous and mystic."
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("About Moscovia...:Go to Moscovia.:Cancel")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "Moscovia is a beautiful kingdom",
+                    "on an island located north of Rune-",
+                    "Midgarts."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "I'm sure that you will be",
+                    "absolutely fascinated",
+                    "by Moscovia's beautiful scenery",
+                    "and gorgeous palace."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "Now that our long winter has",
+                    "passed,",
+                    "I'm happy that I can now show you",
+                    "our gorgeous hometown."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "If you feel like visiting Moscovia",
+                    "take the chance now!",
+                    "I'll help you to have a nice trip",
+                    "to Moscovia!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "Ok then, let us start now.",
+                    "You should pay me 10,000 zeny",
+                    "to go to Moscovia.",
+                    "But when you come back,",
+                    "you don't have to pay."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Moscovia P.R. Officer", args!["Can we leave now?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("Let's go!:Cancel")])?) == 2 {
+                ctx.lines_as(
+                    "Moscovia P.R. Officer",
+                    args![
+                        "If you're too busy now,",
+                        "please tell me again whenever you want.",
+                        "I'm always ready to guide anyone to Moscovia."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if ctx.var("Zeny").get()?.number()? < 10000 {
+                ctx.lines_as(
+                    "Moscovia P.R. Officer",
+                    args![
+                        "I'm sorry but you don't have",
+                        "enough zeny now",
+                        "You need 10,000 zeny",
+                        "to go to Moscovia",
+                        "Thank you."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Moscovia P.R. Officer", args!["Ok then, we're leaving now."])?;
+                ctx.close_window()?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                ctx.call(Function::Warp, vec![Val::from("moscovia"), Val::from(163), Val::from(55)])?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Moscovia P.R. Officer",
+                args![
+                    "If you're too busy now,",
+                    "please tell me again whenever you want.",
+                    "I'm always ready to guide anyone to Moscovia."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn pr_officer_moscovia(ctx: &Ctx) -> Script {
+    pr_officer_moscovia_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn moscovia_p_r_officer_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Moscovia P.R. Officer",

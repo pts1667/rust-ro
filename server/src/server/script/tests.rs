@@ -8,7 +8,27 @@ use script_sdk::{Function, Reply, Request, Value};
 use super::item_script_handler::{ItemEffect, ItemScriptHost};
 
 fn runtime() -> Arc<WasmRuntime> {
-    crate::tests::common::test_script_vm()
+    crate::tests::common::test_systems_runtime()
+}
+
+/// The `systems` script for the numeric id the hand-written NPCs and battleground events were first registered under.
+fn system_entry(kind: &str, id: u32) -> script_sdk::Entry {
+    const NPCS: [&str; 19] = [
+        "counter", "variables", "warper", "stylist", "job_master", "shop", "mount_master", "castle_steward", "castle_lever", "castle_kafra",
+        "wedding_staff", "wedding_bishop", "wedding_divorce", "breeder", "battleground_arena", "battleground_kvm", "battleground_tierra",
+        "battleground_recruiter", "castle_flag",
+    ];
+    match kind {
+        "run_npc" => script_sdk::Entry::Npc(NPCS[id as usize - 1].into()),
+        _ => {
+            let (family, base) = match id {
+                1000..=1999 => ("arena", 1000),
+                2000..=2999 => ("kvm", 2000),
+                _ => ("tierra", 3000),
+            };
+            script_sdk::Entry::Event(format!("{family}_{}_{}", (id - base) / 100, (id - base) % 100))
+        }
+    }
 }
 
 fn item_vm() -> Arc<crate::server::script::ItemVm> {
@@ -111,10 +131,11 @@ fn compiled_catalog_accepts_windows_line_endings() {
 fn npc_manifest_preserves_enabled_placements() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
     let scripts = crate::server::boot::script_loader::ScriptLoader::load_scripts(root.to_str().unwrap()).unwrap();
-    assert_eq!(scripts.values().flatten().filter(|npc| npc.entry_id < 10_000).count(), 736);
+    let systems = |entry: &str| super::entries::system_npc(entry);
+    assert_eq!(scripts.values().flatten().filter(|npc| super::entries::resolve(npc.entry_id).is_some_and(|script| script.module == "systems")).count(), 736);
     let prontera = &scripts["prontera"];
-    assert!(prontera.iter().any(|npc| npc.name == "Job Master" && npc.entry_id == 5));
-    assert!(prontera.iter().any(|npc| npc.entry_id == 6 && !npc.constructor_args.is_empty()));
+    assert!(prontera.iter().any(|npc| npc.name == "Job Master" && npc.entry_id == systems("job_master")));
+    assert!(prontera.iter().any(|npc| npc.entry_id == systems("shop") && !npc.constructor_args.is_empty()));
     let gate = scripts["bat_a01"].iter().find(|npc| npc.name == "barri_warp_up#bat_a01_a").unwrap();
     assert_eq!((gate.x_size, gate.y_size), (7, 0));
 }
@@ -155,13 +176,12 @@ fn npc_dialogue_runs_compiled_code_across_player_wait() {
         }
     }
     let runtime = tokio::runtime::Runtime::new().unwrap();
-    let (host, result) = runtime.block_on(self::runtime().execute(
+    let (host, result) = runtime.block_on(self::runtime().execute_named(
         Dialogue {
             messages: vec![],
             waits: 0,
         },
-        "run_npc",
-        1,
+        &system_entry("run_npc", 1),
     ));
     assert!(result.is_ok(), "{result:?}");
     assert_eq!(host.waits, 1);
@@ -226,7 +246,7 @@ mod battleground_arena {
     }
 
     fn run(host: ArenaHost, entry: &str, id: u32) -> ArenaHost {
-        let (host, result) = tokio::runtime::Runtime::new().unwrap().block_on(runtime().execute(host, entry, id));
+        let (host, result) = tokio::runtime::Runtime::new().unwrap().block_on(runtime().execute_named(host, &system_entry(entry, id)));
         assert!(result.is_ok(), "{result:?}");
         host
     }

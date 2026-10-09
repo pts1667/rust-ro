@@ -1840,6 +1840,346 @@ pub fn target(ctx: &Ctx) -> Script {
     target_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn acolyte_tu_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.mes("[Acolyte]")?;
+    if ctx.var("tu_archer01").get()? == 14 {
+        if (ctx.call(Function::GetTime, vec![ctx.constant("DT_HOUR")?])?.number()? >= 18
+            && ctx.call(Function::GetTime, vec![ctx.constant("DT_HOUR")?])?.number()? < 22)
+        {
+            ctx.lines(args!["H-hello!", "Umm, umm...", "Are you R-Reidin Corse's", "friend t-too?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Acolyte",
+                args![
+                    "M-my name is Mafra.",
+                    "Ever since he saved my life, Reidin has a-always been a good f-friend to me. He's such a great Archer",
+                    "and a really nice person!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Acolyte",
+                args!["Um, and...", "Uh... Oh no~", "What am I supposed", "t-to tell you...?"],
+            )?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Acolyte",
+                args![
+                    "Oh, since I'm training to be an Acolyte, I'm supposed to help out the people he's teaching. So...",
+                    "Let's h-help each other train!",
+                    "Um, is that okay?"
+                ],
+            )?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Sure.:No thanks.:Reidin Corse is mine!")],
+                )?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                    && !subject1.loosely_equals(&Val::from(2))
+                    && !subject1.loosely_equals(&Val::from(3));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as("Acolyte", args!["Wow!", "Thank you, thank you!", "I''ll try my very best!"])?;
+                    ctx.var("tu_archer01").set(Val::from(15))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as(
+                        "Acolyte",
+                        args![
+                            "Oh... Oh.",
+                            "I'm so sorry.",
+                            "If you don't need",
+                            "my help, I guess",
+                            "that's alright..."
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as(
+                        "Acolyte",
+                        args![
+                            "Eh?!",
+                            "R-really?",
+                            "I guess he doesn't",
+                            "need to tell me if",
+                            "he already has a girlfriend..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("[Acolyte]")?;
+                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                        ctx.lines(args![
+                            "W-wait!",
+                            "Y-you're a man!",
+                            "D-d-d-don't tease me",
+                            "like that! I'm serious!"
+                        ])?;
+                    } else {
+                        ctx.lines(args![
+                            "And he's so brave",
+                            "and funny and smart.",
+                            "Y-you're lucky to have him.",
+                            "^333333*Sniff*^000000 I... I..."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Acolyte",
+                            args![
+                                "^333333*Sniffle*^000000",
+                                "I'll d-do my best to help you!",
+                                "I wish you both happiness! (Waaaaaah~!)"
+                            ],
+                        )?;
+                    }
+                    ctx.var("tu_archer01").set(Val::from(15))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+        } else {
+            ctx.lines(args!["^666666Zzzzz...^000000", "Wh-wha...?", "Who are you?"])?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SLEEPATTACK")?])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Acolyte",
+                args![
+                    "Wait, I know...",
+                    "Y-you're... ^666666*Yawn*^000000",
+                    "So sleepy. Take this for now..."
+                ],
+            )?;
+            'b2: {
+                let subject2 = ctx.call(Function::Rand, vec![Val::from(4)])?;
+                let mut matched2 = false;
+                let no_case2 = !subject2.loosely_equals(&Val::from(0))
+                    && !subject2.loosely_equals(&Val::from(1))
+                    && !subject2.loosely_equals(&Val::from(2));
+                if !matched2 && subject2.loosely_equals(&Val::from(0)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(3), &Val::from(90), &Val::from(62))?;
+                    break 'b2;
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(9), &Val::from(90), &Val::from(62))?;
+                    break 'b2;
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(8), &Val::from(90), &Val::from(62))?;
+                    break 'b2;
+                }
+            }
+            'b3: {
+                let subject3 = ctx.call(Function::Rand, vec![Val::from(3)])?;
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(0))
+                    && !subject3.loosely_equals(&Val::from(1))
+                    && !subject3.loosely_equals(&Val::from(2));
+                if !matched3 && subject3.loosely_equals(&Val::from(0)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(1), &Val::from(0), &Val::from(0))?;
+                    break 'b3;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(5), &Val::from(0), &Val::from(0))?;
+                    break 'b3;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(10), &Val::from(0), &Val::from(0))?;
+                    break 'b3;
+                }
+            }
+            'b4: {
+                let subject4 = ctx.call(Function::Rand, vec![Val::from(3)])?;
+                let mut matched4 = false;
+                let no_case4 = !subject4.loosely_equals(&Val::from(0))
+                    && !subject4.loosely_equals(&Val::from(1))
+                    && !subject4.loosely_equals(&Val::from(2));
+                if !matched4 && subject4.loosely_equals(&Val::from(0)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(1), &Val::from(0), &Val::from(0))?;
+                    break 'b4;
+                }
+                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(5), &Val::from(0), &Val::from(0))?;
+                    break 'b4;
+                }
+                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(10), &Val::from(0), &Val::from(0))?;
+                    break 'b4;
+                }
+            }
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("tu_archer01").get()? == 15 {
+            if (ctx.call(Function::GetTime, vec![ctx.constant("DT_HOUR")?])?.number()? >= 18
+                && ctx.call(Function::GetTime, vec![ctx.constant("DT_HOUR")?])?.number()? < 22)
+            {
+                ctx.lines(args!["^666666Zzzzz...^000000", "Wh-wha...?", "Who are you?"])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SLEEPATTACK")?])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Acolyte",
+                    args!["Reidin Corse?", "I can't believe", "I feel asleep fo--", "^666666Zzzzzzz...^000000"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Acolyte",
+                    args![
+                        "^666666Zzzz^000000--Oooh!",
+                        "J-just take this before",
+                        "I fall asleep again~! ^666666*Yawn*^000000"
+                    ],
+                )?;
+            } else {
+                ctx.lines(args!["Okay~!", "Let me try", "casting a spell", "to help you! Yaa~p!"])?;
+            }
+            'b5: {
+                let subject5 = ctx.call(Function::Rand, vec![Val::from(4)])?;
+                let mut matched5 = false;
+                let no_case5 = !subject5.loosely_equals(&Val::from(0))
+                    && !subject5.loosely_equals(&Val::from(1))
+                    && !subject5.loosely_equals(&Val::from(2));
+                if !matched5 && subject5.loosely_equals(&Val::from(0)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(3), &Val::from(90), &Val::from(62))?;
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(10), &Val::from(90), &Val::from(62))?;
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    runtime::npc_skill(ctx, &Val::from("AL_HEAL"), &Val::from(8), &Val::from(90), &Val::from(62))?;
+                    break 'b5;
+                }
+            }
+            'b6: {
+                let subject6 = ctx.call(Function::Rand, vec![Val::from(3)])?;
+                let mut matched6 = false;
+                let no_case6 = !subject6.loosely_equals(&Val::from(0))
+                    && !subject6.loosely_equals(&Val::from(1))
+                    && !subject6.loosely_equals(&Val::from(2));
+                if !matched6 && subject6.loosely_equals(&Val::from(0)) {
+                    matched6 = true;
+                }
+                if matched6 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(1), &Val::from(0), &Val::from(0))?;
+                    break 'b6;
+                }
+                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                    matched6 = true;
+                }
+                if matched6 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(5), &Val::from(0), &Val::from(0))?;
+                    break 'b6;
+                }
+                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                    matched6 = true;
+                }
+                if matched6 {
+                    runtime::npc_skill(ctx, &Val::from("AL_INCAGI"), &Val::from(10), &Val::from(0), &Val::from(0))?;
+                    break 'b6;
+                }
+            }
+            'b7: {
+                let subject7 = ctx.call(Function::Rand, vec![Val::from(3)])?;
+                let mut matched7 = false;
+                let no_case7 = !subject7.loosely_equals(&Val::from(0))
+                    && !subject7.loosely_equals(&Val::from(1))
+                    && !subject7.loosely_equals(&Val::from(2));
+                if !matched7 && subject7.loosely_equals(&Val::from(0)) {
+                    matched7 = true;
+                }
+                if matched7 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(1), &Val::from(0), &Val::from(0))?;
+                    break 'b7;
+                }
+                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                    matched7 = true;
+                }
+                if matched7 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(5), &Val::from(0), &Val::from(0))?;
+                    break 'b7;
+                }
+                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                    matched7 = true;
+                }
+                if matched7 {
+                    runtime::npc_skill(ctx, &Val::from("AL_BLESSING"), &Val::from(10), &Val::from(0), &Val::from(0))?;
+                    break 'b7;
+                }
+            }
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    ctx.lines(args![
+        "...",
+        "W-why does",
+        "traveling make",
+        "me sooo sleepy...?",
+        "^666666Zzzzzzzz...^000000"
+    ])?;
+    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SLEEPATTACK")?])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn acolyte_tu(ctx: &Ctx) -> Script {
+    acolyte_tu_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn alchemist_guildmember_tu_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     let mut l_alche_f = Val::from(0);
     let mut l_alche_s = Val::from(0);

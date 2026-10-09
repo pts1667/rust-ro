@@ -39,10 +39,9 @@ fn every_placement_is_on_a_cached_map_inside_its_bounds_with_a_known_sprite_and_
 #[test]
 fn shop_npcs_only_sell_items_that_exist() {
     crate::tests::common::before_all();
-    const SHOP_ENTRY: u64 = 6;
     let configuration = GlobalConfigService::instance();
     let mut problems = vec![];
-    for npc in manifest("npcs.json").as_array().unwrap().iter().filter(|npc| npc["entry_id"].as_u64() == Some(SHOP_ENTRY)) {
+    for npc in manifest("npcs.json").as_array().unwrap().iter().filter(|npc| npc["module"] == "systems" && npc["entry"] == "shop") {
         let arguments: Vec<i64> = npc["constructor_args"].as_array().unwrap().iter().map(|argument| argument["Number"].as_i64().unwrap()).collect();
         for pair in arguments[1..].chunks(2) {
             if configuration.find_item(pair[0] as i32).is_none() {
@@ -63,13 +62,22 @@ fn every_event_label_belongs_to_a_placed_npc() {
 
 #[test]
 fn every_constant_the_generated_scripts_name_resolves() {
-    let mut names = BTreeSet::new();
-    for file in std::fs::read_dir(repository_path("scripts/src/generated")).unwrap() {
-        let source = std::fs::read_to_string(file.unwrap().path()).unwrap();
-        for part in source.split("constant(ctx, \"").skip(1) {
-            names.insert(part[..part.find('"').unwrap()].to_string());
+    fn collect(directory: &std::path::Path, names: &mut BTreeSet<String>) {
+        for entry in std::fs::read_dir(directory).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                if path.file_name().is_some_and(|name| name != "target") {
+                    collect(&path, names);
+                }
+            } else if path.extension().is_some_and(|extension| extension == "rs") {
+                for part in std::fs::read_to_string(&path).unwrap().split(".constant(\"").skip(1) {
+                    names.insert(part[..part.find('"').unwrap()].to_string());
+                }
+            }
         }
     }
+    let mut names = BTreeSet::new();
+    collect(&repository_path("scripts"), &mut names);
     assert!(!names.is_empty());
     let unknown: Vec<&String> = names.iter().filter(|name| super::item_script_handler::constant(name).is_err()).collect();
     assert!(unknown.is_empty(), "{} unknown constants: {:?}", unknown.len(), unknown);
@@ -117,7 +125,7 @@ fn event_id(label: &str) -> u32 {
 
 fn run_event(host: RecordingHost, label: &str) -> RecordingHost {
     let runtime = crate::tests::common::test_npc_vm();
-    let (host, result) = futures::executor::block_on(runtime.run(host, "run_event", event_id(label)));
+    let (host, result) = futures::executor::block_on(runtime.run(host, event_id(label)));
     result.unwrap();
     host
 }

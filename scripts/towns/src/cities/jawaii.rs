@@ -1875,3 +1875,100 @@ fn customer_bachewcca_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
 pub fn customer_bachewcca(ctx: &Ctx) -> Script {
     customer_bachewcca_body(ctx, Vec::new()).map(|_| ())
 }
+
+fn honeymoon_helper_izlude_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Helper",
+        args![
+            "Newlyweds and",
+            "long time couples...",
+            "We invite you to Jawaii,",
+            "the honeymoon resort!"
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Jawaii?:Let's go to Jawaii~!:Cancel.")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Helper",
+                args![
+                    "There is an island far, far away from the Midgard continent.",
+                    "It is a very quiet and beautiful island resort that only opens",
+                    "its doors to couples."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Helper", args!["This is an exclusive travel offer to the special honeymoon resort for Midgard's citizens. The price, 100,000 zeny, may be expensive, but you really get what you pay for."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Helper",
+                args![
+                    "I guarantee you that some of",
+                    "the happiest moments you can",
+                    "experience in your marriage will be on this island. Can you really put a price on that?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.mes("[Helper]")?;
+            if !(ctx.call(Function::GetPartnerId, vec![])?.is_true()) {
+                ctx.lines(args![
+                    "Errm...",
+                    "Unfortunately, singles are not allowed on the island. Why don't you go forget your loneliness in the Prontera pub?"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                if ctx.var("Zeny").get()?.number()? > 99999 {
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(100000))?))?;
+                    ctx.lines(args!["Bon Voyage...!!", "Let me guide", "you to 'Jawaii!'"])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("jawaii"), Val::from(245), Val::from(125)])?;
+                    return Err(Stop::End);
+                }
+            }
+            ctx.mes("As I explained, you must have 100,000 zeny in order to visit Jawaii. Why don't you ask your partner for help in gathering the zeny for this trip?")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Helper",
+                args![
+                    "There's there no better way to share special, secluded moments with your beloved than through",
+                    "a secret trip to a remote, exotic area."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Helper",
+                args!["A vacation in Jawaii could very well be the greatest gift that you could give to the one you love~"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn honeymoon_helper_izlude(ctx: &Ctx) -> Script {
+    honeymoon_helper_izlude_body(ctx, Vec::new()).map(|_| ())
+}

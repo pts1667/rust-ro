@@ -3,6 +3,7 @@ pub mod alchemist;
 pub mod buying_shops;
 pub mod cashheadgear_dye;
 pub mod clothes_dyer;
+pub mod coin_exchange;
 pub mod dye_maker;
 pub mod elemental_trader;
 pub mod enchan_arm;

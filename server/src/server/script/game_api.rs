@@ -327,7 +327,7 @@ impl ScriptService {
                     .get_map_instance(character.current_map_name(), context.map_instance)
                     .ok_or("Shop map is unavailable")?;
                 let script = instance.get_script(context.npc_id).ok_or("Shop is unavailable")?;
-                if script.entry_id != 6 || script.constructor_args.len() < 3 {
+                if script.entry_id != crate::server::script::entries::system_npc("shop") || script.constructor_args.len() < 3 {
                     return Err("NPC is not a shop".into());
                 }
                 let mut offers = std::collections::HashMap::new();

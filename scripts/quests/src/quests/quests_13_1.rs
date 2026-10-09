@@ -706,6 +706,188 @@ pub fn promotional_staff_gef(ctx: &Ctx) -> Script {
     promotional_staff_gef_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn promotionalstaff_izlude_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if ctx.var("ep13_ryu").get()?.number()? > 8 {
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["I bless you for your future! May it be full of happiness!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if ctx.var("ep13_ryu").get()? == 8 {
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["The test is done!", "If you have any other business, go to the palace."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if ctx.var("ep13_ryu").get()? == 7 {
+        if ctx.var("BaseLevel").get()?.number()? < 70 {
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "You don't look that strong.",
+                    "Nothing but skin and bones!",
+                    "Not reliable.",
+                    "You should level up more before",
+                    "considering this adventure."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "I don't need adventurers who are",
+                    "body-builders... but at least",
+                    "someone not so little!!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Promotional Staff",
+            args![
+                "Wow! You are considerably",
+                "stronger than before!",
+                "Let me see...",
+                "You look different!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Promotional Staff", args!["Um..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args![
+                "Ok, it's done!",
+                "You seemed a sore weak of a soul,",
+                "but now, you're quite stronger than",
+                "before. Great! You will do!!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args![
+                "We have quite high expectations to meet.",
+                "Though the new place is dangerous,",
+                "no need to check thoroughly",
+                "anymore."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Promotional Staff", args!["It's not a hell-hole!", "Ukk!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args![
+                "Anyway, just go back to the",
+                "Recruiter. I will forward to him",
+                "that you passed all the steps. Good",
+                "job, friend!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::ChangeQuest, vec![Val::from(10063), Val::from(10064)])?;
+        ctx.var("ep13_ryu").set(Val::from(8))?;
+        ctx.lines_as("Promotional Staff", args!["Bless all of your heart,", "for your great future!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if ctx.var("ep13_ryu").get()? == 6 {
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["We are recruiting adventurers", "who are quite strong and curious."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["Hey, you're a knowledgeable adventurer. Are you interested in my story?"],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("I have something for you.")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["Um, you're the one sent to be tested, correct? You are in the right place. I'm the Promotional Staff in Izlude."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Promotional Staff",
+            args!["I guess you're qualified enough to go... I think no more testing is needed."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Promotional Staff", args!["Let me see..."])?;
+        ctx.next()?;
+        if ctx.var("BaseLevel").get()?.number()? > 69 {
+            ctx.lines_as(
+                "Promotional Staff",
+                args!["I think you're good enough!", "No more testing!!", "Ok! You pass!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "We have quite high expectations to meet.",
+                    "Though the new place is dangerous,",
+                    "no need to check thoroughly right now."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Promotional Staff", args!["It's not a hell-hole!", "Ukk..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "Anyway, just go back to the recruiter.",
+                    "I will forward to him that you passed all the steps.",
+                    "Good job, friend!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(10062), Val::from(10064)])?;
+            ctx.var("ep13_ryu").set(Val::from(8))?;
+            ctx.lines_as("Promotional Staff", args!["May Freya bless you,", "for your great future!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Promotional Staff", args!["Hmm..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "You don't look that strong.",
+                    "Nothing but skin and bones!",
+                    "Not reliable.",
+                    "I can't let you pass."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(10062), Val::from(10063)])?;
+            ctx.var("ep13_ryu").set(Val::from(7))?;
+            ctx.lines_as(
+                "Promotional Staff",
+                args![
+                    "Please level up a little more. I",
+                    "can't accept that you're strong",
+                    "enough. Sorry."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    shared::quests_quests_13_1::promotional_staff(ctx, vec![])?;
+    return Err(Stop::End);
+}
+
+pub fn promotionalstaff_izlude(ctx: &Ctx) -> Script {
+    promotionalstaff_izlude_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn guide_ep13_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("ep13_ryu").get()?.number()? > 8 {
         ctx.lines_as(

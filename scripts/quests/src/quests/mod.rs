@@ -33,6 +33,7 @@ pub mod quests_ein;
 pub mod quests_geffen;
 pub mod quests_gonryun;
 pub mod quests_hugel;
+pub mod quests_izlude;
 pub mod quests_juperos;
 pub mod quests_lighthalzen;
 pub mod quests_louyang;

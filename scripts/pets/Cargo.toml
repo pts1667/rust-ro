@@ -1,0 +1,19 @@
+[package]
+name = "game-pets"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[lib]
+name = "pets"
+crate-type = ["cdylib"]
+
+[dependencies]
+script-sdk-2 = { path = "../../lib/script-sdk-2" }
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = "debuginfo"

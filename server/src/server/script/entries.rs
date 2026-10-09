@@ -3,8 +3,7 @@ use std::sync::{Mutex, OnceLock};
 
 use script_sdk::Entry;
 
-/// Handles from this value up name a script of a named-ABI module. Lower handles are legacy numeric entry ids, so the `u32`
-/// carried by NPCs and events keeps its shape.
+/// Handles start here, so a small number that was never interned cannot name a script by accident.
 pub const NAMED_BASE: u32 = 0x8000_0000;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -35,6 +34,11 @@ pub fn intern(module: &str, entry: Entry) -> u32 {
     interner.scripts.push(script.clone());
     interner.handles.insert(script, handle);
     handle
+}
+
+/// The handle of an NPC of the `systems` module, such as `shop` or `castle_flag`.
+pub fn system_npc(entry: &str) -> u32 {
+    intern("systems", Entry::Npc(entry.into()))
 }
 
 pub fn resolve(handle: u32) -> Option<NamedScript> {

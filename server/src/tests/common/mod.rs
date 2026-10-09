@@ -190,31 +190,38 @@ pub fn mocked_repository() -> Arc<MockedRepository> {
     Arc::new(MockedRepository)
 }
 
-pub fn test_item_vm() -> Arc<crate::server::script::ItemVm> {
+pub fn test_item_runtime() -> Arc<WasmRuntime> {
     static ITEMS: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
-    let items = ITEMS.get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/items.wasm")).unwrap()).clone();
-    Arc::new(crate::server::script::ItemVm::new(test_script_vm(), items))
+    ITEMS.get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/items.wasm")).unwrap()).clone()
 }
 
-pub fn test_script_vm() -> Arc<WasmRuntime> {
+pub fn test_item_vm() -> Arc<crate::server::script::ItemVm> {
+    static VM: std::sync::OnceLock<Arc<crate::server::script::ItemVm>> = std::sync::OnceLock::new();
+    VM.get_or_init(|| {
+        let pets = WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/pets.wasm")).unwrap();
+        Arc::new(crate::server::script::ItemVm::new(test_item_runtime(), pets))
+    })
+    .clone()
+}
+
+/// The hand-written `systems` module, to run one of its NPCs or events outside the manifest.
+pub fn test_systems_runtime() -> Arc<WasmRuntime> {
     static RUNTIME: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
     RUNTIME
-        .get_or_init(|| {
-            WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/game_scripts.wasm")).unwrap()
-        })
+        .get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/systems.wasm")).unwrap())
         .clone()
 }
 
-/// The NPC and event VM: the legacy module plus the named-ABI modules of `config/wasm`.
+/// The NPC and event VM over the modules of `config/wasm`.
 pub fn test_npc_vm() -> Arc<crate::server::script::ScriptVm> {
     static VM: std::sync::OnceLock<Arc<crate::server::script::ScriptVm>> = std::sync::OnceLock::new();
     VM.get_or_init(|| {
         let wasm = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm");
-        let modules = ["towns", "misc", "jobs", "quests"]
+        let modules = ["towns", "misc", "jobs", "quests", "systems"]
             .into_iter()
             .map(|name| (name.to_string(), WasmRuntime::from_file(wasm.join(format!("{name}.wasm"))).unwrap()))
             .collect();
-        Arc::new(crate::server::script::ScriptVm::new(test_script_vm(), modules))
+        Arc::new(crate::server::script::ScriptVm::new(modules))
     })
     .clone()
 }

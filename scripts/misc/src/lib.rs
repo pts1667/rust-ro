@@ -434,6 +434,7 @@ script_sdk_2::script_module! {
         "Monster Encyclopedia#prt" => other::books::monster_encyclopedia_prt,
         "Monster Race Manager" => other::monster_race::monster_race_manager,
         "Moscovia Guide#mosk" => pre_re::guides::guides_moscovia::moscovia_guide_mosk,
+        "MountManager_turbo" => other::turbo_track::mountmanager_turbo,
         "Mr. Doppel#wop_team_a" => other::poring_war::mr_doppel_wop_team_a,
         "Mr. Doppel#wop_team_d" => other::poring_war::mr_doppel_wop_team_d,
         "Mudie#dummy01" => other::monster_race::mudie_dummy01,

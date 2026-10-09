@@ -86,11 +86,11 @@ pub async fn main() {
     update_item_and_mob_static_db(&mut items, &mobs);
 
     // Setup script virtual machine for NPC
-    let legacy_script_vm = create_script_vm();
     let script_modules = create_script_modules();
     let items_module = script_modules.get("items").cloned().expect("scripting.modules must list the items module");
-    let item_script_vm = Arc::new(ItemVm::new(legacy_script_vm.clone(), items_module));
-    let npc_script_vm = Arc::new(ScriptVm::new(legacy_script_vm, script_modules));
+    let pets_module = script_modules.get("pets").cloned().expect("scripting.modules must list the pets module");
+    let item_script_vm = Arc::new(ItemVm::new(items_module, pets_module));
+    let npc_script_vm = Arc::new(ScriptVm::new(script_modules));
     let scripts = load_scripts();
 
     // Loading configs
@@ -255,9 +255,6 @@ pub fn configs() -> &'static Config {
     CONFIGS.get().expect("configuration is loaded in main")
 }
 
-pub fn create_script_vm() -> Arc<script_runtime::WasmRuntime> {
-    script_runtime::WasmRuntime::from_file(&configs().scripting.module_path).expect("Failed to load compiled game scripts")
-}
 
 pub fn create_script_modules() -> HashMap<String, Arc<script_runtime::WasmRuntime>> {
     configs()

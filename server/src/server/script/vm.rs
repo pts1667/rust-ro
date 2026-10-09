@@ -4,29 +4,20 @@ use std::sync::Arc;
 use script_runtime::{Host, WasmRuntime};
 use script_sdk::Entry;
 
-use super::entries::{NAMED_BASE, resolve};
+use super::entries::resolve;
 
-/// Runs NPC and event scripts: numeric entries go to the legacy module, named ones to the module their manifest names.
+/// Runs NPC and event scripts in the module their manifest names.
 pub struct ScriptVm {
-    legacy: Arc<WasmRuntime>,
     modules: HashMap<String, Arc<WasmRuntime>>,
 }
 
 impl ScriptVm {
-    pub fn new(legacy: Arc<WasmRuntime>, modules: HashMap<String, Arc<WasmRuntime>>) -> Self {
-        Self { legacy, modules }
+    pub fn new(modules: HashMap<String, Arc<WasmRuntime>>) -> Self {
+        Self { modules }
     }
 
-    /// Runs the numeric export `entry` of the legacy module.
-    pub async fn execute<H: Host>(&self, host: H, entry: &str, id: u32) -> (H, Result<(), String>) {
-        self.legacy.execute(host, entry, id).await
-    }
-
-    /// Runs the NPC or event `handle`. `legacy_export` is only used when the handle is a numeric entry.
-    pub async fn run<H: Host>(&self, host: H, legacy_export: &str, handle: u32) -> (H, Result<(), String>) {
-        if handle < NAMED_BASE {
-            return self.legacy.execute(host, legacy_export, handle).await;
-        }
+    /// Runs the NPC or event `handle`.
+    pub async fn run<H: Host>(&self, host: H, handle: u32) -> (H, Result<(), String>) {
         let Some(script) = resolve(handle) else {
             return (host, Err(format!("Unknown named script handle {handle:#x}")));
         };
@@ -37,15 +28,15 @@ impl ScriptVm {
     }
 }
 
-/// Runs item scripts from the items module. The legacy module still holds the pet scripts.
+/// Runs item scripts from the items module and pet scripts from the pets module.
 pub struct ItemVm {
-    legacy: Arc<WasmRuntime>,
     items: Arc<WasmRuntime>,
+    pets: Arc<WasmRuntime>,
 }
 
 impl ItemVm {
-    pub fn new(legacy: Arc<WasmRuntime>, items: Arc<WasmRuntime>) -> Self {
-        Self { legacy, items }
+    pub fn new(items: Arc<WasmRuntime>, pets: Arc<WasmRuntime>) -> Self {
+        Self { items, pets }
     }
 
     /// The fingerprint of the items module, which must match the item manifest.
@@ -63,8 +54,18 @@ impl ItemVm {
         self.items.execute_named(host, &Entry::Program(id)).await
     }
 
-    /// Runs a numeric export of the legacy module, such as the pet scripts.
-    pub async fn execute<H: Host>(&self, host: H, entry: &str, id: u32) -> (H, Result<(), String>) {
-        self.legacy.execute(host, entry, id).await
+    /// Runs the passive bonus script of the pet class `id`.
+    pub async fn run_pet<H: Host>(&self, host: H, id: u32) -> (H, Result<(), String>) {
+        self.pets.execute_named(host, &Entry::Pet(id)).await
+    }
+
+    /// Runs the support script of the pet class `id`.
+    pub async fn run_pet_support<H: Host>(&self, host: H, id: u32) -> (H, Result<(), String>) {
+        self.pets.execute_named(host, &Entry::PetSupport(id)).await
+    }
+
+    /// Runs the automatic bonus program `id` of a pet.
+    pub async fn run_pet_program<H: Host>(&self, host: H, id: u32) -> (H, Result<(), String>) {
+        self.pets.execute_named(host, &Entry::PetProgram(id)).await
     }
 }

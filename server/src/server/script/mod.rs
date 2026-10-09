@@ -27,7 +27,7 @@ mod generated_npc_smoke;
 #[cfg(test)]
 mod generated_npc_audit;
 #[cfg(test)]
-mod generated_npc_trace;
+mod npc_trace;
 pub use host::{NpcScriptHost, PlayerInput, ScriptRequest};
 
 #[derive(Clone, Eq, Hash, PartialEq, Debug)]

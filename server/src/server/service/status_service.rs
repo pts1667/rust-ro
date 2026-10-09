@@ -153,7 +153,7 @@ impl StatusService {
                 let mut script_status = status.clone();
                 script_status.equipment_bonuses = models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(StatusBonus::new).collect());
                 let host = ItemScriptHost::bonuses(script_status, 0);
-                let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_pet_auto_bonus", auto_bonus.definition.program_id));
+                let (host, result) = futures::executor::block_on(self.item_script_vm.run_pet_program(host, auto_bonus.definition.program_id));
                 if let Err(error) = result {
                     error!("Failed to calculate Wasm pet automatic bonus {}: {}", auto_bonus.definition.program_id, error);
                 } else {
@@ -420,7 +420,7 @@ impl StatusService {
         let mut script_status = status.clone();
         script_status.equipment_bonuses = models::status_bonus::StatusBonuses::new(bonuses.iter().copied().map(StatusBonus::new).collect());
         let host = ItemScriptHost::bonuses(script_status, 0);
-        let (host, result) = futures::executor::block_on(self.item_script_vm.execute(host, "run_pet", u32::from(pet.class_id)));
+        let (host, result) = futures::executor::block_on(self.item_script_vm.run_pet(host, u32::from(pet.class_id)));
         if let Err(error) = result {
             error!("Failed to execute Wasm pet bonus script {}: {}", pet.class_id, error);
         } else {

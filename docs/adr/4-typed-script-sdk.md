@@ -16,7 +16,7 @@ The NPC scripts are generated from rathena `.txt` files. They compile into one m
 - Generated scripts are hand-maintained once the generator has produced them. The generator is run once per migration, not on every build.
 - Tests run the same scripts against `MockTransport`, a recording transport with scripted replies. No game host is needed.
 
-Still to decide, in a later ADR: module split and name-based dispatch. This record covers only the authoring API and constants.
+The module split and name-based dispatch are in [ADR 6](6-script-modules.md). This record covers only the authoring API and constants.
 
 # Consequences
 - Scripts read like ordinary Rust, and the mock transport tests them natively.

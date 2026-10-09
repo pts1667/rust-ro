@@ -145,16 +145,16 @@ GM commands to manage players are `@ban`/`@unban`, `@charban`/`@charunban`, `@bl
 
 ### 5.3 Running the Server
 
-NPC and item scripts use the checked-in `config/wasm/game_scripts.wasm` module. To edit and rebuild their Rust sources:
+NPC, event, item and pet scripts run from the checked-in modules in `config/wasm` (`towns`, `misc`, `jobs`, `quests`, `systems`, `items`, `pets`). To edit and rebuild their Rust sources:
 
 ```shell
 rustup target add wasm32-unknown-unknown
 cargo run --package tools --bin scripts-build
 ```
 
-The `scripting` configuration specifies `module_path`, `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. Restart after rebuilding executable script code. [Script architecture and migration details](docs/adr/3-wasmtime.md).
+The `scripting` configuration specifies `modules` (module name to `.wasm` path), `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. Restart after rebuilding executable script code. [Script architecture and migration details](docs/adr/3-wasmtime.md).
 
-The legacy NPC text files are offline import inputs. New behavior is written in `scripts/src/npcs.rs`; item implementations are in `scripts/items/src/generated.rs`. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
+The legacy NPC text files are offline import inputs. New NPC behavior is written in the matching crate under `scripts/`: `systems` holds the hand-written NPCs (warper, job masters, castles, weddings, battlegrounds), `towns`, `misc`, `jobs` and `quests` hold the converted rathena NPCs, `items` the item scripts and `pets` the pet scripts. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
 
 Run from the repository root:
 

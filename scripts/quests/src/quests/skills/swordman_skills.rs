@@ -11,6 +11,215 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn knightdethomas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
+        && (ctx.var("JobLevel").get()?.number()? >= 35
+            || (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?))))
+    {
+        if ctx.call(Function::GetSkillLv, vec![Val::from("SM_MOVINGRECOVERY")])? == 1 {
+            ctx.lines_as(
+                "De Thomas",
+                args![
+                    "Oh, it's you?",
+                    "Long time no see!",
+                    "You seem healthier than before.",
+                    "Hahahaha!",
+                    "Take care! See you again!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            if (ctx.call(Function::CountItem, vec![Val::from(713)])?.number()? >= 200
+                && ctx.call(Function::CountItem, vec![Val::from(1058)])?.number()? >= 1)
+            {
+                ctx.lines_as("De Thomas", args!["Welcome back...", "Are you ready to learn Body Movin'?"])?;
+                ctx.next()?;
+                'b1: {
+                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No, I'm not ready yet.")])?);
+                    let mut matched1 = false;
+                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as("De Thomas", args!["Let's see....."])?;
+                        ctx.next()?;
+                        ctx.lines_as("De Thomas", args!["Ok! I shall now teach you...", "...The Body Movin' skill!"])?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(713), Val::from(200)])?;
+                        ctx.call(Function::DelItem, vec![Val::from(1058), Val::from(1)])?;
+                        ctx.call(
+                            Function::Skill,
+                            vec![Val::from("SM_MOVINGRECOVERY"), Val::from(1), ctx.constant("SKILL_PERM")?],
+                        )?;
+                        ctx.lines_as("De Thomas", args!["There you go!", "Try it yourself.", "But don't overdo it."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "De Thomas",
+                            args!["Oh yeah, I won't be needing your", "armor so you can keep it.", "Good luck now!"],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as("De Thomas", args!["Is that so?", "Then come when you are prepared."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            } else {
+                ctx.lines_as(
+                    "De Thomas",
+                    args![
+                        "Hmmm... He's a swordsman...",
+                        "You know that I am De Thomas Carlos, right?",
+                        "Knight of Prontera's 3rd Calvary.",
+                        "De Thomas Carlos!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("De Thomas", args!["You do not have all the items I asked for."])?;
+                ctx.next()?;
+                ctx.lines_as("De Thomas", args!["Remember, I need ^008800200 empty bottles^000000, your armor, and a ^008800Moth Wing^000000. Come back when you have it all."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else {
+        ctx.lines_as(
+            "De Thomas",
+            args![
+                "My name is De Thomas Carlos.",
+                "Knight of Prontera's 3rd Calvary.",
+                "I have a certain duty these days.",
+                "Ehem! Need I say more."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    return Err(Stop::End);
+}
+
+pub fn knightdethomas(ctx: &Ctx) -> Script {
+    knightdethomas_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn knightdethomas_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
+        && (ctx.var("JobLevel").get()?.number()? >= 35
+            || (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?))))
+    {
+        ctx.lines_as(
+            "De Thomas",
+            args![
+                "Oh, no! You must have been hurt! Are you ok?",
+                "You must have fought hard to get such serious injuries..",
+                "Being a swordsman must come with a lot of responsibility and sacrifice."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.mes("[De Thomas]")?;
+        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+            ctx.mes("For these swordsmen and knights, there is a wonderful skill.")?;
+        } else {
+            ctx.mes("For these swordswomen and knights, there is a wonderful skill young lady.")?;
+        }
+        ctx.lines(args![
+            "I present to you - HP Recovery While Moving!",
+            "Body moving is a splendid skill",
+            "that allows you to regain strength(HP)",
+            "while you are moving!"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "De Thomas",
+            args![
+                "It is currently under development",
+                "so it may not recover that much,",
+                "but it will help a little.",
+                "What do you think? Would you like to learn this skill?"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("What a nice skill! I want to learn it!:No, thank you.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "De Thomas",
+                    args![
+                        "Very well. I will tell you what you need to learn this skill.",
+                        "First, your job level must be higher than ^00880035^000000.",
+                        "You will also need ^008800200 empty bottles^000000.",
+                        "Why? Because it is proof that you fought fiercely to have used that many potions."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "De Thomas",
+                    args![
+                        "Also, the armor you used in battle.",
+                        "This is also proof of an experienced fighter.",
+                        "For the armor... your armor is perfect!",
+                        "Bring your armor!",
+                        "Last but not least... bring me one ^008800Moth Wing^000000."
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Eh? You need that, too?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "De Thomas",
+                    args![
+                        "Not really.. I don't really NEED it.",
+                        "It's just that my niece has gotten a bug hunting as a holiday task during the summer vacation.",
+                        "Of course! It would be much easier for me to get it myself.",
+                        "but I must work here all the time so I don't exactly have the time to go out and get it."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "De Thomas",
+                    args![
+                        "Don't you think it is pitiful that I have to stay in once place everyday, not being able to go outside?",
+                        "Please, find me one...*sniffsniff*",
+                        "If you don't..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("De Thomas", args!["..."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    }
+    return Err(Stop::End);
+}
+
+pub fn knightdethomas_ontouch(ctx: &Ctx) -> Script {
+    knightdethomas_ontouch_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn leon_von_frich_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
         && (ctx.var("JobLevel").get()?.number()? >= 25

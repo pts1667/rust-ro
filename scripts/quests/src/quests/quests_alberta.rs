@@ -1458,6 +1458,168 @@ pub fn grandpa_turtle_tur(ctx: &Ctx) -> Script {
     grandpa_turtle_tur_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn sailor_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if (ctx.var("turtle").get()?.is_true() || runtime::op(&ctx.var("misc_quest").get()?, "&", &Val::from(65536))?.is_true()) {
+        ctx.lines_as(
+            "Gotanblue",
+            args![
+                "Heh...",
+                "Your eyes...",
+                "I can tell you're curious about Turtle Island. I guess you must have been talking to that drunken old man!"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Do you know about Turtle Island?:How can I get there?:Stop talking.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Gotanblue", args!["Turtle Island...?", "Well, first I think it's fair to warn you that Turtle Island took the lives of my buddies. That's right, I was part of ^3355FFJornadan Niliria^000000's crew."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args![
+                        "We wanted to find out if the legends about that island were true, so we left everything behind to learn the truth."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Jornadan Niliria was one of the greatest treasure hunters ever, and he gathered men for his crew from around the globe. I'm proud to say that each member of our crew was the best in his field."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["I happened to be the best at navigating. I was only twenty, but I was still invited to his team. It was such an honor to be accepted as an equal amongst these great men."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Anyway, our biggest clue about Turtle Island's location hinted that it was near Alberta, so our voyage began from here."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["We sailed day and night, drifting for weeks, until one day, we were surrounded by an incredibly thick fog. We had no idea of which direction we were going and the mist wouldn't clear."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args!["But none of us had any regrets and we just kept moving onward. There would be no turning back!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Finally, a coral reef sudden appeared and we couldn't steer away from it. Our ship was critically damaged. But when the fog cleared, we saw that we had finally arrived at Turtle Island! It was real!"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args!["After we made camp on shore and explored the island, we learned something quite remarkable."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["There was a man who had actually made it to Turtle Island before us. His records, however, never reached Rune-Midgarts. He was a great swordmaster known simply as ^3355FFOne^000000."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["According to his records, he had traveled alone to find Turtle Island and made it by himself. But we couldn't find any sign of him anywhere..."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["As we explored Turtle Island further, we learned that not only was it abundant with treasure, but that it also held an item of great interest."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args!["From the first explorer's record, some kind of amazing ^3355FFjewel fragment^000000 was mentioned."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["He had traveled to Turtle Island with the purpose of discovering secrets to the sword arts, and stumbled upon a jewel he claimed was the most beautiful in the world."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args![
+                        "By the ^3355FFOne^000000's records, we were able to thoroughly explore all to be seen on Turtle Island. However..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Even after months of searching, we could never find a trace of the jewel fragment. Eventually, we had to give up on our search."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Finally, we packed our things to leave the island. But then, as we were traveling at sea, we encountered a thick, blinding fog once again."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["We spent a month trying to steer through that mist. When we finally sailed out of that mist, we saw that we had arrived at the other side of Turtle Island!"])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Our spirits were crushed!! We tried again and again to leave that place, and spent nearly a year trying to leave but we kept winding up at Turtle Island's shores."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["As we struggled with the fog, we lost our comrades one by one. In the end, Jornadan, the drunken old man you met, and myself were the only ones who were able to return home to Alberta."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["We were the only ones who did not give in to despair, and doggedly held onto our hopes. Still, it was by pure luck that we found a way back to Rune-Midgarts."])?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["Well, that's my story. You know, if you want to learn more about Turtle Island, why don't you speak to the scholar on the eastern port of Alberta?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args![
+                        "Heh heh...",
+                        "I'm sure he can tell give you details that even I wouldn't be able to provide..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Gotanblue",
+                    args!["After my story of Turtle Island, you're still not afraid of going? I'm impressed! Alright then..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gotanblue", args!["If you wish for me to guide you there, I will charge you 10,000 zeny. I'm the only navigator that can guide you there and back safely."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Turtle island -> 10000 zeny:Cancel")])?) == 1 {
+                    if ctx.var("Zeny").get()?.number()? > 9999 {
+                        ctx.lines_as(
+                            "Gotanblue",
+                            args![
+                                "Alright!!",
+                                "You've made your choice! With my experience, we will arrive without fail! I appreciate your spirit!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.mes("^3355FF*Choo Choo*^000000")?;
+                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                        ctx.call(Function::Warp, vec![Val::from("tur_dun01"), Val::from(157), Val::from(39)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    ctx.lines_as("Gotanblue", args!["Hmmm...", "Sorry, but you don't have enough zeny. I hope you understand that I can let my expertise and experience be undervalued..."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Gotanblue",
+                    args![
+                        "Alright then...",
+                        "Well, if the spirit of adventure should happen to grab you, I will be here waiting."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Gotanblue", args!["Heh..."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gotanblue",
+                    args!["Come back whenever you feel you're ready to hear my story, will you?"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    }
+    ctx.lines_as("Gotanblue", args!["Ahhhh...!", "Just look at that ocean! It covers the earth as far as the eye can see. Tell me that's not one of the most beautiful things you've ever seen..."])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn sailor_alberta(ctx: &Ctx) -> Script {
+    sailor_alberta_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn sailor_tur2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Gotanblue", args!["Do you want", "to return", "to Alberta?"])?;
     ctx.next()?;
@@ -1473,6 +1635,103 @@ fn sailor_tur2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
 
 pub fn sailor_tur2(ctx: &Ctx) -> Script {
     sailor_tur2_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn turtle_scholar_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Jornadan Niliria",
+        args!["Every single place", "has its own unique", "smells, sights and sounds."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as("Jornadan Niliria", args!["Even the great, ever expanding sky that's shared by all the peoples of the earth looks strange when you're in a new and foreign land."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Jornandan Niliria",
+        args!["Heh heh...", "Just like my", "time on Turtle Island.", "Hah Hah Hah~"],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("About Turtle island:You're Jornadan Niliria?!:Stop talking")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Jornadan Niliria", args!["Turtle...", "Island..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jornadan Niliria",
+                args!["It's almost silly, but Turtle Island was named simply because it's shaped just like a turtle."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["Now, Turtle Island is surrounded by a dense fog. When we were first stuck in it, a lot of us believed it was the result of a curse, or some kind of magic."])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["But in actuality, the fog is the result of a natural phenomenon. It's created by a waterfall inside a cave located on Turtle Island's coast."])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["Heh heh...", "Once you attain understanding, the truth becomes so simple. I guess confusion and fear is the fog that clouds your judgment, your path on life."])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["Believe it or not, I too used to fear the dangers of Turtle Island. But now that I understand most of its secrets, I look at my experiences at Turtle Island with fondness."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jornadan Niliria",
+                args!["Still, there is one thing I haven't yet uncovered. The ^3355FFunknown jewel fragment^000000."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jornandan Niliria",
+                args!["So, until I find it, I'll keep researching and learn as much as I can until I do. Ha ha ha ha~!"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Jornadan Niliria", args!["Hmm...?", "You've heard of me?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jornadan Niliria",
+                args![
+                    "Ah...",
+                    "I suppose that you know about my treasure hunting days, and probably about Turtle Island."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jornadan Niliria",
+                args!["Well, as you can see, I'm a little older now. These old bones aren't what they used to be."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["But perhaps, someday, if my research bears fruit, I'll venture out once more and seek the one treasure I've never found..."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Jornadan Niliria", args!["When you want to discover the truth, never give in to despair. If you never give up your search, the answer will come to you."])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["..."])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["...", "......"])?;
+            ctx.next()?;
+            ctx.lines_as("Jornadan Niliria", args!["By the way, I'm pretty hungry. Why doesn't Alberta have any good restaurants?! I hear they have good dimsum in Kunlun..."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn turtle_scholar_alberta(ctx: &Ctx) -> Script {
+    turtle_scholar_alberta_body(ctx, Vec::new()).map(|_| ())
 }
 
 fn letter_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {

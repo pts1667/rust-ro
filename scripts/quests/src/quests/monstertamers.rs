@@ -643,6 +643,247 @@ pub fn monster_tamer_alde(ctx: &Ctx) -> Script {
     monster_tamer_alde_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn monstertamer_izlude_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Shogo",
+        args![
+            "Are you pre-occupied with",
+            "gathering items for monsters",
+            "and want a break? ",
+            "We will gather items",
+            "for your Cute Pets."
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "^3355FF' Monster Taming '^000000?:Order ^3355FF' Book of Devil '^000000:Order ^3355FF' No Recipient '^000000:Order ^3355FF' Orc Trophy '^000000:Cancel",
+            )],
+        )?);
+        let mut matched1 = false;
+        let no_case1 = !subject1.loosely_equals(&Val::from(1))
+            && !subject1.loosely_equals(&Val::from(2))
+            && !subject1.loosely_equals(&Val::from(3))
+            && !subject1.loosely_equals(&Val::from(4))
+            && !subject1.loosely_equals(&Val::from(5));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Shogo", args!["The monster taming items are necessary to communicate with the monster of your choice! We Monster Tamer guild members have a very reasonable offer..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Shogo",
+                args![
+                    "We provide a system that allows you to get your hands on these cool items with less of the hassle!",
+                    "Book of Devil!",
+                    "No Recipient!",
+                    "Orc Trophy!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Shogo",
+                args![
+                    "For 1 Book of Devil, you can exchange:",
+                    "^3355FF1 Old Magic Book^000000",
+                    "^3355FF2 Horrendous Mouth^000000."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Shogo",
+                args!["For 1 No Recipient, you can exchange ^3355FF1 Old Portrait^000000."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Shogo",
+                args![
+                    "Lastly, you can exchange",
+                    "^3355FF1 Chivalry Emblem^000000 and",
+                    "^3355FF1 Scorpion Tail^000000",
+                    "for 1 Orc Trophy.",
+                    "Try these fantastic items!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Shogo", args!["This is an item far beyond what humans can read! Its name? ^3355FFBook of Devil^000000! A very mysterious item that can supposedly summon demons..."])?;
+            ctx.next()?;
+            if (ctx.call(Function::CountItem, vec![Val::from(1006)])?.number()? > 0
+                && ctx.call(Function::CountItem, vec![Val::from(958)])?.number()? > 1)
+            {
+                ctx.lines_as("Shogo", args!["Oh! You have all the items necessary to make 1 Book of Devil! Good, good! With all my pride as a monster tamer, I will make one for you right away."])?;
+                ctx.next()?;
+                ctx.lines_as("Shogo", args!["Let's see...", "Hmm, this is going to be hard."])?;
+                ctx.next()?;
+                ctx.mes("^3355FF*Knock knock scrape scrape*^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "Okay. All done.",
+                        "Please take it for",
+                        "the cute monster you",
+                        "are raising.",
+                        "Book of Devil!"
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(958), Val::from(2)])?;
+                ctx.call(Function::DelItem, vec![Val::from(1006), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(642), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Shogo", args!["For the owner that wishes to raise a monster that can be summoned using the Book of Devil, we provide a way to create 1 Book of Devil!"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "Just bring me...",
+                        "^3355FF1 Old Magicbook^000000 and",
+                        "^3355FF2 Horrendous Mouth^000000!",
+                        "If you bring me these items, with all my pride as a monster tamer, I will make it for you!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Shogo", args!["This is an item which expresses feelings beyond what a human can feel. Its name? ^3355FFNo Recipient^000000! Who sent this letter, and who was supposed to receive it?"])?;
+            ctx.next()?;
+            if ctx.call(Function::CountItem, vec![Val::from(7014)])?.number()? > 0 {
+                ctx.lines_as("Shogo", args!["Oh! You have all the items necessary to make No Recipient! Good, good! With all my pride as a monster tamer, I will make one for you right away."])?;
+                ctx.next()?;
+                ctx.lines_as("Shogo", args!["Got to fold this Old Portrait just right..."])?;
+                ctx.next()?;
+                ctx.mes("^3355FF*Scrape scrape brush brush*^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "Okay. All done.",
+                        "Please take this item",
+                        "for the cute monster",
+                        "you are raising.",
+                        "No Recipient!"
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(7014), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(636), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    "Shogo",
+                    args!["For the monster owner that is fond of No Recipient, we provide a way to create to special item!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "Just bring me...",
+                        "^3355FF1 Old Portrait^000000!",
+                        "If you bring this to me, with all my pride as a monster tamer, I will make it for you!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Shogo",
+                args![
+                    "This is an item far beyond the pride of humans!",
+                    "Its name?",
+                    "^3355FFOrc Trophy^000000!"
+                ],
+            )?;
+            ctx.next()?;
+            if (ctx.call(Function::CountItem, vec![Val::from(1004)])?.number()? > 0
+                && ctx.call(Function::CountItem, vec![Val::from(904)])?.number()? > 0)
+            {
+                ctx.lines_as("Shogo", args!["Oh! You have all the items necessary to make an Orc Trophy! Good, good! With all my pride as a monster tamer, let me make one for you right away!"])?;
+                ctx.next()?;
+                ctx.lines_as("Shogo", args!["Got to...", "Fit this Scorpion Tail...", "Just right..."])?;
+                ctx.next()?;
+                ctx.mes("^3355FF*Clang clang Boong*^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "Okay. All done.",
+                        "Please take this for",
+                        "the cute monster",
+                        "you are raising...",
+                        "Orc Trophy!"
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(904), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(1004), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(635), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "For the monster owner",
+                        "who is fond of Horror of Tribe...",
+                        "One way to make Horror of Tribe !",
+                        "^3355FF 1 Chivalry Emblem^000000!",
+                        "^3355FF 1 Scorpion Tail^000000!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shogo",
+                    args![
+                        "If you bring these items to me,",
+                        "with all my pride as a monster",
+                        "tamer, I will make it for you!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Shogo",
+                args!["Ah...!", "You must have not decided which Monster you want to raise."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Shogo", args!["Definitely not a decision to be made carelessly! Your pet monster will accompany you throughout your life. Please take your time and return when you have decided."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn monstertamer_izlude(ctx: &Ctx) -> Script {
+    monstertamer_izlude_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn munak_s_grandma_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.call(Function::CountItem, vec![Val::from(1558)])?.number()? > 0 {
         ctx.lines_as("Munak's grandma", args!["Oh my...", "Have you seen my granddaughter,"])?;

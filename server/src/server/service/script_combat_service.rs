@@ -544,10 +544,11 @@ fn run_auto_bonus(server: &Server, state: &mut ServerState, character: &mut Char
     }
     let pet_bonus = definition.source_pet_id != 0;
     let run_program = |host: ItemScriptHost, program_id: u32| {
+        let vm = &server.item_service().item_script_vm;
         if pet_bonus {
-            futures::executor::block_on(server.script_service().vm.execute(host, "run_pet_auto_bonus", program_id))
+            futures::executor::block_on(vm.run_pet_program(host, program_id))
         } else {
-            futures::executor::block_on(server.item_service().item_script_vm.run_program(host, program_id))
+            futures::executor::block_on(vm.run_program(host, program_id))
         }
     };
     let host = server

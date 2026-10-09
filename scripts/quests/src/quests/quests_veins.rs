@@ -11,6 +11,421 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if ((ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 2000
+        || ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])? == 0)
+    {
+        ctx.lines(args![
+            "- Wait a moment! -",
+            "- Currently you are carrying -",
+            "- too many items with you. -",
+            "- Please come back after -",
+            "- you put some items into Kafra Storage. -"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if ctx.var("veins_stone").get()? == 0 {
+        ctx.lines_as(
+            "Zabaroo",
+            args![
+                "My back is killing me",
+                "after stooping over to",
+                "pick up stones all day long...",
+                "The pain... It's unbearable!"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Bend with your knees, yo.:Gosh, how bad is it?")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "Whippersnapper!",
+                        "I didn't ask you for",
+                        "your advice! Don't",
+                        "patronize an old man!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "Oh, it hurts so much, it's",
+                        "almost crippling. But I don't",
+                        "have any choice. I need to",
+                        "get enough stops to fill",
+                        "this gap if I want to get",
+                        "paid. Arrrrgh, damn it!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "If I don't get enough",
+                        "money to pay for my",
+                        "granddaughter's medicine,",
+                        "I won't be able to buy any",
+                        "medicine for my granddaughter!",
+                        "And that will be horrible! Ag!"
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Can I help?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "I appreciate your kindness,",
+                        "stranger, but no. I have",
+                        "to do this on my own.",
+                        "A man must have his pride...."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.mes("^333333*Snap*^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "Argh! My back...!",
+                        "This was totally",
+                        "unforeseeable!",
+                        "Please! Please,",
+                        "for the love of Freya,",
+                        "please help me!"
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("I will help you.")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as("Zabaroo", args!["Thank you!", "Thanks so much!"])?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("What do you want me to do?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "Ow-ow-ow! Oh... Okay...",
+                        "You see those all dark",
+                        "stones stuck in the ground?",
+                        "Those are what I need to",
+                        "pick up. Now don't go",
+                        "lifting rocks just yet..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "I asked some other old",
+                        "man in town, Absar, to",
+                        "make me something to help",
+                        "with my back. He was going",
+                        "to help me if I gave hi--",
+                        "ARGH! My back! It hurts!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "It hurts so bad! But it's",
+                        "especially painful right",
+                        "when I'm about to finish",
+                        "sentences in which I intend to",
+                        "tell you important informat--",
+                        "ARRRGH! Find Absar! Quickly!"
+                    ],
+                )?;
+                ctx.next()?;
+                'l2: loop {
+                    if !(true) {
+                        break 'l2;
+                    }
+                    'b2: {
+                        ctx.lines_as(
+                            "Zabaroo",
+                            args![
+                                "Wait, wait...",
+                                "Maybe I can answer",
+                                "a few of your questions",
+                                "before my body is wracked",
+                                "with throbbing pain. Let's...",
+                                "Let's at least give it a try."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("What's with these stones?:Where's the old man?:Nothing.")],
+                            )?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                && !subject3.loosely_equals(&Val::from(2))
+                                && !subject3.loosely_equals(&Val::from(3));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Zabaroo",
+                                    args![
+                                        "Well, we use these dark",
+                                        "stones because they're",
+                                        "pretty and easy to process.",
+                                        "They're sort of a specialty",
+                                        "of this town. I get paid to",
+                                        "harvest these handy rocks."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Zabaroo",
+                                    args![
+                                        "We can sell these to tourists,",
+                                        "and we even have a factory",
+                                        "that uses these stones.",
+                                        "Still, it's not like the",
+                                        "townspeople are getting",
+                                        "rich off these stones."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Zabaroo", args!["All of us are still", "barely making a living..."])?;
+                                ctx.next()?;
+                                break 'b3;
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Zabaroo",
+                                    args![
+                                        "Absar? He's inside",
+                                        "the Tool Shop. You",
+                                        "can't miss him... Just",
+                                        "look for the man with",
+                                        "the crazy eyes!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                break 'b3;
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Zabaroo",
+                                    args![
+                                        "Thanks for your help.",
+                                        "If you can't find Absar",
+                                        "in the Tool Shop, then",
+                                        "you might want to stop",
+                                        "by the Tavern. A-auuugh!"
+                                    ],
+                                )?;
+                                ctx.var("veins_stone").set(Val::from(1))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        if ctx.var("veins_stone").get()? == 1 {
+            ctx.lines_as(
+                "Zabaroo",
+                args![
+                    "Thanks for your help.",
+                    "If you can't find Absar",
+                    "in the Tool Shop, then",
+                    "you might want to stop",
+                    "by the Tavern. A-auuugh!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            if (ctx.var("veins_stone").get()?.number()? > 1 && ctx.var("veins_stone").get()?.number()? < 4) {
+                ctx.lines_as(
+                    "Zabaroo",
+                    args![
+                        "Geez, Absar sure can",
+                        "be fussy. Still, do your",
+                        "best to get what he wants.",
+                        "He won't help me otherwise!",
+                        "Other than that, he's not",
+                        "really that bad a guy..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                if ctx.var("veins_stone").get()? == 4 {
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args!["Oh good, you're back!", "Did you bring what", "Absar made for me?"],
+                    )?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("Yes, here...")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args![
+                            "So this is what he",
+                            "was talking about?",
+                            "How does it... Ah!",
+                            "Here we go! If I pull",
+                            "the handle, that end of",
+                            "the stick will pick stuff up!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args![
+                            "This is great! I won't",
+                            "have to bend over to pick",
+                            "up stones anymore! Heh,",
+                            "he must be awfully proud",
+                            "of this useful invention~",
+                            "I can imagine him strutting."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args!["Um, did he have anything", "to say after he gave this", "to you? I'm just curious."],
+                    )?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("This message...")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args![
+                            "Oh... I thought he",
+                            "would forget all about",
+                            "that. Well, it's a relief",
+                            "to know that now. That's",
+                            "really very nice of him."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args!["I hate to ask you...", "But would you mind", "helping me out one", "more time?"],
+                    )?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("Huh? What is it?")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Zabaroo",
+                        args![
+                            "Don't worry, it's not",
+                            "too hard. Would you just",
+                            "deliver the stones I gathered",
+                            "to the factory in town? It's",
+                            "near the airport or airship or",
+                            "something. It won't take long."
+                        ],
+                    )?;
+                    ctx.var("veins_stone").set(Val::from(5))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    if (ctx.var("veins_stone").get()?.number()? > 4 && ctx.var("veins_stone").get()?.number()? < 7) {
+                        ctx.lines_as(
+                            "Zabaroo",
+                            args![
+                                "Thanks again for your help!",
+                                "What did Absar call this",
+                                "thing again? A Tactile...",
+                                "Extendable... Damn it...",
+                                "Why's the name so long?",
+                                "Anyway, it's usefull~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if ctx.var("veins_stone").get()? == 7 {
+                            ctx.lines_as(
+                                "Zabaroo",
+                                args![
+                                    "Oh, you're back!",
+                                    "I really appreciate all",
+                                    "of your help. I don't have",
+                                    "much, and I know you weren't",
+                                    "expecting a reward, but I'd",
+                                    "like to give you something."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Zabaroo",
+                                args![
+                                    "Ah, here we are. I found",
+                                    "these while harvesting stones",
+                                    "I was told that adventurers",
+                                    "find these useful. Anyway,",
+                                    "I hope you like these rocks..."
+                                ],
+                            )?;
+                            ctx.var("veins_stone").set(Val::from(8))?;
+                            ctx.call(Function::GetExperience, vec![Val::from(300000), Val::from(0)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(985), Val::from(3)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            if ctx.var("veins_stone").get()?.number()? > 7 {
+                                ctx.lines_as(
+                                    "Zabaroo",
+                                    args![
+                                        "Thanks to you and Absar,",
+                                        "my poor back hasn't been",
+                                        "bothering me at all lately.",
+                                        "I should be taking better",
+                                        "care of myself at my age..."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn wincingoldman_veins(ctx: &Ctx) -> Script {
+    wincingoldman_veins_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn strange_old_man_ve_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("veins_stone").get()? == 0 {
         ctx.lines_as(

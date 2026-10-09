@@ -18,12 +18,13 @@
     "seed_path": "db/seed.json"
   },
   "scripting": {
-    "module_path": "config/wasm/game_scripts.wasm",
     "modules": {
       "items": "config/wasm/items.wasm",
       "jobs": "config/wasm/jobs.wasm",
       "misc": "config/wasm/misc.wasm",
+      "pets": "config/wasm/pets.wasm",
       "quests": "config/wasm/quests.wasm",
+      "systems": "config/wasm/systems.wasm",
       "towns": "config/wasm/towns.wasm"
     },
     "npcs_path": "config/wasm/npcs.json",

@@ -11,6 +11,104 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn aibakthing_ayothaya_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Aibakthing",
+        args![
+            "Hoo! Hah! Hoo! Hah!",
+            "Let me take you away to",
+            "a distant spiritual place,",
+            "a land of exotic mystery,",
+            "my hometown Ayothaya!"
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("About Ayothaya.:Go to Ayothaya.:Cancel.")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Aibakthing", args!["We Ayothayans are a pious people who value peace and sincerity. We endeavor to lead simple, yet noble, lives in harmony with nature."])?;
+            ctx.next()?;
+            ctx.lines_as("Aibakthing", args!["Our traditional cuisine is world famous. It's no surprise when we serve dishes like Tom Yum Goong, made of Shrimp, Lemon and Chillies, which has a tantalizing aroma and flavor beyond imagining."])?;
+            ctx.next()?;
+            ctx.lines_as("Aibakthing", args!["For those who crave adventure, there is an age old story about the Sa-mhing Tiger, an evil creature that haunts our temple ruins."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Aibakthing",
+                args![
+                    "Hoo! Hahh! Hoo! Hahh!",
+                    "No man alive can resist the",
+                    "call of this beautiful land.",
+                    "Midgardians are",
+                    "always welcome!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Aibakthing",
+                args![
+                    "Ah, you must pay 10,000 Zeny",
+                    "if you wish to visit Ayothaya.",
+                    "If you're ready, we can leave",
+                    "right now~"
+                ],
+            )?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("I'm ready, let's go!:No.")])?) == 1 {
+                if ctx.var("Zeny").get()?.number()? > 9999 {
+                    ctx.lines_as(
+                        "Aibakthing",
+                        args!["Hoo! Hah! Hoo! Hah!", "Let us be off! Back to my", "beautiful Ayothaya!"],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.call(Function::Warp, vec![Val::from("ayothaya"), Val::from(149), Val::from(71)])?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as("Aibakthing", args!["I am sorry, but you do not have the 10,000 Zeny to travel to Ayothaya. Such a price is nothing compared to the experiences that await you!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Aibakthing",
+                args![
+                    "Have you ever dreamed",
+                    "of a beautiful place filled",
+                    "with spiritual serenity? You",
+                    "must have been dreaming",
+                    "of Ayothaya, my friend."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn aibakthing_ayothaya(ctx: &Ctx) -> Script {
+    aibakthing_ayothaya_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn aibakthing_ayo2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Aibakthing",

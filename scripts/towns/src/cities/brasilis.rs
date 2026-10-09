@@ -11,6 +11,77 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn crewman_bra2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    let mut l_cost = Val::from(0);
+    ctx.lines_as(
+        "Crewman",
+        args![
+            "Hey, have you heard of a place called Brasilis?",
+            "It's a tropical city that's hot like the desert but also rainy. It is a very mysterious place."
+        ],
+    )?;
+    ctx.next()?;
+    ctx.lines_as("Crewman", args!["We recently found a new ocean route to get there easily."])?;
+    if ctx.constant("VIP_SCRIPT")?.is_true() {
+        l_cost = (if ctx.call(Function::VipStatus, vec![ctx.constant("VIP_STATUS_ACTIVE")?])?.is_true() {
+            Val::from(1000)
+        } else {
+            Val::from(10000)
+        });
+        ctx.mes("It's just 10,000 zeny for a round trip, and 1,000 for VIP! So do you want to go?")?;
+    } else {
+        l_cost = Val::from(10000);
+        ctx.mes("It's just 10,000 zeny for a round trip! So do you want to go?")?;
+    }
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Take me to Brasilis!:I'll stay here.")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            if runtime::op(&ctx.var("Zeny").get()?, "<", &l_cost.clone())?.is_true() {
+                ctx.lines_as(
+                    "Crewman",
+                    args![
+                        ((Val::from("I said ") + shared::other_global_functions::f_insertcomma(ctx, vec![l_cost.clone()])?)
+                            + Val::from(" zeny."))
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Crewman", args!["Cool~!! Let's go~!"])?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_cost.clone())?))?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("brasilis"), Val::from(314), Val::from(60)])?;
+                return Err(Stop::End);
+            }
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Crewman",
+                args!["Well if you're ever interested, let me know and I can take you there."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn crewman_bra2(ctx: &Ctx) -> Script {
+    crewman_bra2_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn crewman_bra1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Crewman", args!["My ship is going to back to Alberta, do you want to join us?"])?;
     ctx.next()?;

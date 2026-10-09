@@ -11,6 +11,201 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn sea_captain_amatsu_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Walter Moers",
+        args![
+            "Hey, there.",
+            "Have you ever heard that there",
+            "are totally different countries",
+            "than the Rune-Midgarts Kingdom?"
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("About Amatsu...:Go to Amatsu:Cancel")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "I heard that a drifting ship",
+                    "accidentally discovered it...",
+                    "The ship was totally destroyed",
+                    "by a raging storm in heavy fog.",
+                    " "
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "Anyway, the ship was wrecked",
+                    "on the beach. It was there",
+                    "he arrived at a town called Amatsu."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "The towners took pity on him",
+                    "and took care of his wounds.",
+                    "He lived there until he finished making a map."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "He passed away when he returned",
+                    "to Rune-Midgarts. Fortunately,",
+                    "the map was given to our king, Tristan III."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "King Tristan III announced",
+                    "that he would reward any",
+                    "person brave enough to venture to Amatsu, and spread copies of this map."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "Many brave and adventurous",
+                    "sea captains took the",
+                    "challenge. Great fortune could",
+                    "be made in trade with Amatsu, as well as the rewards from King Tristan III..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "However, they all failed!",
+                    "To overcome various currents",
+                    "and bad weather, lots of",
+                    "experience is required. But they were all blinded by their greed..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "Finally, a great man discovered",
+                    "the perfect sealane to Amatsu...",
+                    "Right! That is me. Sir Walter",
+                    "Moers. I started the trade with Amatsu! Hahaha! Well, that's all about Amatsu."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "I made good money from trades",
+                    "for years, and now I'm interested",
+                    "in tourism. If you want to go to Amatsu, let me know~!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "Oh yeah? It's a long way to",
+                    "Amatsu. That's why we are",
+                    "charging a fare. You don't think that crossing oceans and currents is easy, do you?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "10,000 zeny for a round-trip! I've",
+                    "got a stately room in a sturdy and",
+                    "safe trade ship for you. It is a ",
+                    "reasonable fare when you consider",
+                    "that this isn't a one way trip."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Walter Moers",
+                args!["Shall we go now? You didn't forget", "the fare, right? Let's go."],
+            )?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("All Aboard!:Cancel")])?) == 1 {
+                if ctx.var("Zeny").get()?.number()? > 9999 {
+                    ctx.lines_as("Walter Moers", args!["Alright, I will start the engine!"])?;
+                    ctx.close_window()?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(197), Val::from(83)])?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Walter Moers",
+                    args![
+                        "Were you even listening to me?",
+                        "10,000 zeny. If you got",
+                        "nothing, find some treasure",
+                        "somewhere, like in a wrecked ship...Show me the money!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "If you are an adventurer,",
+                    "this is a great chance",
+                    "to experience a different culture...Well, it is up to you."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Walter Moers",
+                args![
+                    "If you are tired of your daily",
+                    "life, take a trip to a distant",
+                    "country across the ocean.",
+                    "Someplace like, oh I don't know, Amatsu~"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn sea_captain_amatsu(ctx: &Ctx) -> Script {
+    sea_captain_amatsu_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn sea_captain_ama2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Walter Moers",

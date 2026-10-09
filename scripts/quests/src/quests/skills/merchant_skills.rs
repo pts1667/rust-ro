@@ -521,3 +521,610 @@ fn charlron_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
 pub fn charlron(ctx: &Ctx) -> Script {
     charlron_body(ctx, Vec::new()).map(|_| ())
 }
+
+fn gershaun_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    let mut l_care_random = Val::from(0);
+    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?) {
+        if ctx.call(Function::GetSkillLv, vec![Val::from("MC_CARTREVOLUTION")])? == 1 {
+            ctx.lines_as(
+                "Gershaun",
+                args![
+                    "Ah, long time no see!",
+                    "Ohh, the red marks on your cart.",
+                    "They must be the marks of 'it'...",
+                    "Seems like I have taught you the skill correctly!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Gershaun",
+                args![
+                    "You have blood like mine in you!",
+                    "Mmm! After all!!",
+                    "I'm happy! Scratch my back!",
+                    "Here! Hurry!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            if (ctx.var("JobLevel").get()?.number()? >= 35
+                || (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
+                    || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)))
+            {
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "Ooh. You have a firm body",
+                        "for a merchant. You must be",
+                        "very good a carrying things!?",
+                        "Mmm you should be able to learn",
+                        "Cart Revolution!"
+                    ],
+                )?;
+                ctx.next()?;
+                'b1: {
+                    let subject1 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Hey~ that's why I came.:What's that?")],
+                    )?);
+                    let mut matched1 = false;
+                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        l_care_random = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        if l_care_random.clone() == 1 {
+                            if ((((ctx.call(Function::CountItem, vec![Val::from(533)])?.number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(998)])?.number()? > 19)
+                                && ctx.call(Function::CountItem, vec![Val::from(938)])?.number()? > 29)
+                                && ctx.call(Function::CountItem, vec![Val::from(601)])?.number()? > 19)
+                                && ctx.call(Function::CountItem, vec![Val::from(962)])?.number()? > 4)
+                            {
+                                ctx.lines_as("Gershaun", args!["Hoho!", "Got it! I shall teach you", "Cart Revolution!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Gershaun",
+                                    args!["Ah, such a nice day!", "I shall reward those who", "eagerly swing their carts!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::DelItem, vec![Val::from(533), Val::from(2)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(998), Val::from(20)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(938), Val::from(30)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(601), Val::from(20)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(962), Val::from(5)])?;
+                                ctx.call(
+                                    Function::Skill,
+                                    vec![Val::from("MC_CARTREVOLUTION"), Val::from(1), ctx.constant("SKILL_PERM")?],
+                                )?;
+                                ctx.lines(args![
+                                    "Now you can use Cart Revolution",
+                                    "I expect you to make merchants",
+                                    "famous by using this amazing",
+                                    "destruction power. Muahahahahaha!!!"
+                                ])?;
+                                ctx.next()?;
+                                ctx.lines_as("Gershaun", args!["Have a great day!!"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                if ctx.call(Function::CountItem, vec![Val::from(532)])?.number()? > 0 {
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args!["Ooh!", "It's banana juice!", "Thank you very much!", "...............Kaah!"],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(532), Val::from(1)])?;
+                                    ctx.mes("Very refreshing! Thank you! Goodbye!")?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Hmm?",
+                                            "You didn't leave yet?",
+                                            "Ah! You are still attached",
+                                            "to Cart Revolution!",
+                                            "Ok then. Considering you brought",
+                                            "the Banana Juice, I'll teach you."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "It's not hard to teach you",
+                                            "Cart Revolution, but I need you to prepare",
+                                            "the materials to modify your cart.",
+                                            "The items I need are.."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "First I need 20 Irons to make the cart",
+                                            "durable. Then 30 Sticky Mucus to absorb",
+                                            "the shock.",
+                                            "And about 20 Fly Wings and 5 Tentacles?",
+                                            "And 2 bottles of Grape Juice for me!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Just bring those.",
+                                            "I'm not saying ONLY 30 or 20.",
+                                            "It depends on my condition!",
+                                            "Hahahaha!",
+                                            "I'll be waiting. Then byebye~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                            ctx.lines_as(
+                                "Gershaun",
+                                args![
+                                    "Mmm!",
+                                    "Nothing can be done without a refreshing drink!",
+                                    "How about starting a conversation",
+                                    "with at least a bottle of Banana Juice?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if l_care_random.clone() == 2 {
+                            if ((((ctx.call(Function::CountItem, vec![Val::from(533)])?.number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(998)])?.number()? > 14)
+                                && ctx.call(Function::CountItem, vec![Val::from(938)])?.number()? > 24)
+                                && ctx.call(Function::CountItem, vec![Val::from(601)])?.number()? > 14)
+                                && ctx.call(Function::CountItem, vec![Val::from(962)])?.number()? > 4)
+                            {
+                                ctx.lines_as(
+                                    "Gershaun",
+                                    args!["Mmm that's good!", "Great! I shall teach you", "...Cart Revolution!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Gershaun",
+                                    args!["Ah, such a nice day!", "I shall reward those who", "eagerly swing their carts!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::DelItem, vec![Val::from(533), Val::from(2)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(998), Val::from(15)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(938), Val::from(25)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(601), Val::from(15)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(962), Val::from(5)])?;
+                                ctx.call(
+                                    Function::Skill,
+                                    vec![Val::from("MC_CARTREVOLUTION"), Val::from(1), ctx.constant("SKILL_PERM")?],
+                                )?;
+                                ctx.lines(args![
+                                    "Now you can use Cart Revolution",
+                                    "I expect you to make merchants",
+                                    "famous by using its amazing",
+                                    "destruction power. Muahahahahaha!!!"
+                                ])?;
+                                ctx.next()?;
+                                ctx.lines_as("Gershaun", args!["Have a good day!!"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                if ctx.call(Function::CountItem, vec![Val::from(532)])?.number()? > 0 {
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args!["Ooh!", "It's banana juice!", "Thanks a lot!", "...............Kaaah!"],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(532), Val::from(1)])?;
+                                    ctx.mes("Very good! Thank you! Good-bye!")?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Mmm?",
+                                            "You didn't leave yet?",
+                                            "Ah! You're still attached",
+                                            "to Cart Revolution!",
+                                            "Ok then. Considering you brought",
+                                            "the banana juice, I'll teach you."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "It's not hard to teach you",
+                                            "Cart Revolution, but I need you to prepare",
+                                            "the materials to modify your cart.",
+                                            "The items I need are.."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "First I need 20 Irons to make the cart",
+                                            "durable. Then 30 Sticky Mucus to absorb",
+                                            "the shock.",
+                                            "And about 20 Fly Wings and 5 Tentacles?",
+                                            "And 2 bottles of Grape Juice for me!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Bring these to me.",
+                                            "But that doesn't mean I want only 30 and 20.",
+                                            "It all depends on my condition!",
+                                            "Just bring me these for now.",
+                                            "Hahahaha!",
+                                            "I'm looking forward to it. Good bye then~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                            ctx.lines_as(
+                                "Gershaun",
+                                args![
+                                    "Mmm!",
+                                    "Nothing's free nowadays!",
+                                    "How about trying to start a conversation",
+                                    "by offering a bottle of Banana Juice or something?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if l_care_random.clone() == 3 {
+                            if ((((ctx.call(Function::CountItem, vec![Val::from(533)])?.number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(998)])?.number()? > 22)
+                                && ctx.call(Function::CountItem, vec![Val::from(938)])?.number()? > 31)
+                                && ctx.call(Function::CountItem, vec![Val::from(601)])?.number()? > 22)
+                                && ctx.call(Function::CountItem, vec![Val::from(962)])?.number()? > 5)
+                            {
+                                ctx.lines_as(
+                                    "Gershaun",
+                                    args!["Mmm that's good!", "Great! I shall teach you", "...Cart Revolution!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Gershaun",
+                                    args!["Ah, such a nice day!", "I shall reward those who", "eagerly swing their carts!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::DelItem, vec![Val::from(533), Val::from(2)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(998), Val::from(23)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(938), Val::from(32)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(601), Val::from(23)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(962), Val::from(6)])?;
+                                ctx.call(
+                                    Function::Skill,
+                                    vec![Val::from("MC_CARTREVOLUTION"), Val::from(1), ctx.constant("SKILL_PERM")?],
+                                )?;
+                                ctx.lines(args![
+                                    "Now you can use Cart Revolution",
+                                    "I expect you to make merchants",
+                                    "famous by using its amazing",
+                                    "destruction power. Muahahahahaha!!!"
+                                ])?;
+                                ctx.next()?;
+                                ctx.lines_as("Gershaun", args!["Have a good day!!"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                if ctx.call(Function::CountItem, vec![Val::from(532)])?.number()? > 0 {
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args!["Ooh!", "It's Banana Juice!", "Thanks a lot!", "...............Kaaah!"],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(532), Val::from(1)])?;
+                                    ctx.mes("Very good! Thank you! Good-bye!")?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Mmm?",
+                                            "You didn't leave yet?",
+                                            "Ah! You're still attached",
+                                            "to Cart Revolution!",
+                                            "Ok then. Considering you brought",
+                                            "the banana juice, I'll teach you."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "It's not hard to teach you",
+                                            "Cart Revolution, but I need you to prepare",
+                                            "the materials to modify your cart.",
+                                            "The items I need are.."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "First I need 20 Irons to make the cart",
+                                            "durable. Then 30 Sticky Mucus to absorb",
+                                            "the shock.",
+                                            "And about 20 Fly Wings and 5 Tentacles?",
+                                            "And 2 bottles of Grape Juice for me!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Gershaun",
+                                        args![
+                                            "Just bring those.",
+                                            "I'm not saying ONLY 30 or 20.",
+                                            "It depends on my condition!",
+                                            "Hahahaha!",
+                                            "I'll be waiting. Then byebye~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                            ctx.lines_as(
+                                "Gershaun",
+                                args![
+                                    "Mmm!",
+                                    "Nothing can be done without a refreshing drink!",
+                                    "How about starting a conversation",
+                                    "with at least a bottle of Banana Juice?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "... you don't seem to know",
+                                "about Cart Revolution.",
+                                "Ok, I'll tell you a story",
+                                "I've never told anyone before.",
+                                "Listen carefully."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "I did research about a different",
+                                "way to use the cart.",
+                                "I tried cooking ramen",
+                                "and even tried jump-roping.",
+                                "But none of them were able",
+                                "to satisfy me."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "In despair, I wandered",
+                                "through the fields with my cart.",
+                                "After wandering dazed day after day..",
+                                "I met a very strong monster.",
+                                "Life was in danger!",
+                                "Why me - a weaponless, armor-less merchant!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "I was scared to death.. thinking",
+                                "and hoping that this wasn't the",
+                                "last of me. With little hope left",
+                                "I tried the last thing possible.",
+                                "I used my cart to hit the monster!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "The monster died in one hit.",
+                                "It was then that I realized something.",
+                                "Carts can become weapons, too!",
+                                "I finally realized that we can",
+                                "attack with carts!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "Cart Revolution!",
+                                "That's the new attack skill I developed.",
+                                "Using 12 SP you lift your cart",
+                                "to hit your opponent..",
+                                "right in the head!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "The heavier your cart is, the",
+                                "stronger you can attack! With one hit,",
+                                "your opponent will be hurt and",
+                                "forced to back off!",
+                                "This is Cart Revolution!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            }
+        }
+        ctx.lines_as(
+            "Gershaun",
+            args![
+                "Mmm, a young merchant.",
+                "You must use carts, too.",
+                "Since you need to do business.",
+                "But is that all?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Gershaun",
+            args![
+                "I did research about a different",
+                "way to use the cart.",
+                "I tried cooking ramen",
+                "and even tried jump-roping.",
+                "But none of them were able",
+                "to satisfy me."
+            ],
+        )?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("I know, I know.:...?")])?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as("Gershaun", args!["...no, what I'm saying is."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "In despair, I wandered",
+                        "through the fields with my cart.",
+                        "After wandering dazed day after day..",
+                        "I met a very strong monster.",
+                        "Life was in danger!",
+                        "Why me - a weaponless, armor-less merchant!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "I was scared to death.. thinking",
+                        "and hoping that this wasn't the",
+                        "last of me. With little hope left",
+                        "I tried the last thing possible.",
+                        "I used my cart to hit the monster!",
+                        "And then! And then!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "The monster died in one hit.",
+                        "It was then that I realized something.",
+                        "Carts can become weapons, too!",
+                        "I finally realized that we can",
+                        "attack with carts!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "Cart Revolution!",
+                        "That's the new attack skill I developed.",
+                        "Using 12 SP you lift your cart",
+                        "to hit your opponent..",
+                        "right in the head!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Gershaun",
+                    args![
+                        "The heavier your cart is, the",
+                        "stronger you can attack! With one hit,",
+                        "your opponent will be hurt and",
+                        "forced to back off!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Gershaun", args!["Would you like to learn this skill?"])?;
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Yes!!:I want to learn sushi skills...")],
+                    )?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as(
+                            "Gershaun",
+                            args![
+                                "Ok!",
+                                "I'll give you special training!",
+                                "First you need health!",
+                                "Get yourself to merchant",
+                                "level 35!",
+                                "We'll talk after that!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.mes("[Sushi King Gershaun]")?;
+                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_FEMALE")?) {
+                            ctx.mes("Stupid girl!")?;
+                        } else {
+                            ctx.mes("Stupid boy!")?;
+                        }
+                        ctx.lines(args!["It's way to early for you to", "even put your hands on sushi!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            }
+        }
+    }
+    ctx.lines_as(
+        "Gershaun",
+        args![
+            "If it doesn't work, make it work.",
+            "If it doesn't work, make it work.",
+            "If it doesn't work, make it work."
+        ],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn gershaun_alberta(ctx: &Ctx) -> Script {
+    gershaun_alberta_body(ctx, Vec::new()).map(|_| ())
+}

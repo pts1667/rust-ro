@@ -68,13 +68,13 @@ fn active_pet_queries_use_real_owner_context_in_both_npc_and_item_hosts() {
 fn all_embedded_pet_bonus_scripts_execute_as_wasm_and_poring_bonus_tracks_loyalty_and_incubation() {
     let (context, _) = fixture();
     let mut source = context.server.state_mut().characters_mut().remove(&150_000).unwrap();
-    let vm = crate::tests::common::test_script_vm();
+    let vm = crate::tests::common::test_item_vm();
     let mut failures = Vec::new();
     for definition in &world_data().pets {
         source.game_systems.pet = Some(pet(definition.class_id, source.char_id));
         source.refresh_script_context();
         let host = ItemScriptHost::bonuses(source.status.clone(), 0);
-        let (host, result) = context.runtime().block_on(vm.execute(host, "run_pet", u32::from(definition.class_id)));
+        let (host, result) = context.runtime().block_on(vm.run_pet(host, u32::from(definition.class_id)));
         if result.is_err() || host.error.is_some() {
             failures.push(format!("Pet {}: {:?}, host: {:?}", definition.class_id, result, host.error));
         }
@@ -252,7 +252,7 @@ fn disabling_pet_capture_between_map_claim_and_egg_commit_restores_the_exact_liv
     assert!(context.server.state().get_character(150_000).unwrap().game_systems.pending_pet_capture.is_none());
 }
 
-fn support_guest(requests: Vec<Request>) -> script_runtime::WasmRuntime {
+fn support_guest(requests: Vec<Request>) -> crate::server::script::ItemVm {
     let mut data = String::new();
     let mut calls = String::new();
     for (index, request) in requests.into_iter().enumerate() {
@@ -266,8 +266,9 @@ fn support_guest(requests: Vec<Request>) -> script_runtime::WasmRuntime {
     let wasm = format!("(module (import \"rust_ro\" \"invoke\" (func $invoke (param i32 i32 i32 i32) (result i32)))
         (memory (export \"memory\") 1) {data}
         (func (export \"script_abi\") (result i32) i32.const {})
-        (func (export \"run_pet_support\") (param i32) (result i32) {calls} i32.const 0))", script_sdk::ABI_VERSION);
-    script_runtime::WasmRuntime::from_bytes(wasm.as_bytes(), script_runtime::Limits::default()).unwrap()
+        (func (export \"script_run\") (result i32) {calls} i32.const 0))", script_sdk::ABI_VERSION);
+    let guest = script_runtime::WasmRuntime::from_bytes(wasm.as_bytes(), script_runtime::Limits::default()).unwrap();
+    crate::server::script::ItemVm::new(crate::tests::common::test_item_runtime(), std::sync::Arc::new(guest))
 }
 
 #[test]
@@ -285,7 +286,7 @@ fn compiled_pet_support_calls_install_real_bonuses_recovery_and_skills_and_rejec
         Request::Call { function: Function::PetSkillSupport, arguments: vec![Value::from("AL_HEAL"), Value::Number(1), Value::Number(3), Value::Number(40), Value::Number(100)] },
     ]);
     let host = crate::server::service::script_world_service::PetSupportHost::new(source.status.clone(), active.clone(), Default::default(), 100);
-    let (host, result) = context.runtime().block_on(vm.execute(host, "run_pet_support", 1002));
+    let (host, result) = context.runtime().block_on(vm.run_pet_support(host, 1002));
     result.unwrap();
     let support = host.into_support().unwrap();
     assert_eq!(support.base_bonuses, vec![BonusType::Str(2)]);
@@ -298,7 +299,7 @@ fn compiled_pet_support_calls_install_real_bonuses_recovery_and_skills_and_rejec
     let invalid = support_guest(vec![Request::Call { function: Function::PetSkillSupport,
         arguments: vec![Value::from("UNKNOWN_PET_SKILL"), Value::Number(1), Value::Number(1), Value::Number(100), Value::Number(100)] }]);
     let host = crate::server::service::script_world_service::PetSupportHost::new(source.status.clone(), active, Default::default(), 100);
-    let (host, result) = context.runtime().block_on(invalid.execute(host, "run_pet_support", 1002));
+    let (host, result) = context.runtime().block_on(invalid.run_pet_support(host, 1002));
     result.unwrap();
     assert!(host.into_support().is_err());
 }

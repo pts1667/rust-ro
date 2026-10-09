@@ -300,6 +300,146 @@ pub fn juno_artisan_juno(ctx: &Ctx) -> Script {
     juno_artisan_juno_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn junosoldier1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as("Juno Soldier", args!["There is a monster near here known as Lava Golem. This golem is made from a stone heart whose power happened to be amplified with magic power when it was swept away by molten rock."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["The lava dripping from its body is so hot that it can melt down armor and weapons made out of high quality steel."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["You'd better be careful when you encounter this monster. It will damage armor and weapons in the twinkling of an eye."],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier1(ctx: &Ctx) -> Script {
+    junosoldier1_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Geographer...", "That monster looks like a flower blooming from the ground."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Strangely, it can extend its body a long distance. Even if you're far away from it, it can still pose a threat."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as("Juno Soldier", args!["The name of this monster originated from a story about a poor geographer who, unfortunately, was eaten by this monster while he was immersed in his studies."])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier2(ctx: &Ctx) -> Script {
+    junosoldier2_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as("Juno Soldier", args!["Near Juno, there exists a fallen angel named 'False Angel.' It feigns innocence, pretending to bless adventurers and then stabbing them in the back without any warning."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Don't be fooled by its appearance, or you'll find yourself in trouble."],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier3(ctx: &Ctx) -> Script {
+    junosoldier3_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["'Goat' is a monster that was an antelope living in the high mountains that was somehow turned into a monster."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Even if you manage to dodge to its horns, you still need to be wary of its powerful legs."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Goat's legs are so strong because it's always climbing cliffs when it's not busy slaughtering the innocent."],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier4(ctx: &Ctx) -> Script {
+    junosoldier4_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Have you ever", "seen a Large Jellopy?", "Those things are huuuge!"],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["It's hard to believe", "that such a large and", "shining jellopy even exists!"],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier5(ctx: &Ctx) -> Script {
+    junosoldier5_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier6_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["Among the Sage's weapons, there is a 'Dagger of Counter.'"],
+    )?;
+    ctx.next()?;
+    ctx.lines_as("Juno Soldier", args!["Its use is limited to the Sage class, and it increases the chance of inflicting critical attacks. So, for Sages, that dagger can be very useful, as well as make them look stylish in battle."])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier6(ctx: &Ctx) -> Script {
+    junosoldier6_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn junosoldier7_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as("Juno Soldier", args!["Welcome to Juno, the city of noble-mindedness."])?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Juno Soldier",
+        args!["There is a holy shield named 'Sacred Mission' which can only be used by Crusaders."],
+    )?;
+    ctx.next()?;
+    ctx.lines_as("Juno Soldier", args!["It's a long and narrow shield with an angel wing engraved in the center of the front side. Against Devil and Undead monsters, it is especially powerful."])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn junosoldier7(ctx: &Ctx) -> Script {
+    junosoldier7_body(ctx, Vec::new()).map(|_| ())
+}
+
 #[derive(Clone, Copy, Debug)]
 enum AirshipRepresentativeStep {
     Start,

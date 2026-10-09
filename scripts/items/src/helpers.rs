@@ -1,4 +1,4 @@
-//! The `callfunc` helpers of item scripts, ported from the legacy `scripts/src/functions.rs`.
+//! The `callfunc` helpers of item scripts, ported from the numeric ABI `functions.rs`.
 
 use script_sdk_2::{Function, ItemUse, Stop, Val};
 

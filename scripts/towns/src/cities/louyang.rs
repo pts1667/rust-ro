@@ -11,6 +11,125 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn girl_louyang_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Girl",
+        args![
+            "La la la la~",
+            "I feel so good today~",
+            "I'm in the mood to go",
+            "on a picnic somewhere~",
+            "La la la la~"
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("About Luoyang.:Go to Luoyang.:Cancel.")],
+        )?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Girl",
+                args![
+                    "Oh, are you",
+                    "interested in Luoyang?",
+                    "It's a nice place to",
+                    "visit for travelers."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Girl",
+                args![
+                    "Luoyang has a long history",
+                    "with stories of ancient magic and warriors. It's also rumored that many evil beasts roam the",
+                    "Luoyang area."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Girl",
+                args![
+                    "You can find cure-all medicines, mysterious occurrences, and",
+                    "martial artists all in one place!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Girl", args!["I used to train in the martial arts every morning back when I was in Luoyang. I might not look like it, but I'm pretty strong!"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Girl",
+                args![
+                    "If you want to visit",
+                    "Luoyang, feel free to",
+                    "tell me. Just give me",
+                    "some Zeny and we'll go~"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Girl",
+                args![
+                    "I'll guide you to",
+                    "Luoyang right away.",
+                    "For my service, I am",
+                    "accepting 10,000 Zeny."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Girl", args!["So, are you ready?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No.")])?) == 1 {
+                if ctx.var("Zeny").get()?.number()? > 9999 {
+                    ctx.lines_as("Girl", args!["Okay~", "Ready!", "Have fun!"])?;
+                    ctx.close_window()?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.call(Function::Warp, vec![Val::from("lou_fild01"), Val::from(190), Val::from(101)])?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Girl",
+                    args!["...", "You don't seem", "to have 10,000 Zeny...", "Go get some money first!"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Girl",
+                args!["Oh...", "It's so disappointing", "to hear you say that.", "Well, have a good day!"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as("Girl", args!["Oh...", "Have a good day!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn girl_louyang(ctx: &Ctx) -> Script {
+    girl_louyang_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn girl_1lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Girl", args!["Would you", "like to go back", "to Alberta?"])?;
     ctx.next()?;

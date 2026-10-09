@@ -1,6 +1,6 @@
 # Item script API
 
-Refines [the typed script SDK](4-typed-script-sdk.md). It gives item scripts their own typed contexts, in place of the generated `run_item` and `run_bonus` functions of the legacy item module (`scripts/src/items.rs`, now removed).
+Refines [the typed script SDK](4-typed-script-sdk.md). It gives item scripts their own typed contexts, in place of the generated `run_item` and `run_bonus` functions of the retired numeric-ABI item module.
 
 **Date**: 2026-10-09
 

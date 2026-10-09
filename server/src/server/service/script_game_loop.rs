@@ -280,7 +280,7 @@ impl Server {
         };
         let vm = self.script_service().vm.clone();
         self.runtime().spawn(async move {
-            let (host, result) = vm.run(host, "run_event", event.entry_id).await;
+            let (host, result) = vm.run(host, event.entry_id).await;
             if let Err(error) = result {
                 warn!("Compiled event failed: {}", host.error.unwrap_or(error));
             }

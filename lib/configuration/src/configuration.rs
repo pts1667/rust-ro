@@ -84,8 +84,7 @@ impl Default for BotsConfig {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(default)]
 pub struct ScriptingConfig {
-    pub module_path: String,
-    /// Named-ABI modules that run the NPCs and events the manifests route to them, by module name.
+    /// Script modules by name. NPC and event manifests route to them; `items` and `pets` serve the item and pet scripts.
     pub modules: BTreeMap<String, String>,
     pub npcs_path: String,
     pub items_path: String,
@@ -96,11 +95,13 @@ pub struct ScriptingConfig {
 impl Default for ScriptingConfig {
     fn default() -> Self {
         Self {
-            module_path: "config/wasm/game_scripts.wasm".into(),
             modules: BTreeMap::from([
+                ("items".into(), "config/wasm/items.wasm".into()),
                 ("jobs".into(), "config/wasm/jobs.wasm".into()),
                 ("misc".into(), "config/wasm/misc.wasm".into()),
+                ("pets".into(), "config/wasm/pets.wasm".into()),
                 ("quests".into(), "config/wasm/quests.wasm".into()),
+                ("systems".into(), "config/wasm/systems.wasm".into()),
                 ("towns".into(), "config/wasm/towns.wasm".into()),
             ]),
             npcs_path: "config/wasm/npcs.json".into(),

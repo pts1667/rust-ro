@@ -90,18 +90,19 @@ def missing_item(source):
     return item
 
 
-NPC_ITEM_CALL = re.compile(r"Function::(?:GetItem2?|CountItem2?|DelItem2?|MakeItem|ConsumeItem)(?![A-Za-z0-9])[^;]*?vec!\[n\((\d+)\)")
-SHOP_NPC_ENTRY = 6
+NPC_ITEM_CALL = re.compile(r"Function::(?:GetItem2?|CountItem2?|DelItem2?|MakeItem|ConsumeItem)(?![A-Za-z0-9]),\s*vec!\[\s*Val::from\((\d+)\)")
+NPC_MODULES = ("towns", "misc", "jobs", "quests", "shared")
 
 
 def npc_item_ids():
     """Items the NPCs converted from rathena name: shop stock (`config/wasm/npcs.json`) and the first argument of the item commands."""
     ids = set()
     for npc in json.loads((ROOT / "config/wasm/npcs.json").read_text(encoding="utf-8")):
-        if npc["entry_id"] == SHOP_NPC_ENTRY:
+        if npc.get("module") == "systems" and npc["entry"] == "shop":
             ids.update(argument["Number"] for argument in npc["constructor_args"][1::2] if argument["Number"] > 0)
-    for path in (ROOT / "scripts/src/generated").glob("*.rs"):
-        ids.update(int(match) for match in NPC_ITEM_CALL.findall(path.read_text(encoding="utf-8")))
+    for module in NPC_MODULES:
+        for path in (ROOT / "scripts" / module / "src").rglob("*.rs"):
+            ids.update(int(match) for match in NPC_ITEM_CALL.findall(path.read_text(encoding="utf-8")))
     return ids
 
 

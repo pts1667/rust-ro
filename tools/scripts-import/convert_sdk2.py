@@ -92,7 +92,7 @@ def lower_modules(rathena):
     """Lowers every script of every sdk-2 module, and the shared functions they call.
 
     Returns `(routes, modules, blocked, shared)`. `routes` maps the `(file, line)` of each converted script definition to
-    `(module, key)`, where `key` is the name the guest dispatches it by. `modules` maps a module to its scripts as
+    `(module, key, labels)`, where `key` is the name the guest dispatches it by and `labels` its event labels. `modules` maps a module to its scripts as
     `(relative source, key, Lowered)`, `blocked` counts the reasons scripts were left on the legacy code, and `shared` maps
     each `npc/` source to its lowered `function script`s.
     """
@@ -112,10 +112,12 @@ def lower_modules(rathena):
     routes, modules, blocked = {}, {}, collections.defaultdict(list)
     taken, bases = collections.defaultdict(set), collections.defaultdict(set)
     for module, relative, definition in parsed:
-        if definition.kind != "script" or definition.error or not definition.name:
+        # A template placed only by `duplicate` has no display name, just its `::` global name
+        script_name = definition.name or definition.exname
+        if definition.kind != "script" or definition.error or not script_name:
             continue
         # A name used by two scripts keeps its first key and function name; a later one is keyed and named by its line
-        base = fn_name(definition.name)
+        base = fn_name(script_name)
         if base in bases[(module, relative)]:
             base = f"{base}_l{definition.line}"
         bases[(module, relative)].add(base)
@@ -124,9 +126,9 @@ def lower_modules(rathena):
         except Unsupported as reason:
             blocked[str(reason)].append(f"{relative}:{definition.line} {definition.name}")
             continue
-        key = definition.name if definition.name not in taken[module] else f"{definition.name}#{flat_name(relative)}_{definition.line}"
+        key = script_name if script_name not in taken[module] else f"{script_name}#{flat_name(relative)}_{definition.line}"
         taken[module].add(key)
-        routes[(definition.file, definition.line)] = (module, key)
+        routes[(definition.file, definition.line)] = (module, key, [label for label, _ in lowered.events])
         modules.setdefault(module, []).append((relative, key, lowered))
     return routes, modules, blocked, shared
 

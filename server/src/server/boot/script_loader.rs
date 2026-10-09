@@ -18,9 +18,8 @@ struct NpcDefinition {
     x: u16,
     y: u16,
     dir: u16,
-    entry_id: Option<u32>,
-    module: Option<String>,
-    entry: Option<String>,
+    module: String,
+    entry: String,
     #[serde(default)]
     x_size: u16,
     #[serde(default)]
@@ -81,11 +80,10 @@ impl ScriptLoader {
             if definition.name.is_empty() || !names.insert(definition.name.clone()) {
                 return Err("NPC manifest contains an invalid or duplicate NPC".into());
             }
-            let entry_id = match (definition.entry_id, definition.module, definition.entry) {
-                (Some(entry_id), None, None) if entry_id != 0 => entry_id,
-                (None, Some(module), Some(entry)) if !entry.is_empty() => intern(&module, Entry::Npc(entry)),
-                _ => return Err(format!("NPC {} needs either entry_id or module and entry", definition.name)),
-            };
+            if definition.module.is_empty() || definition.entry.is_empty() {
+                return Err(format!("NPC {} needs a module and an entry", definition.name));
+            }
+            let entry_id = intern(&definition.module, Entry::Npc(definition.entry));
             let sprite = definition
                 .sprite
                 .parse::<u16>()

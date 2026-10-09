@@ -17834,6 +17834,285 @@ pub fn man_lyozien_onstop(ctx: &Ctx) -> Script {
     man_lyozien_onstop_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn scamp_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    if ctx.var("lhz_rekenber").get()?.number()? > 21 {
+        ctx.lines_as(
+            "Ahman",
+            args![
+                "Oh, hello. I've heard",
+                "that you had to quit.",
+                "It's quite a pity, really.",
+                "If it weren't for you, some",
+                "of my packages would have",
+                "been destroyed by those thugs."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        if ctx.var("lhz_rekenber").get()? == 21 {
+            ctx.lines_as(
+                "Ahman",
+                args![
+                    "Shouldn't you be",
+                    "taking a break? Besides,",
+                    "Lyozien is still waiting for",
+                    "you on the Airship, isn't he?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            if ctx.var("lhz_rekenber").get()? == 20 {
+                ctx.lines_as(
+                    "Ahman",
+                    args![
+                        "Oh, have my packages",
+                        "arrived? Good, good.",
+                        "I appreciate all of your",
+                        "hard work. I'm surprised",
+                        "they haven't hired you",
+                        "full time by now."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Ahman",
+                    args![
+                        "Is something the matter?",
+                        "You seem really pale. Oh",
+                        "well, you'll have plenty of",
+                        "time to relax on the Airship.",
+                        "Oh, and don't worry, I'll",
+                        "take care of the packages."
+                    ],
+                )?;
+                ctx.var("lhz_rekenber").set(Val::from(21))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                if (ctx.var("lhz_rekenber").get()?.number()? > 15 && ctx.var("lhz_rekenber").get()?.number()? < 20) {
+                    ctx.lines_as(
+                        "Ahman",
+                        args![
+                            "Oh, hello. I'm not",
+                            "expecting any packages",
+                            "at this moment, although",
+                            "I'm aware that there are a",
+                            "few deliveries in queue, but shouldn't you be in Lighthalzen?"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    if ctx.var("lhz_rekenber").get()? == 15 {
+                        ctx.lines_as(
+                            "Ahman",
+                            args![
+                                "Shouldn't you be on",
+                                "your way and report to",
+                                "Lyozien? You should hurry",
+                                "before the Airship takes off."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if ctx.var("lhz_rekenber").get()? == 14 {
+                            ctx.lines_as(
+                                "Ahman",
+                                args![
+                                    "Ah, it's you again.",
+                                    "I assume that means that",
+                                    "my packages have arrived",
+                                    "safely. Is that right?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "Yes, that's right.",
+                                    "Actually, this time we ",
+                                    "were attacked by a group",
+                                    "of thugs, so I was wondering",
+                                    "if you knew anything about it... "
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Ahman",
+                                args![
+                                    "They attacked again?",
+                                    "Oh, that isn't good.",
+                                    "Well, I have no idea",
+                                    "what's going on. I wish",
+                                    "I had some idea of what",
+                                    "they were up to, really."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.var("lhz_rekenber").set(Val::from(15))?;
+                            ctx.lines_as(
+                                "Ahman",
+                                args![
+                                    "For now, you should",
+                                    "go and report to Lyozien.",
+                                    "I assume that you protected",
+                                    "my packages, so thank you",
+                                    "for your diligent work. Now, I shall pick up what I ordered..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            if (ctx.var("lhz_rekenber").get()?.number()? > 10 && ctx.var("lhz_rekenber").get()?.number()? < 14) {
+                                ctx.lines_as(
+                                    "Ahman",
+                                    args![
+                                        "Oh, it's you again.",
+                                        "Shouldn't you be getting",
+                                        "on the Airship and heading",
+                                        "back to the Schwarzwald",
+                                        "Republic? There are more",
+                                        "deliveries in queue, you know."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                if ctx.var("lhz_rekenber").get()? == 10 {
+                                    ctx.lines_as(
+                                        "Ahman",
+                                        args![
+                                            "Thank you for letting me",
+                                            "know that my order has arrived.",
+                                            "You should go back to Lyozien",
+                                            "now so you can finish your job.",
+                                            "Perhaps I'll see you again",
+                                            "sometime, adventurer."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else {
+                                    if ctx.var("lhz_rekenber").get()? == 9 {
+                                        ctx.lines_as(
+                                            "Man",
+                                            args![
+                                                "Hmm, can you really",
+                                                "call this place an Airport?",
+                                                "It's far too small, wouldn't",
+                                                "you agree? Still, I kind of",
+                                                "enjoy sitting around here."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                            args![
+                                                "Excuse me, but do",
+                                                "you know where I can",
+                                                "find a man named Ahman?",
+                                                "I have a message for him."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Ahman",
+                                            args![
+                                                "I'm Ahman, how can--",
+                                                "Oh! You must be here to",
+                                                "tell me that my packages",
+                                                "have arrived. Am I correct?"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                            args![
+                                                "Y-yes. That's right.",
+                                                "Your packages have",
+                                                "arrived and they're",
+                                                "being guarded until",
+                                                "you come to pick them up."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Ahman",
+                                            args![
+                                                "Ah, that's very good to",
+                                                "know. Say, are you a new",
+                                                "worker for Lyozien and Kazien?",
+                                                "I don't believe I've seen you",
+                                                "around before. Have they finally started hiring part timers?"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                            args![
+                                                "Yes, that's right.",
+                                                "Actually, I'm working for",
+                                                "them part time. I heard",
+                                                "they were really busy, so",
+                                                "I sort of volunteered my time."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Ahman",
+                                            args![
+                                                "Alright, alright.",
+                                                "I suppose that you",
+                                                "also don't know what's",
+                                                "being delivered in these",
+                                                "packages, just like Lyozien."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Ahman",
+                                            args![
+                                                "Well, it's all confidential",
+                                                "information anyway, so don't",
+                                                "worry about it. Thank you for",
+                                                "notifying me about the delivery.^FFFFFF  ^000000 Now, you should go back and ",
+                                                "tell Lyozien. Take care now~"
+                                            ],
+                                        )?;
+                                        ctx.var("lhz_rekenber").set(Val::from(10))?;
+                                        ctx.call(Function::ChangeQuest, vec![Val::from(12012), Val::from(12013)])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ctx.lines_as(
+        "Man",
+        args![
+            "Hmm, can you really",
+            "call this place an Airport?",
+            "It's far too small, wouldn't",
+            "you agree? Still, I kind of",
+            "enjoy sitting around here."
+        ],
+    )?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn scamp(ctx: &Ctx) -> Script {
+    scamp_body(ctx, Vec::new()).map(|_| ())
+}
+
 #[derive(Clone, Copy, Debug)]
 enum Bully1Step {
     Start,

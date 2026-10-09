@@ -100,7 +100,6 @@ impl DropRateTable {
     }
 }
 
-pub(crate) const CASTLE_FLAG_ENTRY: u32 = 19;
 
 impl MapInstanceService {
     pub fn start_actor_skill(
@@ -1762,7 +1761,7 @@ impl MapInstanceService {
                     .script_skill_state
                     .npcs
                     .values()
-                    .filter(|npc| npc.script.entry_id == CASTLE_FLAG_ENTRY && npc.script.constructor_args.first().is_some_and(|map| map.text() == castle_map))
+                    .filter(|npc| npc.script.entry_id == crate::server::script::entries::system_npc("castle_flag") && npc.script.constructor_args.first().is_some_and(|map| map.text() == castle_map))
                     .map(|npc| npc.id)
                     .collect();
                 for id in flags {

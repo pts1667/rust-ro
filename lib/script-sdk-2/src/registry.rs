@@ -1,4 +1,4 @@
-use script_sdk::{Entry, NAMED_ABI_VERSION, Request};
+use script_sdk::{ABI_VERSION, Entry, Request};
 
 use crate::ctx::Ctx;
 use crate::flow::{Script, finish};
@@ -9,7 +9,7 @@ use crate::transport::{Transport, WasmTransport};
 pub type ScriptFn = fn(&Ctx<'_>) -> Script;
 
 /// The ABI a module built with [`script_module!`](crate::script_module) reports to the host.
-pub const ABI: u32 = NAMED_ABI_VERSION;
+pub const ABI: u32 = ABI_VERSION;
 
 /// Whether `names` is strictly increasing. That order lets [`run`] binary-search the table, and it rules out duplicates.
 pub const fn is_strictly_sorted(names: &[&str]) -> bool {
@@ -41,18 +41,34 @@ pub type ItemFn = fn(&ItemUse<'_, '_>) -> Script;
 /// A passive item script. It runs in an [`ItemBonus`], so it can describe bonuses and nothing else.
 pub type BonusFn = fn(&ItemBonus<'_, '_>) -> Script;
 
+/// The scripts a module provides. A module fills the tables of the entries it serves and leaves the others empty.
+#[derive(Default)]
+pub struct Tables<'a> {
+    pub npcs: &'a [(&'a str, ScriptFn)],
+    pub events: &'a [(&'a str, ScriptFn)],
+    pub items: &'a [(u32, ItemFn)],
+    pub bonuses: &'a [(u32, BonusFn)],
+    pub programs: &'a [(u32, ItemFn)],
+    pub pets: &'a [(u32, ItemFn)],
+    pub pet_supports: &'a [(u32, ItemFn)],
+    pub pet_programs: &'a [(u32, ItemFn)],
+}
+
 /// Runs the entry the host named and returns the status it expects: `0` on success.
-pub fn run(npcs: &[(&str, ScriptFn)], events: &[(&str, ScriptFn)], items: &[(u32, ItemFn)], bonuses: &[(u32, BonusFn)], programs: &[(u32, ItemFn)]) -> i32 {
+pub fn run(tables: Tables<'_>) -> i32 {
     let transport = WasmTransport;
     let ctx = Ctx::new(&transport);
     let result = current_entry().and_then(|entry| match &entry {
-        Entry::Npc(name) => finish(find(npcs, name)?(&ctx)),
-        Entry::Event(name) => finish(find(events, name)?(&ctx)),
-        Entry::Item(id) => match find_id(items, *id) {
+        Entry::Npc(name) => finish(find(tables.npcs, name)?(&ctx)),
+        Entry::Event(name) => finish(find(tables.events, name)?(&ctx)),
+        Entry::Item(id) => match find_id(tables.items, *id, "item") {
             Ok(script) => finish(script(&ItemUse::new(&ctx))),
-            Err(_) => finish(find_id(bonuses, *id)?(&ItemBonus::new(&ctx))),
+            Err(_) => finish(find_id(tables.bonuses, *id, "item")?(&ItemBonus::new(&ctx))),
         },
-        Entry::Program(id) => finish(find_id(programs, *id)?(&ItemUse::new(&ctx))),
+        Entry::Program(id) => finish(find_id(tables.programs, *id, "item program")?(&ItemUse::new(&ctx))),
+        Entry::Pet(id) => finish(find_id(tables.pets, *id, "pet")?(&ItemUse::new(&ctx))),
+        Entry::PetSupport(id) => finish(find_id(tables.pet_supports, *id, "pet support")?(&ItemUse::new(&ctx))),
+        Entry::PetProgram(id) => finish(find_id(tables.pet_programs, *id, "pet program")?(&ItemUse::new(&ctx))),
     });
     match result {
         Ok(()) => 0,
@@ -63,7 +79,7 @@ pub fn run(npcs: &[(&str, ScriptFn)], events: &[(&str, ScriptFn)], items: &[(u32
     }
 }
 
-/// Whether the item ids are strictly increasing, for the same reason as [`is_strictly_sorted`].
+/// Whether the ids are strictly increasing, for the same reason as [`is_strictly_sorted`].
 pub const fn is_strictly_sorted_ids(ids: &[u32]) -> bool {
     let mut index = 1;
     while index < ids.len() {
@@ -75,8 +91,8 @@ pub const fn is_strictly_sorted_ids(ids: &[u32]) -> bool {
     true
 }
 
-fn find_id<T: Copy>(table: &[(u32, T)], id: u32) -> Result<T, String> {
-    table.binary_search_by_key(&id, |entry| entry.0).map(|index| table[index].1).map_err(|_| format!("Unknown item script {id}"))
+fn find_id<T: Copy>(table: &[(u32, T)], id: u32, kind: &str) -> Result<T, String> {
+    table.binary_search_by_key(&id, |entry| entry.0).map(|index| table[index].1).map_err(|_| format!("Unknown {kind} script {id}"))
 }
 
 fn find(table: &[(&str, ScriptFn)], name: &str) -> Result<ScriptFn, String> {

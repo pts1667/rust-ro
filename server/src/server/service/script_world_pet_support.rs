@@ -153,7 +153,7 @@ impl ScriptWorldService {
         if config.status_support && world_data().pets.iter().any(|definition| definition.class_id == pet.class_id && definition.has_support_script) {
             character.refresh_script_context();
             let host = PetSupportHost::new(character.status.clone(), pet.clone(), config, now);
-            let (host, result) = futures::executor::block_on(server.item_service().item_script_vm.execute(host, "run_pet_support", u32::from(pet.class_id)));
+            let (host, result) = futures::executor::block_on(server.item_service().item_script_vm.run_pet_support(host, u32::from(pet.class_id)));
             result?;
             character.game_systems.pet_support = Some(host.into_support()?);
         }

@@ -16,10 +16,9 @@ use crate::server::script::{ScriptVm, Value};
 use crate::server::service::global_config_service::GlobalConfigService;
 
 #[derive(Deserialize)]
-#[serde(untagged)]
-enum EventManifestEntry {
-    Legacy(u32),
-    Named { module: String, entry: String },
+struct EventManifestEntry {
+    module: String,
+    entry: String,
 }
 
 #[allow(dead_code)]
@@ -40,13 +39,7 @@ impl ScriptService {
                 serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry");
             manifest
                 .into_iter()
-                .map(|(label, entry)| {
-                    let handle = match entry {
-                        EventManifestEntry::Legacy(entry_id) => entry_id,
-                        EventManifestEntry::Named { module, entry } => intern(&module, Entry::Event(entry)),
-                    };
-                    (label, handle)
-                })
+                .map(|(label, entry)| (label, intern(&entry.module, Entry::Event(entry.entry))))
                 .collect()
         })
     }

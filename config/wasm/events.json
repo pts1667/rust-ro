@@ -1,95 +1,368 @@
 {
-  "CompiledEvents::OnSummonedMobDeath": 1,
-  "start#bat_b01::OnInit": 1000,
-  "start#bat_b01::OnReadyCheck": 1001,
-  "start#bat_b01::OnReset": 1002,
-  "start#bat_b01::OnGuillaumeActive": 1003,
-  "start#bat_b01::OnCroixActive": 1004,
-  "OBJ#bat_b01_a::OnMyMobDead": 1010,
-  "OBJ#bat_b01_b::OnMyMobDead": 1011,
-  "guardian#bat_b01_a::OnMyMobDead": 1012,
-  "guardian#bat_b01_b::OnMyMobDead": 1013,
-  "Battle Therapist#b01_a::OnTimer25000": 1020,
-  "Battle Therapist#b01_a::OnTimer26500": 1021,
-  "Battle Therapist#b01_b::OnTimer25000": 1022,
-  "Battle Therapist#b01_b::OnTimer26500": 1023,
-  "Guillaume Vintenar#b01_a::OnInit": 1030,
-  "Croix Vintenar#b01_b::OnInit": 1031,
-  "Vintenar#bat_b01_aover::OnInit": 1032,
-  "Vintenar#bat_b01_bover::OnInit": 1033,
-  "#bat_b01_timer::OnTimer1000": 1050,
-  "start#bat_b01::OnTimer10000": 1051,
-  "countdown#bat_b01::OnTimer7000": 1040,
-  "countdown#bat_b01::OnTimer8000": 1041,
-  "countdown#bat_b01::OnTimer1800000": 1042,
-  "countdown#bat_b01::OnTimer1803000": 1043,
-  "countdown#bat_b01::OnTimer1808000": 1044,
-  "countdown#bat_b01::OnTimer1822000": 1045,
-  "countdown#bat_b01::OnTimer1825000": 1046,
-  "countdown#bat_b01::OnTimer1830000": 1047,
-  "countdown#bat_b01::OnTimer1900000": 1048,
-  "KvM01_BG::OnInit": 2000,
-  "KvM01_BG::OnGuillaumeDie": 2001,
-  "KvM01_BG::OnCroixDie": 2002,
-  "KvM01_BG::OnGuillaumeActive": 2003,
-  "KvM01_BG::OnCroixActive": 2004,
-  "KvM01_BG::OnStart": 2005,
-  "KvM01_BG_Out::OnBegin": 2030,
-  "KvM01_BG::OnTimer1000": 2010,
-  "KvM01_BG::OnTimer3000": 2011,
-  "KvM01_BG::OnTimer6000": 2012,
-  "KvM01_BG::OnTimer30000": 2013,
-  "KvM01_BG::OnTimer45000": 2014,
-  "KvM01_BG::OnTimer50000": 2015,
-  "KvM01_BG::OnTimer55000": 2016,
-  "KvM01_BG::OnTimer59000": 2017,
-  "KvM01_BG::OnTimer61000": 2018,
-  "KvM01_BG::OnTimer300000": 2019,
-  "KvM01_BG::OnTimer330000": 2020,
-  "KvM01_BG::OnTimer345000": 2021,
-  "KvM01_BG::OnTimer350000": 2022,
-  "KvM01_BG::OnTimer355000": 2023,
-  "KvM01_BG::OnTimer360000": 2024,
-  "KvM01_BG_Out::OnTimer1000": 2031,
-  "KvM01_BG_Out::OnTimer3000": 2032,
-  "KvM01_BG_Out::OnTimer5000": 2033,
-  "KvM01_BG_Out::OnTimer55000": 2034,
-  "KvM01_BG_Out::OnTimer60000": 2035,
-  "KvM01_BG::OnGuillaumeQuit": 2001,
-  "KvM01_BG::OnCroixQuit": 2002,
-  "start#bat_a01::OnInit": 3000,
-  "start#bat_a01::OnReadyCheck": 3001,
-  "start#bat_a01::OnGuillaumeActive": 3002,
-  "start#bat_a01::OnCroixActive": 3003,
-  "start#bat_a01::OnTimer10000": 3005,
-  "OBJ#bat_a01_a::OnMyMobDead": 3010,
-  "OBJ#bat_a01_b::OnMyMobDead": 3011,
-  "OBJ#bat_a01_n::OnMyMobDead": 3012,
-  "barricade#bat_a01_a::OnMyMobDead": 3014,
-  "barricade#bat_a01_b::OnMyMobDead": 3015,
-  "Battle Therapist#a01_a::OnTimer25000": 3020,
-  "Battle Therapist#a01_a::OnTimer26500": 3021,
-  "Battle Therapist#a01_b::OnTimer25000": 3022,
-  "Battle Therapist#a01_b::OnTimer26500": 3023,
-  "Valley Ghost#bat_a01_n::OnTimer25000": 3024,
-  "Valley Ghost#bat_a01_n::OnTimer26500": 3025,
-  "Guillaume Vintenar#a01_a::OnInit": 3030,
-  "Croix Vintenar#a01_b::OnInit": 3031,
-  "Guillaume Blacksmith#a01::OnInit": 3032,
-  "Croix Blacksmith#bat_a01::OnInit": 3033,
-  "#bat_a01_timer::OnTimer1000": 3050,
-  "barri_warp_up#bat_a01_a::OnTouch": 3060,
-  "barri_warp_down#bat_a01a::OnTouch": 3061,
-  "barri_warp_up#bat_a01_b::OnTouch": 3062,
-  "barri_warp_down#bat_a01b::OnTouch": 3063,
-  "countdown#bat_a01::OnTimer7000": 3040,
-  "countdown#bat_a01::OnTimer8000": 3041,
-  "countdown#bat_a01::OnTimer1800000": 3042,
-  "countdown#bat_a01::OnTimer1803000": 3043,
-  "countdown#bat_a01::OnTimer1808000": 3044,
-  "countdown#bat_a01::OnTimer1822000": 3045,
-  "countdown#bat_a01::OnTimer1825000": 3046,
-  "countdown#bat_a01::OnTimer1830000": 3047,
+  "start#bat_b01::OnInit": {
+    "module": "systems",
+    "entry": "arena_0_0"
+  },
+  "start#bat_b01::OnReadyCheck": {
+    "module": "systems",
+    "entry": "arena_0_1"
+  },
+  "start#bat_b01::OnReset": {
+    "module": "systems",
+    "entry": "arena_0_2"
+  },
+  "start#bat_b01::OnGuillaumeActive": {
+    "module": "systems",
+    "entry": "arena_0_3"
+  },
+  "start#bat_b01::OnCroixActive": {
+    "module": "systems",
+    "entry": "arena_0_4"
+  },
+  "OBJ#bat_b01_a::OnMyMobDead": {
+    "module": "systems",
+    "entry": "arena_0_10"
+  },
+  "OBJ#bat_b01_b::OnMyMobDead": {
+    "module": "systems",
+    "entry": "arena_0_11"
+  },
+  "guardian#bat_b01_a::OnMyMobDead": {
+    "module": "systems",
+    "entry": "arena_0_12"
+  },
+  "guardian#bat_b01_b::OnMyMobDead": {
+    "module": "systems",
+    "entry": "arena_0_13"
+  },
+  "Battle Therapist#b01_a::OnTimer25000": {
+    "module": "systems",
+    "entry": "arena_0_20"
+  },
+  "Battle Therapist#b01_a::OnTimer26500": {
+    "module": "systems",
+    "entry": "arena_0_21"
+  },
+  "Battle Therapist#b01_b::OnTimer25000": {
+    "module": "systems",
+    "entry": "arena_0_22"
+  },
+  "Battle Therapist#b01_b::OnTimer26500": {
+    "module": "systems",
+    "entry": "arena_0_23"
+  },
+  "Guillaume Vintenar#b01_a::OnInit": {
+    "module": "systems",
+    "entry": "arena_0_30"
+  },
+  "Croix Vintenar#b01_b::OnInit": {
+    "module": "systems",
+    "entry": "arena_0_31"
+  },
+  "Vintenar#bat_b01_aover::OnInit": {
+    "module": "systems",
+    "entry": "arena_0_32"
+  },
+  "Vintenar#bat_b01_bover::OnInit": {
+    "module": "systems",
+    "entry": "arena_0_33"
+  },
+  "#bat_b01_timer::OnTimer1000": {
+    "module": "systems",
+    "entry": "arena_0_50"
+  },
+  "start#bat_b01::OnTimer10000": {
+    "module": "systems",
+    "entry": "arena_0_51"
+  },
+  "countdown#bat_b01::OnTimer7000": {
+    "module": "systems",
+    "entry": "arena_0_40"
+  },
+  "countdown#bat_b01::OnTimer8000": {
+    "module": "systems",
+    "entry": "arena_0_41"
+  },
+  "countdown#bat_b01::OnTimer1800000": {
+    "module": "systems",
+    "entry": "arena_0_42"
+  },
+  "countdown#bat_b01::OnTimer1803000": {
+    "module": "systems",
+    "entry": "arena_0_43"
+  },
+  "countdown#bat_b01::OnTimer1808000": {
+    "module": "systems",
+    "entry": "arena_0_44"
+  },
+  "countdown#bat_b01::OnTimer1822000": {
+    "module": "systems",
+    "entry": "arena_0_45"
+  },
+  "countdown#bat_b01::OnTimer1825000": {
+    "module": "systems",
+    "entry": "arena_0_46"
+  },
+  "countdown#bat_b01::OnTimer1830000": {
+    "module": "systems",
+    "entry": "arena_0_47"
+  },
+  "countdown#bat_b01::OnTimer1900000": {
+    "module": "systems",
+    "entry": "arena_0_48"
+  },
+  "KvM01_BG::OnInit": {
+    "module": "systems",
+    "entry": "kvm_0_0"
+  },
+  "KvM01_BG::OnGuillaumeDie": {
+    "module": "systems",
+    "entry": "kvm_0_1"
+  },
+  "KvM01_BG::OnCroixDie": {
+    "module": "systems",
+    "entry": "kvm_0_2"
+  },
+  "KvM01_BG::OnGuillaumeActive": {
+    "module": "systems",
+    "entry": "kvm_0_3"
+  },
+  "KvM01_BG::OnCroixActive": {
+    "module": "systems",
+    "entry": "kvm_0_4"
+  },
+  "KvM01_BG::OnStart": {
+    "module": "systems",
+    "entry": "kvm_0_5"
+  },
+  "KvM01_BG_Out::OnBegin": {
+    "module": "systems",
+    "entry": "kvm_0_30"
+  },
+  "KvM01_BG::OnTimer1000": {
+    "module": "systems",
+    "entry": "kvm_0_10"
+  },
+  "KvM01_BG::OnTimer3000": {
+    "module": "systems",
+    "entry": "kvm_0_11"
+  },
+  "KvM01_BG::OnTimer6000": {
+    "module": "systems",
+    "entry": "kvm_0_12"
+  },
+  "KvM01_BG::OnTimer30000": {
+    "module": "systems",
+    "entry": "kvm_0_13"
+  },
+  "KvM01_BG::OnTimer45000": {
+    "module": "systems",
+    "entry": "kvm_0_14"
+  },
+  "KvM01_BG::OnTimer50000": {
+    "module": "systems",
+    "entry": "kvm_0_15"
+  },
+  "KvM01_BG::OnTimer55000": {
+    "module": "systems",
+    "entry": "kvm_0_16"
+  },
+  "KvM01_BG::OnTimer59000": {
+    "module": "systems",
+    "entry": "kvm_0_17"
+  },
+  "KvM01_BG::OnTimer61000": {
+    "module": "systems",
+    "entry": "kvm_0_18"
+  },
+  "KvM01_BG::OnTimer300000": {
+    "module": "systems",
+    "entry": "kvm_0_19"
+  },
+  "KvM01_BG::OnTimer330000": {
+    "module": "systems",
+    "entry": "kvm_0_20"
+  },
+  "KvM01_BG::OnTimer345000": {
+    "module": "systems",
+    "entry": "kvm_0_21"
+  },
+  "KvM01_BG::OnTimer350000": {
+    "module": "systems",
+    "entry": "kvm_0_22"
+  },
+  "KvM01_BG::OnTimer355000": {
+    "module": "systems",
+    "entry": "kvm_0_23"
+  },
+  "KvM01_BG::OnTimer360000": {
+    "module": "systems",
+    "entry": "kvm_0_24"
+  },
+  "KvM01_BG_Out::OnTimer1000": {
+    "module": "systems",
+    "entry": "kvm_0_31"
+  },
+  "KvM01_BG_Out::OnTimer3000": {
+    "module": "systems",
+    "entry": "kvm_0_32"
+  },
+  "KvM01_BG_Out::OnTimer5000": {
+    "module": "systems",
+    "entry": "kvm_0_33"
+  },
+  "KvM01_BG_Out::OnTimer55000": {
+    "module": "systems",
+    "entry": "kvm_0_34"
+  },
+  "KvM01_BG_Out::OnTimer60000": {
+    "module": "systems",
+    "entry": "kvm_0_35"
+  },
+  "KvM01_BG::OnGuillaumeQuit": {
+    "module": "systems",
+    "entry": "kvm_0_1"
+  },
+  "KvM01_BG::OnCroixQuit": {
+    "module": "systems",
+    "entry": "kvm_0_2"
+  },
+  "start#bat_a01::OnInit": {
+    "module": "systems",
+    "entry": "tierra_0_0"
+  },
+  "start#bat_a01::OnReadyCheck": {
+    "module": "systems",
+    "entry": "tierra_0_1"
+  },
+  "start#bat_a01::OnGuillaumeActive": {
+    "module": "systems",
+    "entry": "tierra_0_2"
+  },
+  "start#bat_a01::OnCroixActive": {
+    "module": "systems",
+    "entry": "tierra_0_3"
+  },
+  "start#bat_a01::OnTimer10000": {
+    "module": "systems",
+    "entry": "tierra_0_5"
+  },
+  "OBJ#bat_a01_a::OnMyMobDead": {
+    "module": "systems",
+    "entry": "tierra_0_10"
+  },
+  "OBJ#bat_a01_b::OnMyMobDead": {
+    "module": "systems",
+    "entry": "tierra_0_11"
+  },
+  "OBJ#bat_a01_n::OnMyMobDead": {
+    "module": "systems",
+    "entry": "tierra_0_12"
+  },
+  "barricade#bat_a01_a::OnMyMobDead": {
+    "module": "systems",
+    "entry": "tierra_0_14"
+  },
+  "barricade#bat_a01_b::OnMyMobDead": {
+    "module": "systems",
+    "entry": "tierra_0_15"
+  },
+  "Battle Therapist#a01_a::OnTimer25000": {
+    "module": "systems",
+    "entry": "tierra_0_20"
+  },
+  "Battle Therapist#a01_a::OnTimer26500": {
+    "module": "systems",
+    "entry": "tierra_0_21"
+  },
+  "Battle Therapist#a01_b::OnTimer25000": {
+    "module": "systems",
+    "entry": "tierra_0_22"
+  },
+  "Battle Therapist#a01_b::OnTimer26500": {
+    "module": "systems",
+    "entry": "tierra_0_23"
+  },
+  "Valley Ghost#bat_a01_n::OnTimer25000": {
+    "module": "systems",
+    "entry": "tierra_0_24"
+  },
+  "Valley Ghost#bat_a01_n::OnTimer26500": {
+    "module": "systems",
+    "entry": "tierra_0_25"
+  },
+  "Guillaume Vintenar#a01_a::OnInit": {
+    "module": "systems",
+    "entry": "tierra_0_30"
+  },
+  "Croix Vintenar#a01_b::OnInit": {
+    "module": "systems",
+    "entry": "tierra_0_31"
+  },
+  "Guillaume Blacksmith#a01::OnInit": {
+    "module": "systems",
+    "entry": "tierra_0_32"
+  },
+  "Croix Blacksmith#bat_a01::OnInit": {
+    "module": "systems",
+    "entry": "tierra_0_33"
+  },
+  "#bat_a01_timer::OnTimer1000": {
+    "module": "systems",
+    "entry": "tierra_0_50"
+  },
+  "barri_warp_up#bat_a01_a::OnTouch": {
+    "module": "systems",
+    "entry": "tierra_0_60"
+  },
+  "barri_warp_down#bat_a01a::OnTouch": {
+    "module": "systems",
+    "entry": "tierra_0_61"
+  },
+  "barri_warp_up#bat_a01_b::OnTouch": {
+    "module": "systems",
+    "entry": "tierra_0_62"
+  },
+  "barri_warp_down#bat_a01b::OnTouch": {
+    "module": "systems",
+    "entry": "tierra_0_63"
+  },
+  "countdown#bat_a01::OnTimer7000": {
+    "module": "systems",
+    "entry": "tierra_0_40"
+  },
+  "countdown#bat_a01::OnTimer8000": {
+    "module": "systems",
+    "entry": "tierra_0_41"
+  },
+  "countdown#bat_a01::OnTimer1800000": {
+    "module": "systems",
+    "entry": "tierra_0_42"
+  },
+  "countdown#bat_a01::OnTimer1803000": {
+    "module": "systems",
+    "entry": "tierra_0_43"
+  },
+  "countdown#bat_a01::OnTimer1808000": {
+    "module": "systems",
+    "entry": "tierra_0_44"
+  },
+  "countdown#bat_a01::OnTimer1822000": {
+    "module": "systems",
+    "entry": "tierra_0_45"
+  },
+  "countdown#bat_a01::OnTimer1825000": {
+    "module": "systems",
+    "entry": "tierra_0_46"
+  },
+  "countdown#bat_a01::OnTimer1830000": {
+    "module": "systems",
+    "entry": "tierra_0_47"
+  },
+  "CompiledEvents::OnSummonedMobDeath": {
+    "module": "systems",
+    "entry": "summoned_mob_death"
+  },
   "#AirshipWarp-1::OnInit": {
     "module": "towns",
     "entry": "#AirshipWarp-1::OnInit"
@@ -50554,7 +50827,10 @@
     "module": "quests",
     "entry": "#arm1::OnTouch"
   },
-  "Dorian::OnTouch": 104849,
+  "Dorian::OnTouch": {
+    "module": "quests",
+    "entry": "Dorian_izlude::OnTouch"
+  },
   "#Piano3::OnTouch": {
     "module": "quests",
     "entry": "Piano3::OnTouch_"
@@ -51291,5 +51567,8 @@
     "module": "jobs",
     "entry": "Monster Summon#cr5::OnEnd"
   },
-  "Knight De Thomas::OnTouch": 104849
+  "Knight De Thomas::OnTouch": {
+    "module": "quests",
+    "entry": "KnightDeThomas::OnTouch"
+  }
 }

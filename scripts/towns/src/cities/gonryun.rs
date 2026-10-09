@@ -11,6 +11,198 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn kunlun_envoy_gonryun_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Wa Bai Hu",
+        args![
+            "Good day~",
+            "Let me invite you all",
+            "to my homeland, Kunlun.",
+            "It is my honor to guide",
+            "such distinguished quests from",
+            "the Rune-Midgarts kingdom."
+        ],
+    )?;
+    ctx.next()?;
+    'b1: {
+        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("About Kunlun:Visit Kunlun:Cancel")])?);
+        let mut matched1 = false;
+        let no_case1 =
+            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
+        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "Kunlun is a beautiful place,",
+                    "rich with history, and its",
+                    "own traditions. I also think",
+                    "Kunlun is the best place for",
+                    "sightseeing."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "When you arrive at the harbor of",
+                    "Kunlun, you'll be able to see",
+                    "miniature replicas of",
+                    "buildings found in Alberta",
+                    "and Prontera."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "After enjoying a nice, leisurely",
+                    "stroll, step into the beautiful",
+                    "column of light that will take",
+                    "you up into the clouds to",
+                    "Kunlun Village."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "I've heard that on the",
+                    "Rune-Midgarts continent,",
+                    "there is another city that is",
+                    "is kept aloft in the sky by",
+                    "an ancient, mysterious power..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "Well, my Kunlun also floats",
+                    "in the air, but without any",
+                    "so called technology or",
+                    "power supply. We consider",
+                    "our land especially blessed..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "When you're in Kunlun, don't",
+                    "forget to try our specialties",
+                    "such as the giant dumpling or the heaven peach."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "You'd better prepare yourself",
+                    "if you are planning to visit",
+                    "the Kunlun dungeon. I must",
+                    "say, that is not a safe place to go for fun."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "If you are interested in visiting",
+                    "Kunlun, do not hesitate to let",
+                    "me know. It's my great pleasure",
+                    "to serve you, honorable guest."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "Excellent choice, I am glad",
+                    "to have you as our guest~",
+                    "However, a small fee is required",
+                    "to board the ship to Kunlun."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "We ask that you pay 10,000 zeny",
+                    "prior to departure. That fee also",
+                    "covers the cost of returning",
+                    "to Alberta. I am ready to guide",
+                    "you to Kunlun at any time."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Wa Bai Hu", args!["Would you like to board?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("To Kunlun~!:No.")])?) == 1 {
+                if ctx.var("Zeny").get()?.number()? > 9999 {
+                    ctx.lines_as("Wa Bai Hu", args!["Thank you, let me guide you there immediately."])?;
+                    ctx.close_window()?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.call(Function::Warp, vec![Val::from("gon_fild01"), Val::from(258), Val::from(82)])?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Wa Bai Hu",
+                    args![
+                        "I am sorry, but you must have",
+                        "10,000 zeny to travel to Kunlun.",
+                        "Please make sure you have enough",
+                        "zeny with you. Thank you, and",
+                        "please come again."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "I see. However, whenever you",
+                    "change your mind, please let",
+                    "me know. It would be a great",
+                    "please to serve you, most",
+                    "honorable guest."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+            matched1 = true;
+        }
+        if matched1 {
+            ctx.lines_as(
+                "Wa Bai Hu",
+                args![
+                    "I see. However, whenever you",
+                    "change your mind, please let me",
+                    "know. It would be a great pleasure to serve you, most honorable guest."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    }
+    Ok(Val::from(0))
+}
+
+pub fn kunlun_envoy_gonryun(ctx: &Ctx) -> Script {
+    kunlun_envoy_gonryun_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn kunlun_envoy_gon2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Wa Bai Hu",

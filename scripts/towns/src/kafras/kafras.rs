@@ -744,6 +744,35 @@ pub fn kafra_employee_l391(ctx: &Ctx) -> Script {
     kafra_employee_l391_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn kaf_izlude_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.call(Function::Cutin, vec![Val::from("kafra_01"), Val::from(2)])?;
+    shared::kafras_functions_kafras::f_kafset(ctx, vec![])?;
+    ctx.lines_as(
+        "Kafra Employee",
+        args![
+            "Welcome to the",
+            "Kafra Corporation.",
+            "The Kafra services",
+            "are always on your side.",
+            "How may I assist you?"
+        ],
+    )?;
+    shared::kafras_functions_kafras::f_kafra(
+        ctx,
+        vec![Val::from(5), Val::from(0), Val::from(1), Val::from(40), Val::from(820)],
+    )?;
+    ctx.call(
+        Function::SavePoint,
+        vec![Val::from("izlude"), Val::from(94), Val::from(103), Val::from(1), Val::from(1)],
+    )?;
+    shared::kafras_functions_kafras::f_kafend(ctx, vec![Val::from(0), Val::from(1), Val::from("in the city of Izlude")])?;
+    Ok(Val::from(0))
+}
+
+pub fn kaf_izlude(ctx: &Ctx) -> Script {
+    kaf_izlude_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn kafra_employee_l426_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.call(Function::Cutin, vec![Val::from("kafra_04"), Val::from(2)])?;
     shared::kafras_functions_kafras::f_kafra(

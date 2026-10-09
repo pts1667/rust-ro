@@ -10,8 +10,6 @@ use crate::server::boot::script_loader::ScriptLoader;
 use crate::server::service::script_service::ScriptService;
 
 const RUNS_PER_ENTRY: u64 = 4;
-const FIRST_GENERATED_NPC: u32 = 10_000;
-const FIRST_GENERATED_EVENT: u32 = 100_000;
 
 pub(super) struct RandomHost {
     rng: fastrand::Rng,
@@ -76,32 +74,33 @@ impl Host for RandomHost {
     }
 }
 
-/// Handles of the NPCs and events that run generated code: legacy ids from `first` up, and every named entry.
-fn generated_entries(entries: impl Iterator<Item = (String, u32)>, first: u32) -> Vec<(String, u32)> {
-    let by_handle: BTreeMap<u32, String> = entries.filter(|(_, id)| *id >= first).map(|(name, id)| (id, name)).collect();
+/// Handles of the NPCs and events outside the hand-written `systems` module, which has its own tests.
+fn generated_entries(entries: impl Iterator<Item = (String, u32)>) -> Vec<(String, u32)> {
+    let generated = |id: u32| super::entries::resolve(id).is_none_or(|script| script.module != "systems");
+    let by_handle: BTreeMap<u32, String> = entries.filter(|(_, id)| generated(*id)).map(|(name, id)| (id, name)).collect();
     by_handle.into_iter().map(|(id, name)| (name, id)).collect()
 }
 
 fn npc_entries() -> Vec<(String, u32)> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
     let npcs = ScriptLoader::load_scripts(path.to_str().unwrap()).unwrap();
-    generated_entries(npcs.into_values().flatten().map(|npc| (npc.name, npc.entry_id)), FIRST_GENERATED_NPC)
+    generated_entries(npcs.into_values().flatten().map(|npc| (npc.name, npc.entry_id)))
 }
 
 fn event_entries() -> Vec<(String, u32)> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/events.json");
     let labels: serde_json::Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
     let events = labels.as_object().unwrap().keys().filter_map(|label| Some((label.clone(), ScriptService::event_entry(label)?)));
-    generated_entries(events, FIRST_GENERATED_EVENT)
+    generated_entries(events)
 }
 
-fn run_all(entry: &str, entries: Vec<(String, u32)>) -> BTreeMap<String, Vec<String>> {
+fn run_all(entries: Vec<(String, u32)>) -> BTreeMap<String, Vec<String>> {
     let runtime = crate::tests::common::test_npc_vm();
     let mut failures: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (name, id) in entries {
         for seed in 0..RUNS_PER_ENTRY {
             let host = RandomHost { rng: fastrand::Rng::with_seed(u64::from(id) * 31 + seed), errors: vec![] };
-            let (host, result) = futures::executor::block_on(runtime.run(host, entry, id));
+            let (host, result) = futures::executor::block_on(runtime.run(host, id));
             if let Err(error) = result {
                 let error = host.errors.into_iter().next().unwrap_or(error);
                 failures.entry(error).or_default().push(format!("{name} ({id})"));
@@ -122,14 +121,14 @@ fn expected(error: &str) -> bool {
 
 #[test]
 fn every_converted_npc_runs_against_a_random_host() {
-    let failures = run_all("run_npc", npc_entries());
+    let failures = run_all(npc_entries());
     let unexpected: BTreeMap<_, _> = failures.into_iter().filter(|(error, _)| !expected(error)).collect();
     assert!(unexpected.is_empty(), "{}", report(&unexpected));
 }
 
 #[test]
 fn every_converted_event_runs_against_a_random_host() {
-    let failures = run_all("run_event", event_entries());
+    let failures = run_all(event_entries());
     let unexpected: BTreeMap<_, _> = failures.into_iter().filter(|(error, _)| !expected(error)).collect();
     assert!(unexpected.is_empty(), "{}", report(&unexpected));
 }

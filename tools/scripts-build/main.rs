@@ -2,13 +2,14 @@ use std::path::Path;
 use std::process::Command;
 
 /// Each module is a separate cargo workspace: its manifest, and the wasm it installs as `config/wasm/<name>.wasm`.
-const MODULES: [(&str, &str); 6] = [
-    ("scripts/Cargo.toml", "game_scripts"),
+const MODULES: [(&str, &str); 7] = [
     ("scripts/towns/Cargo.toml", "towns"),
     ("scripts/misc/Cargo.toml", "misc"),
     ("scripts/jobs/Cargo.toml", "jobs"),
     ("scripts/quests/Cargo.toml", "quests"),
     ("scripts/items/Cargo.toml", "items"),
+    ("scripts/pets/Cargo.toml", "pets"),
+    ("scripts/systems/Cargo.toml", "systems"),
 ];
 
 fn main() {
