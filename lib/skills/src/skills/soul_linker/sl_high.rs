@@ -93,4 +93,9 @@ impl Skill for SlHigh {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { high_stat_bonus: true, ..SpiritRules::default() }
+    }
 }

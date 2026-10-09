@@ -372,7 +372,7 @@ impl ServerService {
                             char_id:character.char_id,request:crate::server::model::game_systems::ScriptWorldRequest::Pet(crate::server::model::game_systems::PetRequest::PetCombatTarget {target_id:damage.target_id,retaliation:false}),
                         }));
                     }
-                    if damage.skill_id == models::enums::skill_enums::SkillEnum::NpcMagicalattack.id() {
+                    if crate::server::script::skill::ScriptSkillService::skill_object_by_id(damage.skill_id).is_some_and(|skill| skill.lands_at_attack_time()) {
                         let delay = damage.attacked_at.saturating_sub(tick);
                         if *map_item.object_type() == MapItemType::Mob {
                             map_instance.add_to_delayed_tick(MapEvent::MobDamage(MobDamage { damage }), delay);

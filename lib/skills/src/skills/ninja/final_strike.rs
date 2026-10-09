@@ -226,4 +226,24 @@ impl Skill for FinalStrike {
     fn player_only_callback(&self) -> bool {
         true
     }
+
+    #[inline(always)]
+    fn counts_as_weapon(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn attack_ratio(&self, _bow: bool) -> Option<f32> {
+        Some(1.0)
+    }
+
+    #[inline(always)]
+    fn attack_from_hp(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn weapon_aftermath(&self) -> Option<WeaponAftermath> {
+        Some(WeaponAftermath::FinalStrike)
+    }
 }

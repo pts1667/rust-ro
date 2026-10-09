@@ -121,4 +121,9 @@ impl Skill for MarionetteControl {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::Marionette)
     }
+
+    #[inline(always)]
+    fn controls_marionette(&self) -> bool {
+        true
+    }
 }

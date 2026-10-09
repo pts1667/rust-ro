@@ -196,4 +196,29 @@ impl Skill for ShieldChain {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn hit_rate_bonus(&self) -> i32 {
+        20
+    }
+
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        false
+    }
 }

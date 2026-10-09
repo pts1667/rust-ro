@@ -141,4 +141,9 @@ impl Skill for HolyLight {
     fn cost_rules(&self) -> CostRules {
         CostRules { autocast_sp: true, ..CostRules::default() }
     }
+
+    #[inline(always)]
+    fn breaks_kyrie(&self) -> bool {
+        true
+    }
 }

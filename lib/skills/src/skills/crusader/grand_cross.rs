@@ -283,4 +283,14 @@ impl Skill for GrandCross {
     fn ground_kind(&self) -> Option<GroundKind> {
         Some(GroundKind::GrandCross)
     }
+
+    #[inline(always)]
+    fn grand_cross_damage(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn self_hit_counts_as_weapon(&self) -> bool {
+        true
+    }
 }

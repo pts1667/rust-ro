@@ -131,4 +131,9 @@ impl Skill for NpcGranddarkness {
     fn ground_kind(&self) -> Option<GroundKind> {
         Some(GroundKind::GrandDarkness)
     }
+
+    #[inline(always)]
+    fn grand_cross_damage(&self) -> bool {
+        true
+    }
 }

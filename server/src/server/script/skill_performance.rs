@@ -1,5 +1,4 @@
 use models::enums::class::{JobFamily, JobName};
-use models::enums::skill_enums::SkillEnum;
 use models::enums::weapon::WeaponType;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
@@ -79,7 +78,7 @@ impl ScriptSkillService {
         if character.status.has_status_change(StatusChangeKind::RokisWeil) && behaviour != ActorBehaviour::Adaptation {
             return Err("Loki's Veil forbids skills".into());
         }
-        let controlling = skill_id == SkillEnum::CgMarionette.id();
+        let controlling = super::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.controls_marionette());
         if (character.status.has_status_change(StatusChangeKind::Marionette) && !controlling)
             || (character.status.has_status_change(StatusChangeKind::Marionette2) && controlling)
         {
@@ -119,7 +118,7 @@ impl ScriptSkillService {
                 Ok(())
             }
             ActorBehaviour::LongingFreedom => {
-                let ensemble_dance = character.status.status_change(StatusChangeKind::Dancing).filter(|dance| dance.values[3] != 0 && dance.values[0] & 0xFFFF != SkillEnum::CgMoonlit.id() as i32);
+                let ensemble_dance = character.status.status_change(StatusChangeKind::Dancing).filter(|dance| dance.values[3] != 0 && super::ScriptSkillService::skill_object_by_id((dance.values[0] & 0xFFFF) as u32).is_none_or(|skill| skill.ensemble_counts_for_longing()));
                 if ensemble_dance.is_none() || character.status.has_status_change(StatusChangeKind::Longing) {
                     return Err("Longing for Freedom needs an ensemble in progress".into());
                 }
@@ -470,6 +469,8 @@ impl ScriptSkillService {
 
 #[cfg(test)]
 mod tests {
+    use models::enums::skill_enums::SkillEnum;
+
     use super::*;
 
     #[test]

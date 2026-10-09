@@ -248,7 +248,7 @@ impl ScriptSkillService {
             self.validate_native_environment(state, &character, request.skill_id, level, tick)?;
             let base = metadata.cast_duration(level, StatusService::skill_cast_modifier(&source.status, request.skill_id));
             let duration = (base.min(i64::MAX as u128) as i64 + i64::from(request.cast_time_adjust_ms)).max(0) as u128;
-            if request.skill_id == SkillEnum::AlWarp.id() {
+            if super::ScriptSkillService::is_warp_portal(request.skill_id) {
                 let (x, y) = request.ground.ok_or("Warp Portal requires a ground position")?;
                 character.script_skill_state.deferred_requirements = Some(DeferredSkillPayment {
                     skill_id: request.skill_id,
@@ -351,7 +351,7 @@ impl ScriptSkillService {
                     }
                 } else if request.target_id != source.id {
                     let (position, target) = self.actor_target_status(state, &source, request.target_id)?;
-                    if target.hp() == 0 && request.skill_id != SkillEnum::AllResurrection.id() {
+                    if target.hp() == 0 && !matches!(super::ScriptSkillService::skill_behaviour(request.skill_id, request.level as u8), skills::ActorBehaviour::Resurrect) {
                         return Err("Unit skill target died".into());
                     }
                     if !request.ignore_range
@@ -369,7 +369,7 @@ impl ScriptSkillService {
                         return Err("Unit skill target moved out of range or behind an obstacle".into());
                     }
                 }
-                if matches!(request.skill_id, id if id == SkillEnum::CgTarotcard.id() || id == SkillEnum::MgStonecurse.id()) {
+                if super::ScriptSkillService::skill_object_by_id(request.skill_id).is_some_and(|skill| skill.conditional_completion()) {
                     let metadata = SkillMetadata::find(request.skill_id).unwrap();
                     let delay = metadata
                         .after_cast_act_delay
@@ -488,9 +488,9 @@ impl ScriptSkillService {
             | ActorBehaviour::HocusPocus
             | ActorBehaviour::FindStone
             | ActorBehaviour::EnchantArms
-            | ActorBehaviour::ReverseOrcish
-            | ActorBehaviour::ShadowLeap
-            | ActorBehaviour::CondensedPotion
+            | ActorBehaviour::ReverseOrcish
+            | ActorBehaviour::ShadowLeap
+            | ActorBehaviour::CondensedPotion
             | ActorBehaviour::Cultivate
             | ActorBehaviour::CollectItems
             | ActorBehaviour::BondBaby

@@ -194,4 +194,14 @@ impl Skill for CounterKick {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn stance(&self) -> Option<Stance> {
+        Some(Stance { ready: models::status_change::StatusChangeKind::ReadyCounter, rate: 20, friend_boosted: true })
+    }
+
+    #[inline(always)]
+    fn friend_share(&self) -> Option<FriendShare> {
+        Some(FriendShare::TripleAttack)
+    }
 }

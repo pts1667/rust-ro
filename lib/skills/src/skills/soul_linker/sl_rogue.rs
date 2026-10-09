@@ -93,4 +93,9 @@ impl Skill for SlRogue {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { dispel_immune: true, chase_walk_penalty: 40, long_chase_walk: true, ..SpiritRules::default() }
+    }
 }

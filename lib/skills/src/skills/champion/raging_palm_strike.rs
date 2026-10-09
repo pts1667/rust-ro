@@ -196,4 +196,14 @@ impl Skill for RagingPalmStrike {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Delayed { delay_ms: 1000, always_lands: true }
     }
+
+    #[inline(always)]
+    fn deferred_damage(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn weapon_aftermath(&self) -> Option<WeaponAftermath> {
+        Some(WeaponAftermath::DelayedHit)
+    }
 }

@@ -2,7 +2,6 @@ use models::enums::bonus::BonusType;
 use models::enums::element::Element;
 use models::enums::mob::{MobClass, MobGroup, MobRace};
 use models::enums::skill::SkillTargetType;
-use models::enums::skill_enums::SkillEnum;
 use models::enums::status::StatusEffect;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
@@ -125,7 +124,7 @@ pub fn physical_reflection(owner: &StatusSnapshot, battle_flags: u32, skill_id: 
         })
         .sum::<i64>()
         .max(0);
-    let shield_rate = if skill_id == SkillEnum::WsCarttermination.id() {
+    let shield_rate = if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.bypasses_reflect_shield()) {
         0
     } else {
         owner
@@ -591,6 +590,7 @@ fn matches_filter(filter: CombatTargetFilter, event: &CombatEvent<'_>) -> bool {
 #[cfg(test)]
 mod tests {
     use models::enums::element::Element;
+    use models::enums::skill_enums::SkillEnum;
     use models::enums::size::Size;
 
     use super::*;

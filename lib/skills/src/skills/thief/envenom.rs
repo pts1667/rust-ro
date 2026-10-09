@@ -141,4 +141,14 @@ impl Skill for Envenom {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::PoisonReact
     }
+
+    #[inline(always)]
+    fn attack_ratio(&self, _bow: bool) -> Option<f32> {
+        Some(1.0)
+    }
+
+    #[inline(always)]
+    fn flat_attack_per_level(&self) -> u16 {
+        15
+    }
 }

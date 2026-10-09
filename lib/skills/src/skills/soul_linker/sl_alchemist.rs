@@ -93,4 +93,9 @@ impl Skill for SlAlchemist {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { alchemy_base_level_bonus: true, ..SpiritRules::default() }
+    }
 }

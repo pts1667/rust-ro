@@ -93,4 +93,9 @@ impl Skill for SlHunter {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { beast_bane_strength: true, ..SpiritRules::default() }
+    }
 }

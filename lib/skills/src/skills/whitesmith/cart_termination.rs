@@ -221,4 +221,9 @@ impl Skill for CartTermination {
         }
         effects
     }
+
+    #[inline(always)]
+    fn bypasses_reflect_shield(&self) -> bool {
+        true
+    }
 }

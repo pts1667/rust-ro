@@ -27,7 +27,7 @@ impl ScriptSkillService {
                 }
             }
         }
-        if skill_id != SkillEnum::HwMagicpower.id() && metadata.damage_type.as_deref() == Some("Magic") && metadata.damages() {
+        if !super::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.keeps_magic_power()) && metadata.damage_type.as_deref() == Some("Magic") && metadata.damages() {
             if let Some(change) = character.status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::MagicPower) {
                 if change.values[3] == 1 {
                     spent.push(StatusChangeKind::MagicPower);

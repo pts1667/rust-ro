@@ -1838,9 +1838,7 @@ impl BattleService {
         }
         rate += rate * 2 * known(SkillEnum::BsWeaponresearch) / 100;
         rate = rate.clamp(5, 95);
-        if skill_id == SkillEnum::PaShieldchain.id() {
-            rate += 20;
-        }
+        rate += crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).map_or(0, |skill| skill.hit_rate_bonus());
         rate.clamp(0, 100) as u8
     }
 
@@ -1870,10 +1868,8 @@ impl BattleService {
         {
             return true;
         }
-        if skill_id == SkillEnum::CrShieldboomerang.id()
-            && source
-                .status_change(StatusChangeKind::Spirit)
-                .is_some_and(|status| status.values[1] == SkillEnum::SlCrusader.id() as i32)
+        if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.spirit_auto_hit())
+            && crate::server::script::skill::ScriptSkillService::spirit_owner_matches(source.status_change(StatusChangeKind::Spirit), skill_id)
         {
             return true;
         }
@@ -1962,12 +1958,13 @@ impl BattleService {
                 BonusType::DoubleAttackAdditionalChancePercentage(value) => Some(i32::from(*value)),
                 _ => None,
             });
+        let grants_double_attack = |id: u32| crate::server::script::skill::ScriptSkillService::skill_object_by_id(id).is_some_and(|skill| skill.grants_double_attack());
         let skill = if *source.right_hand_weapon_type() == WeaponType::Dagger
-            || source.temporary_skill_ids().contains(&SkillEnum::TfDouble.id())
+            || source.temporary_skill_ids().iter().any(|id| grants_double_attack(*id))
             || source
                 .bonuses()
                 .iter()
-                .any(|bonus| matches!(bonus.bonus(), BonusType::EnableSkillId(id, _) if *id == SkillEnum::TfDouble.id()))
+                .any(|bonus| matches!(bonus.bonus(), BonusType::EnableSkillId(id, _) if grants_double_attack(*id)))
         {
             5 * known_skill_level(source, SkillEnum::TfDouble)
         } else {
@@ -2547,40 +2544,28 @@ impl BattleService {
         let mut damage = 0;
         let mut magic_context = None;
         if let Some(skill) = skill {
-            if matches!(skill.id(), id if id == SkillEnum::HtBlitzbeat.id() || id == SkillEnum::SnFalconassault.id()) {
-                let flags = BattleFlag::Misc.as_flag() | BattleFlag::Long.as_flag() | BattleFlag::Skill.as_flag();
-                let per_hit = Self::falcon_hit_damage(source_status);
-                let hits = u32::from(skill.hit_count().unsigned_abs().max(1));
-                let raw = if skill.id() == SkillEnum::SnFalconassault.id() {
-                    per_hit * 5 * (150 + 70 * u32::from(skill.level())) / 100
-                } else {
-                    per_hit
-                };
-                let damage = self.actor_misc_skill_damage(raw, source_status, target_status, &Element::Neutral, flags, skill.id());
-                return ((damage * hits).min(i32::MAX as u32) as i32, None);
-            }
-            if matches!(skill.id(), id if id == SkillEnum::PaPressure.id() || id == SkillEnum::TfThrowstone.id()) {
-                let raw = if skill.id() == SkillEnum::PaPressure.id() {
-                    500 + 300 * u32::from(skill.level())
-                } else if JobName::try_from_value(source_status.job() as usize).is_ok() {
-                    50
-                } else {
-                    30
-                };
+            if let Some(misc) = skill.misc_damage() {
                 let flags = BattleFlag::Misc.as_flag()
                     | BattleFlag::Long.as_flag()
                     | BattleFlag::Skill.as_flag()
-                    | if skill.id() == SkillEnum::TfThrowstone.id() {
-                        BattleFlag::Weapon.as_flag()
-                    } else {
-                        0
-                    };
-                return (
-                    self.actor_misc_skill_damage(raw, source_status, target_status, &Element::Neutral, flags, skill.id())
-                        .min(i32::MAX as u32) as i32,
-                    None,
-                );
-            } else if matches!(skill.id(),id if id==SkillEnum::CrGrandcross.id() || id==SkillEnum::NpcGranddarkness.id()) {
+                    | if matches!(misc, skills::MiscDamage::Throwstone) { BattleFlag::Weapon.as_flag() } else { 0 };
+                let per_hit = Self::falcon_hit_damage(source_status);
+                let raw = match misc {
+                    skills::MiscDamage::FalconStrike => per_hit,
+                    skills::MiscDamage::FalconAssault => per_hit * 5 * (150 + 70 * u32::from(skill.level())) / 100,
+                    skills::MiscDamage::Pressure => 500 + 300 * u32::from(skill.level()),
+                    skills::MiscDamage::Throwstone if JobName::try_from_value(source_status.job() as usize).is_ok() => 50,
+                    skills::MiscDamage::Throwstone => 30,
+                };
+                let damage = self.actor_misc_skill_damage(raw, source_status, target_status, &Element::Neutral, flags, skill.id());
+                return match misc {
+                    skills::MiscDamage::FalconStrike | skills::MiscDamage::FalconAssault => {
+                        let hits = u32::from(skill.hit_count().unsigned_abs().max(1));
+                        ((damage * hits).min(i32::MAX as u32) as i32, None)
+                    }
+                    skills::MiscDamage::Pressure | skills::MiscDamage::Throwstone => (damage.min(i32::MAX as u32) as i32, None),
+                };
+            } else if skill.grand_cross_damage() {
                 let (value, context) =
                     self.grand_cross_skill_damage_with_context(source_status, target_status, skill.level(), false, skill.id());
                 damage = value;
@@ -2588,22 +2573,8 @@ impl BattleService {
             } else if Self::is_weapon_skill(skill) {
                 let source_status = Self::right_hand_source(source_status);
                 let source_status = source_status.as_ref();
-                let ratio = if skill.id() == SkillEnum::RgBackstap.id() {
-                    1.0 + (2.0 + 0.4 * f32::from(skill.level()))
-                        * if *source_status.right_hand_weapon_type() == WeaponType::Bow {
-                            0.5
-                        } else {
-                            1.0
-                        }
-                } else if skill.id() == SkillEnum::RgIntimidate.id() {
-                    1.0 + 0.3 * f32::from(skill.level())
-                } else if skill.id() == SkillEnum::NjIssen.id() {
-                    1.0
-                } else if skill.id() == SkillEnum::TfPoison.id() {
-                    1.0
-                } else {
-                    skill.dmg_atk().unwrap_or(1.0)
-                };
+                let bow = *source_status.right_hand_weapon_type() == WeaponType::Bow;
+                let ratio = skill.attack_ratio(bow).unwrap_or_else(|| skill.dmg_atk().unwrap_or(1.0));
                 let mut skill_modifier = Self::player_weapon_skill_ratio(source_status, ratio, skill.id());
                 if skill.hit_count() > 1 {
                     skill_modifier /= skill.hit_count() as f32;
@@ -2618,7 +2589,7 @@ impl BattleService {
                     skill.id(),
                     1,
                     PhysicalAttackOverrides {
-                        raw_attack: (skill.id() == SkillEnum::NjIssen.id()).then(|| {
+                        raw_attack: skill.attack_from_hp().then(|| {
                             (u64::from(source_status.str()) * 40 + u64::from(source_status.hp()) * 8 * u64::from(skill.level()) / 100)
                                 .min(u64::from(u32::MAX)) as u32
                         }),
@@ -2665,7 +2636,7 @@ impl BattleService {
     }
 
     pub fn is_weapon_skill(skill: &dyn Skill) -> bool {
-        skill.id() == SkillEnum::NjIssen.id() || skill.is_physical()
+        skill.counts_as_weapon()
     }
 
     /// (([((({(base_atk +
@@ -2707,7 +2678,7 @@ impl BattleService {
     }
 
     pub fn weapon_skill_ratio(source: &StatusSnapshot, ratio: f32, skill_id: u32) -> f32 {
-        if skill_id == SkillEnum::PaSacrifice.id() {
+        if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.skips_weapon_ratio_bonuses()) {
             return ratio;
         }
         ratio
@@ -2734,21 +2705,11 @@ impl BattleService {
     }
 
     fn skill_stacks_mastery(skill_id: u32) -> bool {
-        ![
-            SkillEnum::PaShieldchain,
-            SkillEnum::CrShieldboomerang,
-            SkillEnum::AmAcidterror,
-            SkillEnum::MoInvestigate,
-            SkillEnum::MoExtremityfist,
-            SkillEnum::PaSacrifice,
-            SkillEnum::LkSpiralpierce,
-        ]
-        .into_iter()
-        .any(|skill| skill.id() == skill_id)
+        crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_none_or(|skill| skill.stacks_mastery())
     }
 
     fn skill_stacks_refine(skill_id: u32) -> bool {
-        skill_id == SkillEnum::LkSpiralpierce.id() || Self::skill_stacks_mastery(skill_id)
+        crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_none_or(|skill| skill.stacks_refine())
     }
 
     fn physical_damage_with_split(
@@ -2870,7 +2831,7 @@ impl BattleService {
         let number_of_hits: f32 = 1.0;
         let _kyrie_eleison_effect: f32 = 0.0;
 
-        let uses_ammo = Self::attack_uses_ammo(source_status, skill_id) || skill_id == SkillEnum::HtPhantasmic.id();
+        let uses_ammo = Self::attack_uses_ammo(source_status, skill_id) || crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.uses_ammo());
         let weapon_atk = if overrides.raw_attack.is_some() {
             0
         } else {
@@ -2944,8 +2905,9 @@ impl BattleService {
         }
         atk += f32::from(Self::forged_star_damage(source_status, skill_id))
             + f32::from(Self::spirit_sphere_damage(source_status, skill_id, overrides.sphere_hits));
-        if skill_id == SkillEnum::TfPoison.id() {
-            atk = ((atk + f32::from(overrides.skill_level) * 15.0) * elemental_modifier).floor();
+        let flat_per_level = crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).map_or(0, |skill| skill.flat_attack_per_level());
+        if flat_per_level > 0 {
+            atk = ((atk + f32::from(overrides.skill_level) * f32::from(flat_per_level)) * elemental_modifier).floor();
         }
         if let Some(change) = elemental_extra {
             if let Ok(extra_element) = Element::try_from_value(change.values[0].max(0) as usize) {
@@ -2984,13 +2946,14 @@ impl BattleService {
                 }),
             );
         }
+        let skill_object = crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id);
         atk += 2.0 * known_skill_level(source_status, SkillEnum::BsWeaponresearch) as f32
-            + if skill_id == SkillEnum::NjSyuriken.id() {
+            + if skill_object.as_ref().is_some_and(|skill| skill.scales_with_tobidougu()) {
                 3.0 * known_skill_level(source_status, SkillEnum::NjTobidougu) as f32
             } else {
                 0.0
             }
-            + if skill_id != SkillEnum::McCartrevolution.id() && known_skill_level(source_status, SkillEnum::BsHiltbinding) > 0 {
+            + if !skill_object.as_ref().is_some_and(|skill| skill.excludes_hilt_binding()) && known_skill_level(source_status, SkillEnum::BsHiltbinding) > 0 {
                 4.0
             } else {
                 0.0
@@ -3029,10 +2992,7 @@ impl BattleService {
         let beast_bane = level(SkillEnum::HtBeastbane);
         if beast_bane > 0 && matches!(target.race(), MobRace::Brute | MobRace::Insect) {
             bane += 4 * beast_bane;
-            if source
-                .status_change(models::status_change::StatusChangeKind::Spirit)
-                .is_some_and(|change| change.values[1] == SkillEnum::SlHunter.id() as i32)
-            {
+            if crate::server::script::skill::ScriptSkillService::spirit_rules(source.status_change(models::status_change::StatusChangeKind::Spirit)).beast_bane_strength {
                 bane += i32::from(source.str());
             }
         }
@@ -3040,38 +3000,18 @@ impl BattleService {
     }
 
     pub fn forged_star_damage(source: &StatusSnapshot, skill_id: u32) -> u16 {
-        if [
-            SkillEnum::PaShieldchain,
-            SkillEnum::CrShieldboomerang,
-            SkillEnum::AmAcidterror,
-            SkillEnum::MoInvestigate,
-            SkillEnum::MoExtremityfist,
-            SkillEnum::PaSacrifice,
-        ]
-        .into_iter()
-        .any(|skill| skill.id() == skill_id)
-        {
+        if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| !skill.stacks_forged_stars()) {
             return 0;
         }
         source.right_hand_weapon().map_or(0, |weapon| weapon.forged_star_damage())
     }
 
     pub fn spirit_sphere_damage(source: &StatusSnapshot, skill_id: u32, hits: u16) -> u16 {
-        if [
-            SkillEnum::PaShieldchain,
-            SkillEnum::CrShieldboomerang,
-            SkillEnum::AmAcidterror,
-            SkillEnum::MoInvestigate,
-            SkillEnum::MoExtremityfist,
-            SkillEnum::PaSacrifice,
-            SkillEnum::LkSpiralpierce,
-        ]
-        .into_iter()
-        .any(|skill| skill.id() == skill_id)
-        {
+        let skill = crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id);
+        if skill.as_ref().is_some_and(|skill| !skill.stacks_spirit_spheres()) {
             return 0;
         }
-        let count = u16::from(source.spirit_sphere_count()) + if skill_id == SkillEnum::MoFingeroffensive.id() { hits } else { 0 };
+        let count = u16::from(source.spirit_sphere_count()) + if skill.is_some_and(|skill| skill.adds_hits_to_spheres()) { hits } else { 0 };
         count.saturating_mul(3)
     }
 
@@ -3409,11 +3349,7 @@ impl BattleService {
         let mut context = self.magic_attack_context(
             source,
             1.0 + 0.4 * f32::from(level),
-            if skill_id == SkillEnum::NpcGranddarkness.id() {
-                Element::Dark
-            } else {
-                Element::Holy
-            },
+            crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).map_or(Element::Holy, |skill| skill.element()),
         );
         context.skill_id = skill_id;
         context.grand_cross = Some(GrandCrossAttackContext {

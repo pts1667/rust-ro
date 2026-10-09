@@ -236,4 +236,9 @@ impl Skill for ShieldReflect {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn skips_devotion_protection(&self) -> bool {
+        true
+    }
 }

@@ -135,4 +135,9 @@ impl Skill for Dispell {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Dispel { chance: 50 + 10 * self.level }
     }
+
+    #[inline(always)]
+    fn party_targets_skip_hostility(&self) -> bool {
+        true
+    }
 }

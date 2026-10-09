@@ -171,4 +171,19 @@ impl Skill for BackStab {
     fn player_only_callback(&self) -> bool {
         true
     }
+
+    #[inline(always)]
+    fn requires_behind_target(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn weapon_aftermath(&self) -> Option<WeaponAftermath> {
+        Some(WeaponAftermath::Backstab)
+    }
+
+    #[inline(always)]
+    fn attack_ratio(&self, _bow: bool) -> Option<f32> {
+        Some(1.0 + (2.0 + 0.4 * f32::from(self.level())) * if _bow { 0.5 } else { 1.0 })
+    }
 }

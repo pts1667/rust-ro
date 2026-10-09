@@ -83,6 +83,34 @@ impl ScriptSkillService {
         Self::skill_object(metadata, metadata.max_level).and_then(|skill| skill.crafting_rule())
     }
 
+    /// The implementation of a skill for the rules that do not depend on its level.
+    pub(crate) fn skill_object_by_id(skill_id: u32) -> Option<Box<dyn skills::Skill>> {
+        let metadata = SkillMetadata::find(skill_id)?;
+        Self::skill_object(metadata, 1)
+    }
+
+    /// The effects of the Soul Linker spirit a Spirit status holds, read from the spirit owner's object.
+    pub(crate) fn spirit_rules(spirit: Option<&models::status_change::StatusChange>) -> skills::SpiritRules {
+        spirit.map_or_else(Default::default, |change| Self::owner_spirit_rules(change.values[1]))
+    }
+
+    /// The effects of the Soul Linker spirit owned by this skill id.
+    pub(crate) fn owner_spirit_rules(owner: i32) -> skills::SpiritRules {
+        u32::try_from(owner).ok().and_then(Self::skill_object_by_id).map_or_else(Default::default, |skill| skill.spirit_rules())
+    }
+
+    /// True when the caster's Soul Linker spirit is owned by the spirit owner the skill object names.
+    pub(crate) fn spirit_owner_matches(spirit: Option<&models::status_change::StatusChange>, skill_id: u32) -> bool {
+        Self::skill_object_by_id(skill_id).and_then(|skill| skill.spirit_owner()).is_some_and(|owner| {
+            spirit.is_some_and(|change| change.values[1] == owner as i32)
+        })
+    }
+
+    /// True for the skill whose cast opens a Warp Portal menu.
+    pub(crate) fn is_warp_portal(skill_id: u32) -> bool {
+        Self::skill_object_by_id(skill_id).and_then(|skill| skill.ground_placement()) == Some(skills::GroundPlacement::WarpPortal)
+    }
+
     /// The weapon-attack ratio of a monster weapon skill at a level.
     pub(crate) fn weapon_ratio(metadata: &SkillMetadata, level: u8) -> Option<f32> {
         Self::skill_object(metadata, level).and_then(|skill| skill.weapon_ratio(level))

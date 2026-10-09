@@ -165,4 +165,24 @@ impl Skill for AcidTerror {
         }
         effects
     }
+
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        false
+    }
 }

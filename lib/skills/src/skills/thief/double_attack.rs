@@ -166,4 +166,9 @@ impl Skill for DoubleAttack {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn grants_double_attack(&self) -> bool {
+        true
+    }
 }

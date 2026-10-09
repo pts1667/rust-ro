@@ -217,4 +217,14 @@ impl Skill for StoneCurse {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::StoneCurse
     }
+
+    #[inline(always)]
+    fn deferred_requirement(&self, level: u8) -> RequirementDeferral {
+        if level > 5 { RequirementDeferral::Removals } else { RequirementDeferral::Nothing }
+    }
+
+    #[inline(always)]
+    fn conditional_completion(&self) -> bool {
+        true
+    }
 }

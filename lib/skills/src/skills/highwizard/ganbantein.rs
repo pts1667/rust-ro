@@ -163,4 +163,14 @@ impl Skill for Ganbantein {
     fn ground_placement(&self) -> Option<GroundPlacement> {
         Some(GroundPlacement::AreaStatus)
     }
+
+    #[inline(always)]
+    fn deferred_requirement(&self, _level: u8) -> RequirementDeferral {
+        RequirementDeferral::Everything
+    }
+
+    #[inline(always)]
+    fn sends_failure_packet(&self) -> bool {
+        true
+    }
 }

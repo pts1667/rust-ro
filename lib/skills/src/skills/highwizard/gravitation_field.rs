@@ -225,4 +225,9 @@ impl Skill for GravitationField {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn ignores_damage_guards(&self) -> bool {
+        true
+    }
 }

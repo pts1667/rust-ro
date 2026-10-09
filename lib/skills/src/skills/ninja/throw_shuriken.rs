@@ -140,4 +140,9 @@ impl Skill for ThrowShuriken {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn scales_with_tobidougu(&self) -> bool {
+        true
+    }
 }

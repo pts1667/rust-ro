@@ -93,4 +93,9 @@ impl Skill for SlSoullinker {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { links_soul_linker_targets: true, ..SpiritRules::default() }
+    }
 }

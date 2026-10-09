@@ -93,4 +93,9 @@ impl Skill for SlPriest {
     fn class_effect(&self) -> Option<ClassEffect> {
         Some(ClassEffect::SoulLink)
     }
+
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules { autocast_sp_multiplier: Some(5), ..SpiritRules::default() }
+    }
 }

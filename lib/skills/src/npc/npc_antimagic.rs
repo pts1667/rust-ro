@@ -111,4 +111,9 @@ impl Skill for NpcAntimagic {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn inverts_armor_change(&self) -> bool {
+        true
+    }
 }

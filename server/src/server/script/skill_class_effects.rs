@@ -64,7 +64,7 @@ impl ScriptSkillService {
             || target.status.job == JobName::SoulLinker.value() as u32
             || source.game_systems.partner_id == target.char_id
             || source.game_systems.child_id == target.char_id
-            || source.status.status_change(StatusChangeKind::Spirit).is_some_and(|spirit| spirit.values[1] == SkillEnum::SlSoullinker.id() as i32)
+            || super::ScriptSkillService::spirit_rules(source.status.status_change(StatusChangeKind::Spirit)).links_soul_linker_targets
     }
 
     fn kill_damage(effect: &ScriptSkillEffect, target_id: u32, amount: u32, source_kind: CombatActorKind) -> Damage {

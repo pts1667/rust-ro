@@ -126,4 +126,9 @@ impl Skill for Sacrifice {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Devotion
     }
+
+    #[inline(always)]
+    fn validates_effect(&self) -> Option<EffectValidation> {
+        Some(EffectValidation::Devotion)
+    }
 }

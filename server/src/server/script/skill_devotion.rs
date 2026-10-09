@@ -136,13 +136,13 @@ impl ScriptSkillService {
         if let super::ScriptSkillAction::WaterBall { sequence, cell } = effect.action {
             self.validate_water_ball_shot(source, effect, sequence, cell, tick)?;
         }
-        if effect.skill_id == SkillEnum::AsSplasher.id() {
+        if super::ScriptSkillService::skill_object_by_id(effect.skill_id).and_then(|skill| skill.validates_effect()) == Some(skills::EffectValidation::Splasher) {
             self.validate_splasher_effect(state, source, effect)?;
         }
         if let super::ScriptSkillAction::ActivateGround { skill_id, cast_generation } = effect.action {
             self.validate_ground_activation(state, source, skill_id, cast_generation, tick)?;
         }
-        if effect.skill_id == SkillEnum::CrDevotion.id() {
+        if super::ScriptSkillService::skill_object_by_id(effect.skill_id).and_then(|skill| skill.validates_effect()) == Some(skills::EffectValidation::Devotion) {
             let target = state.get_character(effect.target_id).ok_or("Devotion requires a player target")?;
             self.validate_devotion_target(state, source, target, effect.level)?;
         }

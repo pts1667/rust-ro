@@ -231,4 +231,9 @@ impl Skill for MysticalAmplification {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn keeps_magic_power(&self) -> bool {
+        true
+    }
 }

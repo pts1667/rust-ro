@@ -271,4 +271,19 @@ impl Skill for WaterBall {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::WaterBall
     }
+
+    #[inline(always)]
+    fn deferred_damage(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn magic_rod_rule(&self) -> MagicRodRule {
+        MagicRodRule::WaterBall
+    }
+
+    #[inline(always)]
+    fn needs_water_or_deluge(&self) -> bool {
+        true
+    }
 }

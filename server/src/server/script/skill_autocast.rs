@@ -31,7 +31,7 @@ impl ScriptSkillService {
             let mut sp = pool_cost(amount("SpCost"), amount("SpRateCost"), character.status.sp, snapshot.max_sp());
             let modifier = snapshot.bonuses_raw().iter().filter_map(|bonus| if let BonusType::SpConsumption(value) = bonus { Some(i32::from(*value)) } else { None }).sum::<i32>();
             sp = (u64::from(sp) * (100 + modifier).max(0) as u64 / 100).min(u64::from(u32::MAX)) as u32;
-            if character.status.status_change(StatusChangeKind::Spirit).is_some_and(|change| change.values[1] == SkillEnum::SlPriest.id() as i32) { sp = sp.saturating_mul(5); }
+            if let Some(multiplier) = super::ScriptSkillService::spirit_rules(character.status.status_change(StatusChangeKind::Spirit)).autocast_sp_multiplier { sp = sp.saturating_mul(multiplier); }
             sp.min(character.status.sp)
         } else { 0 };
         let spheres = character.script_skill_state.spirit_spheres.iter().filter(|expiry| **expiry > tick).count().min(u8::MAX as usize) as u8;

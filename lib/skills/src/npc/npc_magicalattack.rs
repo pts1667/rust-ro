@@ -121,4 +121,9 @@ impl Skill for NpcMagicalattack {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn lands_at_attack_time(&self) -> bool {
+        true
+    }
 }

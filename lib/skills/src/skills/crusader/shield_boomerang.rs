@@ -161,4 +161,34 @@ impl Skill for ShieldBoomerang {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn spirit_owner(&self) -> Option<u32> {
+        Some(models::enums::skill_enums::SkillEnum::SlCrusader.id())
+    }
+
+    #[inline(always)]
+    fn spirit_auto_hit(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        false
+    }
 }

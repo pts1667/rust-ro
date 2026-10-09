@@ -106,4 +106,9 @@ impl Skill for SlSma {
     fn magic_modifier(&self, _target_small: bool, source_base_level: u32) -> Option<f32> {
         Some((40.0 + source_base_level as f32) / 100.0)
     }
+
+    #[inline(always)]
+    fn requires_sma_readiness(&self) -> bool {
+        true
+    }
 }

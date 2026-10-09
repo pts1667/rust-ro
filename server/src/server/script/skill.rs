@@ -866,11 +866,11 @@ impl ScriptSkillService {
         }
         if instant {
             if let Some(offensive) = object.as_offensive_skill() {
-                let landed = skill_id == SkillEnum::ChPalmstrike.id()
+                let landed = offensive.deferred_damage()
                     || !BattleService::is_weapon_skill(offensive)
                     || server.battle_service().skill_hits(&source_status, &target_status, skill_id, level);
                 let (damage, magic_context) =
-                    if landed && skill_id != SkillEnum::WzWaterball.id() && skill_id != SkillEnum::ChPalmstrike.id() {
+                    if landed && !offensive.deferred_damage() {
                         server
                             .battle_service()
                             .calculate_damage_with_context(&source_status, &target_status, Some(offensive))
@@ -885,7 +885,7 @@ impl ScriptSkillService {
                     BattleFlag::Misc
                 })
                 .as_flag()
-                    | if skill_id == SkillEnum::TfThrowstone.id() {
+                    | if offensive.adds_weapon_flag() {
                         BattleFlag::Weapon.as_flag()
                     } else {
                         0
@@ -918,7 +918,7 @@ impl ScriptSkillService {
                     landed,
                 };
                 damage_event.set_signed_damage(damage);
-                if skill_id != SkillEnum::WzWaterball.id() && skill_id != SkillEnum::ChPalmstrike.id() {
+                if !offensive.deferred_damage() {
                     damage_event = damage_event.with_skill_notification(
                         character.current_map_name(),
                         character.current_map_instance(),
@@ -1005,7 +1005,7 @@ impl ScriptSkillService {
             .ok_or("Unknown item skill")?;
         if effect.prepared_outcome.is_none()
             && matches!(effect.action, ScriptSkillAction::Cast)
-            && (effect.skill_id == SkillEnum::MgStonecurse.id() || effect.skill_id == SkillEnum::CgTarotcard.id())
+            && Self::skill_object_by_id(effect.skill_id).is_some_and(|skill| skill.conditional_completion())
         {
             let snapshot = StatusService::instance().to_snapshot(&character.status);
             let plan = self.prepare_conditional_completion(
@@ -1223,7 +1223,7 @@ impl ScriptSkillService {
             .as_ref()
             .ok_or("Identification was not requested")?
             .clone();
-        if pending.skill_id != SkillEnum::McIdentify.id() || pending.expires_at <= tick {
+        if !Self::skill_object_by_id(pending.skill_id).is_some_and(|skill| skill.identifies_items()) || pending.expires_at <= tick {
             return Err("Identification request is not active".into());
         }
         character

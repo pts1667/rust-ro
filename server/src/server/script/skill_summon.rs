@@ -1,4 +1,3 @@
-use models::enums::skill_enums::SkillEnum;
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillEffect, ScriptSkillService};
@@ -22,17 +21,15 @@ impl Summon {
     fn for_skill(skill_id: u32, level: u8, base_level: u32) -> Option<Self> {
         let level_index = usize::from(level.clamp(1, 5)) - 1;
         let level = u32::from(level);
-        if skill_id == SkillEnum::AmSpheremine.id() {
-            Some(Self { class: MARINE_SPHERE, ai: SPHERE_AI, limit: None, max_hp: 2000 + 400 * level })
-        } else if skill_id == SkillEnum::AmCannibalize.id() {
-            Some(Self {
+        match super::ScriptSkillService::skill_object_by_id(skill_id).and_then(|skill| skill.summon_kind()) {
+            Some(skills::SummonKind::MarineSphere) => Some(Self { class: MARINE_SPHERE, ai: SPHERE_AI, limit: None, max_hp: 2000 + 400 * level }),
+            Some(skills::SummonKind::Flora) => Some(Self {
                 class: FLORA_CLASSES[level_index],
                 ai: FLORA_AI,
                 limit: Some(6usize.saturating_sub(level as usize)),
                 max_hp: 1500 + 200 * level + 10 * base_level,
-            })
-        } else {
-            None
+            }),
+            None => None,
         }
     }
 }
@@ -96,6 +93,8 @@ impl ScriptSkillService {
 
 #[cfg(test)]
 mod tests {
+    use models::enums::skill_enums::SkillEnum;
+
     use super::*;
 
     #[test]

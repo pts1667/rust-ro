@@ -156,4 +156,9 @@ impl Skill for RagingTrifectaBlow {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn combo_links(&self) -> Vec<ComboLink> {
+        vec![ComboLink { next: models::enums::skill_enums::SkillEnum::MoChaincombo.id(), min_spheres: 0, needs_explosion: false }]
+    }
 }

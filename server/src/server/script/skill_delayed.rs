@@ -1,4 +1,3 @@
-use models::enums::skill_enums::SkillEnum;
 use models::status_change::StatusChangeKind;
 
 use super::metadata::SkillMetadata;
@@ -24,7 +23,7 @@ impl ScriptSkillService {
     }
 
     pub fn validate_damage_target(&self, state: &ServerState, character: &Character, skill_id: u32, target_id: u32) -> Result<(), String> {
-        if skill_id != SkillEnum::RgBackstap.id() {
+        if !Self::skill_object_by_id(skill_id).is_some_and(|skill| skill.requires_behind_target()) {
             return Ok(());
         }
         let target = state
@@ -55,7 +54,8 @@ impl ScriptSkillService {
         damage: &Damage,
         tick: u128,
     ) -> bool {
-        if damage.skill_id == SkillEnum::RgBackstap.id() {
+        let aftermath = Self::skill_object_by_id(damage.skill_id).and_then(|skill| skill.weapon_aftermath());
+        if aftermath == Some(skills::WeaponAftermath::Backstab) {
             server.add_to_next_tick(GameEvent::CharacterEndStatus(CharacterEndStatus {
                 char_id: character.char_id,
                 kind: Some(StatusChangeKind::Hiding),
@@ -80,7 +80,7 @@ impl ScriptSkillService {
                 }
             }
         }
-        if damage.skill_id == SkillEnum::NjIssen.id() {
+        if aftermath == Some(skills::WeaponAftermath::FinalStrike) {
             let target = state.map_item_snapshot(damage.target_id, character.current_map_name(), character.current_map_instance());
             let (x, y) = target.map_or((character.x, character.y), |target| {
                 let (dx, dy) = Self::facing_vector(Self::direction_to(
@@ -107,7 +107,7 @@ impl ScriptSkillService {
                 },
             )));
         }
-        if damage.skill_id == SkillEnum::ChPalmstrike.id() {
+        if aftermath == Some(skills::WeaponAftermath::DelayedHit) {
             let delay =
                 1000 + u128::from(StatusService::instance().attack_motion(&StatusService::instance().to_snapshot(&character.status)));
             let action = ScriptSkillAction::DelayedWeaponHit {

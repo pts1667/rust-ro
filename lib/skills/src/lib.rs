@@ -197,6 +197,111 @@ pub enum ActorBehaviour {
     CastCancel,
 }
 
+/// The formula a skill's damage uses when it is neither the weapon nor the magic one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MiscDamage {
+    /// Blitz Beat: one falcon strike per hit.
+    FalconStrike,
+    /// Falcon Assault: a five-strike volley that scales with its level.
+    FalconAssault,
+    Pressure,
+    /// Counts as a weapon hit.
+    Throwstone,
+}
+
+/// The rate bonus a Friend of the Sun, Moon and Stars gives to the next roll of this skill.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FriendShare {
+    TripleAttack,
+    Counter,
+}
+
+/// A check the server runs before a skill effect is applied.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EffectValidation {
+    Splasher,
+    Devotion,
+}
+
+/// The unit a summon skill creates.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SummonKind {
+    MarineSphere,
+    Flora,
+}
+
+/// The part of a skill's requirements that is paid when the cast completes, not when it starts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RequirementDeferral {
+    Nothing,
+    Sp,
+    Removals,
+    Everything,
+}
+
+/// What a weapon hit does after it lands, beyond its damage.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WeaponAftermath {
+    Backstab,
+    FinalStrike,
+    DelayedHit,
+}
+
+/// How a Magic Rod treats a skill's magic.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MagicRodRule {
+    Standard,
+    /// Water Ball is a unit, so Magic Rod absorbs it, and the gain falls off with its level.
+    WaterBall,
+}
+
+/// The Taekwon stance a kick readies: the status the Taekwon waits in, and the percent chance a normal attack opens the kick's window.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Stance {
+    pub ready: StatusChangeKind,
+    pub rate: u32,
+    /// The Friend bonus of this kick raises its rate.
+    pub friend_boosted: bool,
+}
+
+/// The combo skills a skill may follow. `standing` allows it with no combo open, unless the caster is blocked from moving.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ComboFollows {
+    pub after: Vec<u32>,
+    pub standing: bool,
+}
+
+/// A combo skill this one opens the window for, when the caster has learned it and has enough spirit spheres.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ComboLink {
+    pub next: u32,
+    pub min_spheres: u8,
+    pub needs_explosion: bool,
+}
+
+/// The effects a Soul Linker spirit gives the skills of its owner class. `values[1]` of the Spirit status holds the owner's skill id.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SpiritRules {
+    /// Multiplies the SP that autocast skills take.
+    pub autocast_sp_multiplier: Option<u32>,
+    /// Adds the caster's base level to the bonus of Aid Potion.
+    pub alchemy_base_level_bonus: bool,
+    /// Lets Estin family buffs reach any Soul Linker.
+    pub links_soul_linker_targets: bool,
+    /// Keeps the spirit's own statuses from being dispelled.
+    pub dispel_immune: bool,
+    /// Lowers the Chase Walk value by this much.
+    pub chase_walk_penalty: i32,
+    /// Makes Chase Walk last ten times longer.
+    pub long_chase_walk: bool,
+    /// Raises the base stats of the High spirit.
+    pub high_stat_bonus: bool,
+    /// Keeps SP regeneration while Explosion Spirits is active.
+    pub explosion_sp_regen: bool,
+    /// Adds the caster's STR to Beast Bane.
+    pub beast_bane_strength: bool,
+}
+
 /// The success rule a recipe skill crafts by.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CraftingRule {
@@ -674,6 +779,281 @@ pub trait Skill: Send + Sync {
     /// True when a pet can use the skill on a ground point.
     #[inline(always)]
     fn pet_ground_attack(&self) -> bool {
+        false
+    }
+    /// Added to the hit rate of the skill, in percent.
+    #[inline(always)]
+    fn hit_rate_bonus(&self) -> i32 {
+        0
+    }
+    /// The Soul Linker spirit whose owner shortens this skill's delay.
+    #[inline(always)]
+    fn spirit_owner(&self) -> Option<u32> {
+        None
+    }
+    /// Always hits while the caster's spirit is owned by the spirit owner.
+    #[inline(always)]
+    fn spirit_auto_hit(&self) -> bool {
+        false
+    }
+    /// The skill's own delayed handler applies the damage, not its cast.
+    #[inline(always)]
+    fn deferred_damage(&self) -> bool {
+        false
+    }
+    /// Counts as a weapon skill for hit and damage rules.
+    #[inline(always)]
+    fn counts_as_weapon(&self) -> bool {
+        self.is_physical()
+    }
+    /// Adds the weapon battle flag to the damage it deals.
+    #[inline(always)]
+    fn adds_weapon_flag(&self) -> bool {
+        false
+    }
+    /// The formula the damage uses instead of the weapon or magic one.
+    #[inline(always)]
+    fn misc_damage(&self) -> Option<MiscDamage> {
+        None
+    }
+    /// Uses the Grand Cross formula.
+    #[inline(always)]
+    fn grand_cross_damage(&self) -> bool {
+        false
+    }
+    /// A caster hitting itself with this skill takes the weapon battle flag.
+    #[inline(always)]
+    fn self_hit_counts_as_weapon(&self) -> bool {
+        false
+    }
+    /// The attack ratio the skill uses instead of its own, for a bow or any other weapon.
+    #[inline(always)]
+    fn attack_ratio(&self, _bow: bool) -> Option<f32> {
+        None
+    }
+    /// The raw attack is taken from the caster's HP and STR.
+    #[inline(always)]
+    fn attack_from_hp(&self) -> bool {
+        false
+    }
+    /// Flat attack added per skill level before the element applies.
+    #[inline(always)]
+    fn flat_attack_per_level(&self) -> u16 {
+        0
+    }
+    /// Takes the mastery bonus of the weapon.
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        true
+    }
+    /// Takes the weapon refine bonus.
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        self.stacks_mastery()
+    }
+    /// Takes the forged star damage of the weapon.
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        true
+    }
+    /// Takes the damage of the caster's spirit spheres.
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        true
+    }
+    /// Each hit adds one spirit sphere worth of damage.
+    #[inline(always)]
+    fn adds_hits_to_spheres(&self) -> bool {
+        false
+    }
+    /// Leaves out the Berserk and Overthrust bonuses of the weapon ratio.
+    #[inline(always)]
+    fn skips_weapon_ratio_bonuses(&self) -> bool {
+        false
+    }
+    /// Consumes ammo even when the weapon is not a ranged one.
+    #[inline(always)]
+    fn uses_ammo(&self) -> bool {
+        false
+    }
+    /// Adds three times the Tobidougu level to the attack.
+    #[inline(always)]
+    fn scales_with_tobidougu(&self) -> bool {
+        false
+    }
+    /// Leaves out the Hilt Binding attack bonus.
+    #[inline(always)]
+    fn excludes_hilt_binding(&self) -> bool {
+        false
+    }
+    /// The skill gives the caster a Double Attack chance from its level.
+    #[inline(always)]
+    fn grants_double_attack(&self) -> bool {
+        false
+    }
+    /// Reflect Shield does not apply to damage from this skill.
+    #[inline(always)]
+    fn bypasses_reflect_shield(&self) -> bool {
+        false
+    }
+    /// Devotion does not pass this skill's damage to its protector.
+    #[inline(always)]
+    fn skips_devotion_protection(&self) -> bool {
+        false
+    }
+    /// The damage lands at the time the attack was made, not when it is applied.
+    #[inline(always)]
+    fn lands_at_attack_time(&self) -> bool {
+        false
+    }
+    /// Kyrie Eleison absorbs this skill's damage even when it is not physical.
+    #[inline(always)]
+    fn kyrie_absorbs(&self) -> bool {
+        false
+    }
+    /// Ends Kyrie Eleison when the skill lands.
+    #[inline(always)]
+    fn breaks_kyrie(&self) -> bool {
+        false
+    }
+    /// How Magic Rod treats this skill.
+    #[inline(always)]
+    fn magic_rod_rule(&self) -> MagicRodRule {
+        MagicRodRule::Standard
+    }
+    /// What the hit does after it lands.
+    #[inline(always)]
+    fn weapon_aftermath(&self) -> Option<WeaponAftermath> {
+        None
+    }
+    /// The caster must stand behind the target.
+    #[inline(always)]
+    fn requires_behind_target(&self) -> bool {
+        false
+    }
+    /// Casting this skill keeps the Magic Power status.
+    #[inline(always)]
+    fn keeps_magic_power(&self) -> bool {
+        false
+    }
+    /// The part of the requirements that waits until the cast completes, at this level.
+    #[inline(always)]
+    fn deferred_requirement(&self, _level: u8) -> RequirementDeferral {
+        RequirementDeferral::Nothing
+    }
+    /// The effect of this skill depends on a condition that is checked when it completes.
+    #[inline(always)]
+    fn conditional_completion(&self) -> bool {
+        false
+    }
+    /// The pending item skill of this skill identifies an item.
+    #[inline(always)]
+    fn identifies_items(&self) -> bool {
+        false
+    }
+    /// Casting this skill needs an active Estin or Estun readiness effect.
+    #[inline(always)]
+    fn requires_sma_readiness(&self) -> bool {
+        false
+    }
+    /// A failed cast sends its own failure packet.
+    #[inline(always)]
+    fn sends_failure_packet(&self) -> bool {
+        false
+    }
+    /// Castable while the caster is under Chase Walk.
+    #[inline(always)]
+    fn allowed_while_chase_walking(&self) -> bool {
+        false
+    }
+    /// Casting another skill does not end Cloaking.
+    #[inline(always)]
+    fn keeps_cloaking(&self) -> bool {
+        false
+    }
+    /// Casting below this learned level needs an adjacent wall.
+    #[inline(always)]
+    fn wall_needed_below_level(&self) -> Option<u8> {
+        None
+    }
+    /// The unit a summon skill creates.
+    #[inline(always)]
+    fn summon_kind(&self) -> Option<SummonKind> {
+        None
+    }
+    /// The check the server runs before this skill's effect is applied.
+    #[inline(always)]
+    fn validates_effect(&self) -> Option<EffectValidation> {
+        None
+    }
+    /// Controls a Marionette rather than being under one.
+    #[inline(always)]
+    fn controls_marionette(&self) -> bool {
+        false
+    }
+    /// An ensemble dance in progress counts for Longing for Freedom.
+    #[inline(always)]
+    fn ensemble_counts_for_longing(&self) -> bool {
+        true
+    }
+    /// The combo skills this one may follow.
+    #[inline(always)]
+    fn combo_follows(&self) -> Option<ComboFollows> {
+        None
+    }
+    /// The combo skills this one opens the window for.
+    #[inline(always)]
+    fn combo_links(&self) -> Vec<ComboLink> {
+        Vec::new()
+    }
+    /// A combo skill that the caster can chain from a combo window.
+    #[inline(always)]
+    fn combo_chain_ready(&self) -> bool {
+        false
+    }
+    /// A Taekwon kick that cannot follow this combo skill.
+    #[inline(always)]
+    fn blocks_kick_chain(&self) -> bool {
+        false
+    }
+    /// The Taekwon stance this kick readies.
+    #[inline(always)]
+    fn stance(&self) -> Option<Stance> {
+        None
+    }
+    /// The skill this one shares its Friend bonus with.
+    #[inline(always)]
+    fn friend_share(&self) -> Option<FriendShare> {
+        None
+    }
+    /// The effects this skill gives while it is a Soul Linker spirit's owner.
+    #[inline(always)]
+    fn spirit_rules(&self) -> SpiritRules {
+        SpiritRules::default()
+    }
+    /// The skill needs its caster to stand in water or Deluge.
+    #[inline(always)]
+    fn needs_water_or_deluge(&self) -> bool {
+        false
+    }
+    /// Hostility checks do not apply to the caster's party members.
+    #[inline(always)]
+    fn party_targets_skip_hostility(&self) -> bool {
+        false
+    }
+    /// Undead targets take this skill's healing as damage.
+    #[inline(always)]
+    fn heals_undead_as_damage(&self) -> bool {
+        false
+    }
+    /// Damage from this skill passes the guards and barriers of its target.
+    #[inline(always)]
+    fn ignores_damage_guards(&self) -> bool {
+        false
+    }
+    /// The Armor Change this skill applies is a debuff.
+    #[inline(always)]
+    fn inverts_armor_change(&self) -> bool {
         false
     }
     /// The two numbers a song hands its status, `values[1]` and `values[2]`.

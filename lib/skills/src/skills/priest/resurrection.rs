@@ -100,4 +100,9 @@ impl Skill for Resurrection {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Resurrect
     }
+
+    #[inline(always)]
+    fn heals_undead_as_damage(&self) -> bool {
+        true
+    }
 }

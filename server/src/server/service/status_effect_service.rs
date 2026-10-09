@@ -235,7 +235,7 @@ impl StatusEffectService {
                 Provoke => { if !(values[0] == 10 && values[1] == 0 && values[2] == 100) { values[1] = 2 + 3 * values[0]; values[2] = 5 + 5 * values[0]; } }
                 Regeneration => { values[1] = if values[0] == 1 { 2 } else { values[0] }; values[2] = values[0]; }
                 Berserk => { values[1] = (status.max_hp as u64 * 3 * 5 / 100).min(i32::MAX as u64) as i32; values[3] = if values[3] > 0 { values[3] } else { 10000 }; }
-                Spirit if values[1] == models::enums::skill_enums::SkillEnum::SlHigh.id() as i32 => {
+                Spirit if crate::server::script::skill::ScriptSkillService::owner_spirit_rules(values[1]).high_stat_bonus => {
                     let limit = status.base_level.saturating_sub(10).min(50) as i32;
                     let increase = |stat: u16| (limit - stat as i32).clamp(0, 255);
                     values[2] = increase(status.str) * 65536 + increase(status.agi) * 256 + increase(status.vit);
@@ -251,7 +251,7 @@ impl StatusEffectService {
                 ChaseWalk => {
                     values[1] = if duration > 0 { duration } else { 10000 };
                     values[2] = 35 - 5 * values[0];
-                    if status.status_change(Spirit).is_some_and(|change| change.values[1] == models::enums::skill_enums::SkillEnum::SlRogue.id() as i32) { values[2] -= 40; }
+                    values[2] -= crate::server::script::skill::ScriptSkillService::spirit_rules(status.status_change(Spirit)).chase_walk_penalty;
                     values[3] = 10 + 2 * values[0]; duration = -1;
                 }
                 Sight | Ruwach => {
@@ -259,7 +259,7 @@ impl StatusEffectService {
                     values[2] = crate::server::script::skill::metadata::SkillMetadata::find(id).and_then(|skill| skill.splash(values[0].clamp(1, 255) as u8)).unwrap_or(0);
                     values[1] = duration / 20; values[3] = 0;
                 }
-                ArmorChange => { let antimagic = values[1] == models::enums::skill_enums::SkillEnum::NpcAntimagic.id() as i32; values[0] = 1 + (values[0].max(1) - 1) % 5; values[1] = if antimagic { -20 } else { 20 } * values[0]; values[2] = -values[1]; }
+                ArmorChange => { let antimagic = u32::try_from(values[1]).ok().and_then(crate::server::script::skill::ScriptSkillService::skill_object_by_id).is_some_and(|skill| skill.inverts_armor_change()); values[0] = 1 + (values[0].max(1) - 1) % 5; values[1] = if antimagic { -20 } else { 20 } * values[0]; values[2] = -values[1]; }
                 _ => {}
             }
         }
@@ -369,7 +369,7 @@ impl StatusEffectService {
     }
 
     pub fn dispel_statuses(status: &mut Status, monster: bool) -> Vec<StatusChangeKind> {
-        if status.job == models::enums::class::JobName::SoulLinker.value() as u32 || status.status_change(StatusChangeKind::Spirit).is_some_and(|change| change.values[1] == models::enums::skill_enums::SkillEnum::SlRogue.id() as i32) { return vec![]; }
+        if status.job == models::enums::class::JobName::SoulLinker.value() as u32 || crate::server::script::skill::ScriptSkillService::spirit_rules(status.status_change(StatusChangeKind::Spirit)).dispel_immune { return vec![]; }
         let kinds = status.active_statuses.iter().filter(|change| change.kind.dispellable() && !(monster && change.kind == StatusChangeKind::Assumptio)).map(|change| change.kind).collect::<Vec<_>>();
         for kind in &kinds { if *kind == StatusChangeKind::Berserk { if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == *kind) { change.values[1] = 0; } } Self::end_status(status, Some(*kind)); }
         kinds
@@ -428,7 +428,7 @@ impl StatusEffectService {
 
     pub fn periodic_resources(status: &mut Status, tick: u128) -> Vec<StatusChangeKind> {
         use StatusChangeKind::*;
-        let rogue_spirit = status.status_change(Spirit).is_some_and(|change| change.values[1] == models::enums::skill_enums::SkillEnum::SlRogue.id() as i32);
+        let rogue_spirit = crate::server::script::skill::ScriptSkillService::spirit_rules(status.status_change(Spirit)).long_chase_walk;
         let mut ended = vec![];
         let mut chase_strength = None;
         for change in &mut status.active_statuses {
@@ -481,11 +481,12 @@ impl StatusEffectService {
         use models::status_bonus::BattleFlag;
         if flags & BattleFlag::Magic.as_flag() == 0 || flags & BattleFlag::Skill.as_flag() == 0 { return None; }
         let metadata = crate::server::script::skill::metadata::SkillMetadata::find(skill_id)?;
-        if metadata.unit.is_some() && skill_id != models::enums::skill_enums::SkillEnum::WzWaterball.id() { return None; }
+        let water_ball = crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.magic_rod_rule() == skills::MagicRodRule::WaterBall);
+        if metadata.unit.is_some() && !water_ball { return None; }
         let change = status.status_change(StatusChangeKind::MagicRod)?;
         let cost = metadata.requires.as_ref().and_then(|requires| requires.get("SpCost")).and_then(|value| crate::server::script::skill::metadata::SkillMetadata::json_level_value(value, level, "Amount")).unwrap_or(0).max(0) as u32;
         let mut gain = cost.saturating_mul(change.values[1].max(0) as u32) / 100;
-        if skill_id == models::enums::skill_enums::SkillEnum::WzWaterball.id() && level > 1 { gain /= u32::from(level | 1).pow(2); }
+        if water_ball && level > 1 { gain /= u32::from(level | 1).pow(2); }
         let before = status.sp;
         status.sp = status.sp.saturating_add(gain).min(status.max_sp);
         Some(status.sp.saturating_sub(before))
@@ -559,7 +560,7 @@ impl StatusEffectService {
         let physical = flags & BattleFlag::Weapon.as_flag() != 0;
         let magical = flags & BattleFlag::Magic.as_flag() != 0;
         if damage == 0 { return 0; }
-        if flags == 0 || [models::enums::skill_enums::SkillEnum::PaPressure.id(), models::enums::skill_enums::SkillEnum::HwGravitation.id()].contains(&skill_id) {
+        if flags == 0 || crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.ignores_damage_guards()) {
             let removable = status.active_statuses.iter().filter(|change| change.kind.removed_by_damage()).map(|change| change.kind).collect::<Vec<_>>();
             for kind in removable { Self::end_status(status, Some(kind)); }
             return damage;
@@ -615,14 +616,14 @@ impl StatusEffectService {
         }
         if let Some(change) = status.active_statuses.iter_mut().find(|change| change.kind == StatusChangeKind::Kyrie) {
             change.values[2] = change.values[2].saturating_sub(1);
-            if physical || skill_id == models::enums::skill_enums::SkillEnum::TfThrowstone.id() {
+            if physical || crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.kyrie_absorbs()) {
                 let absorbed = damage.min(change.values[1].max(0) as u32);
                 change.values[1] = (i64::from(change.values[1]) - i64::from(damage)).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
                 damage -= absorbed;
             } else {
                 change.values[1] = (i64::from(change.values[1]) - i64::from(damage)).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
             }
-            if change.values[1] <= 0 || change.values[2] <= 0 || skill_id == models::enums::skill_enums::SkillEnum::AlHolylight.id() { Self::end_status(status, Some(StatusChangeKind::Kyrie)); }
+            if change.values[1] <= 0 || change.values[2] <= 0 || crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.breaks_kyrie()) { Self::end_status(status, Some(StatusChangeKind::Kyrie)); }
         }
         if damage > 0 {
             let removable = status.active_statuses.iter().filter(|change| change.kind.removed_by_damage()).map(|change| change.kind).collect::<Vec<_>>();

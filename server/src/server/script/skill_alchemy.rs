@@ -75,11 +75,11 @@ impl ScriptSkillService {
         let caster = if effect.source_char_id == target.char_id { &*target } else { state.get_character(effect.source_char_id).ok_or("Caster disconnected")? };
         let (hp_range, sp_range) = self.pitched_potion(effect.skill_id, effect.level)?;
         let learned = |skill: SkillEnum| u32::from(learned_level(&caster.status, skill.id()));
-        let linked_bonus = caster
-            .status
-            .status_change(StatusChangeKind::Spirit)
-            .filter(|spirit| spirit.values[1] == SkillEnum::SlAlchemist.id() as i32)
-            .map_or(0, |_| caster.status.base_level);
+        let linked_bonus = if super::ScriptSkillService::spirit_rules(caster.status.status_change(StatusChangeKind::Spirit)).alchemy_base_level_bonus {
+            caster.status.base_level
+        } else {
+            0
+        };
         let pitcher_percent = (100 + 10 * learned(SkillEnum::AmPotionpitcher) + 5 * learned(SkillEnum::AmLearningpotion)) * (100 + linked_bonus) / 100;
         let snapshot = StatusService::instance().to_snapshot(&target.status);
         let hp = pitched_amount(roll(hp_range), pitcher_percent, u32::from(snapshot.vit()), u32::from(learned_level(&target.status, SkillEnum::SmRecovery.id())));

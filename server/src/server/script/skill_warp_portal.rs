@@ -334,7 +334,7 @@ impl ScriptSkillService {
             .as_ref()
             .ok_or("No Warp Portal menu is awaiting a choice")?
             .clone();
-        if selection.skill_id != SkillEnum::AlWarp.id()
+        if !super::ScriptSkillService::is_warp_portal(selection.skill_id)
             || selection.char_id != character.char_id
             || selection.session != menu.cast.session
             || !Self::portal_session_current(state, character, &menu.cast.session)

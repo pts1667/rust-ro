@@ -595,13 +595,8 @@ impl StatusService {
                 .sum::<i32>()
         };
         let mut delay = u64::from(base_delay) * (100 + rate).max(0) as u64 / 100;
-        if let Some(spirit) = status.status_change(models::status_change::StatusChangeKind::Spirit) {
-            use models::enums::skill_enums::SkillEnum;
-            if skill_id == SkillEnum::CrShieldboomerang.id() && spirit.values[1] == SkillEnum::SlCrusader.id() as i32
-                || skill_id == SkillEnum::AsSonicblow.id() && spirit.values[1] == SkillEnum::SlAssasin.id() as i32
-            {
-                delay /= 2;
-            }
+        if crate::server::script::skill::ScriptSkillService::spirit_owner_matches(status.status_change(models::status_change::StatusChangeKind::Spirit), skill_id) {
+            delay /= 2;
         }
         delay.min(u64::from(u32::MAX)) as u32
     }
@@ -820,9 +815,7 @@ impl StatusService {
             return 0;
         }
         if status_snapshot.has_status_change(models::status_change::StatusChangeKind::ExplosionSpirits)
-            && !status_snapshot
-                .status_change(models::status_change::StatusChangeKind::Spirit)
-                .is_some_and(|change| change.values[1] == models::enums::skill_enums::SkillEnum::SlMonk.id() as i32)
+            && !crate::server::script::skill::ScriptSkillService::spirit_rules(status_snapshot.status_change(models::status_change::StatusChangeKind::Spirit)).explosion_sp_regen
         {
             return 0;
         }

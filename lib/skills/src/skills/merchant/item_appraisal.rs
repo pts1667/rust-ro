@@ -116,4 +116,9 @@ impl Skill for ItemAppraisal {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Identify
     }
+
+    #[inline(always)]
+    fn identifies_items(&self) -> bool {
+        true
+    }
 }

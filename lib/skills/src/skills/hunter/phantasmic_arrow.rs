@@ -135,4 +135,9 @@ impl Skill for PhantasmicArrow {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn uses_ammo(&self) -> bool {
+        true
+    }
 }

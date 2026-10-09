@@ -146,4 +146,29 @@ impl Skill for MartyrsReckoning {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Martyr
     }
+
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn skips_weapon_ratio_bonuses(&self) -> bool {
+        true
+    }
 }

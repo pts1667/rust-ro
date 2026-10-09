@@ -176,4 +176,9 @@ impl Skill for BlitzBeat {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn misc_damage(&self) -> Option<MiscDamage> {
+        Some(MiscDamage::FalconStrike)
+    }
 }

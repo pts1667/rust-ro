@@ -25,8 +25,6 @@ const EDP_POISON_DURATION_MS: i32 = 60_000;
 /// Rathena rate of the Triple Attack proc is `30 - level` percent.
 const TRIPLE_ATTACK_BASE_RATE: u32 = 30;
 
-const STANCE_KICK_RATE: u32 = 15;
-const STANCE_COUNTER_RATE: u32 = 20;
 const TUMBLING_RANGED_DODGE_RATE: u32 = 20;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -41,16 +39,11 @@ pub struct SkillCombo {
     pub window_ms: u128,
 }
 
-/// Taekwon stance with the kick it unlocks and the percent chance a normal attack opens the window.
-const STANCES: [(StatusChangeKind, SkillEnum, u32); 4] = [
-    (StatusChangeKind::ReadyStorm, SkillEnum::TkStormkick, STANCE_KICK_RATE),
-    (StatusChangeKind::ReadyDown, SkillEnum::TkDownkick, STANCE_KICK_RATE),
-    (StatusChangeKind::ReadyTurn, SkillEnum::TkTurnkick, STANCE_KICK_RATE),
-    (StatusChangeKind::ReadyCounter, SkillEnum::TkCounter, STANCE_COUNTER_RATE),
-];
+/// The Taekwon kicks a stance can open, in the order a normal attack checks their stances.
+const STANCE_KICKS: [SkillEnum; 4] = [SkillEnum::TkStormkick, SkillEnum::TkDownkick, SkillEnum::TkTurnkick, SkillEnum::TkCounter];
 
-fn learned(character: &Character, skill: SkillEnum) -> bool {
-    learned_level(&character.status, skill.id()) > 0
+fn learned(character: &Character, skill_id: u32) -> bool {
+    learned_level(&character.status, skill_id) > 0
 }
 
 fn spheres(character: &Character, tick: u128) -> usize {
@@ -99,18 +92,27 @@ impl ScriptSkillService {
     }
 
     pub fn triggers_friend_share(skill_id: u32) -> bool {
-        skill_id == SkillEnum::TkCounter.id() || skill_id == SkillEnum::MoCombofinish.id()
+        Self::friend_share(skill_id).is_some()
+    }
+
+    fn friend_share(skill_id: u32) -> Option<skills::FriendShare> {
+        Self::skill_object_by_id(skill_id).and_then(|skill| skill.friend_share())
     }
 
     pub fn is_combo_skill(skill_id: u32) -> bool {
-        [SkillEnum::MoChaincombo, SkillEnum::MoCombofinish, SkillEnum::ChTigerfist, SkillEnum::ChChaincrush]
-            .iter()
-            .any(|skill| skill.id() == skill_id)
-            || Self::is_kick(skill_id)
+        Self::skill_object_by_id(skill_id).is_some_and(|skill| skill.combo_chain_ready()) || Self::is_kick(skill_id)
     }
 
     fn is_kick(skill_id: u32) -> bool {
-        STANCES.iter().any(|(_, kick, _)| kick.id() == skill_id)
+        Self::stance_of(skill_id).is_some()
+    }
+
+    fn stance_of(skill_id: u32) -> Option<skills::Stance> {
+        Self::skill_object_by_id(skill_id).and_then(|skill| skill.stance())
+    }
+
+    fn blocks_kick_chain(skill_id: u32) -> bool {
+        Self::skill_object_by_id(skill_id).is_some_and(|skill| skill.blocks_kick_chain())
     }
 
     fn active_combo(character: &Character, tick: u128) -> Option<&SkillCombo> {
@@ -128,28 +130,19 @@ impl ScriptSkillService {
     /// Chain Combo, Combo Finish, Tiger Fist and Chain Crush are only castable inside the window of the skill they follow.
     pub fn validate_combo(&self, character: &Character, skill_id: u32, tick: u128) -> Result<(), String> {
         let previous = Self::previous_combo(character, tick);
-        let after = |skills: &[SkillEnum]| previous.is_some_and(|previous| skills.iter().any(|skill| skill.id() == previous));
-        let allowed = if skill_id == SkillEnum::MoChaincombo.id() {
-            after(&[SkillEnum::MoTripleattack])
-        } else if skill_id == SkillEnum::MoCombofinish.id() {
-            after(&[SkillEnum::MoChaincombo])
-        } else if skill_id == SkillEnum::ChTigerfist.id() {
-            after(&[SkillEnum::MoCombofinish, SkillEnum::ChChaincrush])
-        } else if skill_id == SkillEnum::ChChaincrush.id() {
-            after(&[SkillEnum::MoCombofinish, SkillEnum::ChTigerfist])
-        } else if Self::is_kick(skill_id) {
+        let allowed = if Self::is_kick(skill_id) {
             character.status.job != JobName::SoulLinker.value() as u32
                 && match Self::active_combo(character, tick) {
                     None => false,
-                    Some(combo) if combo.skill_id == SkillEnum::TkJumpkick.id() => false,
+                    Some(combo) if Self::blocks_kick_chain(combo.skill_id) => false,
                     Some(combo) if combo.last_kick != 0 => combo.last_kick != skill_id,
                     Some(combo) => combo.skill_id == skill_id || character.status.taekwon_ranked,
                 }
-        } else if skill_id == SkillEnum::MoExtremityfist.id() {
-            // Outside a combo Asura Strike needs the caster to be able to move, inside one it follows the Champion chain.
+        } else if let Some(follows) = Self::skill_object_by_id(skill_id).and_then(|skill| skill.combo_follows()) {
+            // Outside a combo some follow-ups need the caster to be able to move, inside one they follow their chain only.
             match previous {
-                Some(_) => after(&[SkillEnum::MoCombofinish, SkillEnum::ChChaincrush]),
-                None => !character.status.blocks_movement(),
+                Some(previous) => follows.after.contains(&previous),
+                None => follows.standing && !character.status.blocks_movement(),
             }
         } else {
             true
@@ -175,22 +168,12 @@ impl ScriptSkillService {
         }
         let spheres = spheres(character, tick);
         let explosion = character.status.has_status_change(StatusChangeKind::ExplosionSpirits);
-        let chains = if skill_id == SkillEnum::MoTripleattack.id() {
-            learned(character, SkillEnum::MoChaincombo)
-        } else if skill_id == SkillEnum::MoChaincombo.id() {
-            learned(character, SkillEnum::MoCombofinish)
-        } else if skill_id == SkillEnum::MoCombofinish.id() {
-            (learned(character, SkillEnum::ChTigerfist) && spheres >= 1)
-                || (learned(character, SkillEnum::ChChaincrush) && spheres >= 2)
-                || (learned(character, SkillEnum::MoExtremityfist) && spheres >= 4 && explosion)
-        } else if skill_id == SkillEnum::ChTigerfist.id() {
-            learned(character, SkillEnum::ChChaincrush) && spheres >= 2
-        } else if skill_id == SkillEnum::ChChaincrush.id() {
-            (learned(character, SkillEnum::MoExtremityfist) && spheres >= 1 && explosion)
-                || (learned(character, SkillEnum::ChTigerfist) && spheres >= 1)
-        } else {
-            false
-        };
+        let chains = Self::skill_object_by_id(skill_id).is_some_and(|skill| {
+            skill
+                .combo_links()
+                .iter()
+                .any(|link| learned(character, link.next) && spheres >= usize::from(link.min_spheres) && (!link.needs_explosion || explosion))
+        });
         if chains {
             let window_ms = u128::from(delay) + COMBO_GRACE_MS;
             character.script_skill_state.combo = Some(SkillCombo { skill_id, target_id, expires_at: tick + window_ms, blocks_attack: false, last_kick: 0, window_ms });
@@ -200,17 +183,20 @@ impl ScriptSkillService {
     /// A normal attack of a Taekwon holding a stance may open the window of its kick, the window shrinks with AGI and DEX.
     pub fn try_stance_combo(&self, character: &mut Character, target_id: u32, tick: u128) {
         let mut chosen = None;
-        for (stance, kick, rate) in STANCES.iter() {
-            if !character.status.has_status_change(*stance) {
+        for kick in STANCE_KICKS.iter().map(|kick| kick.id()) {
+            let Some(stance) = Self::stance_of(kick) else {
+                continue;
+            };
+            if !character.status.has_status_change(stance.ready) {
                 continue;
             }
-            let rate = if *stance == StatusChangeKind::ReadyCounter {
-                boosted_rate(*rate, take_friend_bonus(character, SkillEnum::TkCounter.id()))
+            let rate = if stance.friend_boosted {
+                boosted_rate(stance.rate, take_friend_bonus(character, kick))
             } else {
-                *rate
+                stance.rate
             };
             if fastrand::u32(0..100) < rate {
-                chosen = Some(*kick);
+                chosen = Some(kick);
                 break;
             }
         }
@@ -220,7 +206,7 @@ impl ScriptSkillService {
         let snapshot = StatusService::instance().to_snapshot(&character.status);
         let window_ms = (2000_i64 - 4 * i64::from(snapshot.agi()) - 2 * i64::from(snapshot.dex())).max(0) as u128 + COMBO_GRACE_MS;
         character.script_skill_state.combo =
-            Some(SkillCombo { skill_id: kick.id(), target_id, expires_at: tick + window_ms, blocks_attack: true, last_kick: 0, window_ms });
+            Some(SkillCombo { skill_id: kick, target_id, expires_at: tick + window_ms, blocks_attack: true, last_kick: 0, window_ms });
     }
 
     pub fn attack_blocked_by_combo(character: &Character, tick: u128) -> bool {
@@ -269,7 +255,7 @@ impl ScriptSkillService {
         let instance = caster.map_instance_key.clone();
         let caster_level = learned_level(&caster.status, SkillEnum::SgFriend.id());
         let in_party = |member: &Character| member.char_id != caster_id && member.game_systems.party_id == party && member.map_instance_key == instance;
-        let grants: Vec<(u32, u32, i32)> = if skill_id == SkillEnum::TkCounter.id() {
+        let grants: Vec<(u32, u32, i32)> = if Self::friend_share(skill_id) == Some(skills::FriendShare::TripleAttack) {
             if caster_level == 0 {
                 return Ok(());
             }
@@ -280,7 +266,7 @@ impl ScriptSkillService {
                 .filter(|member| learned_level(&member.status, SkillEnum::MoTripleattack.id()) > 0)
                 .map(|member| (member.char_id, SkillEnum::MoTripleattack.id(), friend_bonus(caster_level)))
                 .collect()
-        } else if skill_id == SkillEnum::MoCombofinish.id() {
+        } else if Self::friend_share(skill_id) == Some(skills::FriendShare::Counter) {
             state
                 .characters()
                 .values()

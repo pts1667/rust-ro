@@ -171,4 +171,9 @@ impl Skill for ThrowSpiritSphere {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn adds_hits_to_spheres(&self) -> bool {
+        true
+    }
 }

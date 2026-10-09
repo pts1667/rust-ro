@@ -226,4 +226,29 @@ impl Skill for AsuraStrike {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn stacks_mastery(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_refine(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_forged_stars(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn stacks_spirit_spheres(&self) -> bool {
+        false
+    }
+
+    #[inline(always)]
+    fn combo_follows(&self) -> Option<ComboFollows> {
+        Some(ComboFollows { after: vec![models::enums::skill_enums::SkillEnum::MoCombofinish.id(), models::enums::skill_enums::SkillEnum::ChChaincrush.id()], standing: true })
+    }
 }

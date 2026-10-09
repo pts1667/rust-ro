@@ -83,7 +83,7 @@ impl ScriptSkillService {
     pub(super) fn open_teleport_menu(&self, character: &mut Character, effect: &ScriptSkillEffect, _tick: u128) -> Result<(), String> {
         if effect.source_char_id != character.char_id
             || effect.target_id != character.char_id
-            || effect.skill_id != SkillEnum::AlTeleport.id()
+            || !matches!(Self::effect_behaviour(effect), skills::ActorBehaviour::Teleport)
             || !(1..=2).contains(&effect.level)
         {
             return Err("Teleport menu does not match its caster".into());

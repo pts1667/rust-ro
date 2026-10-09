@@ -264,7 +264,7 @@ impl SkillService {
             })
             .as_flag()
             | BattleFlag::Skill.as_flag()
-            | if skill.id() == SkillEnum::TfThrowstone.id() {
+            | if skill.adds_weapon_flag() {
                 BattleFlag::Weapon.as_flag()
             } else {
                 0
@@ -274,12 +274,12 @@ impl SkillService {
         match skill.skill_type() {
             SkillType::Offensive => {
                 let skill = skill.as_offensive_skill().unwrap();
-                landed = skill.id() == SkillEnum::ChPalmstrike.id()
+                landed = skill.deferred_damage()
                     || !BattleService::is_weapon_skill(skill)
                     || self
                         .battle_service
                         .skill_hits(source_status, target_status.as_ref().unwrap(), skill.id(), skill.level());
-                if landed && skill.id() != SkillEnum::WzWaterball.id() && skill.id() != SkillEnum::ChPalmstrike.id() {
+                if landed && !skill.deferred_damage() {
                     (damage, magic_context) =
                         self.battle_service
                             .calculate_damage_with_context(source_status, target_status.as_ref().unwrap(), Some(skill));
@@ -295,7 +295,7 @@ impl SkillService {
                     const PLAYER_DAMAGE_MOTION: u32 = 480;
                     target_damage_motion = PLAYER_DAMAGE_MOTION;
                 }
-                if skill.id() != SkillEnum::WzWaterball.id() && skill.id() != SkillEnum::ChPalmstrike.id() {
+                if !skill.deferred_damage() {
                     damage_notification = Some(crate::server::model::damage_notification::DamageNotification::new(
                         character.current_map_name(),
                         character.current_map_instance(),

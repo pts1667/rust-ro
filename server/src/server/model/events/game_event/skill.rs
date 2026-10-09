@@ -245,7 +245,7 @@ impl GameEventHandler for crate::server::script::skill::ScriptSkillEffect {
         state.insert_character(caster);
         paid?;
         if !completion.succeeded {
-            if effect.skill_id == models::enums::skill_enums::SkillEnum::HwGanbantein.id() {
+            if crate::server::script::skill::ScriptSkillService::skill_object_by_id(effect.skill_id).is_some_and(|skill| skill.sends_failure_packet()) {
                 let mut packet = 0x0110_u16.to_le_bytes().to_vec();
                 packet.extend_from_slice(&(effect.skill_id as u16).to_le_bytes());
                 packet.extend_from_slice(&0_u32.to_le_bytes());
@@ -767,7 +767,7 @@ impl GameEventHandler for ScriptTeleportSelection {
                 .is_none_or(|session| !binding.matches(&session))
         }) {
             Err("Warp destination choice belongs to another login".into())
-        } else if selection.skill_id == models::enums::skill_enums::SkillEnum::AlWarp.id() {
+        } else if crate::server::script::skill::ScriptSkillService::is_warp_portal(selection.skill_id) {
             server
                 .script_skill_service()
                 .finish_warp_portal_menu(server, state, &mut character, &selection, tick)

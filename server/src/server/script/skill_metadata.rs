@@ -228,7 +228,7 @@ impl SkillMetadata {
             _ => BattleFlag::Misc,
         })
         .as_flag()
-            | if self.id == models::enums::skill_enums::SkillEnum::TfThrowstone.id() {
+            | if super::ScriptSkillService::skill_object_by_id(self.id).is_some_and(|skill| skill.adds_weapon_flag()) {
                 BattleFlag::Weapon.as_flag()
             } else {
                 0

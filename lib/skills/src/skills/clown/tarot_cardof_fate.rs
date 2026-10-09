@@ -141,4 +141,14 @@ impl Skill for TarotCardofFate {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Tarot
     }
+
+    #[inline(always)]
+    fn deferred_requirement(&self, _level: u8) -> RequirementDeferral {
+        RequirementDeferral::Sp
+    }
+
+    #[inline(always)]
+    fn conditional_completion(&self) -> bool {
+        true
+    }
 }

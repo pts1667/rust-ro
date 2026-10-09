@@ -135,4 +135,9 @@ impl Skill for SummonMarineSphere {
     fn ground_placement(&self) -> Option<GroundPlacement> {
         Some(GroundPlacement::Summon)
     }
+
+    #[inline(always)]
+    fn summon_kind(&self) -> Option<SummonKind> {
+        Some(SummonKind::MarineSphere)
+    }
 }

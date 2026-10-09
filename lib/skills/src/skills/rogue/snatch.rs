@@ -196,4 +196,9 @@ impl Skill for Snatch {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Intimidate
     }
+
+    #[inline(always)]
+    fn attack_ratio(&self, _bow: bool) -> Option<f32> {
+        Some(1.0 + 0.3 * f32::from(self.level()))
+    }
 }

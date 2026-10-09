@@ -150,4 +150,9 @@ impl Skill for ShelteringBliss {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn ensemble_counts_for_longing(&self) -> bool {
+        false
+    }
 }

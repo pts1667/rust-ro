@@ -196,4 +196,9 @@ impl Skill for Heal {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Heal
     }
+
+    #[inline(always)]
+    fn heals_undead_as_damage(&self) -> bool {
+        true
+    }
 }

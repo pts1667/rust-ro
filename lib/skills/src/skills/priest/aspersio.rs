@@ -160,4 +160,9 @@ impl Skill for Aspersio {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn heals_undead_as_damage(&self) -> bool {
+        true
+    }
 }

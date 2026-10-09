@@ -156,4 +156,19 @@ impl Skill for GlacierFist {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn combo_follows(&self) -> Option<ComboFollows> {
+        Some(ComboFollows { after: vec![models::enums::skill_enums::SkillEnum::MoCombofinish.id(), models::enums::skill_enums::SkillEnum::ChChaincrush.id()], standing: false })
+    }
+
+    #[inline(always)]
+    fn combo_links(&self) -> Vec<ComboLink> {
+        vec![ComboLink { next: models::enums::skill_enums::SkillEnum::ChChaincrush.id(), min_spheres: 2, needs_explosion: false }]
+    }
+
+    #[inline(always)]
+    fn combo_chain_ready(&self) -> bool {
+        true
+    }
 }

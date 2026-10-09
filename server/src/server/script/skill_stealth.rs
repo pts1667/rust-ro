@@ -24,7 +24,7 @@ impl ScriptSkillService {
     pub fn player_skill_source_allowed(status: &Status, skill_id: u32) -> bool {
         (!status.has_status_change(StatusChangeKind::Hiding)
             || SkillMetadata::find(skill_id).is_some_and(|metadata| metadata.flags.get("AllowWhenHidden").copied().unwrap_or(false)))
-            && (!status.has_status_change(StatusChangeKind::ChaseWalk) || skill_id == SkillEnum::StChasewalk.id())
+            && (!status.has_status_change(StatusChangeKind::ChaseWalk) || Self::skill_object_by_id(skill_id).is_some_and(|skill| skill.allowed_while_chase_walking()))
     }
 
     pub fn area_skill_target_allowed(source: &models::status::StatusSnapshot, target: &models::status::StatusSnapshot, skill_id: u32) -> bool {
@@ -46,16 +46,17 @@ impl ScriptSkillService {
 
     pub fn validate_stealth_cast(state: &ServerState, character: &Character, skill_id: u32) -> Result<(), String> {
         if !Self::player_skill_source_allowed(&character.status, skill_id) { return Err("This skill cannot be used while hidden".into()); }
-        if skill_id == SkillEnum::AsCloaking.id() && !character.status.has_status_change(StatusChangeKind::Cloaking) {
+        let wall_below = Self::skill_object_by_id(skill_id).and_then(|skill| skill.wall_needed_below_level());
+        if let Some(wall_below) = wall_below.filter(|_| !character.status.has_status_change(StatusChangeKind::Cloaking)) {
             let snapshot = StatusService::instance().to_snapshot(&character.status);
-            let learned = snapshot.known_skills().iter().find(|skill| skill.value == SkillEnum::AsCloaking).map_or(0, |skill| skill.level);
-            if learned < 3 && !Self::adjacent_cloaking_wall(state, character) { return Err("Cloaking below learned level three requires an adjacent wall".into()); }
+            let learned = snapshot.known_skills().iter().find(|skill| skill.value == SkillEnum::from_id(skill_id)).map_or(0, |skill| skill.level);
+            if learned < wall_below && !Self::adjacent_cloaking_wall(state, character) { return Err("Cloaking below learned level three requires an adjacent wall".into()); }
         }
         Ok(())
     }
 
     pub fn end_cloaking_on_skill(&self, server: &Server, character: &mut Character, skill_id: u32, tick: u128) {
-        if skill_id != SkillEnum::AsCloaking.id() && character.status.status_change(StatusChangeKind::Cloaking).is_some_and(|change| change.values[3] as u32 & CloakingFlag::AllowSkills.as_flag() == 0) {
+        if !Self::skill_object_by_id(skill_id).is_some_and(|skill| skill.keeps_cloaking()) && character.status.status_change(StatusChangeKind::Cloaking).is_some_and(|change| change.values[3] as u32 & CloakingFlag::AllowSkills.as_flag() == 0) {
             StatusEffectService::end(server, character, Some(StatusChangeKind::Cloaking), tick, &self.client_notification_sender);
         }
     }

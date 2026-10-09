@@ -161,4 +161,14 @@ impl Skill for Cloaking {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn keeps_cloaking(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn wall_needed_below_level(&self) -> Option<u8> {
+        Some(3)
+    }
 }

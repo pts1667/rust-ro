@@ -110,7 +110,6 @@ impl Server {
         skill_id: u32,
         completed: bool,
     ) -> bool {
-        use models::enums::skill_enums::SkillEnum;
 
         use super::visibility_service::TargetingMode;
         if skill_id != 0 && self.is_emperium_target(state, source, target_id) {
@@ -138,7 +137,7 @@ impl Server {
                 )
                 .is_some();
         }
-        if skill_id == SkillEnum::SaDispell.id() {
+        if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.party_targets_skip_hostility()) {
             let own_party = state.characters().get(&target_id).is_some_and(|target| {
                 source.game_systems.party_id > 0
                     && source.game_systems.party_id == target.game_systems.party_id
@@ -150,7 +149,7 @@ impl Server {
         } else if Self::player_skill_requires_hostile_target(skill_id) && !self.player_combat_target_allowed(state, source, target_id) {
             return false;
         }
-        if [SkillEnum::AlHeal.id(), SkillEnum::AllResurrection.id(), SkillEnum::PrAspersio.id()].contains(&skill_id) {
+        if crate::server::script::skill::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.heals_undead_as_damage()) {
             let target = self
                 .server_service()
                 .get_target_status(state, source, Some(target_id), 0)
@@ -896,9 +895,7 @@ impl Server {
             .get_map_instance_from_character(target)
             .and_then(|instance| instance.state().get_mob(damage.attacker_id).map(|mob| mob.mob_id as u32));
         let devotion = if damage.battle_flags != 0
-            && damage.skill_id != models::enums::skill_enums::SkillEnum::PaPressure.id()
-            && damage.skill_id != models::enums::skill_enums::SkillEnum::CrReflectshield.id()
-            && damage.skill_id != models::enums::skill_enums::SkillEnum::PaPressure.id()
+            && !crate::server::script::skill::ScriptSkillService::skill_object_by_id(damage.skill_id).is_some_and(|skill| skill.skips_devotion_protection())
         {
             target
                 .status
@@ -1169,8 +1166,8 @@ impl Server {
                     }),
                 }));
             }
-            let grand_cross_self =
-                damage.attacker_id == damage.target_id && damage.skill_id == models::enums::skill_enums::SkillEnum::CrGrandcross.id();
+            let grand_cross_self = damage.attacker_id == damage.target_id
+                && crate::server::script::skill::ScriptSkillService::skill_object_by_id(damage.skill_id).is_some_and(|skill| skill.self_hit_counts_as_weapon());
             let hit_flags = if grand_cross_self {
                 (damage.battle_flags & !BattleFlag::Magic.as_flag()) | BattleFlag::Weapon.as_flag()
             } else {

@@ -47,7 +47,7 @@ impl ScriptSkillService {
         if event.char_id != character.char_id || event.skill_id != pending.skill_id || event.skill_level != pending.level { return Err("Targeting reply does not match the pending item skill".into()); }
         let skill = self.configuration.find_skill_config(&Value::Number(event.skill_id as i32)).ok_or("Unknown item skill")?;
         self.validate_skill(skill, event.skill_level as u32)?;
-        if event.skill_id == models::enums::skill_enums::SkillEnum::SlSma.id()
+        if super::ScriptSkillService::skill_object_by_id(event.skill_id).is_some_and(|skill| skill.requires_sma_readiness())
             && !character.status.status_change(StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
             return Err("Esma requires an active Estin or Estun readiness effect".into());
         }

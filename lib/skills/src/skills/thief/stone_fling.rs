@@ -149,4 +149,19 @@ impl Skill for StoneFling {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::FixedWeapon { amount: 30 }
     }
+
+    #[inline(always)]
+    fn adds_weapon_flag(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn misc_damage(&self) -> Option<MiscDamage> {
+        Some(MiscDamage::Throwstone)
+    }
+
+    #[inline(always)]
+    fn kyrie_absorbs(&self) -> bool {
+        true
+    }
 }

@@ -141,4 +141,9 @@ impl Skill for CartRevolution {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn excludes_hilt_binding(&self) -> bool {
+        true
+    }
 }

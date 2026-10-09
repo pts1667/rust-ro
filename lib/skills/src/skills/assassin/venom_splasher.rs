@@ -250,4 +250,9 @@ impl Skill for VenomSplasher {
     fn player_only_callback(&self) -> bool {
         true
     }
+
+    #[inline(always)]
+    fn validates_effect(&self) -> Option<EffectValidation> {
+        Some(EffectValidation::Splasher)
+    }
 }

@@ -49,14 +49,11 @@ impl ScriptSkillService {
         mut upfront: SkillRequirementPlan,
     ) -> (SkillRequirementPlan, SkillRequirementPlan) {
         let mut deferred = SkillRequirementPlan::default();
-        if skill_id == models::enums::skill_enums::SkillEnum::CgTarotcard.id() {
-            deferred.sp = std::mem::take(&mut upfront.sp);
-        }
-        if skill_id == models::enums::skill_enums::SkillEnum::HwGanbantein.id() {
-            deferred = std::mem::take(&mut upfront);
-        }
-        if skill_id == models::enums::skill_enums::SkillEnum::MgStonecurse.id() && level > 5 {
-            deferred.removals = std::mem::take(&mut upfront.removals);
+        match super::ScriptSkillService::skill_object_by_id(skill_id).map_or(skills::RequirementDeferral::Nothing, |skill| skill.deferred_requirement(level)) {
+            skills::RequirementDeferral::Nothing => {}
+            skills::RequirementDeferral::Sp => deferred.sp = std::mem::take(&mut upfront.sp),
+            skills::RequirementDeferral::Removals => deferred.removals = std::mem::take(&mut upfront.removals),
+            skills::RequirementDeferral::Everything => deferred = std::mem::take(&mut upfront),
         }
         (upfront, deferred)
     }

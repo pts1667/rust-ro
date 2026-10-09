@@ -356,11 +356,11 @@ impl ScriptSkillService {
             .as_ref()
             .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
-        if skill_id == SkillEnum::SlSma.id()
+        if super::ScriptSkillService::skill_object_by_id(skill_id).is_some_and(|skill| skill.requires_sma_readiness())
             && !character.status.status_change(models::status_change::StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
             return Err("Esma requires an active Estin or Estun readiness effect".into());
         }
-        if skill_id == SkillEnum::WzWaterball.id() {
+        if let Some(water_ball) = super::ScriptSkillService::skill_object_by_id(skill_id).filter(|skill| skill.needs_water_or_deluge()) {
             let instance = state
                 .get_map_instance_from_character(character)
                 .ok_or("Water Ball map is unavailable")?;
@@ -372,7 +372,7 @@ impl ScriptSkillService {
             if !water && !self.ground_field_contains(character, skills::GroundKind::Deluge, character.x, character.y, tick) {
                 return Err("Water Ball requires standing in water or Deluge".into());
             }
-            if level == 0 || level > 5 {
+            if level == 0 || level > water_ball.max_level() {
                 return Err("Water Ball level is invalid".into());
             }
         }

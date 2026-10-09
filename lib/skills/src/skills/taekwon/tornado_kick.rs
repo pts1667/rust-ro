@@ -194,4 +194,9 @@ impl Skill for TornadoKick {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn stance(&self) -> Option<Stance> {
+        Some(Stance { ready: models::status_change::StatusChangeKind::ReadyStorm, rate: 15, friend_boosted: false })
+    }
 }

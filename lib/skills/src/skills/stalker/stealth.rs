@@ -151,4 +151,9 @@ impl Skill for Stealth {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn allowed_while_chase_walking(&self) -> bool {
+        true
+    }
 }

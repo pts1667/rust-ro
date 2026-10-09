@@ -247,4 +247,9 @@ impl Skill for SonicBlow {
         let percent = (2 * i32::from(self.level) + 10) * if spirit_of_assassin { 2 } else { 1 };
         vec![StatusInfliction::secondary(StatusChangeKind::Stun, percent * 100, self.level)]
     }
+
+    #[inline(always)]
+    fn spirit_owner(&self) -> Option<u32> {
+        Some(models::enums::skill_enums::SkillEnum::SlAssasin.id())
+    }
 }

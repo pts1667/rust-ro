@@ -186,4 +186,28 @@ impl Skill for RagingThrust {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn combo_follows(&self) -> Option<ComboFollows> {
+        Some(ComboFollows { after: vec![models::enums::skill_enums::SkillEnum::MoChaincombo.id()], standing: false })
+    }
+
+    #[inline(always)]
+    fn combo_links(&self) -> Vec<ComboLink> {
+        vec![
+            ComboLink { next: models::enums::skill_enums::SkillEnum::ChTigerfist.id(), min_spheres: 1, needs_explosion: false },
+            ComboLink { next: models::enums::skill_enums::SkillEnum::ChChaincrush.id(), min_spheres: 2, needs_explosion: false },
+            ComboLink { next: models::enums::skill_enums::SkillEnum::MoExtremityfist.id(), min_spheres: 4, needs_explosion: true },
+        ]
+    }
+
+    #[inline(always)]
+    fn combo_chain_ready(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn friend_share(&self) -> Option<FriendShare> {
+        Some(FriendShare::Counter)
+    }
 }

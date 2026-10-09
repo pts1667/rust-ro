@@ -241,4 +241,19 @@ impl Skill for GloriaDomini {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Pressure
     }
+
+    #[inline(always)]
+    fn misc_damage(&self) -> Option<MiscDamage> {
+        Some(MiscDamage::Pressure)
+    }
+
+    #[inline(always)]
+    fn skips_devotion_protection(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn ignores_damage_guards(&self) -> bool {
+        true
+    }
 }

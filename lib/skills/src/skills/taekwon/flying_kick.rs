@@ -194,4 +194,9 @@ impl Skill for FlyingKick {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn blocks_kick_chain(&self) -> bool {
+        true
+    }
 }
