@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // WZ_FROSTNOVA - Frost Nova
 pub struct FrostNova {
@@ -258,58 +259,10 @@ impl Skill for FrostNova {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 38 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 43 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 48 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 53 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 58 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 63 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 68 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 73 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 78 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 83 {
-                effects.push(StatusEffect::Freeze);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [38, 43, 48, 53, 58, 63, 68, 73, 78, 83].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Freeze, *chance * 100, self.level));
         }
         effects
     }

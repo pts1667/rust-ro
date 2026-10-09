@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // LK_HEADCRUSH - Traumatic Blow
 pub struct TraumaticBlow {
@@ -148,33 +149,10 @@ impl Skill for TraumaticBlow {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [50, 50, 50, 50, 50].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Bleeding, *chance * 100, self.level));
         }
         effects
     }

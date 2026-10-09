@@ -153,60 +153,11 @@ impl Skill for SightlessMind {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(2);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 13 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 16 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 19 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 22 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 13 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 16 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 19 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 22 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        effects
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let chance = (10 + 3 * i32::from(self.level)) * 100;
+        vec![
+            StatusInfliction::primary(StatusChangeKind::Stun, chance, self.level),
+            StatusInfliction::secondary(StatusChangeKind::Blind, chance, self.level),
+        ]
     }
 }

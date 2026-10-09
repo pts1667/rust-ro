@@ -198,59 +198,11 @@ impl Skill for StormGust {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        if hit.hits_on_target < 3 {
+            return vec![];
         }
-        if self.level == 2 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 200 {
-                effects.push(StatusEffect::Freeze);
-            }
-        }
-        effects
+        // Above 10_000 so MDEF reduction still leaves a likely freeze.
+        vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 15_000, self.level)]
     }
 }

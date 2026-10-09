@@ -118,7 +118,7 @@ impl Skill for NpcPoison {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        vec![]
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        vec![StatusInfliction::secondary(StatusChangeKind::Poison, 2000 * i32::from(self.level), self.level)]
     }
 }

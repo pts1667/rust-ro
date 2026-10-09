@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // ASC_METEORASSAULT - Meteor Assault
 pub struct MeteorAssault {
@@ -228,160 +229,16 @@ impl Skill for MeteorAssault {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(3);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 10 {
-                effects.push(StatusEffect::Blind);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Blind, *chance * 100, self.level));
         }
-        if self.level == 2 {
-            if chance <= 15 {
-                effects.push(StatusEffect::Blind);
-            }
+        if let Some(chance) = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Stun, *chance * 100, self.level));
         }
-        if self.level == 3 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 30 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 35 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 45 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 55 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 10 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 15 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 30 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 35 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 45 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 55 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 10 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 15 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 30 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 35 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 45 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 50 {
-                effects.push(StatusEffect::Bleeding);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 55 {
-                effects.push(StatusEffect::Bleeding);
-            }
+        if let Some(chance) = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Bleeding, *chance * 100, self.level));
         }
         effects
     }

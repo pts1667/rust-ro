@@ -143,7 +143,7 @@ impl Skill for KiExplosion {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        vec![]
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        vec![StatusInfliction::secondary(StatusChangeKind::Stun, 7_000, self.level)]
     }
 }

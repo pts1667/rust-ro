@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::enums::skill_enums::SkillEnum;
 
 // SM_BASH - Bash
 pub struct Bash {
@@ -228,7 +229,12 @@ impl Skill for Bash {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        vec![]
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        let fatal_blow = hit.source.known_skills().iter().any(|skill| skill.value == SkillEnum::SmFatalblow && skill.level > 0);
+                if !fatal_blow || self.level <= 5 {
+                    return vec![];
+                }
+                let chance = (i32::from(self.level) - 5) * hit.source.base_level().min(i32::MAX as u32) as i32 * 10;
+                vec![StatusInfliction::secondary(StatusChangeKind::Stun, chance, self.level)]
     }
 }

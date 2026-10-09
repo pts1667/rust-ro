@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // WZ_VERMILION - Lord of Vermilion
 pub struct LordofVermilion {
@@ -258,58 +259,10 @@ impl Skill for LordofVermilion {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 4 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 8 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 12 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 16 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 24 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 28 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 32 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 36 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Blind);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Blind, *chance * 100, self.level));
         }
         effects
     }

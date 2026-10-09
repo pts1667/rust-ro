@@ -131,21 +131,4 @@ impl Skill for StoneFling {
         Element::Neutral
     }
 
-    #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(2);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 3 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 3 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        effects
-    }
 }

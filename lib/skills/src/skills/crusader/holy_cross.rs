@@ -218,44 +218,7 @@ impl Skill for HolyCross {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 25 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 30 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 35 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 6 {
-        }
-        if self.level == 7 {
-        }
-        if self.level == 8 {
-        }
-        if self.level == 9 {
-        }
-        if self.level == 10 {
-        }
-        effects
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        vec![StatusInfliction::secondary(StatusChangeKind::Blind, 300 * i32::from(self.level), self.level)]
     }
 }

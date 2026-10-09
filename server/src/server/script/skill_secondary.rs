@@ -1,9 +1,8 @@
 use models::enums::EnumWithMaskValueU32;
-use models::enums::element::Element;
-use models::enums::mob::MobRace;
 use models::enums::skill_enums::SkillEnum;
 use models::status::StatusSnapshot;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use skills::{HitContext, StatusInfliction};
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillHit, ScriptSkillService};
@@ -56,81 +55,47 @@ impl ScriptSkillService {
         };
         if player_source {
             vec![
-                request(StatusChangeKind::Stun, 300, false),
-                request(StatusChangeKind::Blind, 300, true),
+                request(StatusChangeKind::Stun, 500, false),
+                request(StatusChangeKind::Blind, 500, true),
             ]
         } else {
             vec![request(StatusChangeKind::Stun, 500, false)]
         }
     }
 
-    pub fn secondary_status_requests(
+    /// Statuses the skill object declares for a damaging hit. The server rolls each chance against the target.
+    pub(crate) fn trait_status_requests(
         metadata: &SkillMetadata,
         level: u8,
-        source_level: u32,
-        fatal_blow: bool,
-        assassin_spirit: bool,
+        source: &StatusSnapshot,
         target: &StatusSnapshot,
-        gust_hits: u8,
-        joint: models::status_change::JointBreak,
+        hits_on_target: u8,
     ) -> Vec<StatusChangeRequest> {
-        use StatusChangeKind::*;
-        let level_i = level as i32;
-        let mut effects = vec![];
-        let mut status = |kind, chance: i32, secondary: bool| {
-            effects.push(StatusChangeRequest {
-                kind,
-                duration_ms: metadata.duration(level, secondary).unwrap_or(0),
-                values: [level_i, 0, 0, 0],
-                rate: chance.clamp(0, u16::MAX as i32) as u16,
-                flags: 0,
-            });
+        let skill_enum = SkillEnum::from_id(metadata.id);
+        let Some(skill) = skills::skill_enums::to_object(skill_enum, level).or_else(|| skills::npc::to_object(skill_enum, level)) else {
+            return vec![];
         };
-        match metadata.name.as_str() {
-            "TF_POISON" => status(Poison, (10 + 4 * level_i) * 100, true),
-            "NPC_POISON" => status(Poison, 2000 * level_i, true),
-            "AS_VENOMKNIFE" => status(Poison, 10000, true),
-            "MO_BALKYOUNG" => status(Stun, 7000, true),
-            "NPC_HELLJUDGEMENT" => status(Curse, 10000, true),
-            "AS_SPLASHER" => status(Poison, 10000, true),
-            "MG_FROSTDIVER" => status(Freeze, (3 * level_i + 35).min(level_i + 60) * 100, true),
-            "WZ_FROSTNOVA" => status(Freeze, (5 * level_i + 33) * 100, true),
-            "AS_SONICBLOW" => status(Stun, (2 * level_i + 10) * if assassin_spirit { 200 } else { 100 }, true),
-            "SM_BASH" if fatal_blow && level > 5 => status(Stun, (level_i - 5) * source_level.min(i32::MAX as u32) as i32 * 10, true),
-            "WZ_METEOR" => status(Stun, 300 * level_i, true),
-            "WZ_VERMILION" => status(Blind, (4 * level_i).min(40) * 100, true),
-            "WZ_STORMGUST" if gust_hits >= 3 => status(Freeze, 15_000, true),
-            "WS_CARTTERMINATION" => status(Stun, 500 * level_i, true),
-            "MER_CRASH" => status(Stun, 600 * level_i, true),
-            "MA_LANDMINE" | "HT_LANDMINE" => status(Stun, 1000, true),
-            "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => status(Freeze, 10000, true),
-            "ML_SPIRALPIERCE" => status(Ankle, 10000, true),
-            "SL_STUN" if *target.size() == models::enums::size::Size::Medium => status(Stun, (30 + 10 * level_i) * 100, false),
-            "RG_RAID" => {
-                status(Stun, (10 + 3 * level_i) * 100, false);
-                status(Blind, (10 + 3 * level_i) * 100, true);
+        let hit = HitContext { source, target, hits_on_target };
+        skill
+            .inflict_status_effect_to_target(&hit)
+            .into_iter()
+            .map(|infliction| status_change_request(metadata, level, infliction))
+            .collect()
+    }
+
+    /// Statuses of skills that have no `lib/skills` object yet. Move each arm into its skill's hook once the object exists.
+    pub(crate) fn objectless_status_requests(metadata: &SkillMetadata, level: u8, target: &StatusSnapshot) -> Vec<StatusChangeRequest> {
+        let infliction = match metadata.name.as_str() {
+            "MER_CRASH" => StatusInfliction::secondary(StatusChangeKind::Stun, 600 * i32::from(level), level),
+            "MA_LANDMINE" => StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, level),
+            "MA_FREEZINGTRAP" => StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, level),
+            "ML_SPIRALPIERCE" => StatusInfliction::secondary(StatusChangeKind::Ankle, 10_000, level),
+            "SL_STUN" if *target.size() == models::enums::size::Size::Medium => {
+                StatusInfliction::primary(StatusChangeKind::Stun, (30 + 10 * i32::from(level)) * 100, level)
             }
-            "CR_GRANDCROSS"
-                if *target.element() == Element::Undead || *target.race() == MobRace::RUndead || *target.race() == MobRace::Demon =>
-            {
-                status(Blind, 10_000, true)
-            }
-            "LK_JOINTBEAT" => {
-                let rate = ((50 * (level_i + 1) - 270 * target.str() as i32 / 100) * 10).clamp(0, u16::MAX as i32) as u16;
-                if joint == models::status_change::JointBreak::Neck {
-                    status(Bleeding, 10_000, true);
-                }
-                effects.push(StatusChangeRequest {
-                    kind: JointBeat,
-                    duration_ms: metadata.duration(level, true).unwrap_or(0),
-                    values: [level_i, joint.as_flag() as i32, 0, 0],
-                    rate,
-                    flags: 0,
-                });
-            }
-            _ => {}
-        }
-        effects
+            _ => return vec![],
+        };
+        vec![status_change_request(metadata, level, infliction)]
     }
 
     pub fn after_skill_damage(&self, server: &Server, state: &mut ServerState, hit: ScriptSkillHit, tick: u128) -> Result<(), String> {
@@ -170,14 +135,6 @@ impl ScriptSkillService {
         } else {
             StatusService::instance().to_snapshot(&source.status)
         };
-        let fatal_blow = !companion
-            && snapshot
-                .known_skills()
-                .iter()
-                .any(|skill| skill.value == SkillEnum::SmFatalblow && skill.level > 0);
-        let assassin_spirit = snapshot
-            .status_change(StatusChangeKind::Spirit)
-            .is_some_and(|change| change.values[1] == SkillEnum::SlAssasin.id() as i32);
         let target = state
             .get_character(hit.target_id)
             .map(|character| StatusService::instance().to_snapshot(&character.status))
@@ -262,21 +219,6 @@ impl ScriptSkillService {
         } else {
             0
         };
-        let joints = [
-            models::status_change::JointBreak::Ankle,
-            models::status_change::JointBreak::Wrist,
-            models::status_change::JointBreak::Knee,
-            models::status_change::JointBreak::Shoulder,
-            models::status_change::JointBreak::Waist,
-            models::status_change::JointBreak::Neck,
-        ];
-        let joint = if target.active_statuses().iter().any(|change| {
-            change.kind == StatusChangeKind::JointBeat && change.values[1] as u32 & models::status_change::JointBreak::Neck.as_flag() != 0
-        }) {
-            models::status_change::JointBreak::Neck
-        } else {
-            joints[fastrand::usize(0..joints.len())]
-        };
         if target.hp() > 0 {
             if metadata.name == "TF_THROWSTONE" {
                 let requests = Self::stone_fling_status_requests(!companion, hit.skill_level);
@@ -298,16 +240,10 @@ impl ScriptSkillService {
                     ));
                 }
             }
-            for request in Self::secondary_status_requests(
-                metadata,
-                hit.skill_level,
-                source_level,
-                fatal_blow,
-                assassin_spirit,
-                &target,
-                gust_hits,
-                joint,
-            ) {
+            let requests = Self::trait_status_requests(metadata, hit.skill_level, &snapshot, &target, gust_hits)
+                .into_iter()
+                .chain(Self::objectless_status_requests(metadata, hit.skill_level, &target));
+            for request in requests {
                 if metadata.name == "CR_GRANDCROSS" && state.get_character(hit.target_id).is_some() {
                     continue;
                 }
@@ -404,31 +340,80 @@ impl ScriptSkillService {
     }
 }
 
+fn status_change_request(metadata: &SkillMetadata, level: u8, infliction: StatusInfliction) -> StatusChangeRequest {
+    StatusChangeRequest {
+        kind: infliction.kind,
+        duration_ms: metadata.duration(level, infliction.secondary_duration).unwrap_or(0),
+        values: infliction.values,
+        rate: infliction.chance,
+        flags: 0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use models::status_change::JointBreak;
-
     use super::*;
 
     #[test]
     fn classic_additional_effects_keep_independent_probabilities_and_gust_threshold() {
+        let source = StatusSnapshot::_from(&models::status::Status::default());
+        let target = StatusSnapshot::_from(&models::status::Status::default());
+        let gust = SkillMetadata::find(SkillEnum::WzStormgust.id()).unwrap();
+        assert!(ScriptSkillService::trait_status_requests(gust, 10, &source, &target, 2).is_empty());
+        assert_eq!(ScriptSkillService::trait_status_requests(gust, 10, &source, &target, 3)[0].rate, 15_000);
+    }
+
+    #[test]
+    fn hit_statuses_come_from_the_skill_object_with_its_chance() {
+        let source = StatusSnapshot::_from(&models::status::Status::default());
         let target = StatusSnapshot::_from(&models::status::Status::default());
         let frost = SkillMetadata::find(SkillEnum::MgFrostdiver.id()).unwrap();
-        let effects = ScriptSkillService::secondary_status_requests(frost, 10, 99, false, false, &target, 0, JointBreak::Ankle);
-        assert_eq!(effects[0].rate, 6500);
-        let gust = SkillMetadata::find(SkillEnum::WzStormgust.id()).unwrap();
-        assert!(ScriptSkillService::secondary_status_requests(gust, 10, 99, false, false, &target, 2, JointBreak::Ankle).is_empty());
+        let requests = ScriptSkillService::trait_status_requests(frost, 10, &source, &target, 0);
         assert_eq!(
-            ScriptSkillService::secondary_status_requests(gust, 10, 99, false, false, &target, 3, JointBreak::Ankle)[0].rate,
-            15000
+            requests.iter().map(|request| (request.kind, request.rate)).collect::<Vec<_>>(),
+            vec![(StatusChangeKind::Freeze, 6500)]
+        );
+        assert_eq!(requests[0].duration_ms, frost.duration(10, true).unwrap());
+        let holy_cross = SkillMetadata::find(SkillEnum::CrHolycross.id()).unwrap();
+        let blind = ScriptSkillService::trait_status_requests(holy_cross, 10, &source, &target, 0);
+        assert_eq!(blind.iter().map(|request| (request.kind, request.rate)).collect::<Vec<_>>(), vec![(StatusChangeKind::Blind, 3000)]);
+    }
+
+    #[test]
+    fn rogue_intimidate_stuns_for_the_primary_duration_and_blinds_for_the_secondary() {
+        let source = StatusSnapshot::_from(&models::status::Status::default());
+        let target = StatusSnapshot::_from(&models::status::Status::default());
+        let raid = SkillMetadata::find(SkillEnum::RgRaid.id()).unwrap();
+        let requests = ScriptSkillService::trait_status_requests(raid, 5, &source, &target, 0);
+        assert_eq!(
+            requests
+                .iter()
+                .map(|request| (request.kind, request.rate, request.duration_ms))
+                .collect::<Vec<_>>(),
+            vec![
+                (StatusChangeKind::Stun, 2500, raid.duration(5, false).unwrap()),
+                (StatusChangeKind::Blind, 2500, raid.duration(5, true).unwrap()),
+            ]
+        );
+    }
+
+    #[test]
+    fn objectless_arms_apply_their_secondary_statuses() {
+        let target = StatusSnapshot::_from(&models::status::Status::default());
+        let landmine = SkillMetadata::find(SkillEnum::MaLandmine.id()).unwrap();
+        let requests = ScriptSkillService::objectless_status_requests(landmine, 1, &target);
+        assert_eq!(
+            requests.iter().map(|request| (request.kind, request.rate, request.duration_ms)).collect::<Vec<_>>(),
+            vec![(StatusChangeKind::Stun, 1000, landmine.duration(1, true).unwrap())]
         );
     }
 
     #[test]
     fn npc_poison_applies_its_secondary_duration_and_level_chance_after_a_hit() {
         let metadata = SkillMetadata::all().iter().find(|skill| skill.name == "NPC_POISON").unwrap();
+        let source = StatusSnapshot::_from(&models::status::Status::default());
         let target = StatusSnapshot::_from(&models::status::Status::default());
-        let requests = ScriptSkillService::secondary_status_requests(metadata, 3, 20, false, false, &target, 0, JointBreak::Ankle);
+        let requests = ScriptSkillService::trait_status_requests(metadata, 3, &source, &target, 0);
         assert_eq!(requests.len(), 1);
         assert_eq!(requests[0].kind, StatusChangeKind::Poison);
         assert_eq!(requests[0].rate, 6000);
@@ -443,7 +428,7 @@ mod tests {
                 .iter()
                 .map(|request| (request.kind, request.rate, request.duration_ms))
                 .collect::<Vec<_>>(),
-            vec![(StatusChangeKind::Stun, 300, 5000), (StatusChangeKind::Blind, 300, 30000)]
+            vec![(StatusChangeKind::Stun, 500, 5000), (StatusChangeKind::Blind, 500, 30000)]
         );
         let other = ScriptSkillService::stone_fling_status_requests(false, 1);
         assert_eq!(other.len(), 1);

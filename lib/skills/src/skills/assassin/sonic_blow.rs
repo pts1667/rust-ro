@@ -12,6 +12,8 @@ use models::enums::bonus::{BonusType};
 use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
+use models::enums::skill_enums::SkillEnum;
+use models::status_change::StatusChangeKind;
 use std::any::Any;
 use crate::{*};
 
@@ -237,59 +239,12 @@ impl Skill for SonicBlow {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 12 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 14 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 16 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 18 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 22 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 24 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 26 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 28 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 30 {
-                effects.push(StatusEffect::Stun);
-            }
-        }
-        effects
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        let spirit_of_assassin = hit
+            .source
+            .status_change(StatusChangeKind::Spirit)
+            .is_some_and(|change| change.values[1] == SkillEnum::SlAssasin.id() as i32);
+        let percent = (2 * i32::from(self.level) + 10) * if spirit_of_assassin { 2 } else { 1 };
+        vec![StatusInfliction::secondary(StatusChangeKind::Stun, percent * 100, self.level)]
     }
 }

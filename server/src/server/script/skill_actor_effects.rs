@@ -84,24 +84,10 @@ impl ScriptSkillService {
                     ));
             }
         }
-        let joints = [
-            models::status_change::JointBreak::Ankle,
-            models::status_change::JointBreak::Wrist,
-            models::status_change::JointBreak::Knee,
-            models::status_change::JointBreak::Shoulder,
-            models::status_change::JointBreak::Waist,
-            models::status_change::JointBreak::Neck,
-        ];
-        for request in Self::secondary_status_requests(
-            metadata,
-            hit.skill_level,
-            source.status.base_level(),
-            false,
-            false,
-            &target,
-            0,
-            joints[fastrand::usize(0..6)],
-        ) {
+        let requests = Self::trait_status_requests(metadata, hit.skill_level, &source.status, &target, 0)
+            .into_iter()
+            .chain(Self::objectless_status_requests(metadata, hit.skill_level, &target));
+        for request in requests {
             self.start_actor_target_status(server, state, &source, hit.target_id, request, 0, tick)?;
         }
         Ok(())

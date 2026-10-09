@@ -128,14 +128,7 @@ impl Skill for SandAttack {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 20 {
-                effects.push(StatusEffect::Blind);
-            }
-        }
-        effects
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        vec![StatusInfliction::secondary(StatusChangeKind::Blind, 1500, self.level)]
     }
 }

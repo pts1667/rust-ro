@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // AS_SPLASHER - Venom Splasher
 pub struct VenomSplasher {
@@ -232,58 +233,10 @@ impl Skill for VenomSplasher {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 100 {
-                effects.push(StatusEffect::Poisoned);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [100, 100, 100, 100, 100, 100, 100, 100, 100, 100].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Poison, *chance * 100, self.level));
         }
         effects
     }

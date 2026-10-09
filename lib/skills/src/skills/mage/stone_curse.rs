@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::StatusChangeKind;
 
 // MG_STONECURSE - Stone Curse
 pub struct StoneCurse {
@@ -204,58 +205,10 @@ impl Skill for StoneCurse {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 24 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 2 {
-            if chance <= 28 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 32 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 36 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 40 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 44 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 48 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 52 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 56 {
-                effects.push(StatusEffect::Stone);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 60 {
-                effects.push(StatusEffect::Stone);
-            }
+    fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
+        let mut effects = vec![];
+        if let Some(chance) = [24, 28, 32, 36, 40, 44, 48, 52, 56, 60].get(usize::from(self.level).saturating_sub(1)) {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Stone, *chance * 100, self.level));
         }
         effects
     }

@@ -268,7 +268,13 @@ impl Skill for GrandCross {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        vec![]
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        let undead = *hit.target.element() == Element::Undead
+                    || *hit.target.race() == models::enums::mob::MobRace::RUndead
+                    || *hit.target.race() == models::enums::mob::MobRace::Demon;
+                if !undead {
+                    return vec![];
+                }
+                vec![StatusInfliction::secondary(StatusChangeKind::Blind, 10_000, self.level)]
     }
 }

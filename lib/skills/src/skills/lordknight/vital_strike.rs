@@ -14,6 +14,7 @@ use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
 use crate::{*};
+use models::status_change::JointBreak;
 
 // LK_JOINTBEAT - Vital Strike
 pub struct VitalStrike {
@@ -297,59 +298,25 @@ impl Skill for VitalStrike {
     }
 
     #[inline(always)]
-    fn inflict_status_effect_to_target(&self, _status: &StatusSnapshot, _target_status: &StatusSnapshot, mut _rng: fastrand::Rng) -> Vec<StatusEffect> {
-        let mut effects = Vec::with_capacity(1);
-        let chance = _rng.u8(1..=100);
-        if self.level == 1 {
-            if chance <= 5 {
-                effects.push(StatusEffect::VitalStrike);
-            }
+    fn inflict_status_effect_to_target(&self, hit: &HitContext) -> Vec<StatusInfliction> {
+        let level = i32::from(self.level);
+        let rate = (50 * (level + 1) - 270 * i32::from(hit.target.str()) / 100) * 10;
+        let neck_broken = hit.target.active_statuses().iter().any(|change| {
+            change.kind == StatusChangeKind::JointBeat && change.values[1] as u32 & JointBreak::Neck.as_flag() != 0
+        });
+        let joint = if neck_broken {
+            JointBreak::Neck
+        } else {
+            [JointBreak::Ankle, JointBreak::Wrist, JointBreak::Knee, JointBreak::Shoulder, JointBreak::Waist, JointBreak::Neck][fastrand::usize(0..6)]
+        };
+        let mut effects = vec![];
+        if joint == JointBreak::Neck {
+            effects.push(StatusInfliction::secondary(StatusChangeKind::Bleeding, 10_000, self.level));
         }
-        if self.level == 2 {
-            if chance <= 15 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 3 {
-            if chance <= 20 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 4 {
-            if chance <= 25 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 5 {
-            if chance <= 30 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 6 {
-            if chance <= 35 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 7 {
-            if chance <= 40 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 8 {
-            if chance <= 45 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 9 {
-            if chance <= 50 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
-        if self.level == 10 {
-            if chance <= 55 {
-                effects.push(StatusEffect::VitalStrike);
-            }
-        }
+        effects.push(StatusInfliction {
+            values: [level, joint.as_flag() as i32, 0, 0],
+            ..StatusInfliction::secondary(StatusChangeKind::JointBeat, rate, self.level)
+        });
         effects
     }
 }
