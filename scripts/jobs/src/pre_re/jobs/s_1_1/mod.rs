@@ -1,0 +1,6 @@
+pub mod acolyte;
+pub mod archer;
+pub mod mage;
+pub mod merchant;
+pub mod swordman;
+pub mod thief;

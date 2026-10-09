@@ -45,7 +45,7 @@ pub fn create_empty_map_instance(
 ) -> MapInstance {
     let cells: Vec<u16> = vec![CellType::Walkable.as_flag(); 100 * 100 + 1];
     MapInstance::from_map(
-        crate::tests::common::test_script_vm(),
+        crate::tests::common::test_npc_vm(),
         create_empty_map(),
         0,
         cells,

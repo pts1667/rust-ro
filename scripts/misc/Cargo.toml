@@ -1,0 +1,20 @@
+[package]
+name = "game-misc"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[lib]
+name = "misc"
+crate-type = ["cdylib"]
+
+[dependencies]
+script-sdk-2 = { path = "../../lib/script-sdk-2" }
+shared = { path = "../shared" }
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = "debuginfo"

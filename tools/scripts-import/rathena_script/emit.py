@@ -34,7 +34,7 @@ def event_name(script, label):
     return label
 
 
-def write_outputs(root, definitions, scripts, functions):
+def write_outputs(root, definitions, scripts, functions, routes=None):
     generated = root / "scripts/src/generated"
     generated.mkdir(parents=True, exist_ok=True)
     for stale in generated.glob("*.rs"):
@@ -100,7 +100,7 @@ def write_outputs(root, definitions, scripts, functions):
         mod_lines.append("")
     (generated / "mod.rs").write_text("\n".join(mod_lines), encoding="utf-8")
 
-    write_registries(root, definitions, scripts, by_name, event_entries)
+    write_registries(root, definitions, scripts, by_name, event_entries, routes)
 
 
 def shop_arguments(definition):
@@ -113,6 +113,8 @@ def shop_arguments(definition):
 
 
 SCRIPT_WARPS = "config/npc/pre-re/warps/script_warps.txt"
+# Legacy entry ids of the NPCs moved to named modules, for the trace comparison between the two
+MIGRATION_MAP = "config/wasm/migration_map.json"
 WARP_CONF = "config/npc/scripts_warps.conf"
 
 
@@ -139,12 +141,16 @@ def write_script_warps(root, definitions, maps):
     print(f"wrote {len(lines) - 1} script warps, dropped {dropped} (map without a cache)")
 
 
-def write_registries(root, definitions, scripts, by_name, event_entries):
+def write_registries(root, definitions, scripts, by_name, event_entries, routes=None):
+    """Rewrites the NPC and event manifests. `routes` maps `(file, line)` of a script to `(module, key)` for the scripts sdk-2 converts;
+    those are dispatched by name, every other script by its legacy `entry_id`."""
+    routes = routes or {}
     npcs_path = root / "config/wasm/npcs.json"
     events_path = root / "config/wasm/events.json"
-    # Generated shops share entry 6 with the hand-written ones but are the only ones with a trigger area
-    npcs = [npc for npc in json.loads(npcs_path.read_text(encoding="utf-8")) if npc["entry_id"] < FIRST_NPC_ENTRY and not (npc["entry_id"] == SHOP_ENTRY and "x_size" in npc)]
-    events = {label: entry for label, entry in json.loads(events_path.read_text(encoding="utf-8")).items() if entry < FIRST_EVENT_ENTRY}
+    # Generated shops share entry 6 with the hand-written ones but are the only ones with a trigger area; named entries are regenerated
+    npcs = [npc for npc in json.loads(npcs_path.read_text(encoding="utf-8")) if "module" not in npc and npc["entry_id"] < FIRST_NPC_ENTRY and not (npc["entry_id"] == SHOP_ENTRY and "x_size" in npc)]
+    events = {label: entry for label, entry in json.loads(events_path.read_text(encoding="utf-8")).items() if isinstance(entry, int) and entry < FIRST_EVENT_ENTRY}
+    routed_by_name = {(d.exname or d.name): d for d in definitions if d.kind == "script" and not d.error and (d.file, d.line) in routes}
     placed = 0
     taken = {npc["name"] for npc in npcs}
     skipped, renamed, missing_maps = [], [], collections.Counter()
@@ -158,7 +164,11 @@ def write_registries(root, definitions, scripts, by_name, event_entries):
                 print(f"skipped shop {definition.name}: unsupported item list {definition.details[:60]!r}")
                 continue
         elif definition.kind in ("script", "duplicate") and definition.name:
-            source = definition if definition.kind == "script" and not definition.error and not definition.blockers else by_name.get(definition.source)
+            routed = definition.kind == "script" and (definition.file, definition.line) in routes
+            if definition.kind == "script":
+                source = definition if not definition.error and (routed or not definition.blockers) else None
+            else:
+                source = routed_by_name.get(definition.source) or by_name.get(definition.source)
             constructor_args, trigger = [], None
             if source is None:
                 continue
@@ -178,17 +188,34 @@ def write_registries(root, definitions, scripts, by_name, event_entries):
                 continue
             renamed.append(name)
         taken.add(name)
-        npcs.append(dict(map_name=map_name, x=x, y=y, dir=direction, name=name, sprite="111" if definition.sprite in ("-1", "FAKE_NPC") else definition.sprite, entry_id=entry_id,
-                         x_size=trigger[0], y_size=trigger[1], constructor_args=constructor_args))
+        route = routes.get((source.file, source.line)) if definition.kind != "shop" else None
+        sprite = "111" if definition.sprite in ("-1", "FAKE_NPC") else definition.sprite
+        placement = dict(map_name=map_name, x=x, y=y, dir=direction, name=name, sprite=sprite, **({} if route else {"entry_id": entry_id}),
+                         x_size=trigger[0], y_size=trigger[1], constructor_args=constructor_args)
+        if route:
+            placement.update(module=route[0], entry=route[1])
+        npcs.append(placement)
         registered.append((name, definition, source))
         placed += 1
+    migration = {}
     for name, definition, source in registered:
         if definition.kind != "shop":
+            route = routes.get((source.file, source.line))
             for label in event_labels(source):
-                events.setdefault(f"{name}::{event_name(source, label)}", event_entries[(source.name, label)])
+                key = f"{name}::{event_name(source, label)}"
+                if route:
+                    events.setdefault(key, {"module": route[0], "entry": f"{route[1]}::{label}"})
+                else:
+                    events.setdefault(key, event_entries[(source.name, label)])
+            if route:
+                migration[name] = {
+                    "entry_id": source.entry_id,
+                    "events": {f"{name}::{event_name(source, label)}": event_entries[(source.name, label)] for label in event_labels(source)},
+                }
     write_script_warps(root, definitions, maps)
     npcs_path.write_text(json.dumps(npcs, indent=2) + "\n", encoding="utf-8")
     events_path.write_text(json.dumps(events, indent=2) + "\n", encoding="utf-8")
+    (root / MIGRATION_MAP).write_text(json.dumps(migration, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     if renamed:
         print(f"renamed {len(renamed)} NPCs whose name was already taken: {renamed[:3]}")
     if skipped:

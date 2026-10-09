@@ -972,7 +972,7 @@ mod tests {
             old_tasks.clone(),
         ));
         let new = std::sync::Arc::new(MapInstance::from_map(
-            crate::tests::common::test_script_vm(),
+            crate::tests::common::test_npc_vm(),
             crate::tests::common::map_instance_helper::create_empty_map(),
             1,
             vec![CellType::Walkable.as_flag(); 10000],

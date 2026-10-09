@@ -386,7 +386,7 @@ fn callbacks_and_delayed_damage_cannot_cross_map_instances() {
         scripts,
     )));
     let clone = Arc::new(MapInstance::from_map(
-        common::test_script_vm(),
+        common::test_npc_vm(),
         map,
         1,
         vec![CellType::Walkable.as_flag() | CellType::Shootable.as_flag(); 10000],

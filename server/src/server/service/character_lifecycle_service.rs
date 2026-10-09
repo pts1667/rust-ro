@@ -522,7 +522,7 @@ impl Server {
         let vm = self.script_service().vm.clone();
         let timeout = std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1));
         self.runtime().spawn(async move {
-            match tokio::time::timeout(timeout, vm.execute(host, "run_event", callback.entry_id)).await {
+            match tokio::time::timeout(timeout, vm.run(host, "run_event", callback.entry_id)).await {
                 Ok((host, Err(error))) => warn!(
                     "NPC {} timer quit callback failed: {}",
                     callback.key.npc_id,

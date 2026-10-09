@@ -38,7 +38,7 @@ impl Server {
         let started = std::time::Instant::now();
         script_debug!("NPC conversation started: npc={npc_id} ({npc_name}) entry={entry} char={char_id}");
         self.runtime().spawn(async move {
-            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.execute(host, "run_npc", entry)).await {
+            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.run(host, "run_npc", entry)).await {
                 Ok((host, result)) => (result.err().map(|error| host.error.unwrap_or(error)), host.dialog_open),
                 Err(_) => (Some("NPC conversation timed out".into()), true),
             };

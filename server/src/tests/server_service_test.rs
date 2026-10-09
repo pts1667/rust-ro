@@ -138,7 +138,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
         GlobalConfigService::instance(),
         server_task_queue.clone(),
         movement_task_queue.clone(),
-        test_script_vm(),
+        crate::tests::common::test_npc_vm(),
         InventoryService::new(
             client_notification_sender.clone(),
             persistence_event_sender.clone(),
@@ -159,7 +159,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
             GlobalConfigService::instance(),
             repository.clone(),
             server_task_queue.clone(),
-            test_script_vm(),
+            crate::tests::common::test_npc_vm(),
         ),
         CharacterService::new(
             client_notification_sender.clone(),

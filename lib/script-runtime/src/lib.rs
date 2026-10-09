@@ -2,7 +2,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use script_sdk::{ABI_VERSION, MAX_MESSAGE_BYTES, Reply, Request};
+use script_sdk::{ABI_VERSION, Entry, MAX_MESSAGE_BYTES, NAMED_ABI_VERSION, Reply, Request};
 use wasmtime::{Caller, Config, Engine, Linker, Module, Store, StoreLimits, StoreLimitsBuilder};
 
 #[async_trait]
@@ -33,11 +33,18 @@ pub struct WasmRuntime {
     limits: Limits,
 }
 
+/// What a single execution runs: a numeric id for legacy modules, or a named script for named-ABI modules.
+enum Invocation<'a> {
+    Numeric { entry: &'a str, id: u32 },
+    Named(&'a Entry),
+}
+
 struct Execution<H> {
     host: H,
     limits: StoreLimits,
     calls_remaining: usize,
     abi_verified: bool,
+    entry: Vec<u8>,
 }
 
 impl WasmRuntime {
@@ -88,7 +95,17 @@ impl WasmRuntime {
         Ok(Self { engine, module, limits })
     }
 
+    /// Runs the export `entry` of a numeric-ABI module with `id`.
     pub async fn execute<H: Host>(&self, host: H, entry: &str, id: u32) -> (H, Result<(), String>) {
+        self.run_in_store(host, Invocation::Numeric { entry, id }).await
+    }
+
+    /// Runs the named script `entry` of a named-ABI module.
+    pub async fn execute_named<H: Host>(&self, host: H, entry: &Entry) -> (H, Result<(), String>) {
+        self.run_in_store(host, Invocation::Named(entry)).await
+    }
+
+    async fn run_in_store<H: Host>(&self, host: H, invocation: Invocation<'_>) -> (H, Result<(), String>) {
         let limits = StoreLimitsBuilder::new()
             .memory_size(self.limits.memory_bytes)
             .memories(1)
@@ -101,9 +118,10 @@ impl WasmRuntime {
             limits,
             calls_remaining: self.limits.host_calls,
             abi_verified: false,
+            entry: Vec::new(),
         });
         store.limiter(|execution| &mut execution.limits);
-        let result = self.run(&mut store, entry, id).await;
+        let result = self.run(&mut store, invocation).await;
         (store.into_data().host, result.map_err(|error| format!("{error:#}")))
     }
 
@@ -127,9 +145,12 @@ impl WasmRuntime {
             .map_err(|e| e.to_string())
     }
 
-    async fn run<H: Host>(&self, store: &mut Store<Execution<H>>, entry: &str, id: u32) -> wasmtime::Result<()> {
+    async fn run<H: Host>(&self, store: &mut Store<Execution<H>>, invocation: Invocation<'_>) -> wasmtime::Result<()> {
         store.set_fuel(self.limits.fuel)?;
         store.fuel_async_yield_interval(Some(100_000))?;
+        if let Invocation::Named(entry) = invocation {
+            store.data_mut().entry = serde_json::to_vec(entry)?;
+        }
         let mut linker = Linker::new(&self.engine);
         linker.func_wrap_async(
             "rust_ro",
@@ -163,17 +184,44 @@ impl WasmRuntime {
                 })
             },
         )?;
+        linker.func_wrap_async(
+            "rust_ro",
+            "entry",
+            |mut caller: Caller<'_, Execution<H>>, (buffer_pointer, buffer_capacity): (u32, u32)| {
+                Box::new(async move {
+                    wasmtime::ensure!(caller.data().abi_verified, "Entry is unavailable before ABI verification");
+                    let entry = caller.data().entry.clone();
+                    wasmtime::ensure!(entry.len() <= buffer_capacity as usize, "Entry exceeds guest buffer");
+                    let memory = caller
+                        .get_export("memory")
+                        .and_then(|export| export.into_memory())
+                        .ok_or_else(|| wasmtime::format_err!("Guest does not export memory"))?;
+                    let buffer_end = (buffer_pointer as usize)
+                        .checked_add(buffer_capacity as usize)
+                        .ok_or_else(|| wasmtime::format_err!("Invalid entry buffer"))?;
+                    wasmtime::ensure!(buffer_end <= memory.data_size(&caller), "Invalid entry buffer");
+                    memory.write(&mut caller, buffer_pointer as usize, &entry)?;
+                    Ok(entry.len() as i32)
+                })
+            },
+        )?;
         let instance = linker.instantiate_async(&mut *store, &self.module).await?;
         let abi = instance
             .get_typed_func::<(), u32>(&mut *store, "script_abi")?
             .call_async(&mut *store, ())
             .await?;
-        wasmtime::ensure!(abi == ABI_VERSION, "Unsupported script ABI {abi}");
+        let expected = match invocation {
+            Invocation::Numeric { .. } => ABI_VERSION,
+            Invocation::Named(_) => NAMED_ABI_VERSION,
+        };
+        wasmtime::ensure!(abi == expected, "Unsupported script ABI {abi}");
         store.data_mut().abi_verified = true;
-        let exit = instance
-            .get_typed_func::<u32, i32>(&mut *store, entry)?
-            .call_async(&mut *store, id)
-            .await?;
+        let exit = match invocation {
+            Invocation::Numeric { entry, id } => {
+                instance.get_typed_func::<u32, i32>(&mut *store, entry)?.call_async(&mut *store, id).await?
+            }
+            Invocation::Named(_) => instance.get_typed_func::<(), i32>(&mut *store, "script_run")?.call_async(&mut *store, ()).await?,
+        };
         wasmtime::ensure!(exit == 0, "Script returned error code {exit}");
         Ok(())
     }

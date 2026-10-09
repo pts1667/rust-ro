@@ -13,7 +13,7 @@ use models::status::{Status, StatusSnapshot};
 use models::status_bonus::BonusExpiry;
 use movement::position::Position;
 use packets::packets::{Packet, PacketZcMsgStateChange, PacketZcNotifyAct};
-use script_runtime::WasmRuntime;
+use crate::server::script::ScriptVm;
 
 use crate::MAP_DIR;
 use crate::server::boot::map_loader::MapLoader;
@@ -52,7 +52,7 @@ pub struct ServerService {
     configuration_service: &'static GlobalConfigService,
     server_task_queue: Arc<TasksQueue<GameEvent>>,
     movement_task_queue: Arc<TasksQueue<GameEvent>>,
-    vm: Arc<WasmRuntime>,
+    vm: Arc<ScriptVm>,
     character_service: CharacterService,
     inventory_service: InventoryService,
     item_service: ItemService,
@@ -89,7 +89,7 @@ impl ServerService {
         configuration_service: &'static GlobalConfigService,
         server_task_queue: Arc<TasksQueue<GameEvent>>,
         movement_task_queue: Arc<TasksQueue<GameEvent>>,
-        vm: Arc<WasmRuntime>,
+        vm: Arc<ScriptVm>,
         inventory_service: InventoryService,
         battle_service: BattleService,
         skill_service: SkillService,

@@ -181,7 +181,7 @@ fn npc_fixture() -> (Arc<Server>, Arc<Session>, NpcContact) {
     let script = Script { id: npc_id, scope_instance: 0, entry_id: 1, map_name: "empty".into(), name: "Counter".into(), sprite: 0, x: 51, y: 50, dir: 0, x_size: 0, y_size: 0, constructor_args: vec![] };
     let map = Box::leak(Box::new(Map::new(100, 100, 10_000, "empty".into(), "empty.gat".into(), vec![], vec![], vec![script])));
     let cells = vec![models::enums::cell::CellType::Walkable.as_flag(); 10_001];
-    let instance = MapInstance::from_map(crate::tests::common::test_script_vm(), map, 0, cells, context.client_notification_sender.clone(), MapItems::new(0), Arc::new(TasksQueue::new()));
+    let instance = MapInstance::from_map(crate::tests::common::test_npc_vm(), map, 0, cells, context.client_notification_sender.clone(), MapItems::new(0), Arc::new(TasksQueue::new()));
     context.server.state_mut().map_instances_mut().insert("empty".into(), vec![Arc::new(instance)]);
     let mut session = Session::create_empty(character.account_id, 0, 0, context.server.packetver());
     session.char_id = Some(character.char_id);

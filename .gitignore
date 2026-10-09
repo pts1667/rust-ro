@@ -1,5 +1,6 @@
 /target
 /scripts/target/
+/scripts/*/target/
 __pycache__/
 .idea
 *.iml

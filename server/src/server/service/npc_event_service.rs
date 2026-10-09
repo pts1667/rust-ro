@@ -349,7 +349,7 @@ impl Server {
         let notifications = self.server_service().notification_sender();
         let packetver = self.packetver();
         self.runtime().spawn(async move {
-            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.execute(host, "run_event", event.entry_id)).await {
+            let (error, dialog_open) = match tokio::time::timeout(timeout, vm.run(host, "run_event", event.entry_id)).await {
                 Ok((host, result)) => (result.err().map(|error| host.error.unwrap_or(error)), host.dialog_open),
                 Err(_) => (Some("NPC event timed out".into()), true),
             };

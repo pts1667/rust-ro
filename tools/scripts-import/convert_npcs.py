@@ -169,8 +169,12 @@ def main():
     definitions, library, scripts, functions = convert(rathena, sources, [] if options.no_library else LIBRARY_SOURCES)
     report(definitions, scripts, functions)
     if options.write:
+        from convert_sdk2 import lower_modules, write_modules, write_shared
         from rathena_script.emit import write_outputs
-        write_outputs(ROOT, definitions, scripts, functions)
+        routes, modules, _, shared = lower_modules(rathena)
+        write_shared(shared)
+        write_modules(modules)
+        write_outputs(ROOT, definitions, scripts, functions, routes)
 
 
 if __name__ == "__main__":

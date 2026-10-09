@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
-use script_sdk::Value;
+use script_sdk::{Entry, Value};
 use serde::Deserialize;
 
 use crate::server::model::map_item::{MapItem, MapItemType, ToMapItem};
 use crate::server::model::script::Script;
 use crate::server::script::constant::load_constant;
+use crate::server::script::entries::intern;
 
 pub struct ScriptLoader;
 
@@ -17,7 +18,9 @@ struct NpcDefinition {
     x: u16,
     y: u16,
     dir: u16,
-    entry_id: u32,
+    entry_id: Option<u32>,
+    module: Option<String>,
+    entry: Option<String>,
     #[serde(default)]
     x_size: u16,
     #[serde(default)]
@@ -75,9 +78,14 @@ impl ScriptLoader {
         let mut scripts: HashMap<String, Vec<Script>> = HashMap::new();
         let mut names = std::collections::HashSet::new();
         for definition in definitions {
-            if definition.name.is_empty() || !names.insert(definition.name.clone()) || definition.entry_id == 0 {
+            if definition.name.is_empty() || !names.insert(definition.name.clone()) {
                 return Err("NPC manifest contains an invalid or duplicate NPC".into());
             }
+            let entry_id = match (definition.entry_id, definition.module, definition.entry) {
+                (Some(entry_id), None, None) if entry_id != 0 => entry_id,
+                (None, Some(module), Some(entry)) if !entry.is_empty() => intern(&module, Entry::Npc(entry)),
+                _ => return Err(format!("NPC {} needs either entry_id or module and entry", definition.name)),
+            };
             let sprite = definition
                 .sprite
                 .parse::<u16>()
@@ -99,7 +107,7 @@ impl ScriptLoader {
                 dir: definition.dir,
                 x_size: definition.x_size,
                 y_size: definition.y_size,
-                entry_id: definition.entry_id,
+                entry_id,
                 constructor_args: definition.constructor_args,
             });
         }

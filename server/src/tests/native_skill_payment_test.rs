@@ -523,7 +523,7 @@ fn intimidate_warps_after_eight_hundred_milliseconds_and_only_brings_a_nearby_vi
             let flags = context.server.state().map_flags_for("empty", 0);
             context.server.map_flag_overrides().insert(("empty".into(), instance_id), flags);
             let instance = crate::server::model::map_instance::MapInstance::from_map(
-                common::test_script_vm(),
+                common::test_npc_vm(),
                 crate::tests::common::map_instance_helper::create_empty_map(),
                 instance_id,
                 vec![CellType::Walkable.as_flag() | CellType::Shootable.as_flag(); 100 * 100],
@@ -1180,7 +1180,7 @@ fn teleport_selection_warps_once_without_repayment_and_preserves_random_instance
         let (context, repository, mut character) = fixture(false, false);
         if instance_id != 0 {
             let instance = crate::server::model::map_instance::MapInstance::from_map(
-                common::test_script_vm(), crate::tests::common::map_instance_helper::create_empty_map(), instance_id,
+                common::test_npc_vm(), crate::tests::common::map_instance_helper::create_empty_map(), instance_id,
                 vec![CellType::Walkable.as_flag() | CellType::Shootable.as_flag(); 100 * 100],
                 context.client_notification_sender.clone(), crate::server::model::map_item::MapItems::new(0), Arc::new(TasksQueue::new()),
             );

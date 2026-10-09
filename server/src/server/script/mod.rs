@@ -2,9 +2,11 @@ use std::mem;
 
 pub use script_runtime::WasmRuntime;
 pub use script_sdk::Value;
+pub use vm::ScriptVm;
 
 pub(crate) mod bonus;
 pub mod constant;
+pub mod entries;
 mod array_variables;
 mod game_api;
 pub(crate) mod game_data;
@@ -17,12 +19,15 @@ pub(crate) mod utilities;
 pub(crate) mod unit_data;
 pub(crate) mod pet_auto_bonus;
 pub mod skill;
+mod vm;
 #[cfg(test)]
 mod tests;
 #[cfg(test)]
 mod generated_npc_smoke;
 #[cfg(test)]
 mod generated_npc_audit;
+#[cfg(test)]
+mod generated_npc_trace;
 pub use host::{NpcScriptHost, PlayerInput, ScriptRequest};
 
 #[derive(Clone, Eq, Hash, PartialEq, Debug)]

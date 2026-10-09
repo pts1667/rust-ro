@@ -26,6 +26,7 @@ use std::time::Instant;
 
 use configuration::configuration::Config;
 use server::Server;
+use server::script::ScriptVm;
 use tokio::runtime::Runtime;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::time::ChronoLocal;
@@ -85,8 +86,8 @@ pub async fn main() {
     update_item_and_mob_static_db(&mut items, &mobs);
 
     // Setup script virtual machine for NPC
-    let npc_script_vm = create_script_vm();
-    let item_script_vm = npc_script_vm.clone();
+    let item_script_vm = create_script_vm();
+    let npc_script_vm = Arc::new(ScriptVm::new(item_script_vm.clone(), create_script_modules()));
     let scripts = load_scripts();
 
     // Loading configs
@@ -253,6 +254,18 @@ pub fn configs() -> &'static Config {
 
 pub fn create_script_vm() -> Arc<script_runtime::WasmRuntime> {
     script_runtime::WasmRuntime::from_file(&configs().scripting.module_path).expect("Failed to load compiled game scripts")
+}
+
+pub fn create_script_modules() -> HashMap<String, Arc<script_runtime::WasmRuntime>> {
+    configs()
+        .scripting
+        .modules
+        .iter()
+        .map(|(name, path)| {
+            let runtime = script_runtime::WasmRuntime::from_file(path).unwrap_or_else(|error| panic!("Failed to load script module {name}: {error}"));
+            (name.clone(), runtime)
+        })
+        .collect()
 }
 
 #[cfg(test)]

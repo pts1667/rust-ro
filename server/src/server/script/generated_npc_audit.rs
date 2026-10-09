@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 use crate::server::boot::script_loader::ScriptLoader;
 use crate::server::service::global_config_service::GlobalConfigService;
+use crate::server::service::script_service::ScriptService;
 
 fn repository_path(relative: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join(relative)
@@ -111,12 +112,12 @@ impl script_runtime::Host for RecordingHost {
 }
 
 fn event_id(label: &str) -> u32 {
-    manifest("events.json")[label].as_u64().unwrap_or_else(|| panic!("{label} is not a registered event")) as u32
+    ScriptService::event_entry(label).unwrap_or_else(|| panic!("{label} is not a registered event"))
 }
 
 fn run_event(host: RecordingHost, label: &str) -> RecordingHost {
-    let runtime = crate::tests::common::test_script_vm();
-    let (host, result) = futures::executor::block_on(runtime.execute(host, "run_event", event_id(label)));
+    let runtime = crate::tests::common::test_npc_vm();
+    let (host, result) = futures::executor::block_on(runtime.run(host, "run_event", event_id(label)));
     result.unwrap();
     host
 }

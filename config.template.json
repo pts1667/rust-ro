@@ -19,6 +19,12 @@
   },
   "scripting": {
     "module_path": "config/wasm/game_scripts.wasm",
+    "modules": {
+      "jobs": "config/wasm/jobs.wasm",
+      "misc": "config/wasm/misc.wasm",
+      "quests": "config/wasm/quests.wasm",
+      "towns": "config/wasm/towns.wasm"
+    },
     "npcs_path": "config/wasm/npcs.json",
     "items_path": "config/wasm/items.json",
     "map_flags_path": "config/wasm/map_flags.json",

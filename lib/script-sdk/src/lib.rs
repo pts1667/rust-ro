@@ -3,7 +3,18 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 pub const ABI_VERSION: u32 = 1;
+/// ABI of modules that run named scripts. The host passes the script as an [`Entry`] and the module exports `script_run`.
+pub const NAMED_ABI_VERSION: u32 = 2;
 pub const MAX_MESSAGE_BYTES: usize = 65_536;
+
+/// The script a named-ABI module runs, read by the guest through the `rust_ro::entry` import.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Entry {
+    /// An NPC's main dialogue, by its manifest name.
+    Npc(String),
+    /// A labelled event, as `"<npc name>::<label>"`.
+    Event(String),
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Value {

@@ -147,3 +147,50 @@ async fn asynchronous_host_call_suspends_without_blocking_executor() {
     sender.send(()).unwrap();
     assert!(task.await.unwrap().is_ok());
 }
+
+/// A named-ABI module whose `script_run` runs `body`.
+fn named_module(body: &str, abi: u32) -> Vec<u8> {
+    format!(
+        r#"(module
+        (import "rust_ro" "entry" (func $entry (param i32 i32) (result i32)))
+        (memory (export "memory") 1)
+        (func (export "script_abi") (result i32) i32.const {abi})
+        (func (export "script_run") (result i32) {body})
+    )"#
+    )
+    .into_bytes()
+}
+
+/// `{"Npc":"prontera_guard"}`, 24 bytes once serialized.
+const NAMED_ENTRY_LENGTH: u32 = 24;
+
+#[tokio::test]
+async fn named_module_receives_the_entry_it_runs() {
+    let body = format!(
+        "i32.const 64 i32.const 256 call $entry i32.const {NAMED_ENTRY_LENGTH} i32.eq \
+         i32.const 64 i32.load8_u i32.const 123 i32.eq i32.and i32.eqz"
+    );
+    let runtime = WasmRuntime::from_bytes(&named_module(&body, 2), Limits::default()).unwrap();
+    let count = Arc::new(AtomicUsize::new(0));
+    let entry = script_sdk::Entry::Npc("prontera_guard".into());
+    let (_, result) = runtime.execute_named(CountingHost { count: count.clone() }, &entry).await;
+    assert!(result.is_ok(), "{result:?}");
+}
+
+#[tokio::test]
+async fn entry_larger_than_the_guest_buffer_is_rejected() {
+    let runtime = WasmRuntime::from_bytes(&named_module("i32.const 64 i32.const 8 call $entry drop i32.const 0", 2), Limits::default()).unwrap();
+    let count = Arc::new(AtomicUsize::new(0));
+    let entry = script_sdk::Entry::Npc("prontera_guard".into());
+    let (_, result) = runtime.execute_named(CountingHost { count }, &entry).await;
+    assert!(result.unwrap_err().contains("Entry exceeds guest buffer"));
+}
+
+#[tokio::test]
+async fn named_execution_rejects_a_numeric_abi_module() {
+    let runtime = WasmRuntime::from_bytes(&named_module("i32.const 0", 1), Limits::default()).unwrap();
+    let count = Arc::new(AtomicUsize::new(0));
+    let entry = script_sdk::Entry::Event("prontera_guard::OnTouch".into());
+    let (_, result) = runtime.execute_named(CountingHost { count }, &entry).await;
+    assert!(result.unwrap_err().contains("Unsupported script ABI 1"));
+}

@@ -199,6 +199,20 @@ pub fn test_script_vm() -> Arc<WasmRuntime> {
         .clone()
 }
 
+/// The NPC and event VM: the legacy module plus the named-ABI modules of `config/wasm`.
+pub fn test_npc_vm() -> Arc<crate::server::script::ScriptVm> {
+    static VM: std::sync::OnceLock<Arc<crate::server::script::ScriptVm>> = std::sync::OnceLock::new();
+    VM.get_or_init(|| {
+        let wasm = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm");
+        let modules = ["towns", "misc", "jobs", "quests"]
+            .into_iter()
+            .map(|name| (name.to_string(), WasmRuntime::from_file(wasm.join(format!("{name}.wasm"))).unwrap()))
+            .collect();
+        Arc::new(crate::server::script::ScriptVm::new(test_script_vm(), modules))
+    })
+    .clone()
+}
+
 pub struct ServerBuilder {
     pub configuration: &'static Config,
     pub repository: Arc<MockedRepository>,

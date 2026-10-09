@@ -58,7 +58,7 @@ pub(super) fn fixture() -> (ServerServiceTestContext, Arc<MapInstance>, MapInsta
         vec![script],
     )));
     let instance = Arc::new(MapInstance::from_map(
-        common::test_script_vm(),
+        common::test_npc_vm(),
         map,
         0,
         vec![CellType::Walkable.as_flag() | CellType::Shootable.as_flag(); 10000],

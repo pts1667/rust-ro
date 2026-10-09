@@ -14,6 +14,7 @@ use model::events::client_notification::{AreaNotificationRangeType, Notification
 use model::events::game_event::GameEvent;
 use model::events::persistence_event::PersistenceEvent;
 use packets::packets_parser::parse;
+use script::ScriptVm;
 use script::skill::ScriptSkillService;
 use script_runtime::WasmRuntime;
 use tokio::runtime::Runtime;
@@ -206,7 +207,7 @@ impl Server {
         configuration: &'static Config,
         repository: Arc<dyn Repository>,
         map_items: MapItems,
-        npc_script_vm: Arc<WasmRuntime>,
+        npc_script_vm: Arc<ScriptVm>,
         item_script_vm: Arc<WasmRuntime>,
         client_notification_sender: SyncSender<Notification>,
         persistence_event_sender: SyncSender<PersistenceEvent>,

@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::SyncSender;
 use std::time::Duration;
 
-use script_runtime::WasmRuntime;
+use crate::server::script::ScriptVm;
 
 use crate::server::map_instance_loop::MAP_LOOP_TICK_RATE;
 use crate::server::model::events::client_notification::Notification;
@@ -120,7 +120,7 @@ impl DerefMut for MapStateRefMut<'_> {
 
 impl MapInstance {
     pub fn from_map(
-        vm: Arc<WasmRuntime>,
+        vm: Arc<ScriptVm>,
         map: &'static Map,
         id: u8,
         cells: Vec<u16>,
@@ -134,7 +134,7 @@ impl MapInstance {
     /// `unique_npc_names` suffixes the NPC names with the instance id (`Name_12`), like the NPCs duplicated for a memorial dungeon.
     #[allow(clippy::too_many_arguments)]
     pub fn from_map_with(
-        _vm: Arc<WasmRuntime>,
+        _vm: Arc<ScriptVm>,
         map: &'static Map,
         id: u8,
         cells: Vec<u16>,

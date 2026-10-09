@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::sync::mpsc::SyncSender;
 use std::sync::{Arc, Mutex};
 
-use script_runtime::WasmRuntime;
+use script_sdk::Entry;
+use serde::Deserialize;
 use tokio::runtime::Runtime;
 
 use crate::repository::ItemRepository;
@@ -10,8 +11,16 @@ use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::{CharacterAddItems, GameEvent};
 use crate::server::model::tasks_queue::TasksQueue;
-use crate::server::script::Value;
+use crate::server::script::entries::intern;
+use crate::server::script::{ScriptVm, Value};
 use crate::server::service::global_config_service::GlobalConfigService;
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum EventManifestEntry {
+    Legacy(u32),
+    Named { module: String, entry: String },
+}
 
 #[allow(dead_code)]
 pub struct ScriptService {
@@ -19,14 +28,27 @@ pub struct ScriptService {
     pub(crate) configuration_service: &'static GlobalConfigService,
     repository: Arc<dyn ItemRepository>,
     server_task_queue: Arc<TasksQueue<GameEvent>>,
-    pub vm: Arc<WasmRuntime>,
+    pub vm: Arc<ScriptVm>,
     pub(crate) npc_variables: Mutex<HashMap<(u32, u8, u32, String, u32), Value>>,
 }
 
 impl ScriptService {
     fn compiled_events() -> &'static HashMap<String, u32> {
         static EVENTS: std::sync::OnceLock<HashMap<String, u32>> = std::sync::OnceLock::new();
-        EVENTS.get_or_init(|| serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry"))
+        EVENTS.get_or_init(|| {
+            let manifest: HashMap<String, EventManifestEntry> =
+                serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry");
+            manifest
+                .into_iter()
+                .map(|(label, entry)| {
+                    let handle = match entry {
+                        EventManifestEntry::Legacy(entry_id) => entry_id,
+                        EventManifestEntry::Named { module, entry } => intern(&module, Entry::Event(entry)),
+                    };
+                    (label, handle)
+                })
+                .collect()
+        })
     }
 
     pub fn event_entry(label: &str) -> Option<u32> {
@@ -67,7 +89,7 @@ impl ScriptService {
         configuration_service: &'static GlobalConfigService,
         repository: Arc<dyn ItemRepository>,
         server_task_queue: Arc<TasksQueue<GameEvent>>,
-        vm: Arc<WasmRuntime>,
+        vm: Arc<ScriptVm>,
     ) -> Self {
         ScriptService {
             client_notification_sender,
