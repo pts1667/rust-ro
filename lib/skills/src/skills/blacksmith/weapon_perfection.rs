@@ -146,4 +146,9 @@ impl Skill for WeaponPerfection {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::PartyBuff
+    }
 }

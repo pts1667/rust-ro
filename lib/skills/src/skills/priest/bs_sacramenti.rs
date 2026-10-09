@@ -116,4 +116,27 @@ impl Skill for BsSacramenti {
     fn client_type(&self) -> usize {
         2
     }
+
+    #[inline(always)]
+    fn area_status(&self) -> Option<AreaStatusProfile> {
+        Some(AreaStatusProfile {
+            kind: StatusChangeKind::Benedictio,
+            chance: 10_000,
+            delay_ms: 0,
+            duration: AreaDuration::Plain,
+            party_quarter_chance: false,
+            undead_only: false,
+            level_rate: false,
+        })
+    }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Benedictio
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

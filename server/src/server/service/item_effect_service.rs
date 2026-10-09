@@ -376,7 +376,11 @@ impl ItemService {
                         Function::ItemSkill | Function::UnitSkill => {
                             let skill = self.configuration_service.find_skill_config(arguments.first().ok_or("Missing skill")?).ok_or("Unknown skill")?;
                             if number(1)? <= 0 || number(1)? > 255 { return Err("Invalid skill level".into()); }
-                            if skill.name() != "AL_TELEPORT" && number(1)? > skill.max_level() as i32 { return Err("Skill level exceeds its maximum".into()); }
+                            if number(1)? > skill.max_level() as i32
+                                && !matches!(crate::server::script::skill::ScriptSkillService::skill_behaviour(skill.id, number(1)? as u8), skills::ActorBehaviour::Teleport)
+                            {
+                                return Err("Skill level exceeds its maximum".into());
+                            }
                         }
                         Function::UnitSkillToId | Function::UnitSkillToPosition => {
                             super::script_unit_skill_service::unit_skill_request(self.configuration_service, 0, *function, arguments)?;
@@ -479,7 +483,7 @@ impl ItemService {
                             let skill = self.configuration_service.find_skill_config(&arguments[0]).ok_or("Unknown skill")?;
                             server.script_skill_service().validate_skill(skill, arguments[1].number_value()? as u32)?;
                             if character.status.blocks_casting() { return Err("A status change prevents using this skill".into()); }
-                            if skill.name() == "AL_TELEPORT" {
+                            if matches!(crate::server::script::skill::ScriptSkillService::skill_behaviour(skill.id, arguments[1].number_value()? as u8), skills::ActorBehaviour::Teleport) {
                                 let (map, _, _) = crate::server::script::skill::ScriptSkillService::teleport_destination(character, arguments[1].number_value()? as u32)?;
                                 if self.configuration_service.find_map(&map).is_none() { return Err("Return map is unavailable".into()); }
                             }

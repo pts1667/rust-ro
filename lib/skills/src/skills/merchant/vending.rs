@@ -121,4 +121,14 @@ impl Skill for Vending {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::ServiceCall(ServiceCall::Vending)
+    }
+
+    #[inline(always)]
+    fn map_restriction(&self) -> Option<MapRestriction> {
+        Some(MapRestriction::NoVending)
+    }
 }

@@ -224,4 +224,14 @@ impl Skill for Basilica {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Basilica)
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::Basilica)
+    }
 }

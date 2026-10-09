@@ -123,4 +123,19 @@ impl Skill for PlantCultivation {
         }
         Ok(Some(required_items))
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Cultivate
+    }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { item_per_level: true, ..CostRules::default() }
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

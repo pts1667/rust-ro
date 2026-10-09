@@ -111,4 +111,14 @@ impl Skill for CreateElementalConverter {
     fn validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {
         if status.sp() > 30 { Ok(30) } else {Err(())}
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::ElementalConverter)
+    }
+
+    #[inline(always)]
+    fn crafting_rule(&self) -> Option<CraftingRule> {
+        Some(CraftingRule::FixedSuccess)
+    }
 }

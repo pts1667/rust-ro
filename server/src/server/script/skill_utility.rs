@@ -11,6 +11,7 @@ use script_sdk::Value;
 use packets::packets::{Packet, PacketZcUseskillAck2};
 
 use super::{metadata::SkillMetadata, ScriptSkillAction, ScriptSkillEffect, ScriptSkillService, ScriptSkillState};
+use skills::{ActorBehaviour, ServiceCall, SphereGrant};
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::{CharacterMovement, CharacterStatusChange, CharacterUseSkill, GameEvent};
 use crate::server::model::movement::Movement;
@@ -52,27 +53,27 @@ impl ScriptSkillService {
         }
         Self::validate_stealth_cast(state, character, event.skill_id)?;
         self.validate_damage_target(state, character, event.skill_id, event.target_id)?;
-        self.validate_support_target(state, character, event.skill_id, event.target_id)?;
+        self.validate_support_target(state, character, event.skill_id, event.skill_level, event.target_id)?;
         if character.status.hp == 0 || character.status.blocks_casting() || character.is_using_skill() || character.script_skill_state.casting_until > tick || character.timing.get_canact_tick() > tick { return Err("Character cannot start a skill now".into()); }
         if let Some(target) = state.get_character(event.target_id) {
             if target.map_instance_key != character.map_instance_key { return Err("Item skill target is on another map".into()); }
         }
-        let position = if matches!(skill.name().as_str(), "HT_REMOVETRAP" | "HT_SPRINGTRAP") {
+        let position = if matches!(Self::skill_behaviour(skill.id, pending.level), ActorBehaviour::TrapControl { .. }) {
             let (x, y) = self.validate_player_trap_control(state, character, event.target_id, skill.id, pending.level, tick, false)?;
             Position { x, y, dir: 0 }
         } else if event.target_id == character.char_id { Position { x: character.x, y: character.y, dir: character.dir } }
             else { state.map_item_snapshot(event.target_id, character.current_map_name(), character.current_map_instance()).ok_or("Item skill target is not on this map")?.position };
         if character.x.abs_diff(position.x).max(character.y.abs_diff(position.y)) > self.player_skill_range(&StatusService::instance().to_snapshot(&character.status), skill.id, pending.level).max(1) { return Err("Item skill target is out of range".into()); }
         let target = if event.target_id == character.char_id { Some(character) } else { state.get_character(event.target_id) };
-        if skill.name() == "AS_SPLASHER" {
+        if Self::skill_behaviour(skill.id, pending.level) == ActorBehaviour::VenomSplasher {
             let effect = ScriptSkillEffect { source_char_id: character.char_id, target_id: event.target_id, skill_id: event.skill_id, level: event.skill_level, heal_value: 0, proc_depth: 0, skill_event_emitted: false, cast_generation: 0, action: ScriptSkillAction::Cast, deferred_requirements: None, prepared_outcome: None, source_index: None, source_item: None };
             self.validate_splasher_effect(state, character, &effect)?;
         }
-        if skill.name() == "CR_DEVOTION" { self.validate_devotion_target(state, character, target.ok_or("Devotion requires a player target")?, pending.level)?; }
-        match skill.name().as_str() {
-            "ALL_RESURRECTION" if target.is_none_or(|target| target.status.hp > 0 || target.status.has_status_change(StatusChangeKind::HellPower)) => return Err("Resurrection requires a dead target without Hell Power".into()),
-            "AL_HEAL" if target.is_some_and(|target| target.status.hp == 0 || target.status.has_status_change(StatusChangeKind::NoRecovery)) => return Err("Target cannot be healed".into()),
-            "WZ_ESTIMATION" if target.is_some() => return Err("Monster estimation requires a monster".into()),
+        if Self::skill_behaviour(skill.id, pending.level) == ActorBehaviour::Devotion { self.validate_devotion_target(state, character, target.ok_or("Devotion requires a player target")?, pending.level)?; }
+        match Self::skill_behaviour(skill.id, pending.level) {
+            ActorBehaviour::Resurrect if target.is_none_or(|target| target.status.hp > 0 || target.status.has_status_change(StatusChangeKind::HellPower)) => return Err("Resurrection requires a dead target without Hell Power".into()),
+            ActorBehaviour::Heal if target.is_some_and(|target| target.status.hp == 0 || target.status.has_status_change(StatusChangeKind::NoRecovery)) => return Err("Target cannot be healed".into()),
+            ActorBehaviour::Estimation if target.is_some() => return Err("Monster estimation requires a monster".into()),
             _ => {}
         }
         if pending.keep_requirements { self.requirements_plan(character, skill.id, pending.level, tick)?; }
@@ -179,37 +180,49 @@ impl ScriptSkillService {
 
     pub fn apply_utility_skill(&self, server: &Server, state: &ServerState, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<bool, String> {
         let Some(metadata) = SkillMetadata::find(effect.skill_id) else { return Ok(false); };
-        match metadata.name.as_str() {
-            "BS_GREED" => self.collect_nearby_items(server, state, character)?,
-            "WE_BABY" => self.bond_family_baby(server, state, character, effect.level)?,
-            "MO_CALLSPIRITS" | "CH_SOULCOLLECT" | "GS_GLITTERING" => {
+        match Self::effect_behaviour(effect) {
+            ActorBehaviour::CollectItems => self.collect_nearby_items(server, state, character)?,
+            ActorBehaviour::BondBaby => self.bond_family_baby(server, state, character, effect.level)?,
+            ActorBehaviour::Spheres(grant) => {
                 character.script_skill_state.expire_spheres(tick);
                 let expiry = tick + metadata.duration(effect.level, false).unwrap_or(600000).max(0) as u128;
-                match metadata.name.as_str() {
-                    "MO_CALLSPIRITS" => character.script_skill_state.add_sphere(expiry, effect.level as usize),
-                    "CH_SOULCOLLECT" => for _ in 0..5 { character.script_skill_state.add_sphere(expiry, 5); },
-                    _ if fastrand::u32(0..100) < 20 + 10 * effect.level as u32 => character.script_skill_state.add_sphere(expiry, 10),
-                    _ => { if !character.script_skill_state.spirit_spheres.is_empty() { character.script_skill_state.spirit_spheres.remove(0); } }
+                match grant {
+                    SphereGrant::Level => character.script_skill_state.add_sphere(expiry, effect.level as usize),
+                    SphereGrant::Five => {
+                        for _ in 0..5 {
+                            character.script_skill_state.add_sphere(expiry, 5);
+                        }
+                    }
+                    SphereGrant::Glitter if fastrand::u32(0..100) < 20 + 10 * effect.level as u32 => character.script_skill_state.add_sphere(expiry, 10),
+                    SphereGrant::Glitter => {
+                        if !character.script_skill_state.spirit_spheres.is_empty() {
+                            character.script_skill_state.spirit_spheres.remove(0);
+                        }
+                    }
                 }
-                if metadata.name == "GS_GLITTERING" { character.script_skill_state.coins = character.script_skill_state.spirit_spheres.len() as u8; }
+                if grant == SphereGrant::Glitter {
+                    character.script_skill_state.coins = character.script_skill_state.spirit_spheres.len() as u8;
+                }
                 character.status.spirit_sphere_count = character.script_skill_state.spirit_spheres.len().min(u8::MAX as usize) as u8;
                 self.notify_spheres(character);
             }
-            "TF_BACKSLIDING" | "TK_HIGHJUMP" => self.execute_movement_skill(server, state, character, effect, tick)?,
-            "TK_RUN" => self.toggle_run(server, state, character, effect, tick)?,
-            "TK_MISSION" => {
-                if !crate::server::service::script_character_service::begin_taekwon_mission(server, character)? { return Err("Taekwon Mission kept the current target".into()); }
+            ActorBehaviour::BackSlide | ActorBehaviour::HighJump => self.execute_movement_skill(server, state, character, effect, tick)?,
+            ActorBehaviour::Run => self.toggle_run(server, state, character, effect, tick)?,
+            ActorBehaviour::Mission => {
+                if !crate::server::service::script_character_service::begin_taekwon_mission(server, character)? {
+                    return Err("Taekwon Mission kept the current target".into());
+                }
             }
-            "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT" => {
-                let request = match metadata.name.as_str() {
-                    "MC_VENDING" => crate::server::model::game_systems::ScriptWorldRequest::Store(crate::server::model::game_systems::StoreRequest::PrepareVending { skill_level: effect.level }),
-                    "MC_PUSHCART" => crate::server::model::game_systems::ScriptWorldRequest::Container(crate::server::model::game_systems::ContainerRequest::SetCart(1)),
-                    "AM_CALLHOMUN" => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::CallHomunculus),
-                    "WE_CALLPARTNER" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallPartner),
-                    "WE_CALLBABY" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallBaby),
-                    "WE_CALLPARENT" => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallParents),
-                    "AM_REST" => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::RestHomunculus),
-                    _ => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::ResurrectHomunculus { skill_level: effect.level }),
+            ActorBehaviour::ServiceCall(call) => {
+                let request = match call {
+                    ServiceCall::Vending => crate::server::model::game_systems::ScriptWorldRequest::Store(crate::server::model::game_systems::StoreRequest::PrepareVending { skill_level: effect.level }),
+                    ServiceCall::Pushcart => crate::server::model::game_systems::ScriptWorldRequest::Container(crate::server::model::game_systems::ContainerRequest::SetCart(1)),
+                    ServiceCall::CallHomunculus => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::CallHomunculus),
+                    ServiceCall::RestHomunculus => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::RestHomunculus),
+                    ServiceCall::ResurrectHomunculus => crate::server::model::game_systems::ScriptWorldRequest::Homunculus(crate::server::model::game_systems::HomunculusRequest::ResurrectHomunculus { skill_level: effect.level }),
+                    ServiceCall::CallPartner => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallPartner),
+                    ServiceCall::CallBaby => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallBaby),
+                    ServiceCall::CallParents => crate::server::model::game_systems::ScriptWorldRequest::Family(crate::server::model::game_systems::FamilyRequest::CallParents),
                 };
                 server.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld { char_id: character.char_id, request }));
             }
@@ -247,7 +260,7 @@ impl ScriptSkillService {
         let walkable = |x: i32, y: i32| x >= 0 && y >= 0 && x < instance.x_size() as i32 && y < instance.y_size() as i32 && instance.state().cells()[y as usize * instance.x_size() as usize + x as usize] & CellType::Walkable.as_flag() != 0;
         let occupied = |x: i32, y: i32| state.characters().values().any(|target| target.char_id != character.char_id && target.map_instance_key == character.map_instance_key && target.x as i32 == x && target.y as i32 == y) || instance.state().mobs().values().any(|mob| mob.status.hp() > 0 && mob.x as i32 == x && mob.y as i32 == y) || instance.state().map_items().values().any(|item| instance.get_script(item.id()).is_some_and(|npc| npc.x() as i32 == x && npc.y() as i32 == y));
         let (mut x, mut y) = (character.x as i32, character.y as i32);
-        if metadata.name == "TF_BACKSLIDING" {
+        if Self::effect_behaviour(effect) == ActorBehaviour::BackSlide {
             let distance = metadata.knockback.as_ref().and_then(|count| count.value(effect.level, "Amount")).unwrap_or(5);
             for _ in 0..distance { if !walkable(x - dx, y - dy) { break; } x -= dx; y -= dy; }
             if !character.status.has_status_change(StatusChangeKind::Endure) {

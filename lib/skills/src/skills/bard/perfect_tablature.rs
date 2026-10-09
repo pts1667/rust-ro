@@ -240,4 +240,14 @@ impl Skill for PerfectTablature {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::Whistle, reach: PerformanceReach::Everyone, ensemble: false, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        (level + i32::from(stats.agi()) / 10 + lesson / 2, (level + 1) / 2 + i32::from(stats.luk()) / 30 + lesson / 5)
+    }
 }

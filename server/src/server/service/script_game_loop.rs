@@ -305,7 +305,7 @@ impl Server {
             if self.character_service().is_overweight_for_combat(&character) {
                 return Err("Too heavy to use skills".into());
             }
-            self.script_skill_service().validate_performing(state, &character, event.skill_id)?;
+            self.script_skill_service().validate_performing(state, &character, event.skill_id, event.skill_level)?;
             if (8001..=8016).contains(&event.skill_id) || (8201..=8240).contains(&event.skill_id) {
                 self.add_to_next_tick(GameEvent::ScriptWorld(crate::server::model::events::game_event::ScriptWorld {
                     char_id: character.char_id,
@@ -356,7 +356,7 @@ impl Server {
             let skill = configuration
                 .find_skill_config(&(event.skill_id as i32).into())
                 .ok_or("Unknown skill")?;
-            if skill.name() == "SA_CASTCANCEL" {
+            if matches!(crate::server::script::skill::ScriptSkillService::skill_behaviour(event.skill_id, event.skill_level), skills::ActorBehaviour::CastCancel) {
                 return self.script_skill_service().cast_cancel(self, &mut character, event.skill_id, event.skill_level, tick);
             }
             if skill.name() == "MC_VENDING" || skill.name() == "MC_PUSHCART" {
@@ -377,8 +377,8 @@ impl Server {
                 }));
                 return Ok(());
             }
-            if crate::server::service::skill_menu_service::is_menu_skill(skill.name()) {
-                return self.open_skill_menu(state, &mut character, skill.name(), event.skill_id, event.skill_level, event.target_id, tick);
+            if let Some(menu_kind) = crate::server::service::skill_menu_service::menu_kind(event.skill_id, event.skill_level) {
+                return self.open_skill_menu(state, &mut character, menu_kind, event.skill_id, event.skill_level, event.target_id, tick);
             }
             self.script_skill_service().validate_skill(skill, u32::from(event.skill_level))?;
             if !self.player_skill_target_allowed(state, &character, event.target_id, event.skill_id, false) {
@@ -403,7 +403,7 @@ impl Server {
                         .script_skill_service()
                         .handle_skill(self, &mut character, skill, u32::from(event.skill_level), false);
                 }
-                if skill.name() == "AL_TELEPORT" {
+                if matches!(crate::server::script::skill::ScriptSkillService::skill_behaviour(event.skill_id, event.skill_level), skills::ActorBehaviour::Teleport) {
                     return self
                         .script_skill_service()
                         .start_native_teleport_menu(self, state, &mut character, event.skill_level, tick);

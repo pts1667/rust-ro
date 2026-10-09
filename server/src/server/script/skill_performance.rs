@@ -4,6 +4,7 @@ use models::enums::weapon::WeaponType;
 use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_change::{StatusChange, StatusChangeKind, StatusChangeRequest};
+use skills::{ActorBehaviour, PerformanceEffect, PerformanceProfile, PerformanceReach};
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -36,111 +37,20 @@ pub(super) struct PerformanceClock {
     last_pulse_second: i32,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Reach {
-    /// Everybody on a normal map, only the party where players fight each other.
-    Everyone,
-    Anyone,
-    Party,
-    Enemies,
+fn radius_of(performance: PerformanceProfile) -> u16 {
+    if performance.ensemble { ENSEMBLE_RADIUS } else { SONG_RADIUS }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Effect {
-    /// Hands `Performance::status` to everybody in reach.
-    Aura,
-    /// Damage to every enemy in the area on each pulse (Unchained Serenade).
-    Damage,
-    /// SP drain on enemy players on each pulse (Hip Shaker).
-    Drain,
-}
-
-#[derive(Clone, Copy)]
-struct Performance {
-    status: StatusChangeKind,
-    reach: Reach,
-    ensemble: bool,
-    effect: Effect,
-}
-
-impl Performance {
-    fn radius(self) -> u16 {
-        if self.ensemble { ENSEMBLE_RADIUS } else { SONG_RADIUS }
-    }
-
-    fn pulse_seconds(self) -> i32 {
-        if self.effect == Effect::Aura { PULSE_SECONDS } else { HARASS_PULSE_SECONDS }
-    }
-}
-
-fn performance(name: &str) -> Option<Performance> {
-    use Reach::*;
-    use StatusChangeKind::*;
-    let song = |status, reach| Performance { status, reach, ensemble: false, effect: Effect::Aura };
-    let ensemble = |status, reach| Performance { status, reach, ensemble: true, effect: Effect::Aura };
-    let harassing = |effect| Performance { status: Dancing, reach: Enemies, ensemble: false, effect };
-    Some(match name {
-        "BA_WHISTLE" => song(Whistle, Everyone),
-        "BA_ASSASSINCROSS" => song(AssnCros, Everyone),
-        "BA_POEMBRAGI" => song(PoemBragi, Everyone),
-        "BA_APPLEIDUN" => song(AppleIdun, Everyone),
-        "DC_HUMMING" => song(Humming, Everyone),
-        "DC_FORTUNEKISS" => song(Fortune, Everyone),
-        "DC_SERVICEFORYOU" => song(Service4U, Everyone),
-        "DC_DONTFORGETME" => song(DontForgetMe, Enemies),
-        "BD_DRUMBATTLEFIELD" => ensemble(DrumBattle, Party),
-        "BD_RINGNIBELUNGEN" => ensemble(Nibelungen, Party),
-        "BD_SIEGFRIED" => ensemble(Siegfried, Party),
-        "BD_ETERNALCHAOS" => ensemble(EternalChaos, Enemies),
-        "BD_LULLABY" => ensemble(Sleep, Enemies),
-        "BD_ROKISWEIL" => ensemble(RokisWeil, Anyone),
-        "BD_INTOABYSS" => ensemble(IntoAbyss, Party),
-        "BD_RICHMANKIM" => ensemble(RichMankim, Enemies),
-        "BA_DISSONANCE" => harassing(Effect::Damage),
-        "DC_UGLYDANCE" => harassing(Effect::Drain),
-        _ => return None,
-    })
-}
-
-fn lesson_for(name: &str) -> SkillEnum {
-    if name.starts_with("BA_") || name.starts_with("BD_") { SkillEnum::BaMusicallesson } else { SkillEnum::DcDancinglesson }
-}
-
-/// The two numbers the song hands to its status, `values[1]` and `values[2]`.
-fn song_values(name: &str, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
-    let (agi, dex, int, vit, luk) = (i32::from(stats.agi()), i32::from(stats.dex()), i32::from(stats.int()), i32::from(stats.vit()), i32::from(stats.luk()));
-    match name {
-        "BA_WHISTLE" => (level + agi / 10 + lesson / 2, (level + 1) / 2 + luk / 30 + lesson / 5),
-        "BA_ASSASSINCROSS" => ((lesson / 2 + 5 + level + agi / 20) * 10, 0),
-        "BA_POEMBRAGI" => (3 * level + dex / 10 + lesson, (if level < 10 { 3 * level } else { 50 }) + int / 5 + 2 * lesson),
-        "BA_APPLEIDUN" => (5 + 2 * level + vit / 10 + lesson / 2, 0),
-        "DC_HUMMING" => (1 + 2 * level + dex / 10 + lesson, 0),
-        "DC_FORTUNEKISS" => ((10 + level + luk / 10) * 10 + 5 * lesson, 0),
-        "DC_SERVICEFORYOU" => (15 + level + int / 10 + lesson / 2, 20 + 3 * level + int / 10 + lesson / 2),
-        "DC_DONTFORGETME" => ((5 + 3 * level + dex / 10 + lesson) * 10, 5 + 3 * level + agi / 10 + lesson),
-        "BD_DRUMBATTLEFIELD" => ((level + 1) * 25, (level + 1) * 2),
-        "BD_RINGNIBELUNGEN" => ((level + 2) * 25, 0),
-        "BD_SIEGFRIED" => (55 + 5 * level, 10 * level),
-        "BD_RICHMANKIM" => (25 + 11 * level, 0),
-        _ => (0, 0),
-    }
-}
-
-fn dissonance_damage(level: i32, lesson: i32) -> u32 {
-    (30 + 10 * level + level * lesson).max(0) as u32
-}
-
-fn ugly_dance_drain(level: i32, lesson: i32) -> u32 {
-    (5 + 5 * level + level * lesson).max(0) as u32
-}
-
-fn apple_of_idun_heal(level: i32, vit: i32, lesson: i32) -> u32 {
-    (30 + 5 * level + vit / 2 + 5 * lesson).max(0) as u32
+fn pulse_seconds_of(performance: PerformanceProfile) -> i32 {
+    if performance.effect == PerformanceEffect::Aura { PULSE_SECONDS } else { HARASS_PULSE_SECONDS }
 }
 
 impl ScriptSkillService {
-    pub(super) fn is_performance_skill(name: &str) -> bool {
-        performance(name).is_some() || matches!(name, "BD_ENCORE" | "BD_ADAPTATION" | "CG_LONGINGFREEDOM")
+    pub(super) fn is_performance_skill(metadata: &SkillMetadata, level: u8) -> bool {
+        matches!(
+            Self::actor_behaviour(metadata, level),
+            ActorBehaviour::Performance(_) | ActorBehaviour::Encore | ActorBehaviour::Adaptation | ActorBehaviour::LongingFreedom
+        )
     }
 
     fn find_partner(state: &ServerState, source: &Character, skill_id: u32) -> Option<(u32, u8)> {
@@ -164,8 +74,9 @@ impl ScriptSkillService {
     }
 
     /// While performing only a few skills are allowed, an ensemble needs its partner next to the caster.
-    pub fn validate_performing(&self, state: &ServerState, character: &Character, skill_id: u32) -> Result<(), String> {
-        if character.status.has_status_change(StatusChangeKind::RokisWeil) && skill_id != SkillEnum::BdAdaptation.id() {
+    pub fn validate_performing(&self, state: &ServerState, character: &Character, skill_id: u32, level: u8) -> Result<(), String> {
+        let behaviour = Self::skill_behaviour(skill_id, level);
+        if character.status.has_status_change(StatusChangeKind::RokisWeil) && behaviour != ActorBehaviour::Adaptation {
             return Err("Loki's Veil forbids skills".into());
         }
         let controlling = skill_id == SkillEnum::CgMarionette.id();
@@ -177,12 +88,12 @@ impl ScriptSkillService {
         let metadata = SkillMetadata::find(skill_id);
         let flag = |name: &str| metadata.is_some_and(|metadata| metadata.flags.get(name).copied().unwrap_or(false));
         if character.status.has_status_change(StatusChangeKind::Dancing) && !flag("AllowWhenPerforming") {
-            let repeats_performance = flag("IsSong") || flag("IsEnsemble") || skill_id == SkillEnum::BdEncore.id();
+            let repeats_performance = flag("IsSong") || flag("IsEnsemble") || behaviour == ActorBehaviour::Encore;
             if !character.status.has_status_change(StatusChangeKind::Longing) || repeats_performance {
                 return Err("Cannot use this skill while performing".into());
             }
         }
-        if metadata.and_then(|metadata| performance(&metadata.name)).is_some_and(|performance| performance.ensemble)
+        if matches!(behaviour, ActorBehaviour::Performance(performance) if performance.ensemble)
             && Self::find_partner(state, character, skill_id).is_none()
         {
             return Err("An ensemble needs a partner standing next to the caster".into());
@@ -196,11 +107,10 @@ impl ScriptSkillService {
         state: &ServerState,
         character: &mut Character,
         effect: &ScriptSkillEffect,
-        name: &str,
         tick: u128,
     ) -> Result<(), String> {
-        match name {
-            "BD_ADAPTATION" => {
+        match Self::effect_behaviour(effect) {
+            ActorBehaviour::Adaptation => {
                 let elapsed_ms = character.status.status_change(StatusChangeKind::Dancing).map(|dance| dance.values[2].saturating_mul(1000)).ok_or("Not performing")?;
                 if elapsed_ms < ADAPTATION_MIN_ELAPSED_MS {
                     return Err("The performance has not lasted long enough".into());
@@ -208,7 +118,7 @@ impl ScriptSkillService {
                 StatusEffectService::end(server, character, Some(StatusChangeKind::Dancing), tick, &self.client_notification_sender);
                 Ok(())
             }
-            "CG_LONGINGFREEDOM" => {
+            ActorBehaviour::LongingFreedom => {
                 let ensemble_dance = character.status.status_change(StatusChangeKind::Dancing).filter(|dance| dance.values[3] != 0 && dance.values[0] & 0xFFFF != SkillEnum::CgMoonlit.id() as i32);
                 if ensemble_dance.is_none() || character.status.has_status_change(StatusChangeKind::Longing) {
                     return Err("Longing for Freedom needs an ensemble in progress".into());
@@ -218,7 +128,7 @@ impl ScriptSkillService {
                 request.flags = 0;
                 StatusEffectService::start(server, character, request, tick, &self.client_notification_sender).map(|_| ())
             }
-            "BD_ENCORE" => {
+            ActorBehaviour::Encore => {
                 let (skill_id, level) = character.script_skill_state.last_performance.ok_or("There is nothing to repeat")?;
                 let level = level.min(learned_level(&character.status, skill_id));
                 if level == 0 {
@@ -241,7 +151,9 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Unknown performance")?;
-        let performance = performance(&metadata.name).ok_or("This skill is not a performance")?;
+        let ActorBehaviour::Performance(performance) = Self::actor_behaviour(metadata, level) else {
+            return Err("This skill is not a performance".into());
+        };
         let (partner, level) = if performance.ensemble {
             let (partner, partner_level) = Self::find_partner(state, character, skill_id).ok_or("An ensemble needs a partner standing next to the caster")?;
             (Some(partner), ((u32::from(level) + u32::from(partner_level)) / 2) as u8)
@@ -375,9 +287,10 @@ impl ScriptSkillService {
             }
             clock.next_radiate_at = tick + RADIATE_INTERVAL_MS;
             let second = dance.values[2];
-            let pulse_every = SkillMetadata::find((dance.values[0] & 0xFFFF) as u32)
-                .and_then(|metadata| performance(&metadata.name))
-                .map_or(PULSE_SECONDS, Performance::pulse_seconds);
+            let pulse_every = match Self::skill_behaviour((dance.values[0] & 0xFFFF) as u32, (dance.values[0] >> 16) as u8) {
+                ActorBehaviour::Performance(performance) => pulse_seconds_of(performance),
+                _ => PULSE_SECONDS,
+            };
             let pulse = second != clock.last_pulse_second && second > 0 && second % pulse_every == 0;
             if pulse {
                 clock.last_pulse_second = second;
@@ -392,8 +305,8 @@ impl ScriptSkillService {
         state: &ServerState,
         source: &Character,
         stats: &StatusSnapshot,
-        (skill_id, level, lesson): (u32, i32, i32),
-        effect: Effect,
+        (skill_id, level, amount): (u32, i32, u32),
+        effect: PerformanceEffect,
         radius: u16,
         tick: u128,
     ) {
@@ -408,7 +321,7 @@ impl ScriptSkillService {
                 skill_damage_adjusted: false,
                 target_id,
                 attacker_id: source.char_id,
-                damage: server.battle_service().actor_misc_skill_damage(dissonance_damage(level, lesson), stats, target, &Element::Neutral, flags, skill_id),
+                damage: server.battle_service().actor_misc_skill_damage(amount, stats, target, &Element::Neutral, flags, skill_id),
                 healing: 0,
                 right_hand_damage: None,
                 attacked_at: tick,
@@ -424,7 +337,7 @@ impl ScriptSkillService {
             }
             .with_skill_notification(source.current_map_name(), source.current_map_instance(), source.x, source.y, tick, 1, 0)
         };
-        if effect == Effect::Damage {
+        if effect == PerformanceEffect::Damage {
             if let Some(instance) = state.get_map_instance_from_character(source) {
                 let mobs = instance
                     .state()
@@ -450,16 +363,16 @@ impl ScriptSkillService {
             }
             let snapshot = StatusService::instance().to_snapshot(&target.status);
             match effect {
-                Effect::Damage => server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: strike(target.char_id, &snapshot) })),
-                Effect::Drain => {
-                    let percent = (u64::from(ugly_dance_drain(level, lesson)) * 100 / u64::from(snapshot.max_sp().max(1))).clamp(1, 100) as u16;
+                PerformanceEffect::Damage => server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage: strike(target.char_id, &snapshot) })),
+                PerformanceEffect::Drain => {
+                    let percent = (u64::from(amount) * 100 / u64::from(snapshot.max_sp().max(1))).clamp(1, 100) as u16;
                     server.add_to_next_tick(GameEvent::GroundTrapEffect(GroundTrapEffect {
                         map: target.map_instance_key.clone(),
                         target_id: target.char_id,
                         kind: GroundTrapEffectKind::DrainSp { percent },
                     }));
                 }
-                Effect::Aura => {}
+                PerformanceEffect::Aura => {}
             }
         }
     }
@@ -468,18 +381,19 @@ impl ScriptSkillService {
         let skill_id = (dance.values[0] & 0xFFFF) as u32;
         let level = dance.values[0] >> 16;
         let Some(metadata) = SkillMetadata::find(skill_id) else { return };
-        let Some(performance) = performance(&metadata.name) else { return };
+        let Some(skill) = Self::skill_object(metadata, level as u8) else { return };
+        let ActorBehaviour::Performance(performance) = skill.actor_behaviour() else { return };
         let stats = StatusService::instance().to_snapshot(&source.status);
-        let lesson = i32::from(learned_level(&source.status, lesson_for(&metadata.name).id()));
-        let (first, second) = song_values(&metadata.name, level, &stats, lesson);
-        let radius = performance.radius();
+        let lesson = i32::from(learned_level(&source.status, performance.lesson.id()));
+        let (first, second) = skill.performance_values(level, &stats, lesson);
+        let radius = radius_of(performance);
         let in_range = |x: u16, y: u16| source.x.abs_diff(x).max(source.y.abs_diff(y)) <= radius;
-        let lingering = !performance.ensemble && performance.reach != Reach::Enemies;
+        let lingering = !performance.ensemble && performance.reach != PerformanceReach::Enemies;
         let linger_ms = if lingering { metadata.duration(level as u8, true).unwrap_or(20_000) } else { SHORT_LINGER_MS };
         let versus = state.map_flags(&source.map_instance_key).versus(state.siege_active());
-        if performance.effect != Effect::Aura {
+        if performance.effect != PerformanceEffect::Aura {
             if pulse {
-                self.harass(server, state, source, &stats, (skill_id, level, lesson), performance.effect, radius, tick);
+                self.harass(server, state, source, &stats, (skill_id, level, skill.performance_amount(level, &stats, lesson)), performance.effect, radius, tick);
             }
             return;
         }
@@ -491,12 +405,13 @@ impl ScriptSkillService {
             request.duration_ms = metadata.duration(level as u8, true).unwrap_or(30_000);
         }
 
-        if performance.reach != Reach::Enemies {
+        let heal = skill.performance_heal(level, &stats, lesson);
+        if performance.reach != PerformanceReach::Enemies {
             for target in state.characters().values() {
                 let party = source.game_systems.party_id != 0 && target.game_systems.party_id == source.game_systems.party_id;
                 let allowed = match performance.reach {
-                    Reach::Party => party,
-                    Reach::Anyone => true,
+                    PerformanceReach::Party => party,
+                    PerformanceReach::Anyone => true,
                     _ => party || !versus,
                 };
                 if !allowed
@@ -514,8 +429,7 @@ impl ScriptSkillService {
                 if stale {
                     server.add_to_next_tick(GameEvent::CharacterStatusChange(CharacterStatusChange { char_id: target.char_id, request: request.clone() }));
                 }
-                if pulse && metadata.name == "BA_APPLEIDUN" {
-                    let heal = apple_of_idun_heal(level, i32::from(stats.vit()), lesson);
+                if pulse && heal > 0 {
                     let heal_effect = ScriptSkillEffect {
                         source_char_id: source.char_id,
                         target_id: target.char_id,
@@ -560,10 +474,16 @@ mod tests {
 
     #[test]
     fn harassing_songs_pulse_every_three_seconds_and_scale_with_the_lesson() {
-        assert_eq!(performance("BA_DISSONANCE").unwrap().pulse_seconds(), 3);
-        assert_eq!(performance("DC_UGLYDANCE").unwrap().pulse_seconds(), 3);
-        assert_eq!(performance("BA_WHISTLE").unwrap().pulse_seconds(), PULSE_SECONDS);
-        assert_eq!(dissonance_damage(5, 10), 30 + 50 + 50);
-        assert_eq!(ugly_dance_drain(5, 10), 5 + 25 + 50);
+        let stats = StatusSnapshot::_from(&models::status::Status::default());
+        let pulse = |skill: SkillEnum| match ScriptSkillService::skill_behaviour(skill.id(), 5) {
+            ActorBehaviour::Performance(performance) => pulse_seconds_of(performance),
+            _ => 0,
+        };
+        let amount = |skill: SkillEnum| ScriptSkillService::skill_object(SkillMetadata::find(skill.id()).unwrap(), 5).unwrap().performance_amount(5, &stats, 10);
+        assert_eq!(pulse(SkillEnum::BaDissonance), 3);
+        assert_eq!(pulse(SkillEnum::DcUglydance), 3);
+        assert_eq!(pulse(SkillEnum::BaWhistle), PULSE_SECONDS);
+        assert_eq!(amount(SkillEnum::BaDissonance), 30 + 50 + 50);
+        assert_eq!(amount(SkillEnum::DcUglydance), 5 + 25 + 50);
     }
 }

@@ -3268,13 +3268,12 @@ impl BattleService {
         metadata: &crate::server::script::skill::metadata::SkillMetadata,
         level: u8,
     ) -> Result<(i32, MagicAttackContext), String> {
-        let modifier = match metadata.name.as_str() {
-            "SL_STUN" => 1.0 + 0.05 * f32::from(level),
-            "SL_STIN" if *target.size() == Size::Small => 1.0 + 0.1 * f32::from(level),
-            "SL_STIN" => 0.01,
-            "SL_SMA" => (40.0 + source.base_level() as f32) / 100.0,
-            _ if metadata.is_monster() => 1.0,
-            _ => return Err("Skill has no metadata magic damage formula".into()),
+        let modifier = match crate::server::script::skill::ScriptSkillService::skill_object(metadata, level)
+            .and_then(|skill| skill.magic_modifier(*target.size() == Size::Small, source.base_level()))
+        {
+            Some(modifier) => modifier,
+            None if metadata.is_monster() => 1.0,
+            None => return Err("Skill has no metadata magic damage formula".into()),
         };
         let mut context = self.magic_attack_context(source, modifier, self.skill_attack_element(source, metadata, level));
         context.skill_id = metadata.id;

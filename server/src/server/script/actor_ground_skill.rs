@@ -8,7 +8,9 @@ use models::enums::map::MapActorType;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithStringValue};
 use models::status_bonus::BattleFlag;
 
-use super::ground::{GroundCell, GroundKind, GroundSkill, NEXT_GROUND_UNIT};
+use skills::GroundKind;
+
+use super::ground::{GroundCell, GroundSkill, NEXT_GROUND_UNIT};
 use super::metadata::SkillMetadata;
 use super::{GroundSkillSource, ScriptSkillService};
 use crate::server::Server;
@@ -57,7 +59,7 @@ impl ScriptSkillService {
         if level == 0 || level > metadata.max_level || source.status.hp() == 0 {
             return Err("Ground skill source or level is invalid".into());
         }
-        let kind = GroundKind::from_name(&metadata.name)
+        let kind = Self::ground_kind(metadata, level)
             .filter(|kind| {
                 scripted
                     || kind.trap()
@@ -111,7 +113,7 @@ impl ScriptSkillService {
         let configuration = &self.configuration.config().game.skill_units;
         let unit_range = metadata.unit_value("Range", level, "Size").unwrap_or(0).max(0) as u16;
         let layout_range = metadata.unit_value("Layout", level, "Size").unwrap_or(0).max(0) as u16;
-        let overlaps_traps = metadata.flags.get("IsTrap").copied().unwrap_or(false) || metadata.name == "AL_WARP";
+        let overlaps_traps = metadata.flags.get("IsTrap").copied().unwrap_or(false) || Self::ground_kind(metadata, level) == Some(GroundKind::WarpPortal);
         if metadata.unit_flag("NoReiteration") && configuration.reiteration_sources & actor_mask == 0 {
             let range = layout_range.saturating_add(if actor_kind == CombatActorKind::Player { unit_range } else { 0 });
             let grounds = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
@@ -190,7 +192,7 @@ impl ScriptSkillService {
     ) -> Result<(), String> {
         self.validate_actor_ground_with_options(state, &source, skill_id, level, x, y, tick, ignore_range, scripted)?;
         let metadata = SkillMetadata::find(skill_id).unwrap();
-        let kind = GroundKind::from_name(&metadata.name).unwrap();
+        let kind = Self::ground_kind(metadata, level).ok_or("Actor ground skill has no unit")?;
         let base_duration = metadata.duration(level, false).unwrap_or(100);
         let duration = if kind == GroundKind::Meteor {
             100
@@ -255,7 +257,7 @@ impl ScriptSkillService {
         }
         let mut ground = GroundSkill {
             portal: None,
-            message: if matches!(kind, GroundKind::TalkieBox | GroundKind::Graffiti) {
+            message: if kind.carries_text() {
                 state.get_character(source.actor_id).map_or_else(
                     || b"Boo!".to_vec(),
                     |player| player.script_skill_state.ground_skill_text.clone(),

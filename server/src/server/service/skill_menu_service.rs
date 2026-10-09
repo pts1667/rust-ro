@@ -67,9 +67,10 @@ pub enum SkillMenuChoice {
     StarPlace(u8),
 }
 
-pub fn is_menu_skill(name: &str) -> bool {
-    crate::server::script::skill::metadata::SkillMetadata::find_by_name(name)
-        .is_some_and(|metadata| metadata.route == Some(crate::server::script::skill::metadata::SkillRoute::Menu))
+/// The menu a skill opens for its caster, read from its object.
+pub fn menu_kind(skill_id: u32, level: u8) -> Option<skills::MenuKind> {
+    let metadata = crate::server::script::skill::metadata::SkillMetadata::find(skill_id)?;
+    crate::server::script::skill::ScriptSkillService::skill_object(metadata, level)?.menu()
 }
 
 const ELEMENTAL_CONVERTER_LEVEL: u16 = 23;
@@ -170,32 +171,32 @@ impl Server {
         &self,
         state: &ServerState,
         character: &mut Character,
-        skill_name: &str,
+        menu_kind: skills::MenuKind,
         skill_id: u32,
         level: u8,
         target_id: u32,
         tick: u128,
     ) -> Result<(), String> {
         self.script_skill_service().requirements_plan(character, skill_id, level, tick)?;
-        if matches!(skill_name, "AM_PHARMACY" | "AL_HOLYWATER" | "ASC_CDP") {
-            return self.start_crafting_skill(state, character, skill_name, skill_id, level, tick);
+        if matches!(menu_kind, skills::MenuKind::Pharmacy | skills::MenuKind::HolyWater | skills::MenuKind::DeadlyPoison) {
+            return self.start_crafting_skill(state, character, menu_kind, skill_id, level, tick);
         }
-        let (kind, packet) = match skill_name {
-            "SA_CREATECON" => {
+        let (kind, packet) = match menu_kind {
+            skills::MenuKind::ElementalConverter => {
                 let entries: Vec<u8> = self.item_service().makeable_items(character, ELEMENTAL_CONVERTER_LEVEL).iter().flat_map(|id| (*id as u16).to_le_bytes()).collect();
                 if entries.is_empty() {
                     return Err("No elemental converter can be made".into());
                 }
                 (SkillMenuKind::ElementalConverter, list_packet(ARROW_LIST_PACKET, &entries)?)
             }
-            "AC_MAKINGARROW" => {
+            skills::MenuKind::MakingArrow => {
                 let entries: Vec<u8> = arrow_sources(character).iter().flat_map(|id| (*id as u16).to_le_bytes()).collect();
                 if entries.is_empty() {
                     return Err("Nothing to make arrows from".into());
                 }
                 (SkillMenuKind::MakingArrow, list_packet(ARROW_LIST_PACKET, &entries)?)
             }
-            "WS_WEAPONREFINE" => {
+            skills::MenuKind::WeaponRefine => {
                 let mut entries = vec![];
                 for index in refinable_weapons(character, level) {
                     let client_index = index as u32 + CLIENT_INDEX_OFFSET;
@@ -206,7 +207,7 @@ impl Server {
                 }
                 (SkillMenuKind::WeaponRefine, list_packet(WEAPON_LIST_PACKET, &entries)?)
             }
-            "SA_AUTOSPELL" => {
+            skills::MenuKind::AutoSpell => {
                 let spells = auto_spell_choices(character, level);
                 if spells.is_empty() {
                     return Err("No skill can be turned into an Auto Spell".into());
@@ -217,11 +218,11 @@ impl Server {
                 }
                 (SkillMenuKind::AutoSpell, packet)
             }
-            "SG_FEEL" => match self.star_place_menu(character, level)? {
+            skills::MenuKind::StarPlace => match self.star_place_menu(character, level)? {
                 Some(packet) => (SkillMenuKind::StarPlace, packet),
                 None => return Ok(()),
             },
-            "BS_REPAIRWEAPON" => {
+            skills::MenuKind::RepairWeapon => {
                 let target = self.repair_target(state, character, skill_id, level, target_id)?;
                 let mut entries = vec![];
                 for index in broken_items(target) {
@@ -232,7 +233,7 @@ impl Server {
                 }
                 (SkillMenuKind::RepairWeapon { target: target_id }, list_packet(REPAIR_LIST_PACKET, &entries)?)
             }
-            _ => return Err(format!("{skill_name} does not open a menu")),
+            _ => return Err("This skill does not open a menu".into()),
         };
         character.pending_skill_menu = Some(SkillMenu { kind, skill_id, level, expires_at: tick + MENU_LIFETIME_MS });
         self.send_to_character(character.char_id, packet);
@@ -240,10 +241,10 @@ impl Server {
     }
 
     /// Pharmacy opens its window, Aqua Benedicta and Create Deadly Poison make their one item at once.
-    fn start_crafting_skill(&self, state: &ServerState, character: &mut Character, skill_name: &str, skill_id: u32, level: u8, tick: u128) -> Result<(), String> {
+    fn start_crafting_skill(&self, state: &ServerState, character: &mut Character, menu_kind: skills::MenuKind, skill_id: u32, level: u8, tick: u128) -> Result<(), String> {
         let item_service = self.item_service();
-        match skill_name {
-            "AM_PHARMACY" => {
+        match menu_kind {
+            skills::MenuKind::Pharmacy => {
                 item_service.open_crafting_window(character, false, POTION_LEVEL, Some(skill_id))?;
                 if let Err(error) = item_service.pay_skill_requirements(self, character, skill_id, level, tick, true, None) {
                     character.pending_craft = None;
@@ -251,7 +252,7 @@ impl Server {
                 }
                 Ok(())
             }
-            "AL_HOLYWATER" => {
+            skills::MenuKind::HolyWater => {
                 let water = state
                     .get_map_instance_from_character(character)
                     .is_some_and(|instance| instance.state().cells().get(character.y as usize * instance.x_size() as usize + character.x as usize).is_some_and(|cell| cell & CellType::Water.as_flag() != 0));

@@ -54,7 +54,8 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
     if let Some(layout) = super::talkie_box::layout(id, server.packetver()) {
         let [level, skill, x, y, text] = layout.offsets;
         let skill_id = u32::from(read(skill));
-        if !crate::server::script::skill::ScriptSkillService::is_text_ground_skill(skill_id) {
+        let skill_level = u8::try_from(read(level)).map_err(|_| "Invalid text ground skill level")?;
+        if !crate::server::script::skill::ScriptSkillService::is_text_ground_skill(skill_id, skill_level) {
             return Err("Text ground skill packet requires Talkie Box or Graffiti".into());
         }
         let contents = &bytes[text..];
@@ -63,7 +64,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
             skill: CharacterUseGroundSkill {
                 char_id,
                 skill_id,
-                skill_level: u8::try_from(read(level)).map_err(|_| "Invalid text ground skill level")?,
+                skill_level,
                 x: read(x),
                 y: read(y),
             },

@@ -278,4 +278,9 @@ impl Skill for GrandCross {
                 }
                 vec![StatusInfliction::secondary(StatusChangeKind::Blind, 10_000, self.level).monsters_only()]
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::GrandCross)
+    }
 }

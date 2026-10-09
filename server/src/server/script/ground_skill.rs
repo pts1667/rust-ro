@@ -10,6 +10,7 @@ use models::status::StatusSnapshot;
 use models::status_bonus::{BattleFlag, CombatTrigger};
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use script_sdk::Value;
+use skills::{GroundKind, GroundPlacement};
 
 use super::ScriptSkillService;
 use super::metadata::SkillMetadata;
@@ -28,249 +29,6 @@ use crate::server::state::server::ServerState;
 const SAFETY_WALL_APPLY_GRACE_MS: u128 = 400;
 
 pub(super) static NEXT_GROUND_UNIT: AtomicU32 = AtomicU32::new(2_000_000);
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GroundKind {
-    WarpPortal,
-    Firewall,
-    Pneuma,
-    Quagmire,
-    Deluge,
-    Volcano,
-    ViolentGale,
-    LandProtector,
-    Thunderstorm,
-    HeavenDrive,
-    Meteor,
-    StormGust,
-    Vermilion,
-    GrandCross,
-    GrandDarkness,
-    SkidTrap,
-    AnkleSnare,
-    LandMine,
-    BlastMine,
-    ClaymoreTrap,
-    Shockwave,
-    Flasher,
-    Sandman,
-    FreezingTrap,
-    TalkieBox,
-    Graffiti,
-    ArrowShower,
-    Earthquake,
-    SafetyWall,
-    Sanctuary,
-    VenomDust,
-    SpiderWeb,
-    EvilLand,
-    FirePillar,
-    Demonstration,
-    Basilica,
-    FogWall,
-    Warm,
-}
-
-impl GroundKind {
-    pub fn from_name(name: &str) -> Option<Self> {
-        Some(match name {
-            "AL_WARP" => Self::WarpPortal,
-            "MG_FIREWALL" => Self::Firewall,
-            "AL_PNEUMA" => Self::Pneuma,
-            "MG_SAFETYWALL" => Self::SafetyWall,
-            "PR_SANCTUARY" => Self::Sanctuary,
-            "AS_VENOMDUST" => Self::VenomDust,
-            "PF_SPIDERWEB" => Self::SpiderWeb,
-            "WZ_FIREPILLAR" => Self::FirePillar,
-            "AM_DEMONSTRATION" => Self::Demonstration,
-            "HP_BASILICA" => Self::Basilica,
-            "PF_FOGWALL" => Self::FogWall,
-            "SG_SUN_WARM" | "SG_MOON_WARM" | "SG_STAR_WARM" => Self::Warm,
-            "WZ_QUAGMIRE" => Self::Quagmire,
-            "SA_DELUGE" => Self::Deluge,
-            "SA_VOLCANO" => Self::Volcano,
-            "SA_VIOLENTGALE" => Self::ViolentGale,
-            "SA_LANDPROTECTOR" => Self::LandProtector,
-            "MG_THUNDERSTORM" => Self::Thunderstorm,
-            "WZ_HEAVENDRIVE" => Self::HeavenDrive,
-            "WZ_METEOR" => Self::Meteor,
-            "WZ_STORMGUST" => Self::StormGust,
-            "WZ_VERMILION" => Self::Vermilion,
-            "CR_GRANDCROSS" => Self::GrandCross,
-            "MA_SKIDTRAP" | "HT_SKIDTRAP" => Self::SkidTrap,
-            "HT_ANKLESNARE" => Self::AnkleSnare,
-            "MA_LANDMINE" | "HT_LANDMINE" => Self::LandMine,
-            "HT_BLASTMINE" => Self::BlastMine,
-            "HT_CLAYMORETRAP" => Self::ClaymoreTrap,
-            "HT_SHOCKWAVE" => Self::Shockwave,
-            "HT_FLASHER" => Self::Flasher,
-            "MA_SANDMAN" | "HT_SANDMAN" => Self::Sandman,
-            "MA_FREEZINGTRAP" | "HT_FREEZINGTRAP" => Self::FreezingTrap,
-            "HT_TALKIEBOX" => Self::TalkieBox,
-            "RG_GRAFFITI" => Self::Graffiti,
-            "MA_SHOWER" => Self::ArrowShower,
-            _ => return Self::from_monster(super::monster::MonsterSkill::of_name(name)?),
-        })
-    }
-
-    fn from_monster(skill: super::monster::MonsterSkill) -> Option<Self> {
-        use super::monster::MonsterSkill;
-        Some(match skill {
-            MonsterSkill::EvilLand => Self::EvilLand,
-            MonsterSkill::GrandDarkness => Self::GrandDarkness,
-            MonsterSkill::EarthQuake => Self::Earthquake,
-            _ => return None,
-        })
-    }
-
-    pub(super) fn view_id(self) -> u32 {
-        match self {
-            Self::WarpPortal => 129,
-            Self::Firewall => 127,
-            Self::Pneuma => 133,
-            Self::SafetyWall => 126,
-            Self::Sanctuary => 131,
-            Self::VenomDust => 146,
-            Self::SpiderWeb => 183,
-            Self::Quagmire => 142,
-            Self::Volcano => 154,
-            Self::Deluge => 155,
-            Self::ViolentGale => 156,
-            Self::LandProtector => 157,
-            Self::SkidTrap => 144,
-            Self::AnkleSnare => 145,
-            Self::LandMine => 147,
-            Self::BlastMine => 143,
-            Self::ClaymoreTrap => 152,
-            Self::Shockwave => 148,
-            Self::Flasher => 150,
-            Self::Sandman => 149,
-            Self::FreezingTrap => 151,
-            Self::TalkieBox => 153,
-            Self::Graffiti => 176,
-            Self::Earthquake => 198,
-            Self::FirePillar => 135,
-            Self::Demonstration => 177,
-            _ => 134,
-        }
-    }
-
-    fn status(self) -> Option<StatusChangeKind> {
-        match self {
-            Self::Pneuma => Some(StatusChangeKind::Pneuma),
-            Self::SafetyWall => Some(StatusChangeKind::SafetyWall),
-            Self::Quagmire => Some(StatusChangeKind::Quagmire),
-            Self::Deluge => Some(StatusChangeKind::Deluge),
-            Self::Volcano => Some(StatusChangeKind::Volcano),
-            Self::ViolentGale => Some(StatusChangeKind::ViolentGale),
-            Self::Basilica => Some(StatusChangeKind::Basilica),
-            Self::FogWall => Some(StatusChangeKind::FogWall),
-            _ => None,
-        }
-    }
-
-    /// Kinds that the actor (monster and NPC) cast pipeline can place and run to completion.
-    pub(super) fn actor_placeable(self) -> bool {
-        matches!(
-            self,
-            Self::HeavenDrive
-                | Self::Thunderstorm
-                | Self::Pneuma
-                | Self::SafetyWall
-                | Self::Sanctuary
-                | Self::VenomDust
-                | Self::SpiderWeb
-                | Self::EvilLand
-                | Self::FirePillar
-                | Self::Demonstration
-                | Self::Quagmire
-                | Self::Deluge
-                | Self::Volcano
-                | Self::ViolentGale
-                | Self::LandProtector
-                | Self::SkidTrap
-                | Self::AnkleSnare
-                | Self::LandMine
-                | Self::BlastMine
-                | Self::ClaymoreTrap
-                | Self::Shockwave
-                | Self::Flasher
-                | Self::Sandman
-                | Self::FreezingTrap
-                | Self::ArrowShower
-                | Self::Firewall
-                | Self::Meteor
-                | Self::StormGust
-                | Self::Vermilion
-                | Self::Earthquake
-                | Self::GrandCross
-                | Self::GrandDarkness
-        )
-    }
-
-    /// Sage fields: one per caster, a new one replaces the previous.
-    pub(super) fn element_field(self) -> bool {
-        matches!(self, Self::Deluge | Self::Volcano | Self::ViolentGale | Self::LandProtector)
-    }
-
-    fn damaging(self) -> bool {
-        !matches!(
-            self,
-            Self::WarpPortal
-                | Self::TalkieBox
-                | Self::Graffiti
-                | Self::Pneuma
-                | Self::SafetyWall
-                | Self::Sanctuary
-                | Self::VenomDust
-                | Self::SpiderWeb
-                | Self::EvilLand
-                | Self::GrandDarkness
-                | Self::Quagmire
-                | Self::Deluge
-                | Self::Volcano
-                | Self::ViolentGale
-                | Self::LandProtector
-                | Self::Basilica
-                | Self::FogWall
-                | Self::Warm
-        )
-    }
-
-    pub(super) fn effect_range(self, configured: u16) -> u16 {
-        match self {
-            Self::Pneuma => 1,
-            Self::Sanctuary | Self::VenomDust | Self::SpiderWeb | Self::FogWall => 0,
-            _ => configured,
-        }
-    }
-
-    /// Units that follow the trap placement rules and run through the trap-style tick.
-    pub(super) fn classic_unit(self) -> bool {
-        self.trap() || matches!(self, Self::Graffiti | Self::FirePillar | Self::Demonstration)
-    }
-
-    /// Units that stay on the map after the actor that placed them is gone.
-    pub(super) fn outlives_source(self) -> bool {
-        matches!(self, Self::AnkleSnare | Self::FirePillar | Self::Demonstration)
-    }
-
-    pub(super) fn trap(self) -> bool {
-        matches!(
-            self,
-            Self::SkidTrap
-                | Self::AnkleSnare
-                | Self::LandMine
-                | Self::BlastMine
-                | Self::ClaymoreTrap
-                | Self::Shockwave
-                | Self::Flasher
-                | Self::Sandman
-                | Self::FreezingTrap
-                | Self::TalkieBox
-        )
-    }
-}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct GroundSkillSource {
@@ -422,12 +180,12 @@ impl ScriptSkillService {
                 .is_some_and(|pending| pending.item_index.is_some() || pending.source_item.is_some());
         Self::validate_skill_map(state, character, skill_id, level, issued)?;
         let metadata = SkillMetadata::find(skill_id).ok_or("Pre-renewal ground definition is unavailable")?;
-        if GroundKind::from_name(&metadata.name).is_none()
-            && !matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "RG_CLEANER" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "NJ_SHADOWJUMP" | "AM_SPHEREMINE" | "AM_CANNIBALIZE" | "CR_SLIMPITCHER" | "CR_CULTIVATION" | "PR_BENEDICTIO")
-        {
+        let kind = Self::ground_kind(metadata, level);
+        let placement = Self::ground_placement(metadata, level);
+        if kind.is_none() && placement.is_none() {
             return Err("Skill does not accept a ground target".into());
         }
-        let basilica_cancel = metadata.name == "HP_BASILICA" && character.status.basilica_owner() == Some(character.char_id);
+        let basilica_cancel = placement == Some(GroundPlacement::Basilica) && character.status.basilica_owner() == Some(character.char_id);
         if character.status.hp == 0
             || (character.status.blocks_casting() && !basilica_cancel)
             || (!instant && (character.script_skill_state.casting_until > tick || character.timing.get_canact_tick() > tick))
@@ -455,7 +213,7 @@ impl ScriptSkillService {
         {
             return Err("Ground skill target is outside usable terrain".into());
         }
-        if GroundKind::from_name(&metadata.name).is_some_and(GroundKind::classic_unit) {
+        if kind.is_some_and(GroundKind::classic_unit) {
             self.validate_actor_ground_with_options(
                 state,
                 &GroundSkillSource {
@@ -478,29 +236,29 @@ impl ScriptSkillService {
                 true,
             )?;
         }
-        if Self::is_alchemist_summon(skill_id) {
+        if placement == Some(GroundPlacement::Summon) {
             self.validate_summon_limit(state, character, skill_id, level)?;
         }
         let active = self.ground_skills.lock().map_err(|_| "Ground skill state is unavailable")?;
-        if metadata.name == "MG_FIREWALL"
-            && active
+        if let (Some(GroundPlacement::Limit(max)), Some(kind)) = (placement, kind) {
+            let count = active
                 .iter()
-                .filter(|ground| ground.source_id == character.char_id && ground.kind == GroundKind::Firewall && ground.expires_at > tick)
-                .count()
-                >= 3
-        {
-            return Err("At most three Fire Walls may be active".into());
+                .filter(|ground| ground.source_id == character.char_id && ground.kind == kind && ground.expires_at > tick)
+                .count();
+            if count >= usize::from(max) {
+                return Err(format!("At most {max} units of this skill may be active"));
+            }
         }
-        if metadata.name == "AL_PNEUMA"
-            && active.iter().any(|ground| {
-                ground.kind == GroundKind::Pneuma
+        if let (Some(GroundPlacement::NoOverlap), Some(kind)) = (placement, kind) {
+            if active.iter().any(|ground| {
+                ground.kind == kind
                     && ground.map == *character.current_map_name()
                     && ground.instance == character.current_map_instance()
                     && ground.expires_at > tick
                     && ground.covers(x, y)
-            })
-        {
-            return Err("A Pneuma already covers this cell".into());
+            }) {
+                return Err("This cell is already covered by this skill".into());
+            }
         }
         Ok(())
     }
@@ -535,7 +293,8 @@ impl ScriptSkillService {
         self.validate_ground_target_with_mode(state, character, skill_id, level, x, y, tick, instant)?;
         self.end_cloaking_on_skill(server, character, skill_id, tick);
         let metadata = SkillMetadata::find(skill_id).unwrap();
-        if metadata.name == "HP_BASILICA" {
+        let placement = Self::ground_placement(metadata, level);
+        if placement == Some(GroundPlacement::Basilica) {
             if character.status.basilica_owner() == Some(character.char_id) {
                 self.expire_owned_ground_units(character.char_id, GroundKind::Basilica, tick);
                 return Ok(());
@@ -546,10 +305,10 @@ impl ScriptSkillService {
             }
             self.expire_owned_ground_units(character.char_id, GroundKind::Basilica, tick);
         }
-        if metadata.name == "AL_WARP" {
+        if placement == Some(GroundPlacement::WarpPortal) {
             return self.start_warp_portal_menu(server, state, character, skill_id, level, x, y, tick, instant, depth, None);
         }
-        if metadata.name == "RG_CLEANER" {
+        if placement == Some(GroundPlacement::Cleaner) {
             let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
             let effect = super::ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -573,7 +332,7 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if Self::is_alchemist_summon(skill_id) {
+        if placement == Some(GroundPlacement::Summon) {
             let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
             let effect = super::ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -596,10 +355,7 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if matches!(metadata.name.as_str(), "BS_HAMMERFALL" | "HW_GANBANTEIN" | "MO_BODYRELOCATION" | "NJ_SHADOWJUMP" | "CR_SLIMPITCHER" | "CR_CULTIVATION" | "PR_BENEDICTIO") {
-            if instant && metadata.name == "BS_HAMMERFALL" {
-                return self.cast_area_status(server, state, character, skill_id, level, x, y, tick);
-            }
+        if placement == Some(GroundPlacement::AreaStatus) {
             let skill = self.configuration.find_skill_config(&Value::Number(skill_id as i32)).unwrap();
             let effect = super::ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -622,18 +378,13 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        let kind = GroundKind::from_name(&metadata.name).unwrap();
-        if kind == GroundKind::Warm {
-            let slot = match metadata.name.as_str() {
-                "SG_SUN_WARM" => 0,
-                "SG_MOON_WARM" => 1,
-                _ => 2,
-            };
+        let kind = Self::ground_kind(metadata, level).ok_or("Skill does not accept a ground target")?;
+        if let GroundKind::Warm(slot) = kind {
             if character.status.has_status_change(StatusChangeKind::Warm) {
                 return Err("Warm is already active".into());
             }
             if !character.status.has_status_change(StatusChangeKind::Miracle)
-                && character.game_systems.star_places[slot] != normalize_map(character.current_map_name())
+                && character.game_systems.star_places[usize::from(slot)] != normalize_map(character.current_map_name())
             {
                 return Err("Warm needs the remembered map".into());
             }
@@ -725,7 +476,7 @@ impl ScriptSkillService {
         for (number, (x, y, offset)) in centers.into_iter().enumerate() {
             let locations = match kind {
                 GroundKind::Firewall => Self::firewall_cells(character.x, character.y, x, y),
-                GroundKind::Pneuma | GroundKind::Warm => vec![(x, y)],
+                GroundKind::Pneuma | GroundKind::Warm(_) => vec![(x, y)],
                 GroundKind::FogWall => Self::fogwall_cells(x, y),
                 GroundKind::Sanctuary => Self::sanctuary_cells(x, y),
                 GroundKind::VenomDust => Self::venom_dust_cells(x, y),
@@ -767,12 +518,12 @@ impl ScriptSkillService {
             if cells.is_empty() {
                 continue;
             }
-            if kind == GroundKind::Warm {
+            if matches!(kind, GroundKind::Warm(_)) {
                 warm_group = cells.first().map(|cell| cell.id);
             }
             active.push(GroundSkill {
                 portal: None,
-                message: if matches!(kind, GroundKind::TalkieBox | GroundKind::Graffiti) {
+                message: if kind.carries_text() {
                     character.script_skill_state.ground_skill_text.clone()
                 } else {
                     vec![]
@@ -1127,7 +878,7 @@ impl ScriptSkillService {
                 self.tick_fog_wall(server, state, ground, tick);
                 continue;
             }
-            if ground.kind == GroundKind::Warm {
+            if matches!(ground.kind, GroundKind::Warm(_)) {
                 self.tick_warm(server, state, ground, tick);
                 continue;
             }

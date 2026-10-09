@@ -120,4 +120,14 @@ impl Skill for PreparePotion {
         }
         Ok(Some(required_items))
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::Pharmacy)
+    }
+
+    #[inline(always)]
+    fn crafting_rule(&self) -> Option<CraftingRule> {
+        Some(CraftingRule::Pharmacy)
+    }
 }

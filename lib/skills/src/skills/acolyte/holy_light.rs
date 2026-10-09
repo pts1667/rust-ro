@@ -136,4 +136,9 @@ impl Skill for HolyLight {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { autocast_sp: true, ..CostRules::default() }
+    }
 }

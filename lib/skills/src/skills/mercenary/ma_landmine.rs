@@ -87,4 +87,19 @@ impl Skill for MaLandmine {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, self.level).delayed(StatusDelay::Ms(1_000))]
     }
+
+    #[inline(always)]
+    fn companion_effect(&self) -> Option<CompanionEffect> {
+        Some(CompanionEffect::Trap)
+    }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::LandMine)
+    }
+
+    #[inline(always)]
+    fn pet_ground_attack(&self) -> bool {
+        true
+    }
 }

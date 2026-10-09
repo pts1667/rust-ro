@@ -134,4 +134,9 @@ impl Skill for DownTempo {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::EternalChaos, reach: PerformanceReach::Enemies, ensemble: true, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
 }

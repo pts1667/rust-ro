@@ -230,4 +230,19 @@ impl Skill for SongofLutie {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::AppleIdun, reach: PerformanceReach::Everyone, ensemble: false, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        (5 + 2 * level + i32::from(stats.vit()) / 10 + lesson / 2, 0)
+    }
+
+    #[inline(always)]
+    fn performance_amount(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> u32 {
+        (30 + 5 * level + i32::from(stats.vit()) / 2 + 5 * lesson).max(0) as u32
+    }
 }

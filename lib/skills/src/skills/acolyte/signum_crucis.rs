@@ -131,4 +131,17 @@ impl Skill for SignumCrucis {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::AreaStatus { at_target_point: false }
     }
+
+    #[inline(always)]
+    fn area_status(&self) -> Option<AreaStatusProfile> {
+        Some(AreaStatusProfile {
+            kind: StatusChangeKind::SignumCrucis,
+            chance: 2500 + 400 * i32::from(self.level),
+            delay_ms: 0,
+            duration: AreaDuration::Permanent,
+            party_quarter_chance: false,
+            undead_only: true,
+            level_rate: true,
+        })
+    }
 }

@@ -601,7 +601,7 @@ impl GameEventHandler for CharacterUseGroundSkillText {
         {
             return Err("Text ground skill input belongs to an expired login".into());
         }
-        if !ScriptSkillService::is_text_ground_skill(event.skill.skill_id) || event.message.len() > 79 {
+        if !ScriptSkillService::is_text_ground_skill(event.skill.skill_id, event.skill.skill_level) || event.message.len() > 79 {
             return Err("Invalid text ground skill input".into());
         }
 

@@ -167,4 +167,9 @@ impl Skill for Quagmire {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::Quagmire)
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Quagmire)
+    }
 }

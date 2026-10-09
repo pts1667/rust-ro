@@ -87,4 +87,19 @@ impl Skill for MaFreezingTrap {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, self.level).delayed(StatusDelay::AfterAttackMotion(100))]
     }
+
+    #[inline(always)]
+    fn companion_effect(&self) -> Option<CompanionEffect> {
+        Some(CompanionEffect::Trap)
+    }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::FreezingTrap)
+    }
+
+    #[inline(always)]
+    fn pet_ground_attack(&self) -> bool {
+        true
+    }
 }

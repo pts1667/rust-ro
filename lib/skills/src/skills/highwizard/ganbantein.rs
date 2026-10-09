@@ -153,4 +153,14 @@ impl Skill for Ganbantein {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Ganbantein
     }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { abyss_exempt: true, ..CostRules::default() }
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

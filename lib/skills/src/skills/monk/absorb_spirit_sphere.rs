@@ -116,4 +116,9 @@ impl Skill for AbsorbSpiritSphere {
     fn base_cast_time(&self) -> u32 {
        2000
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::AbsorbSpirits)
+    }
 }

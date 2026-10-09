@@ -5,6 +5,7 @@ use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithMaskValueU8, EnumWithNumberValue};
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use skills::ClassEffect;
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -34,46 +35,9 @@ const MAX_RANDOM_MONSTER_LEVEL: i32 = 99;
 const PORING_MOB_ID: u32 = 1002;
 
 impl ScriptSkillService {
-    /// The class-specific soul links, each starts `Spirit` on the target with the skill id as its second value.
-    fn soul_link_skill(name: &str) -> bool {
-        matches!(
-            name,
-            "SL_ALCHEMIST" | "SL_ASSASIN" | "SL_BARDDANCER" | "SL_BLACKSMITH" | "SL_CRUSADER" | "SL_HUNTER" | "SL_KNIGHT" | "SL_MONK" | "SL_PRIEST"
-                | "SL_ROGUE" | "SL_SAGE" | "SL_SOULLINKER" | "SL_STAR" | "SL_SUPERNOVICE" | "SL_WIZARD" | "SL_HIGH"
-        )
-    }
-
-    fn soul_linker_buff(name: &str) -> Option<StatusChangeKind> {
-        match name {
-            "SL_KAIZEL" => Some(StatusChangeKind::Kaizel),
-            "SL_KAAHI" => Some(StatusChangeKind::Kaahi),
-            "SL_KAUPE" => Some(StatusChangeKind::Kaupe),
-            "SL_KAITE" => Some(StatusChangeKind::Kaite),
-            _ => None,
-        }
-    }
-
-    fn es_debuff(name: &str) -> Option<StatusChangeKind> {
-        match name {
-            "SL_SWOO" => Some(StatusChangeKind::Swoo),
-            "SL_SKE" => Some(StatusChangeKind::Ske),
-            "SL_SKA" => Some(StatusChangeKind::Ska),
-            _ => None,
-        }
-    }
-
-    pub(super) fn is_class_skill(name: &str) -> bool {
-        Self::soul_link_skill(name)
-            || Self::soul_linker_buff(name).is_some()
-            || Self::es_debuff(name).is_some()
-            || Self::is_taekwon_skill(name)
-            || Self::is_performance_skill(name)
-            || Self::is_alchemy_skill(name)
-            || matches!(
-            name,
-            "MO_ABSORBSPIRITS" | "MO_KITRANSLATION" | "CR_FULLPROTECTION" | "PR_REDEMPTIO" | "SG_SUN_COMFORT" | "SG_MOON_COMFORT" | "SG_STAR_COMFORT" | "SG_HATE" | "CG_MARIONETTE" | "WE_MALE" | "WE_FEMALE" | "SA_ELEMENTWATER" | "SA_ELEMENTGROUND" | "SA_ELEMENTFIRE" | "SA_CLASSCHANGE" | "SA_MONOCELL" | "TF_STEAL" | "RG_STEALCOIN" | "PF_MINDBREAKER" | "PF_HPCONVERSION" | "PF_SOULCHANGE" | "SA_QUESTION" | "SA_GRAVITY"
-                | "SA_LEVELUP" | "SA_INSTANTDEATH" | "SA_FULLRECOVERY" | "SA_COMA" | "SA_FORTUNE" | "SA_DEATH" | "SA_SUMMONMONSTER"
-        )
+    /// Whether the class dispatch handles this skill: a declared class effect, or a performance song.
+    fn is_class_skill(metadata: &SkillMetadata, level: u8) -> bool {
+        Self::class_effect(metadata, level).is_some() || Self::is_performance_skill(metadata, level)
     }
 
     pub(super) fn timed_request(effect: &ScriptSkillEffect, kind: StatusChangeKind) -> StatusChangeRequest {
@@ -173,12 +137,12 @@ impl ScriptSkillService {
     /// Effects whose target is a player (or the caster themselves), `character` is the target.
     pub(super) fn apply_class_skill(&self, server: &Server, state: &ServerState, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<bool, String> {
         let Some(metadata) = SkillMetadata::find(effect.skill_id) else { return Ok(false) };
-        if !Self::is_class_skill(&metadata.name) {
+        if !Self::is_class_skill(&metadata, effect.level) {
             return Ok(false);
         }
         let on_self = effect.source_char_id == character.char_id;
-        match metadata.name.as_str() {
-            "MO_ABSORBSPIRITS" => {
+        match Self::class_effect(&metadata, effect.level) {
+            Some(ClassEffect::AbsorbSpirits) => {
                 if character.status.job == JobName::Gunslinger.value() as u32 {
                     return Err("Coins cannot be absorbed".into());
                 }
@@ -200,7 +164,7 @@ impl ScriptSkillService {
                     self.followup_action(server, effect, effect.source_char_id, ScriptSkillAction::Heal { hp: 0, sp: spheres * SP_PER_SPHERE });
                 }
             }
-            "MO_KITRANSLATION" => {
+            Some(ClassEffect::KiTranslation) => {
                 let party_id = state.get_character(effect.source_char_id).map_or(0, |source| source.game_systems.party_id);
                 if on_self || party_id == 0 || character.game_systems.party_id != party_id {
                     return Err("Ki Translation only works on another party member".into());
@@ -217,7 +181,7 @@ impl ScriptSkillService {
                 character.status.spirit_sphere_count = character.script_skill_state.spirit_spheres.len().min(u8::MAX as usize) as u8;
                 self.notify_spheres(character);
             }
-            "PR_REDEMPTIO" => {
+            Some(ClassEffect::Redemptio) => {
                 let flags = state.map_flags(&character.map_instance_key);
                 if flags.is_gvg() || flags.enabled(crate::server::model::map_flags::MapFlag::Battleground) {
                     return Err("Redemptio is disabled on this map".into());
@@ -258,10 +222,10 @@ impl ScriptSkillService {
                 }
                 server.character_service().update_hp_sp(character, 1, 0);
             }
-            "CG_MARIONETTE" => self.start_marionette(server, state, character, effect, tick)?,
-            "SG_SUN_COMFORT" | "SG_MOON_COMFORT" | "SG_STAR_COMFORT" => self.star_comfort(server, character, &metadata.name, effect, tick)?,
-            "SG_HATE" => return Err("Hatred of the Sun, Moon and Stars only targets monsters".into()),
-            "WE_MALE" | "WE_FEMALE" => {
+            Some(ClassEffect::Marionette) => self.start_marionette(server, state, character, effect, tick)?,
+            Some(ClassEffect::StarComfort { slot, kind }) => self.star_comfort(server, character, slot, kind, effect, tick)?,
+            Some(ClassEffect::StarHate) => return Err("Hatred of the Sun, Moon and Stars only targets monsters".into()),
+            Some(ClassEffect::ConjugalShare { hp }) => {
                 let source_partner = if on_self { character.game_systems.partner_id } else { state.get_character(effect.source_char_id).map_or(0, |source| source.game_systems.partner_id) };
                 let partner_id = if on_self { source_partner } else { character.char_id };
                 if partner_id == 0 || partner_id != source_partner {
@@ -269,7 +233,7 @@ impl ScriptSkillService {
                 }
                 let share = |partner: &Character| {
                     let snapshot = StatusService::instance().to_snapshot(&partner.status);
-                    if metadata.name == "WE_MALE" { (snapshot.max_hp() / 10, 0) } else { (0, snapshot.max_sp() / 10) }
+                    if hp { (snapshot.max_hp() / 10, 0) } else { (0, snapshot.max_sp() / 10) }
                 };
                 if on_self {
                     let partner = state.get_character(partner_id).ok_or("The partner is not online")?;
@@ -280,10 +244,10 @@ impl ScriptSkillService {
                     Self::restore(server, character, hp, sp);
                 }
             }
-            "AM_POTIONPITCHER" => self.aid_potion(server, state, character, effect)?,
-            "AM_BERSERKPITCHER" => self.aid_berserk_potion(server, character, tick)?,
-            "AM_TWILIGHT1" | "AM_TWILIGHT2" | "AM_TWILIGHT3" => self.twilight_alchemy(server, character, &metadata.name)?,
-            "CR_FULLPROTECTION" => {
+            Some(ClassEffect::AidPotion) => self.aid_potion(server, state, character, effect)?,
+            Some(ClassEffect::AidBerserkPotion) => self.aid_berserk_potion(server, character, tick)?,
+            Some(ClassEffect::Twilight(stage)) => self.twilight_alchemy(server, character, stage)?,
+            Some(ClassEffect::FullProtection) => {
                 use models::enums::item::ItemType;
                 let slots = [
                     (StatusChangeKind::ProtectWeapon, models::enums::item::EquipmentLocation::HandRight.as_flag() | models::enums::item::EquipmentLocation::HandLeft.as_flag(), ItemType::Weapon),
@@ -303,41 +267,41 @@ impl ScriptSkillService {
                     StatusEffectService::start(server, character, Self::timed_request(effect, kind), tick, &self.client_notification_sender)?;
                 }
             }
-            "SA_QUESTION" => {
+            Some(ClassEffect::Question) => {
                 let mut packet = 0x00c0_u16.to_le_bytes().to_vec();
                 packet.extend_from_slice(&character.char_id.to_le_bytes());
                 packet.push(EMOTION_QUESTION);
                 self.notify_area(character, packet);
             }
-            "SA_GRAVITY" => {}
-            "SA_LEVELUP" => {
+            Some(ClassEffect::Gravity) => {}
+            Some(ClassEffect::LevelUp) => {
                 let required = server.character_service().next_base_level_required_exp(&character.status);
                 if required != u32::MAX {
                     server.character_service().gain_base_exp_unrated(character, required / 10);
                 }
             }
-            "SA_INSTANTDEATH" => {
+            Some(ClassEffect::InstantDeath) => {
                 let damage = Self::kill_damage(effect, character.char_id, character.status.hp, CombatActorKind::Player);
                 server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
             }
-            "SA_FULLRECOVERY" => {
+            Some(ClassEffect::FullRecovery) => {
                 if character.status.hp > 0 {
                     let snapshot = StatusService::instance().to_snapshot(&character.status);
                     server.character_service().update_hp_sp(character, snapshot.max_hp(), snapshot.max_sp());
                 }
             }
-            "SA_COMA" => {
+            Some(ClassEffect::Coma) => {
                 if character.status.hp > 0 {
                     server.character_service().update_hp_sp(character, character.status.hp.min(1), character.status.sp.min(1));
                 }
             }
-            "SA_FORTUNE" => {
+            Some(ClassEffect::Fortune) => {
                 if !on_self {
                     return Err("Fortune only works on the caster".into());
                 }
                 self.grant_zeny(server, character, character.status.base_level.saturating_mul(100))?;
             }
-            "SA_SUMMONMONSTER" => {
+            Some(ClassEffect::SummonMonster) => {
                 let config = GlobalConfigService::instance();
                 let mob_id = (0..RANDOM_MONSTER_ATTEMPTS)
                     .map(|_| fastrand::i32(1001..2000))
@@ -363,7 +327,7 @@ impl ScriptSkillService {
                     area_end: None,
                 }));
             }
-            "PF_HPCONVERSION" => {
+            Some(ClassEffect::HpConversion) => {
                 let snapshot = StatusService::instance().to_snapshot(&character.status);
                 let cost = snapshot.max_hp() / 10;
                 if character.status.hp <= cost {
@@ -372,7 +336,7 @@ impl ScriptSkillService {
                 let sp = cost.saturating_mul(u32::from(effect.level));
                 server.character_service().update_hp_sp(character, character.status.hp - cost, character.status.sp.saturating_add(sp).min(snapshot.max_sp()));
             }
-            "PF_SOULCHANGE" => {
+            Some(ClassEffect::SoulChange) => {
                 if on_self {
                     return Err("Soul Change needs another player".into());
                 }
@@ -385,9 +349,9 @@ impl ScriptSkillService {
                 }
                 self.followup_action(server, effect, effect.source_char_id, ScriptSkillAction::SetResources { hp: None, sp: Some(target_sp) });
             }
-            name if Self::is_taekwon_skill(name) => self.apply_taekwon_skill(server, character, effect, name, tick)?,
-            name if Self::is_performance_skill(name) => self.apply_performance_skill(server, state, character, effect, name, tick)?,
-            name if Self::soul_link_skill(name) => {
+            Some(ClassEffect::Stance(kind)) => self.apply_stance(server, character, effect, kind, tick)?,
+            Some(ClassEffect::SevenWind) => self.apply_seven_wind(server, character, effect, tick)?,
+            Some(ClassEffect::SoulLink) => {
                 let mut request = Self::timed_request(effect, StatusChangeKind::Spirit);
                 request.values[1] = effect.skill_id as i32;
                 if !StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)? {
@@ -397,8 +361,7 @@ impl ScriptSkillService {
                 let on_caster = ScriptSkillEffect { target_id: effect.source_char_id, skill_id: SkillEnum::SlSma.id(), ..effect.clone() };
                 self.queue_delayed_status(server, source, &on_caster, Self::timed_request(&on_caster, StatusChangeKind::Sma));
             }
-            name if Self::soul_linker_buff(name).is_some() => {
-                let kind = Self::soul_linker_buff(name).ok_or("Unknown buff")?;
+            Some(ClassEffect::SoulLinkBuff(kind)) => {
                 let source = if on_self { &*character } else { state.get_character(effect.source_char_id).ok_or("Caster disconnected")? };
                 if !Self::soul_linker_target_allowed(source, character) {
                     self.punish_caster(server, source, effect, SOUL_LINK_MISUSE_STUN_MS);
@@ -406,12 +369,12 @@ impl ScriptSkillService {
                 }
                 StatusEffectService::start(server, character, Self::timed_request(effect, kind), tick, &self.client_notification_sender)?;
             }
-            name if Self::es_debuff(name).is_some() => {
+            Some(ClassEffect::Estin(_)) => {
                 let source = if on_self { &*character } else { state.get_character(effect.source_char_id).ok_or("Caster disconnected")? };
                 self.punish_caster(server, source, effect, SOUL_LINK_MISUSE_STUN_MS);
                 return Err("Estin skills only work on monsters".into());
             }
-            "PF_MINDBREAKER" => {
+            Some(ClassEffect::MindBreaker) => {
                 let snapshot = StatusService::instance().to_snapshot(&character.status);
                 if Self::undead_target(&snapshot) || character.status.has_status_change(StatusChangeKind::MindBreaker) {
                     return Err("Mind Breaker has no effect".into());
@@ -420,6 +383,7 @@ impl ScriptSkillService {
                     return Err("Mind Breaker failed".into());
                 }
             }
+            _ if Self::is_performance_skill(metadata, effect.level) => self.apply_performance_skill(server, state, character, effect, tick)?,
             _ => return Err(format!("{} cannot target a player", metadata.name)),
         }
         Ok(true)
@@ -435,23 +399,23 @@ impl ScriptSkillService {
         mob: &Mob,
     ) -> Result<Option<bool>, String> {
         let Some(metadata) = SkillMetadata::find(effect.skill_id) else { return Ok(None) };
-        if !Self::is_class_skill(&metadata.name) {
+        if !Self::is_class_skill(&metadata, effect.level) {
             return Ok(None);
         }
         let immune = mob.status.has_mob_capability(MobCapability::StatusImmune);
         let mob_level = mob.status_effects.base_level;
         let source = StatusService::instance().to_snapshot(&caster.status);
-        let succeeded = match metadata.name.as_str() {
-            "MO_ABSORBSPIRITS" => {
+        let succeeded = match Self::class_effect(&metadata, effect.level) {
+            Some(ClassEffect::AbsorbSpirits) => {
                 let drained = !immune && fastrand::u32(0..100) < ABSORB_MOB_CHANCE_PERCENT;
                 if drained {
                     Self::grant_sp(server, caster, 2 * mob_level);
                 }
                 drained
             }
-            "TF_STEAL" => self.steal_item(server, caster, effect, instance, mob, &source),
-            "RG_STEALCOIN" => self.steal_coin(server, caster, effect, instance, mob, &source)?,
-            "SA_DEATH" => {
+            Some(ClassEffect::StealItem) => self.steal_item(server, caster, effect, instance, mob, &source),
+            Some(ClassEffect::StealCoin) => self.steal_coin(server, caster, effect, instance, mob, &source)?,
+            Some(ClassEffect::Death) => {
                 let kill = !immune;
                 if kill {
                     let damage = Self::kill_damage(effect, mob.id, mob.status.hp(), *source.combat_actor_kind());
@@ -459,20 +423,15 @@ impl ScriptSkillService {
                 }
                 kill
             }
-            "SA_FULLRECOVERY" => {
+            Some(ClassEffect::FullRecovery) => {
                 instance.add_to_next_tick(MapEvent::MobHeal(MobHeal { mob_id: mob.id, hp: mob.status.max_hp(), sp: mob.status.max_sp() }));
                 true
             }
-            "SA_FORTUNE" => {
+            Some(ClassEffect::Fortune) => {
                 self.grant_zeny(server, caster, mob_level.saturating_mul(100))?;
                 true
             }
-            "SA_ELEMENTWATER" | "SA_ELEMENTGROUND" | "SA_ELEMENTFIRE" => {
-                let element = match metadata.name.as_str() {
-                    "SA_ELEMENTWATER" => models::enums::element::Element::Water,
-                    "SA_ELEMENTGROUND" => models::enums::element::Element::Earth,
-                    _ => models::enums::element::Element::Fire,
-                };
+            Some(ClassEffect::ElementChange(element)) => {
                 if !immune {
                     let mut request = Self::timed_request(effect, StatusChangeKind::ElementalChange);
                     request.values = [i32::from(effect.level), element.value() as i32, 0, 0];
@@ -480,8 +439,8 @@ impl ScriptSkillService {
                 }
                 !immune
             }
-            "SA_CLASSCHANGE" | "SA_MONOCELL" => {
-                let replacement = if metadata.name == "SA_MONOCELL" {
+            Some(ClassEffect::ClassChange { monocell }) => {
+                let replacement = if monocell {
                     Some(PORING_MOB_ID)
                 } else {
                     crate::server::script::game_data::random_summon("CLASSCHANGE", &mut fastrand::Rng::new())
@@ -498,15 +457,15 @@ impl ScriptSkillService {
                     None => false,
                 }
             }
-            "SG_HATE" => self.star_hate_mob(server, caster, effect, mob)?,
-            "PF_MINDBREAKER" => {
+            Some(ClassEffect::StarHate) => self.star_hate_mob(server, caster, effect, mob)?,
+            Some(ClassEffect::MindBreaker) => {
                 let blocked = immune || Self::undead_target(&mob.status) || mob.status_effects.has_status_change(StatusChangeKind::MindBreaker);
                 if !blocked {
                     instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange { mob_id: mob.id, request: Self::mind_breaker_request(effect) }));
                 }
                 !blocked
             }
-            "PF_SOULCHANGE" => {
+            Some(ClassEffect::SoulChange) => {
                 if mob.steal_flags & MobStealFlag::SoulChange.as_flag() != 0 {
                     false
                 } else {
@@ -515,8 +474,7 @@ impl ScriptSkillService {
                     true
                 }
             }
-            name if Self::es_debuff(name).is_some() => {
-                let kind = Self::es_debuff(name).ok_or("Unknown debuff")?;
+            Some(ClassEffect::Estin(kind)) => {
                 if mob.status_effects.has_status_change(kind) {
                     if kind != StatusChangeKind::Ske {
                         instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus { mob_id: mob.id, kind: Some(StatusChangeKind::Swoo) }));

@@ -25,7 +25,8 @@ pub struct Teleport {
 
 impl Skill for Teleport {
     fn new(level: u8) -> Option<Self> where Self : Sized {
-        if level > 2 { return None }
+        // Butterfly Wing casts Teleport at level 3; learnable levels stop at 2 (max_level).
+        if level > 3 { return None }
         Some(Self { level, cast_time: 0, after_cast_act_delay: 0, after_cast_walk_delay: 0 })
     }
 
@@ -127,5 +128,10 @@ impl Skill for Teleport {
     #[inline(always)]
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Teleport
+    }
+
+    #[inline(always)]
+    fn map_restriction(&self) -> Option<MapRestriction> {
+        (self.level <= 2).then_some(MapRestriction::NoTeleport)
     }
 }

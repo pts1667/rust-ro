@@ -4,7 +4,9 @@ use models::status::StatusSnapshot;
 
 use super::ScriptSkillService;
 use super::actor::ScriptSkillActor;
-use super::ground::{GroundKind, GroundSkillSource};
+use skills::GroundKind;
+
+use super::ground::GroundSkillSource;
 use super::metadata::SkillMetadata;
 use super::monster::MonsterSkill;
 use crate::server::Server;
@@ -107,8 +109,11 @@ impl ScriptSkillService {
         let instance = state
             .get_map_instance(&source.map, source.instance)
             .ok_or("Area unit skill map is unavailable")?;
+        let area = Self::skill_object(metadata, level).and_then(|skill| skill.area_status());
+        let undead_only = area.is_some_and(|profile| profile.undead_only);
+        let level_rate = area.is_some_and(|profile| profile.level_rate);
         for (id, status, player) in self.actor_area_targets(server, state, source, metadata.id, x, y, radius) {
-            if metadata.name == "AL_CRUCIS"
+            if undead_only
                 && *status.element() != Element::Undead
                 && !matches!(*status.race(), MobRace::Demon | MobRace::RUndead)
             {
@@ -141,7 +146,7 @@ impl ScriptSkillService {
                     instance.add_to_next_tick(MapEvent::MobStatusAlternatives(MobStatusAlternatives { mob_id: id, requests }));
                 }
             } else if let Some((mut request, delay)) = Self::area_status_request(metadata.id, level, false, 0) {
-                if metadata.name == "AL_CRUCIS" {
+                if level_rate {
                     request.rate = Self::signum_crucis_rate(level, source.status.base_level(), status.base_level());
                 }
                 if metadata.is_monster() {
@@ -175,7 +180,8 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(request.skill_id).ok_or("Unknown actor ground skill")?;
-        let kind = GroundKind::from_name(&metadata.name).ok_or_else(|| format!("Actor ground unit {} is not implemented", metadata.name))?;
+        let level = u8::try_from(request.level).map_err(|_| "Actor ground skill level is invalid")?;
+        let kind = Self::ground_kind(metadata, level).ok_or_else(|| format!("Actor ground unit {} is not implemented", metadata.name))?;
         if !kind.actor_placeable() {
             return Err(format!("{} still requires an actor-specific unit lifecycle", metadata.name));
         }

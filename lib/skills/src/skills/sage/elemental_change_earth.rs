@@ -130,4 +130,9 @@ impl Skill for ElementalChangeEarth {
     fn base_after_cast_act_delay(&self) -> u32 {
        1000
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::ElementChange(models::enums::element::Element::Earth))
+    }
 }

@@ -214,4 +214,9 @@ impl Skill for StormGust {
     fn knocks_back_on_hit(&self) -> bool {
         false
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::StormGust)
+    }
 }

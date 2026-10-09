@@ -136,4 +136,9 @@ impl Skill for EnchantedStoneCraft {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn crafting_rule(&self) -> Option<CraftingRule> {
+        Some(CraftingRule::Forge)
+    }
 }

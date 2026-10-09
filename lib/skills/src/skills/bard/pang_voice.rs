@@ -132,4 +132,9 @@ impl Skill for PangVoice {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::Confusion)
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Support(SupportProfile { chance: SupportChance::Fixed(7000), ..SupportProfile::default() })
+    }
 }

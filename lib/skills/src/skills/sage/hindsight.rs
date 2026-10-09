@@ -171,4 +171,9 @@ impl Skill for Hindsight {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::AutoSpell)
+    }
 }

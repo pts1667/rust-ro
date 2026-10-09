@@ -130,7 +130,7 @@ impl ScriptSkillService {
         }
         if matches!(effect.action, super::ScriptSkillAction::Cast) {
             Self::validate_stealth_cast(state, source, effect.skill_id)?;
-            self.validate_support_target(state, source, effect.skill_id, effect.target_id)?;
+            self.validate_support_target(state, source, effect.skill_id, effect.level, effect.target_id)?;
             Self::validate_skill_map(state, source, effect.skill_id, effect.level, true)?;
         }
         if let super::ScriptSkillAction::WaterBall { sequence, cell } = effect.action {

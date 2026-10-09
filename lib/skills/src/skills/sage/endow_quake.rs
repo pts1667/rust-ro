@@ -159,4 +159,9 @@ impl Skill for EndowQuake {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Support(SupportProfile { chance: SupportChance::Endow, needs_weapon: true })
+    }
 }

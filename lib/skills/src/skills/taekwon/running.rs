@@ -264,4 +264,9 @@ impl Skill for Running {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Run
+    }
 }

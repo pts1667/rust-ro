@@ -202,4 +202,19 @@ impl Skill for AidCondensedPotion {
     fn client_type(&self) -> usize {
         2
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::CondensedPotion
+    }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { item_per_level: true, ..CostRules::default() }
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

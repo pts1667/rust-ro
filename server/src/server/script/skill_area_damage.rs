@@ -4,6 +4,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use models::enums::cell::CellType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithNumberValue};
+use skills::ActorBehaviour;
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -70,7 +71,12 @@ impl ScriptSkillService {
         let Some(metadata) = SkillMetadata::find(original.skill_id) else {
             return Ok(vec![(MapItemType::Mob, original)]);
         };
-        if metadata.name == "SM_MAGNUM" {
+        let behaviour = Self::actor_behaviour(metadata, original.skill_level);
+        let profile = match behaviour {
+            ActorBehaviour::Splash(profile) => profile,
+            _ => skills::SplashProfile::default(),
+        };
+        if profile.self_element_buff {
             let mut request = models::status_change::StatusChangeRequest::guaranteed(
                 models::status_change::StatusChangeKind::WeaponAttackElement,
                 metadata.duration(original.skill_level, true).unwrap_or(10000),
@@ -84,7 +90,7 @@ impl ScriptSkillService {
                 },
             ));
         }
-        if metadata.name == "WZ_WATERBALL" {
+        if behaviour == ActorBehaviour::WaterBall {
             self.begin_water_ball(server, state, character, original, tick)?;
             return Ok(vec![]);
         }
@@ -120,7 +126,7 @@ impl ScriptSkillService {
         let bowling_min_x = ((i32::from(character.x) - bowling_distance) / 40 * 40).max(0);
         let bowling_min_y = ((i32::from(character.y) - bowling_distance) / 40 * 40).max(0);
         let near = |id: u32, tx: u16, ty: u16| {
-            if metadata.name == "KN_BOWLINGBASH" {
+            if behaviour == ActorBehaviour::Bowling {
                 id == original.target_id
                     || (bowling_min_x..=bowling_min_x + 39).contains(&i32::from(tx))
                         && (bowling_min_y..=bowling_min_y + 39).contains(&i32::from(ty))
@@ -203,7 +209,7 @@ impl ScriptSkillService {
             );
         }
         candidates.retain(|target| Self::area_skill_target_allowed(&source, &target.status, original.skill_id));
-        let collisions = if metadata.name == "KN_BOWLINGBASH" {
+        let collisions = if behaviour == ActorBehaviour::Bowling {
             Some(Self::bowling_collisions(
                 character.x,
                 character.y,
@@ -270,7 +276,7 @@ impl ScriptSkillService {
             damage_event.set_signed_damage(damage / divisor.max(1).min(i32::MAX as u32) as i32);
             damage_event.magic_context = magic_context;
             damage_event.landed = landed;
-            if metadata.name == "SM_MAGNUM" && landed {
+            if profile.distance_ratio && landed {
                 let ratio = 1.0
                     + f32::from(original.skill_level)
                         * if target.x.abs_diff(x).max(target.y.abs_diff(y)) <= 1 {
@@ -288,9 +294,9 @@ impl ScriptSkillService {
                     original.skill_id,
                 ));
             }
-            if metadata.name == "MG_FIREBALL" && target.x.abs_diff(x).max(target.y.abs_diff(y)) == 2 {
+            if let Some(scale) = profile.far_magic_scale.filter(|_| target.x.abs_diff(x).max(target.y.abs_diff(y)) == 2) {
                 if let Some(mut context) = damage_event.magic_context {
-                    context.modifier *= 0.75;
+                    context.modifier *= scale;
                     damage_event.set_signed_damage(
                         battle.magic_damage_from_context(&source, &target.status, context) / divisor.max(1).min(i32::MAX as u32) as i32,
                     );
@@ -363,7 +369,7 @@ impl ScriptSkillService {
                 .cells()
                 .get(character.y as usize * instance.x_size() as usize + character.x as usize)
                 .is_some_and(|cell| cell & CellType::Water.as_flag() != 0);
-            if !water && !self.ground_field_contains(character, super::ground::GroundKind::Deluge, character.x, character.y, tick) {
+            if !water && !self.ground_field_contains(character, skills::GroundKind::Deluge, character.x, character.y, tick) {
                 return Err("Water Ball requires standing in water or Deluge".into());
             }
             if level == 0 || level > 5 {
@@ -407,7 +413,7 @@ impl ScriptSkillService {
             let natural = map_state.cells()[y as usize * instance.x_size() as usize + x as usize] & CellType::Water.as_flag() != 0;
             let mut deluge = false;
             for ground in grounds.iter_mut().filter(|ground| {
-                ground.kind == super::ground::GroundKind::Deluge
+                ground.kind == skills::GroundKind::Deluge
                     && ground.map == *character.current_map_name()
                     && ground.instance == character.current_map_instance()
                     && ground.cast_verified

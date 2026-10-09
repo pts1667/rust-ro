@@ -166,4 +166,9 @@ impl Skill for LandMine {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Stun, 1_000, self.level).delayed(StatusDelay::Ms(1_000))]
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::LandMine)
+    }
 }

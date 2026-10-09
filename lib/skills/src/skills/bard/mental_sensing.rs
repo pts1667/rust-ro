@@ -120,4 +120,14 @@ impl Skill for MentalSensing {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::RichMankim, reach: PerformanceReach::Enemies, ensemble: true, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        (25 + 11 * level, 0)
+    }
 }

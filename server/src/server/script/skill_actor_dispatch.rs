@@ -225,7 +225,7 @@ impl ScriptSkillService {
                         .ok_or("Unit skill target is not on this map")?
                 };
                 self.validate_damage_target(state, &character, request.skill_id, request.target_id)?;
-                self.validate_support_target(state, &character, request.skill_id, request.target_id)?;
+                self.validate_support_target(state, &character, request.skill_id, level, request.target_id)?;
                 if !server.player_skill_target_allowed(state, &character, request.target_id, request.skill_id, false) {
                     return Err("Unit skill cannot target this actor".into());
                 }
@@ -471,14 +471,50 @@ impl ScriptSkillService {
     }
 
     pub(crate) fn validate_script_actor_operation(metadata: &SkillMetadata, source: &ScriptSkillActor, level: u8) -> Result<(), String> {
-        use super::ground::GroundKind;
         use skills::ActorBehaviour;
         let direct_support = match Self::actor_behaviour(metadata, level) {
             ActorBehaviour::Default
             | ActorBehaviour::Splash(_)
             | ActorBehaviour::Delayed { .. }
             | ActorBehaviour::FixedWeapon { .. }
-            | ActorBehaviour::Magic(_) => false,
+            | ActorBehaviour::Magic(_)
+            | ActorBehaviour::Devotion
+            | ActorBehaviour::VenomSplasher
+            | ActorBehaviour::WinkCharm
+            | ActorBehaviour::Tarot
+            | ActorBehaviour::SpellBreaker
+            | ActorBehaviour::Estimation
+            | ActorBehaviour::Identify
+            | ActorBehaviour::HocusPocus
+            | ActorBehaviour::FindStone
+            | ActorBehaviour::EnchantArms
+            | ActorBehaviour::ReverseOrcish
+            | ActorBehaviour::ShadowLeap
+            | ActorBehaviour::CondensedPotion
+            | ActorBehaviour::Cultivate
+            | ActorBehaviour::CollectItems
+            | ActorBehaviour::BondBaby
+            | ActorBehaviour::Spheres(_)
+            | ActorBehaviour::HighJump
+            | ActorBehaviour::Mission
+            | ActorBehaviour::Run
+            | ActorBehaviour::ServiceCall(_)
+            | ActorBehaviour::TrapControl { .. }
+            | ActorBehaviour::Martyr
+            | ActorBehaviour::Intimidate
+            | ActorBehaviour::Pressure
+            | ActorBehaviour::Benedictio
+            | ActorBehaviour::PoisonReact
+            | ActorBehaviour::Bowling
+            | ActorBehaviour::WaterBall
+            | ActorBehaviour::Support(_)
+            | ActorBehaviour::UndeadBuffDamage
+            | ActorBehaviour::PartyBuff
+            | ActorBehaviour::Performance(_)
+            | ActorBehaviour::Adaptation
+            | ActorBehaviour::LongingFreedom
+            | ActorBehaviour::Encore
+            | ActorBehaviour::CastCancel => false,
             ActorBehaviour::Teleport => matches!(source.object_type, MapItemType::Mob | MapItemType::Npc),
             _ => true,
         } || metadata.monster_skill().is_some_and(MonsterSkill::is_direct_support);
@@ -491,7 +527,7 @@ impl ScriptSkillService {
         {
             return Ok(());
         }
-        if let Some(kind) = GroundKind::from_name(&metadata.name) {
+        if let Some(kind) = Self::ground_kind(metadata, level) {
             return if kind.actor_placeable() {
                 Ok(())
             } else {
@@ -501,13 +537,7 @@ impl ScriptSkillService {
         if metadata.target_type.as_deref() == Some("Ground") {
             return Err(format!("{} requires an actor-specific ground lifecycle", metadata.name));
         }
-        if matches!(
-            metadata.name.as_str(),
-            "RG_BACKSTAP"
-                | "AS_SPLASHER"
-                | "NJ_ISSEN"
-                | "RG_RAID"
-        ) {
+        if Self::player_only_callback(metadata, level) {
             return Err(format!("{} requires an additional actor-specific callback", metadata.name));
         }
         let skill = SkillEnum::try_from_value(metadata.id)
@@ -520,7 +550,7 @@ impl ScriptSkillService {
                 crate::server::service::battle_service::BattleService::is_weapon_skill(offensive)
                     || offensive.is_magic()
                     || matches!(Self::actor_behaviour(metadata, level), skills::ActorBehaviour::FixedWeapon { .. })
-                    || metadata.name == "PA_PRESSURE"
+                    || matches!(Self::actor_behaviour(metadata, level), skills::ActorBehaviour::Pressure)
             })
         {
             return Ok(());

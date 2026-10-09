@@ -310,7 +310,7 @@ impl StatusEffectService {
                     if change.values[1] > 0 && status.hp > 100 { status.hp = 100; }
                     if status.status_change(StatusChangeKind::Endure).is_some_and(|endure| endure.values[3] == 1) { removed.extend(Self::end_status(status, Some(StatusChangeKind::Endure))); }
                     if status.hp > 0 {
-                        let duration = crate::server::script::skill::metadata::SkillMetadata::all().iter().find(|skill| skill.name == "LK_BERSERK").and_then(|skill| skill.duration(change.values[0].clamp(1, 255) as u8, false)).unwrap_or(0);
+                        let duration = crate::server::script::skill::metadata::SkillMetadata::find(models::enums::skill_enums::SkillEnum::LkBerserk.id()).and_then(|skill| skill.duration(change.values[0].clamp(1, 255) as u8, false)).unwrap_or(0);
                         let tick = change.expires_at.unwrap_or(change.started_at);
                         let mut recovery = StatusChangeRequest::guaranteed(StatusChangeKind::Regeneration, duration, 10);
                         recovery.values[3] = (models::status_change::RegenerationBlock::Hp.as_flag() | models::status_change::RegenerationBlock::Sp.as_flag()) as i32;

@@ -60,7 +60,9 @@ fn configure(support: &mut PetSupportRuntime, pet: &PetRecord, config: &PetSuppo
             let skill = crate::server::service::global_config_service::GlobalConfigService::instance()
                 .find_skill_config(args.first().ok_or("Missing pet support skill")?).ok_or("Unknown pet support skill")?;
             let metadata = SkillMetadata::find(skill.id).ok_or("Pet skill has no classic definition")?;
-            if metadata.name != "AL_HEAL" && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_none() {
+            if !matches!(crate::server::script::skill::ScriptSkillService::actor_behaviour(metadata, metadata.max_level), skills::ActorBehaviour::Heal)
+                && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_none()
+            {
                 return Err("Pet support skill has no healing or status effect".into());
             }
             let level = u8::try_from(args.get(1).ok_or("Missing pet skill level")?.number_value()?).map_err(|_| "Pet skill level is out of range")?;
@@ -310,7 +312,7 @@ impl ScriptWorldService {
     fn cast_pet_support(&self, server: &Server, character: &Character, pet: &PetRecord, skill_id: u32, level: u8, now: u64) -> Result<(), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Pet support skill disappeared")?;
         let actor_id = pet_world_id(pet.id);
-        if metadata.name == "AL_HEAL" {
+        if matches!(crate::server::script::skill::ScriptSkillService::actor_behaviour(metadata, level), skills::ActorBehaviour::Heal) {
             let data = self.configuration.get_mob_safe(i32::from(pet.class_id)).ok_or("Pet monster data is unavailable")?;
             let snapshot = crate::server::model::status::StatusFromDb::from_mob_model(data);
             let hp = ScriptSkillService::heal_amount(&snapshot, u32::from(pet.level), level);

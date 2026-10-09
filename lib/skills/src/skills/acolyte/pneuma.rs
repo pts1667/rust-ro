@@ -122,4 +122,14 @@ impl Skill for Pneuma {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::Pneuma)
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Pneuma)
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::NoOverlap)
+    }
 }

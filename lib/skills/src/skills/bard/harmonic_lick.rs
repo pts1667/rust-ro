@@ -180,4 +180,14 @@ impl Skill for HarmonicLick {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::Nibelungen, reach: PerformanceReach::Party, ensemble: true, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        ((level + 2) * 25, 0)
+    }
 }

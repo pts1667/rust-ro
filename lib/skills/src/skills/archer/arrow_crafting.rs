@@ -121,4 +121,9 @@ impl Skill for ArrowCrafting {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::MakingArrow)
+    }
 }

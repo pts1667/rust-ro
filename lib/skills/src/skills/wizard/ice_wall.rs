@@ -126,4 +126,9 @@ impl Skill for IceWall {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn map_restriction(&self) -> Option<MapRestriction> {
+        Some(MapRestriction::NoIceWall)
+    }
 }

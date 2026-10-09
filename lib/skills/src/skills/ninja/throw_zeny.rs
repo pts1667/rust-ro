@@ -166,4 +166,9 @@ impl Skill for ThrowZeny {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { no_zeny: true, ..CostRules::default() }
+    }
 }

@@ -153,12 +153,7 @@ pub(crate) fn level_slot(level: u8) -> Result<usize, String> {
 
 impl ScriptSkillService {
     /// The comfort skills only work on the remembered map on the day of their slot, or during a Miracle.
-    pub(super) fn star_comfort(&self, server: &Server, character: &mut Character, name: &str, effect: &ScriptSkillEffect, tick: u128) -> Result<(), String> {
-        let (slot, kind) = match name {
-            "SG_SUN_COMFORT" => (0, StatusChangeKind::SunComfort),
-            "SG_MOON_COMFORT" => (1, StatusChangeKind::MoonComfort),
-            _ => (STAR_SLOT, StatusChangeKind::StarComfort),
-        };
+    pub(super) fn star_comfort(&self, server: &Server, character: &mut Character, slot: usize, kind: StatusChangeKind, effect: &ScriptSkillEffect, tick: u128) -> Result<(), String> {
         if effect.source_char_id != character.char_id {
             return Err("Comfort can only be cast on oneself".into());
         }

@@ -150,4 +150,14 @@ impl Skill for AcousticRhythm {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::Siegfried, reach: PerformanceReach::Party, ensemble: true, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        (55 + 5 * level, 10 * level)
+    }
 }

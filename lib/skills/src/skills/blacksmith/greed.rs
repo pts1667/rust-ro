@@ -116,4 +116,9 @@ impl Skill for Greed {
     fn base_after_cast_act_delay(&self) -> u32 {
        1000
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::CollectItems
+    }
 }

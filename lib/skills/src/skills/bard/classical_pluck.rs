@@ -120,4 +120,9 @@ impl Skill for ClassicalPluck {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::RokisWeil, reach: PerformanceReach::Anyone, ensemble: true, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
 }

@@ -121,4 +121,9 @@ impl Skill for Sacrifice {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Devotion
+    }
 }

@@ -94,6 +94,16 @@ impl Skill for SlSma {
 
     #[inline(always)]
     fn actor_behaviour(&self) -> ActorBehaviour {
-        ActorBehaviour::Magic(MagicProfile { consumes_sma: true, ..MagicProfile::default() })
+        ActorBehaviour::Magic(MagicProfile { consumes_sma: true, es_magic: true, ..MagicProfile::default() })
+    }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { kaina_sp_reduction: true, ..CostRules::default() }
+    }
+
+    #[inline(always)]
+    fn magic_modifier(&self, _target_small: bool, source_base_level: u32) -> Option<f32> {
+        Some((40.0 + source_base_level as f32) / 100.0)
     }
 }

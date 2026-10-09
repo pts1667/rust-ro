@@ -13,6 +13,7 @@ use models::enums::status::StatusEffect::{*};
 use models::status_bonus::{StatusBonusFlag, TemporaryStatusBonus};
 use models::enums::mob::MobRace::{*};
 use std::any::Any;
+use models::status_change::StatusChangeKind;
 use crate::{*};
 
 // TK_READYCOUNTER - Counter Kick Stance
@@ -138,5 +139,10 @@ impl Skill for CounterKickStance {
     #[inline(always)]
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
+    }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::Stance(StatusChangeKind::ReadyCounter))
     }
 }

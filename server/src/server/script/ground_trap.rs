@@ -4,7 +4,9 @@ use models::status::StatusSnapshot;
 use models::status_change::{StatusChange, StatusChangeKind, StatusChangeRequest, StatusStartFlag};
 
 use super::ScriptSkillService;
-use super::ground::{GroundKind, GroundSkill, GroundSkillSource};
+use skills::GroundKind;
+
+use super::ground::{GroundSkill, GroundSkillSource};
 use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::events::game_event::{GameEvent, GroundTrapSpend};

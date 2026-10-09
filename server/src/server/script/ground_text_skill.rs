@@ -1,11 +1,13 @@
 use super::ScriptSkillService;
-use super::ground::{GroundKind, GroundSkill};
+use skills::GroundKind;
+
+use super::ground::GroundSkill;
 use super::metadata::SkillMetadata;
 use crate::server::state::server::ServerState;
 
 impl ScriptSkillService {
-    pub(crate) fn is_text_ground_skill(skill_id: u32) -> bool {
-        SkillMetadata::find(skill_id).is_some_and(|skill| matches!(skill.name.as_str(), "HT_TALKIEBOX" | "RG_GRAFFITI"))
+    pub(crate) fn is_text_ground_skill(skill_id: u32, level: u8) -> bool {
+        SkillMetadata::find(skill_id).is_some_and(|skill| Self::ground_kind(skill, level).is_some_and(GroundKind::carries_text))
     }
 
     pub(super) fn tick_talkie_box(&self, state: &ServerState, ground: &mut GroundSkill, tick: u128) {

@@ -120,4 +120,14 @@ impl Skill for CallHomunculus {
         }
         Ok(Some(required_items))
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::ServiceCall(ServiceCall::CallHomunculus)
+    }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { no_item_costs: true, ..CostRules::default() }
+    }
 }

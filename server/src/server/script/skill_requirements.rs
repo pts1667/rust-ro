@@ -99,7 +99,8 @@ impl ScriptSkillService {
             })
         .min(u64::from(u32::MAX)) as u32;
         let minimum_hp = required_hp.saturating_add(1);
-        let hp = if matches!(metadata.name.as_str(), "SM_MAGNUM" | "MS_MAGNUM") {
+        let rules = Self::cost_rules(metadata, level);
+        let hp = if rules.no_hp {
             0
         } else {
             required_hp
@@ -113,7 +114,7 @@ impl ScriptSkillService {
                 snapshot.max_sp() as u64 * sp_rate.unsigned_abs() as u64 / 100
             })
             .min(u32::MAX as u64) as u32;
-        let sp = if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN" | "SL_SMA") {
+        let sp = if rules.kaina_sp_reduction {
             let reduction = if snapshot.base_level() >= 90 { 7 } else if snapshot.base_level() >= 80 { 5 } else if snapshot.base_level() >= 70 { 3 } else { 0 };
             let rate = u64::from(snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::SlKaina)) * reduction;
             sp.saturating_sub((u64::from(sp) * rate.min(100) / 100) as u32)
@@ -150,7 +151,7 @@ impl ScriptSkillService {
             sp,
             zeny: {
                 let zeny = amount("ZenyCost").max(0) as u32;
-                if metadata.name == "MC_MAMMONITE" && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::BsUnfairlytrick) > 0 { zeny * 9 / 10 } else { zeny }
+                if rules.unfair_trick_zeny && snapshot.known_skill_level(models::enums::skill_enums::SkillEnum::BsUnfairlytrick) > 0 { zeny * 9 / 10 } else { zeny }
             },
             spirit_spheres: spheres,
             removals: vec![],
@@ -247,9 +248,9 @@ impl ScriptSkillService {
             .bonuses_raw()
             .iter()
             .any(|bonus| matches!(bonus, BonusType::EnableNoGemstoneRequired))
-            || (character.status.has_status_change(StatusChangeKind::IntoAbyss) && metadata.name != "HW_GANBANTEIN");
-        if metadata.name != "AM_CALLHOMUN" {
-            let one_per_level = matches!(metadata.name.as_str(), "AM_POTIONPITCHER" | "CR_SLIMPITCHER" | "CR_CULTIVATION");
+            || (character.status.has_status_change(StatusChangeKind::IntoAbyss) && !rules.abyss_exempt);
+        if !rules.no_item_costs {
+            let one_per_level = rules.item_per_level;
             for (index, requirement) in requirements
                 .get("ItemCost")
                 .and_then(|value| value.as_array())

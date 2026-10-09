@@ -195,4 +195,9 @@ impl Skill for Volcano {
     fn client_type(&self) -> usize {
         2
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Volcano)
+    }
 }

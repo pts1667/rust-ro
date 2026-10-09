@@ -171,4 +171,17 @@ impl Skill for UnbarringOctave {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::AreaStatus { at_target_point: false }
     }
+
+    #[inline(always)]
+    fn area_status(&self) -> Option<AreaStatusProfile> {
+        Some(AreaStatusProfile {
+            kind: StatusChangeKind::Freeze,
+            chance: 1500 + 500 * i32::from(self.level),
+            delay_ms: 3000,
+            duration: AreaDuration::Adjusted,
+            party_quarter_chance: true,
+            undead_only: false,
+            level_rate: false,
+        })
+    }
 }

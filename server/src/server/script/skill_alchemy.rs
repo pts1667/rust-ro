@@ -1,6 +1,7 @@
 use models::enums::skill_enums::SkillEnum;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use regex_lite::Regex;
+use skills::TwilightStage;
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -54,10 +55,6 @@ fn roll((low, high): (u32, u32)) -> u32 {
 }
 
 impl ScriptSkillService {
-    pub(super) fn is_alchemy_skill(name: &str) -> bool {
-        matches!(name, "AM_POTIONPITCHER" | "AM_BERSERKPITCHER" | "CR_SLIMPITCHER" | "CR_CULTIVATION" | "AM_TWILIGHT1" | "AM_TWILIGHT2" | "AM_TWILIGHT3")
-    }
-
     /// The potion consumed at this level: the pitcher skills list one potion per skill level.
     fn pitched_potion(&self, skill_id: u32, level: u8) -> Result<((u32, u32), (u32, u32)), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Unknown pitcher skill")?;
@@ -100,14 +97,14 @@ impl ScriptSkillService {
     }
 
     /// Twilight Alchemy prepares 200 White Potions, 200 Condensed White Potions, or 100 Alcohol with 50 Acid and 50 Fire Bottles.
-    pub(super) fn twilight_alchemy(&self, server: &Server, character: &mut Character, name: &str) -> Result<(), String> {
+    pub(super) fn twilight_alchemy(&self, server: &Server, character: &mut Character, stage: TwilightStage) -> Result<(), String> {
         let items = server.item_service();
-        let batches: &[(i32, u16)] = match name {
-            "AM_TWILIGHT1" => &[(WHITE_POTION, 200)],
-            "AM_TWILIGHT2" => &[(WHITE_SLIM_POTION, 200)],
-            _ => &[(ALCOHOL, 100), (ACID_BOTTLE, 50), (FIRE_BOTTLE, 50)],
+        let batches: &[(i32, u16)] = match stage {
+            TwilightStage::WhitePotion => &[(WHITE_POTION, 200)],
+            TwilightStage::WhiteSlimPotion => &[(WHITE_SLIM_POTION, 200)],
+            TwilightStage::Bottles => &[(ALCOHOL, 100), (ACID_BOTTLE, 50), (FIRE_BOTTLE, 50)],
         };
-        if name == "AM_TWILIGHT3" {
+        if stage == TwilightStage::Bottles {
             let bottles: i32 = character.inventory_iter().filter(|(_, item)| item.item_id == EMPTY_BOTTLE).map(|(_, item)| i32::from(item.amount)).sum();
             if bottles < 200 {
                 return Err("Twilight Alchemy needs 200 Empty Bottles".into());

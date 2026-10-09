@@ -97,4 +97,9 @@ impl Skill for MerCrash {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Stun, 600 * i32::from(self.level), self.level)]
     }
+
+    #[inline(always)]
+    fn companion_effect(&self) -> Option<CompanionEffect> {
+        Some(CompanionEffect::Weapon(MercenaryWeapon::Crash))
+    }
 }

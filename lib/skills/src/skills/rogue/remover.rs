@@ -116,4 +116,9 @@ impl Skill for Remover {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::EraseGraffiti
     }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::Cleaner)
+    }
 }

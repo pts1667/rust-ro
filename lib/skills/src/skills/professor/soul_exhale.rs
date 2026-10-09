@@ -121,4 +121,9 @@ impl Skill for SoulExhale {
     fn base_after_cast_act_delay(&self) -> u32 {
        5000
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::SoulChange)
+    }
 }

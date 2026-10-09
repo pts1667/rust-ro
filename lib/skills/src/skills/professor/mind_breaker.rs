@@ -181,4 +181,9 @@ impl Skill for MindBreaker {
         }
         0
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::MindBreaker)
+    }
 }

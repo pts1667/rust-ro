@@ -1,10 +1,10 @@
 use models::enums::EnumWithMaskValueU32;
 use models::enums::skill_enums::SkillEnum;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
-use skills::{ActorBehaviour, HitContext, StatusDelay, StatusInfliction};
+use skills::{ActorBehaviour, ClassEffect, CompanionEffect, HitContext, StatusDelay, StatusInfliction};
 
 use super::metadata::SkillMetadata;
-use super::{ScriptSkillHit, ScriptSkillService};
+use super::{ScriptSkillEffect, ScriptSkillHit, ScriptSkillService};
 use crate::server::Server;
 use crate::server::model::events::game_event::GameEvent;
 use crate::server::model::events::map_event::{MapEvent, MobKnockback, MobStatusChange, ScriptMobCombat};
@@ -50,6 +50,80 @@ impl ScriptSkillService {
     /// What an actor does with the skill beyond damage and statuses. Monster skills without an object are `Default`.
     pub(crate) fn actor_behaviour(metadata: &SkillMetadata, level: u8) -> ActorBehaviour {
         Self::skill_object(metadata, level).map_or(ActorBehaviour::Default, |skill| skill.actor_behaviour())
+    }
+
+    /// The behaviour of a skill by id and level, from its object.
+    pub(crate) fn skill_behaviour(skill_id: u32, level: u8) -> ActorBehaviour {
+        SkillMetadata::find(skill_id).map_or(ActorBehaviour::Default, |metadata| Self::actor_behaviour(metadata, level))
+    }
+
+    /// The behaviour of the skill a script effect casts.
+    pub(crate) fn effect_behaviour(effect: &ScriptSkillEffect) -> ActorBehaviour {
+        Self::skill_behaviour(effect.skill_id, effect.level)
+    }
+
+    /// The cost rules a skill object declares, or the defaults for a skill without one.
+    pub(crate) fn cost_rules(metadata: &SkillMetadata, level: u8) -> skills::CostRules {
+        Self::skill_object(metadata, level).map_or(skills::CostRules::default(), |skill| skill.cost_rules())
+    }
+
+    /// The ground unit a skill leaves on the map, from its object.
+    pub(crate) fn ground_kind(metadata: &SkillMetadata, level: u8) -> Option<skills::GroundKind> {
+        Self::skill_object(metadata, level).and_then(|skill| skill.ground_kind())
+    }
+
+    /// How a skill places itself on the ground, from its object.
+    pub(crate) fn ground_placement(metadata: &SkillMetadata, level: u8) -> Option<skills::GroundPlacement> {
+        Self::skill_object(metadata, level).and_then(|skill| skill.ground_placement())
+    }
+
+    /// The crafting rule of a recipe skill, read at its maximum level since the rule does not depend on the level.
+    pub(crate) fn crafting_rule(skill_id: u32) -> Option<skills::CraftingRule> {
+        let metadata = SkillMetadata::find(skill_id)?;
+        Self::skill_object(metadata, metadata.max_level).and_then(|skill| skill.crafting_rule())
+    }
+
+    /// The weapon-attack ratio of a monster weapon skill at a level.
+    pub(crate) fn weapon_ratio(metadata: &SkillMetadata, level: u8) -> Option<f32> {
+        Self::skill_object(metadata, level).and_then(|skill| skill.weapon_ratio(level))
+    }
+
+    /// True when a pet can use the skill on a ground point.
+    pub(crate) fn pet_ground_attack(metadata: &SkillMetadata) -> bool {
+        Self::skill_object(metadata, metadata.max_level).is_some_and(|skill| skill.pet_ground_attack())
+    }
+
+    /// True when the skill needs a player-side callback that actors cannot run.
+    pub(crate) fn player_only_callback(metadata: &SkillMetadata, level: u8) -> bool {
+        Self::skill_object(metadata, level).is_some_and(|skill| skill.player_only_callback())
+    }
+
+    /// The rate rule a timed support skill applies its status with, `Certain` for other skills.
+    pub(crate) fn support_chance(skill_id: u32, level: u8) -> skills::SupportChance {
+        match Self::skill_behaviour(skill_id, level) {
+            ActorBehaviour::Support(profile) => profile.chance,
+            _ => skills::SupportChance::Certain,
+        }
+    }
+
+    /// The status a skill applies, from its object or metadata.
+    pub(crate) fn skill_status(skill_id: u32) -> Option<StatusChangeKind> {
+        SkillMetadata::find(skill_id).and_then(Self::status_for_metadata)
+    }
+
+    /// The status a script effect's skill applies.
+    pub(crate) fn effect_status(effect: &ScriptSkillEffect) -> Option<StatusChangeKind> {
+        Self::skill_status(effect.skill_id)
+    }
+
+    /// The class-specific effect the skill object declares, read by the class dispatch.
+    pub(crate) fn class_effect(metadata: &SkillMetadata, level: u8) -> Option<ClassEffect> {
+        Self::skill_object(metadata, level).and_then(|skill| skill.class_effect())
+    }
+
+    /// The homunculus or mercenary effect the skill object declares, read by the companion dispatch.
+    pub(crate) fn companion_effect(metadata: &SkillMetadata, level: u8) -> Option<CompanionEffect> {
+        Self::skill_object(metadata, level).and_then(|skill| skill.companion_effect())
     }
 
     /// The statuses a damaging hit inflicts, as the skill object declares them.
@@ -141,7 +215,7 @@ impl ScriptSkillService {
         let Some(target) = target else {
             return Ok(());
         };
-        if metadata.name == "RG_INTIMIDATE" && !companion {
+        if Self::actor_behaviour(metadata, hit.skill_level) == ActorBehaviour::Intimidate && !companion {
             let mob = state.get_map_instance(&map, instance_id).and_then(|instance| {
                 instance.state().get_mob(hit.target_id).map(|mob| {
                     (
@@ -280,7 +354,7 @@ impl ScriptSkillService {
                 }
             }
         }
-        if metadata.name == "PA_PRESSURE" {
+        if Self::actor_behaviour(metadata, hit.skill_level) == ActorBehaviour::Pressure {
             let percent = 15 + 5 * hit.skill_level as u32;
             if let Some(target) = state.characters_mut().get_mut(&hit.target_id) {
                 server.character_service().update_hp_sp(
@@ -462,36 +536,123 @@ mod tests {
     }
 
     #[test]
+    fn class_effects_come_from_objects() {
+        let effect = |skill: SkillEnum, level: u8| ScriptSkillService::class_effect(SkillMetadata::find(skill.id()).unwrap(), level);
+        assert_eq!(effect(SkillEnum::SlMonk, 1), Some(ClassEffect::SoulLink));
+        assert_eq!(effect(SkillEnum::SlKaahi, 1), Some(ClassEffect::SoulLinkBuff(StatusChangeKind::Kaahi)));
+        assert_eq!(effect(SkillEnum::SlSke, 1), Some(ClassEffect::Estin(StatusChangeKind::Ske)));
+        assert_eq!(effect(SkillEnum::SgStarComfort, 1), Some(ClassEffect::StarComfort { slot: 2, kind: StatusChangeKind::StarComfort }));
+        assert_eq!(effect(SkillEnum::WeFemale, 1), Some(ClassEffect::ConjugalShare { hp: false }));
+        assert_eq!(effect(SkillEnum::TkSevenwind, 1), Some(ClassEffect::SevenWind));
+        assert_eq!(effect(SkillEnum::AlHeal, 1), None);
+    }
+
+    #[test]
+    fn ground_kinds_come_from_the_skill_objects() {
+        use skills::{GroundKind, GroundPlacement};
+        let kind = |skill: SkillEnum| ScriptSkillService::ground_kind(SkillMetadata::find(skill.id()).unwrap(), 1);
+        let placement = |skill: SkillEnum, level: u8| ScriptSkillService::ground_placement(SkillMetadata::find(skill.id()).unwrap(), level);
+        let table = [
+            (SkillEnum::AlWarp, GroundKind::WarpPortal),
+            (SkillEnum::MgFirewall, GroundKind::Firewall),
+            (SkillEnum::AlPneuma, GroundKind::Pneuma),
+            (SkillEnum::MgSafetywall, GroundKind::SafetyWall),
+            (SkillEnum::PrSanctuary, GroundKind::Sanctuary),
+            (SkillEnum::AsVenomdust, GroundKind::VenomDust),
+            (SkillEnum::PfSpiderweb, GroundKind::SpiderWeb),
+            (SkillEnum::WzFirepillar, GroundKind::FirePillar),
+            (SkillEnum::AmDemonstration, GroundKind::Demonstration),
+            (SkillEnum::HpBasilica, GroundKind::Basilica),
+            (SkillEnum::PfFogwall, GroundKind::FogWall),
+            (SkillEnum::SgSunWarm, GroundKind::Warm(0)),
+            (SkillEnum::SgMoonWarm, GroundKind::Warm(1)),
+            (SkillEnum::SgStarWarm, GroundKind::Warm(2)),
+            (SkillEnum::WzQuagmire, GroundKind::Quagmire),
+            (SkillEnum::SaDeluge, GroundKind::Deluge),
+            (SkillEnum::SaVolcano, GroundKind::Volcano),
+            (SkillEnum::SaViolentgale, GroundKind::ViolentGale),
+            (SkillEnum::SaLandprotector, GroundKind::LandProtector),
+            (SkillEnum::MgThunderstorm, GroundKind::Thunderstorm),
+            (SkillEnum::WzHeavendrive, GroundKind::HeavenDrive),
+            (SkillEnum::WzMeteor, GroundKind::Meteor),
+            (SkillEnum::WzStormgust, GroundKind::StormGust),
+            (SkillEnum::WzVermilion, GroundKind::Vermilion),
+            (SkillEnum::CrGrandcross, GroundKind::GrandCross),
+            (SkillEnum::MaSkidtrap, GroundKind::SkidTrap),
+            (SkillEnum::HtSkidtrap, GroundKind::SkidTrap),
+            (SkillEnum::HtAnklesnare, GroundKind::AnkleSnare),
+            (SkillEnum::MaLandmine, GroundKind::LandMine),
+            (SkillEnum::HtLandmine, GroundKind::LandMine),
+            (SkillEnum::HtBlastmine, GroundKind::BlastMine),
+            (SkillEnum::HtClaymoretrap, GroundKind::ClaymoreTrap),
+            (SkillEnum::HtShockwave, GroundKind::Shockwave),
+            (SkillEnum::HtFlasher, GroundKind::Flasher),
+            (SkillEnum::MaSandman, GroundKind::Sandman),
+            (SkillEnum::HtSandman, GroundKind::Sandman),
+            (SkillEnum::MaFreezingtrap, GroundKind::FreezingTrap),
+            (SkillEnum::HtFreezingtrap, GroundKind::FreezingTrap),
+            (SkillEnum::HtTalkiebox, GroundKind::TalkieBox),
+            (SkillEnum::RgGraffiti, GroundKind::Graffiti),
+            (SkillEnum::MaShower, GroundKind::ArrowShower),
+            (SkillEnum::NpcEvilland, GroundKind::EvilLand),
+            (SkillEnum::NpcGranddarkness, GroundKind::GrandDarkness),
+            (SkillEnum::NpcEarthquake, GroundKind::Earthquake),
+        ];
+        for (skill, expected) in table {
+            assert_eq!(kind(skill), Some(expected), "{skill:?}");
+        }
+        assert_eq!(kind(SkillEnum::RgCleaner), None);
+        assert_eq!(kind(SkillEnum::HwGanbantein), None);
+        assert_eq!(placement(SkillEnum::MgFirewall, 1), Some(GroundPlacement::Limit(3)));
+        assert_eq!(placement(SkillEnum::AlPneuma, 1), Some(GroundPlacement::NoOverlap));
+        assert_eq!(placement(SkillEnum::RgCleaner, 1), Some(GroundPlacement::Cleaner));
+        assert_eq!(placement(SkillEnum::AmSpheremine, 1), Some(GroundPlacement::Summon));
+        assert_eq!(placement(SkillEnum::BsHammerfall, 1), Some(GroundPlacement::AreaStatus));
+        assert_eq!(placement(SkillEnum::HpBasilica, 1), Some(GroundPlacement::Basilica));
+        assert_eq!(placement(SkillEnum::SgSunWarm, 1), None);
+    }
+
+    #[test]
     fn actor_behaviour_comes_from_the_skill_object() {
         let behaviour = |skill: SkillEnum, level: u8| ScriptSkillService::actor_behaviour(SkillMetadata::find(skill.id()).unwrap(), level);
         assert_eq!(behaviour(SkillEnum::AlHeal, 1), ActorBehaviour::Heal);
         assert_eq!(behaviour(SkillEnum::AlTeleport, 1), ActorBehaviour::Teleport);
         assert_eq!(behaviour(SkillEnum::TfThrowstone, 1), ActorBehaviour::FixedWeapon { amount: 30 });
         assert_eq!(behaviour(SkillEnum::SaDispell, 5), ActorBehaviour::Dispel { chance: 100 });
-        assert_eq!(behaviour(SkillEnum::SlSma, 1), ActorBehaviour::Magic(MagicProfile { consumes_sma: true, grants_sma_from_level: None }));
-        assert_eq!(behaviour(SkillEnum::SlStun, 7), ActorBehaviour::Magic(MagicProfile { consumes_sma: false, grants_sma_from_level: Some(7) }));
+        assert_eq!(behaviour(SkillEnum::SlSma, 1), ActorBehaviour::Magic(MagicProfile { consumes_sma: true, grants_sma_from_level: None, es_magic: true }));
+        assert_eq!(behaviour(SkillEnum::SlStun, 7), ActorBehaviour::Magic(MagicProfile { consumes_sma: false, grants_sma_from_level: Some(7), es_magic: true }));
         assert!(matches!(
             behaviour(SkillEnum::SmMagnum, 1),
             ActorBehaviour::Splash(profile) if profile.single_hit && profile.distance_ratio && profile.knockback_cells == 2
         ));
         assert_eq!(behaviour(SkillEnum::WzFrostnova, 1), ActorBehaviour::Splash(SplashProfile::default()));
+        assert_eq!(behaviour(SkillEnum::CrDevotion, 1), ActorBehaviour::Devotion);
+        assert_eq!(behaviour(SkillEnum::PrLexdivina, 1), ActorBehaviour::Toggle(StatusChangeKind::Silence));
+        assert_eq!(
+            behaviour(SkillEnum::SmProvoke, 1),
+            ActorBehaviour::Support(skills::SupportProfile { chance: skills::SupportChance::Provoke, needs_weapon: false })
+        );
+        assert!(matches!(behaviour(SkillEnum::SaFlamelauncher, 1), ActorBehaviour::Support(profile) if profile.needs_weapon));
+        assert_eq!(behaviour(SkillEnum::AlBlessing, 1), ActorBehaviour::UndeadBuffDamage);
+        assert!(matches!(behaviour(SkillEnum::PrStrecovery, 1), ActorBehaviour::Cure { undead_follow_up: true, .. }));
     }
 
     #[test]
-    fn strip_profiles_name_their_slots_and_full_strip_rate() {
-        let (kinds, full) = ScriptSkillService::strip_profile(SkillEnum::RgStripweapon.id(), 1).unwrap();
-        assert_eq!((kinds, full), (&[StatusChangeKind::StripWeapon][..], false));
-        let (kinds, full) = ScriptSkillService::strip_profile(SkillEnum::StFullstrip.id(), 1).unwrap();
-        assert_eq!(kinds.len(), 4);
-        assert!(full);
-        assert_eq!(ScriptSkillService::strip_profile(SkillEnum::AlHeal.id(), 1), None);
+    fn strip_behaviours_name_their_slots_and_full_strip_rate() {
+        let behaviour = |skill: SkillEnum| ScriptSkillService::actor_behaviour(SkillMetadata::find(skill.id()).unwrap(), 1);
+        assert_eq!(
+            behaviour(SkillEnum::RgStripweapon),
+            ActorBehaviour::Strip { kinds: &[StatusChangeKind::StripWeapon], full: false }
+        );
+        assert!(matches!(behaviour(SkillEnum::StFullstrip), ActorBehaviour::Strip { kinds, full: true } if kinds.len() == 4));
+        assert_eq!(behaviour(SkillEnum::AlHeal), ActorBehaviour::Heal);
     }
 
     #[test]
     fn status_kinds_come_from_objects_or_metadata() {
-        assert_eq!(ScriptSkillService::status_for_skill("SM_PROVOKE"), Some(StatusChangeKind::Provoke));
-        assert_eq!(ScriptSkillService::status_for_skill("PR_LEXDIVINA"), Some(StatusChangeKind::Silence));
-        assert_eq!(ScriptSkillService::status_for_skill("SM_SELFPROVOKE"), Some(StatusChangeKind::Provoke));
-        assert_eq!(ScriptSkillService::status_for_skill("AL_HEAL"), None);
+        assert_eq!(ScriptSkillService::skill_status(SkillEnum::SmProvoke.id()), Some(StatusChangeKind::Provoke));
+        assert_eq!(ScriptSkillService::skill_status(SkillEnum::PrLexdivina.id()), Some(StatusChangeKind::Silence));
+        assert_eq!(ScriptSkillService::skill_status(SkillEnum::SmSelfprovoke.id()), Some(StatusChangeKind::Provoke));
+        assert_eq!(ScriptSkillService::skill_status(SkillEnum::AlHeal.id()), None);
     }
 }

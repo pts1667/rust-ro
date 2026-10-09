@@ -15,15 +15,11 @@ use crate::server::state::server::ServerState;
 use crate::server::Server;
 
 impl ScriptSkillService {
-    pub(super) fn party_support_skill(name: &str) -> bool {
-        matches!(name, "AL_ANGELUS" | "PR_GLORIA" | "PR_MAGNIFICAT" | "BS_WEAPONPERFECT" | "BS_ADRENALINE" | "BS_ADRENALINE2" | "BS_OVERTHRUST")
-    }
-
     pub(super) fn apply_party_support(&self, server: &Server, state: &ServerState, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<(), String> {
         let source = if effect.source_char_id == character.char_id { &*character } else { state.get_character(effect.source_char_id).ok_or("Party skill caster disconnected")? };
         let metadata = SkillMetadata::find(effect.skill_id).ok_or("Party skill metadata is unavailable")?;
         let skill = self.configuration.find_skill_config(&script_sdk::Value::Number(effect.skill_id as i32)).ok_or("Party skill configuration is unavailable")?;
-        let kind = Self::status_for_skill(skill.name()).ok_or("Party skill status is unavailable")?;
+        let kind = Self::skill_status(effect.skill_id).ok_or("Party skill status is unavailable")?;
         let radius = metadata.splash(effect.level).unwrap_or(-1);
         let radius = if radius < 0 { 14 } else { radius.min(i32::from(u16::MAX)) as u16 };
         let source_id = source.char_id;

@@ -120,4 +120,9 @@ impl Skill for Hocuspocus {
         }
         Ok(Some(required_items))
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::HocusPocus
+    }
 }

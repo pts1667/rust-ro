@@ -13,6 +13,8 @@ use models::status_change::StatusChangeKind;
 pub mod npc;
 pub mod skill_enums;
 pub mod skills;
+mod ground;
+pub use ground::{GroundKind, GroundPlacement};
 
 
 type SkillRequirementResult<T> = std::result::Result<T, ()>;
@@ -119,6 +121,244 @@ pub enum ActorBehaviour {
     FixedWeapon { amount: u32 },
     /// Magic damage from the metadata formula, with Soul Linker's Sma side effects.
     Magic(MagicProfile),
+    /// Crusader's Devotion on the target.
+    Devotion,
+    /// Venom Splasher's status on the target; boss monsters are immune.
+    VenomSplasher,
+    /// Confusion, then the caster's Wink of Charm on the target.
+    WinkCharm,
+    /// Draws a random Tarot Card of Fate effect for the target.
+    Tarot,
+    /// Cancels the target's cast, or drains SP when the target has Magic Rod.
+    SpellBreaker,
+    /// Shows a monster's stats to the caster.
+    Estimation,
+    /// Opens the identify list for the caster.
+    Identify,
+    /// Casts a random skill from the Abracadabra table.
+    HocusPocus,
+    /// Gives the caster a stone item.
+    FindStone,
+    /// Enchant Arms: the weapon element status on the target.
+    EnchantArms,
+    /// Orcish status on the target.
+    ReverseOrcish,
+    /// Ninja Shadow Jump: moves the caster to a ground point.
+    ShadowLeap,
+    /// Creator Condensed Potion: splits a potion into a ground heal.
+    CondensedPotion,
+    /// Creator Plant Cultivation: grows a plant on the ground.
+    Cultivate,
+    /// Greed: collects the items around the caster.
+    CollectItems,
+    /// Wedding Bond: links the caster to the family baby.
+    BondBaby,
+    /// Adds spirit spheres for the caster, following the grant rule.
+    Spheres(SphereGrant),
+    /// Taekwon High Jump: moves the caster forward.
+    HighJump,
+    /// Taekwon Mission: starts a Taekwon mission on the caster.
+    Mission,
+    /// Taekwon Run: toggles running for the caster.
+    Run,
+    /// A request handled by the script world: vending, cart, homunculus or family calls.
+    ServiceCall(ServiceCall),
+    /// Removes a trap the caster controls, or springs it when `spring` is set.
+    TrapControl { spring: bool },
+    /// Martyr's Reckoning: a hit that the caster takes for an ally.
+    Martyr,
+    /// Snatch: a monster hit may warp the target away.
+    Intimidate,
+    /// Gloria Domini: drains a share of the target's SP.
+    Pressure,
+    /// Benedictio: cures the target's status effects around the caster.
+    Benedictio,
+    /// Envenom: spends the poison reaction on a hit.
+    PoisonReact,
+    /// Bowling Bash: hits the target and the monsters in the line it knocks back into.
+    Bowling,
+    /// Water Ball: a ball that flies from the caster to the target cell.
+    WaterBall,
+    /// Timed status the skill puts on its target, with the rules for its rate and weapon.
+    Support(SupportProfile),
+    /// Blessing and Increase Agi damage an undead target instead of buffing it.
+    UndeadBuffDamage,
+    /// Party-wide status: every party member in range receives it, the caster included.
+    PartyBuff,
+    /// Song or dance: hands its status out on each pulse, or harasses enemies with damage or drain.
+    Performance(PerformanceProfile),
+    /// Amp: ends the dance once it has lasted long enough to adapt.
+    Adaptation,
+    /// Longing for Freedom: lets a dancer keep dancing out of an ensemble.
+    LongingFreedom,
+    /// Encore: repeats the last performance for half its SP.
+    Encore,
+    /// Cast Cancel: ends the caster's own cast.
+    CastCancel,
+}
+
+/// The success rule a recipe skill crafts by.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CraftingRule {
+    /// Weapon-material tempering, with its own formula per material.
+    Forge,
+    /// Create Deadly Poison, from the caster's DEX and LUK.
+    DeadlyPoison,
+    /// Always succeeds.
+    FixedSuccess,
+    /// Pharmacy, from its own learned skills and the potion.
+    Pharmacy,
+}
+
+/// The window or instant craft a menu skill opens for its caster.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MenuKind {
+    ElementalConverter,
+    MakingArrow,
+    WeaponRefine,
+    AutoSpell,
+    StarPlace,
+    RepairWeapon,
+    Pharmacy,
+    HolyWater,
+    DeadlyPoison,
+}
+
+/// How a skill's costs differ from its metadata.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct CostRules {
+    /// Pays no HP (Magnum Break).
+    pub no_hp: bool,
+    /// Pays no zeny (Throw Zeny).
+    pub no_zeny: bool,
+    /// Soul Linker's Kaina lowers the SP cost.
+    pub kaina_sp_reduction: bool,
+    /// Unfair Trick lowers the zeny cost by a tenth (Mammonite).
+    pub unfair_trick_zeny: bool,
+    /// Not blocked by Into Abyss, which requires gemstones (Ganbantein).
+    pub abyss_exempt: bool,
+    /// Takes no item costs at all (Call Homunculus).
+    pub no_item_costs: bool,
+    /// Consumes one item per skill level (pitchers and Cultivation).
+    pub item_per_level: bool,
+    /// Only the autocast cost pays SP (Holy Light).
+    pub autocast_sp: bool,
+}
+
+/// The status an area skill applies: its chance (hundredths of a percent) and when it lands.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AreaStatusProfile {
+    pub kind: StatusChangeKind,
+    pub chance: i32,
+    pub delay_ms: u128,
+    pub duration: AreaDuration,
+    /// Party members resist with a quarter of the chance and take the plain duration.
+    pub party_quarter_chance: bool,
+    /// Only undead and demon monsters are affected.
+    pub undead_only: bool,
+    /// The chance follows the caster's and the target's base levels.
+    pub level_rate: bool,
+}
+
+/// Which duration the area status lasts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AreaDuration {
+    /// The skill's duration for its level, with the status's own adjustment.
+    Adjusted,
+    /// The skill's plain duration for its level.
+    Plain,
+    /// Until it is removed.
+    Permanent,
+}
+
+/// How a skill adds spirit spheres.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SphereGrant {
+    /// One sphere valued at the skill level.
+    Level,
+    /// Five spheres valued at 5.
+    Five,
+    /// One sphere valued at 10 on a level-based chance; otherwise one sphere is removed.
+    Glitter,
+}
+
+/// The script world request an actor makes for the caster.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ServiceCall {
+    Vending,
+    Pushcart,
+    CallHomunculus,
+    RestHomunculus,
+    ResurrectHomunculus,
+    CallPartner,
+    CallBaby,
+    CallParents,
+}
+
+/// Parameters of [`ActorBehaviour::Support`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct SupportProfile {
+    /// How the rate of the status is decided.
+    pub chance: SupportChance,
+    /// The target must have an equipped weapon (elemental endows).
+    pub needs_weapon: bool,
+}
+
+/// The rate rule of a timed support skill, out of 10000.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SupportChance {
+    #[default]
+    Certain,
+    Fixed(u16),
+    /// Depends on the caster's and the target's base levels.
+    Provoke,
+    /// Depends on the caster's base level and intelligence.
+    DecreaseAgi,
+    /// Grows with the skill level.
+    Endow,
+}
+
+/// A map flag that blocks a skill on that map.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MapRestriction {
+    NoVending,
+    NoTeleport,
+    NoWarp,
+    NoIceWall,
+}
+
+/// Parameters of [`ActorBehaviour::Performance`].
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PerformanceProfile {
+    /// The status the performance hands out on each pulse.
+    pub status: StatusChangeKind,
+    pub reach: PerformanceReach,
+    /// Needs a partner standing next to the caster.
+    pub ensemble: bool,
+    pub effect: PerformanceEffect,
+    /// The lesson skill whose level adds to the performance values.
+    pub lesson: models::enums::skill_enums::SkillEnum,
+}
+
+/// Who a performance reaches.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PerformanceReach {
+    /// Everybody on a normal map, only the party where players fight each other.
+    Everyone,
+    Anyone,
+    Party,
+    Enemies,
+}
+
+/// What a performance does on each pulse.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PerformanceEffect {
+    /// Hands the status to everybody in reach.
+    Aura,
+    /// Damage to every enemy in the area (Unchained Serenade).
+    Damage,
+    /// SP drain on enemy players (Hip Shaker).
+    Drain,
 }
 
 /// Parameters of [`ActorBehaviour::Splash`].
@@ -145,6 +385,122 @@ pub struct MagicProfile {
     pub consumes_sma: bool,
     /// From this skill level, the actor gains Sma after the hit unless it already has it.
     pub grants_sma_from_level: Option<u8>,
+    /// Es magic: a player target is stunned instead, unless the server allows Es magic on players.
+    pub es_magic: bool,
+}
+
+/// What a class-specific skill does to the player or monster it lands on. The server's class dispatch runs one arm per variant.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ClassEffect {
+    /// Drains the target's spirit spheres into SP.
+    AbsorbSpirits,
+    /// Moves the caster's spirit spheres to a party member.
+    KiTranslation,
+    FullProtection,
+    Redemptio,
+    Marionette,
+    /// `slot` indexes the remembered map for the comfort's day.
+    StarComfort { slot: usize, kind: StatusChangeKind },
+    /// Hatred of the Sun, Moon and Stars, monsters only.
+    StarHate,
+    /// Shares the partner's max HP when `hp`, otherwise max SP.
+    ConjugalShare { hp: bool },
+    AidPotion,
+    AidBerserkPotion,
+    Twilight(TwilightStage),
+    Question,
+    Gravity,
+    LevelUp,
+    InstantDeath,
+    FullRecovery,
+    Coma,
+    Fortune,
+    SummonMonster,
+    /// Kills a monster outright.
+    Death,
+    ElementChange(Element),
+    /// Turns a monster into a random monster of its class, or Poring when `monocell`.
+    ClassChange { monocell: bool },
+    HpConversion,
+    SoulChange,
+    MindBreaker,
+    StealItem,
+    StealCoin,
+    /// The Soul Linker's class soul link, held on the target as `Spirit`.
+    SoulLink,
+    /// Soul Linker's party buffs.
+    SoulLinkBuff(StatusChangeKind),
+    /// Estin's debuffs on monsters; casting one on a player punishes the caster.
+    Estin(StatusChangeKind),
+    /// Taekwon stance or Tumbling, held until cast again.
+    Stance(StatusChangeKind),
+    SevenWind,
+}
+
+/// The materials of one Twilight Alchemy stage.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TwilightStage {
+    WhitePotion,
+    WhiteSlimPotion,
+    /// Needs 200 Empty Bottles in the inventory, then makes the Alcohol, Acid and Fire Bottles.
+    Bottles,
+}
+
+/// What a homunculus or mercenary skill does when it resolves. Read only by the companion dispatch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CompanionEffect {
+    /// Sets a trap on the target cell.
+    Trap,
+    /// Homunculus passive; casting does nothing.
+    Passive,
+    /// Gives the companion itself a status.
+    SelfStatus(StatusChangeKind),
+    /// Gives the companion and its owner the same status.
+    SelfAndOwnerStatus(StatusChangeKind),
+    /// Fully heals the companion and gives it the change status.
+    Transform,
+    /// Heals the owner, boosted by the companion's Brain Surgery.
+    OwnerHeal,
+    /// Chance to swap places with the owner.
+    Castle,
+    /// Heals a random recipient among the companion, its owner and the enemy it is fighting.
+    ChaoticHeal,
+    /// Ends these statuses on the target.
+    TargetCure(&'static [StatusChangeKind]),
+    /// Ends these statuses on the companion.
+    SourceCure(&'static [StatusChangeKind]),
+    /// Gives the owner the companion's HP, then the companion self-destructs.
+    Scapegoat,
+    /// Silences the target, or ends its silence when already silenced.
+    LexDivina,
+    MercenaryDecreaseAgi,
+    MercenaryProvoke,
+    /// Devotion on the owner, the owner must be within ten levels.
+    Devotion,
+    Moonlight,
+    /// Intimacy-scaled damage that resets the intimacy.
+    IntimacyStrike,
+    /// Self-destructive explosion that needs high intimacy.
+    BioExplosion,
+    /// A random homunculus bolt spell.
+    Caprice,
+    /// Mercenary weapon skill with its own formula.
+    Weapon(MercenaryWeapon),
+}
+
+/// The mercenary weapon skills whose damage formula the companion dispatch computes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MercenaryWeapon {
+    Bash,
+    Magnum,
+    BowlingBash,
+    Double,
+    ChargeArrow,
+    SharpShooting,
+    Pierce,
+    Brandish,
+    SpiralPierce,
+    Crash,
 }
 
 /// One skill: its identity, requirements, timings, damage and effects.
@@ -269,6 +625,86 @@ pub trait Skill: Send + Sync {
     #[inline(always)]
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::Default
+    }
+    /// How this skill's costs differ from its metadata. Read by requirements and autocast.
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules::default()
+    }
+    /// The map flag that blocks this skill, if any.
+    #[inline(always)]
+    fn map_restriction(&self) -> Option<MapRestriction> {
+        None
+    }
+    /// The ground unit this skill leaves on the map, if any.
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        None
+    }
+    /// How this skill places itself on the ground, when its unit alone does not say.
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        None
+    }
+    /// True when the skill needs a player-side callback that actors do not run, so actors cannot cast it.
+    #[inline(always)]
+    fn player_only_callback(&self) -> bool {
+        false
+    }
+    /// The damage a monster weapon attack deals, as a fraction of its weapon attack, when the skill is one.
+    #[inline(always)]
+    fn weapon_ratio(&self, _level: u8) -> Option<f32> {
+        None
+    }
+    /// The success rule of the recipe this skill crafts, if it has one.
+    #[inline(always)]
+    fn crafting_rule(&self) -> Option<CraftingRule> {
+        None
+    }
+    /// The multiplier of the skill's metadata magic damage, when the skill has its own formula.
+    #[inline(always)]
+    fn magic_modifier(&self, _target_small: bool, _source_base_level: u32) -> Option<f32> {
+        None
+    }
+    /// The menu this skill opens for its caster, if any.
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        None
+    }
+    /// True when a pet can use the skill on a ground point.
+    #[inline(always)]
+    fn pet_ground_attack(&self) -> bool {
+        false
+    }
+    /// The two numbers a song hands its status, `values[1]` and `values[2]`.
+    #[inline(always)]
+    fn performance_values(&self, _level: i32, _stats: &StatusSnapshot, _lesson: i32) -> (i32, i32) {
+        (0, 0)
+    }
+    /// The damage or drain a harassing performance applies on each pulse.
+    #[inline(always)]
+    fn performance_amount(&self, _level: i32, _stats: &StatusSnapshot, _lesson: i32) -> u32 {
+        0
+    }
+    /// The HP a performance heals its listeners on each pulse.
+    #[inline(always)]
+    fn performance_heal(&self, _level: i32, _stats: &StatusSnapshot, _lesson: i32) -> u32 {
+        0
+    }
+    /// The status an area skill applies to every enemy around the caster, or `None` if it applies none.
+    #[inline(always)]
+    fn area_status(&self) -> Option<AreaStatusProfile> {
+        None
+    }
+    /// What a homunculus or mercenary skill does when it resolves. Read only by the companion dispatch.
+    #[inline(always)]
+    fn companion_effect(&self) -> Option<CompanionEffect> {
+        None
+    }
+    /// The class-specific effect this skill has on the player or monster it lands on. Read only by the class dispatch.
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        None
     }
     /// The status a self or support skill applies, when its metadata does not name one.
     #[inline(always)]

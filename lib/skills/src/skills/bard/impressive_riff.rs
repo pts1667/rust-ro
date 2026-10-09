@@ -230,4 +230,14 @@ impl Skill for ImpressiveRiff {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::AssnCros, reach: PerformanceReach::Everyone, ensemble: false, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        ((lesson / 2 + 5 + level + i32::from(stats.agi()) / 20) * 10, 0)
+    }
 }

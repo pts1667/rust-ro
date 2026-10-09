@@ -126,4 +126,14 @@ impl Skill for ShadowLeap {
     fn base_after_cast_act_delay(&self) -> u32 {
        1000
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::ShadowLeap
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

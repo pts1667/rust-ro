@@ -160,4 +160,9 @@ impl Skill for SightlessMind {
             StatusInfliction::secondary(StatusChangeKind::Blind, chance, self.level),
         ]
     }
+
+    #[inline(always)]
+    fn player_only_callback(&self) -> bool {
+        true
+    }
 }

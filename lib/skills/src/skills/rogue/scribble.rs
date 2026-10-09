@@ -120,4 +120,9 @@ impl Skill for Scribble {
         }
         Ok(Some(required_items))
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Graffiti)
+    }
 }

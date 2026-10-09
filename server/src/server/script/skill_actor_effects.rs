@@ -11,7 +11,6 @@ use script_sdk::Value;
 use super::ScriptSkillService;
 use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
 use super::actor::{self, ScriptSkillActor};
-use super::ground::GroundKind;
 use super::metadata::SkillMetadata;
 use super::monster::MonsterSkill;
 use super::secondary::HitStatuses;
@@ -60,7 +59,7 @@ impl ScriptSkillService {
         {
             break_equipment(server, state, hit.target_id, BreakSlot::Weapon)?;
         }
-        if metadata.name == "RG_INTIMIDATE" && source.object_type == MapItemType::Mob && hit.damage > 0 {
+        if Self::actor_behaviour(metadata, hit.skill_level) == ActorBehaviour::Intimidate && source.object_type == MapItemType::Mob && hit.damage > 0 {
             self.actor_intimidate_warp(server, state, &source, &hit, &target, tick);
         }
         let object = Self::skill_object(metadata, hit.skill_level);
@@ -214,8 +213,8 @@ impl ScriptSkillService {
             }
             _ => {}
         }
-        // Ground units are registered per skill name in GroundKind, not by the skill's target type.
-        if request.ground.is_some() || GroundKind::from_name(&metadata.name).is_some() {
+        // Ground units are registered by the skill object's ground kind, not by its target type.
+        if request.ground.is_some() || Self::ground_kind(metadata, level).is_some() {
             let (x, y) = self.actor_skill_point(state, source, request, metadata)?;
             if behaviour == ActorBehaviour::EraseGraffiti {
                 self.erase_graffiti(
@@ -441,6 +440,7 @@ impl ScriptSkillService {
                         skill,
                         kind,
                         level,
+                        Self::support_chance(request.skill_id, level),
                         source.status.base_level(),
                         source.status.int(),
                         status.base_level(),
@@ -774,7 +774,7 @@ impl ScriptSkillService {
 
     pub(super) fn actor_metadata_status(metadata: &SkillMetadata) -> bool {
         metadata.damage_flags.get("NoDamage").copied().unwrap_or(false)
-            && (metadata.is_monster() && !metadata.is_wide_monster() || metadata.name == "SA_REVERSEORCISH")
+            && (metadata.is_monster() && !metadata.is_wide_monster() || Self::actor_behaviour(metadata, 1) == ActorBehaviour::ReverseOrcish)
             && metadata.status.as_deref().and_then(StatusChangeKind::from_name).is_some()
     }
 

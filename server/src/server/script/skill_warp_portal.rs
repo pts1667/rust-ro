@@ -7,7 +7,9 @@ use models::enums::cell::CellType;
 use models::enums::skill_enums::SkillEnum;
 
 use super::actor::ScriptSkillActor;
-use super::ground::{GroundCell, GroundKind, GroundSkill, GroundSkillSource, NEXT_GROUND_UNIT};
+use skills::GroundKind;
+
+use super::ground::{GroundCell, GroundSkill, GroundSkillSource, NEXT_GROUND_UNIT};
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
 use crate::server::Server;

@@ -4,11 +4,15 @@ use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use skills::{ActorBehaviour, CompanionEffect, MercenaryWeapon};
 
 use super::ScriptSkillService;
 use super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::action::Damage;
+
+/// Spells a Homunculus Caprice picks from, one per cast.
+const CAPRICE_SPELLS: [SkillEnum; 4] = [SkillEnum::MgColdbolt, SkillEnum::MgFirebolt, SkillEnum::MgLightningbolt, SkillEnum::WzEarthspike];
 
 #[derive(Clone, Debug, Default)]
 pub struct CompanionSkillContext {
@@ -118,27 +122,21 @@ impl ScriptSkillService {
                 request,
             }
         };
-        match metadata.name.as_str() {
-            "MA_SKIDTRAP" | "MA_LANDMINE" | "MA_SANDMAN" | "MA_FREEZINGTRAP" | "MA_SHOWER" => {
+        let effect = Self::companion_effect(metadata, level);
+        match effect {
+            Some(CompanionEffect::Trap) => {
                 return Ok(vec![Ground {
                     skill_id,
                     level,
                     target_id,
                 }]);
             }
-            "HLIF_BRAIN" | "HAMI_SKIN" | "HVAN_INSTRUCT" => return Ok(vec![]),
-            "HLIF_AVOID" | "HAMI_DEFENCE" => {
-                let kind = if metadata.name == "HLIF_AVOID" {
-                    StatusChangeKind::HomAvoid
-                } else {
-                    StatusChangeKind::HomDefence
-                };
+            Some(CompanionEffect::Passive) => return Ok(vec![]),
+            Some(CompanionEffect::SelfStatus(kind)) => return Ok(vec![status_request(kind, source_id)]),
+            Some(CompanionEffect::SelfAndOwnerStatus(kind)) => {
                 return Ok(vec![status_request(kind, source_id), status_request(kind, owner_id)]);
             }
-            "HAMI_BLOODLUST" => return Ok(vec![status_request(StatusChangeKind::Bloodlust, source_id)]),
-            "HFLI_FLEET" => return Ok(vec![status_request(StatusChangeKind::Fleet, source_id)]),
-            "HFLI_SPEED" => return Ok(vec![status_request(StatusChangeKind::HomSpeed, source_id)]),
-            "HLIF_CHANGE" => {
+            Some(CompanionEffect::Transform) => {
                 return Ok(vec![
                     Heal {
                         target_id: source_id,
@@ -148,7 +146,7 @@ impl ScriptSkillService {
                     status_request(StatusChangeKind::HomChange, source_id),
                 ]);
             }
-            "HAMI_CASTLE" => {
+            Some(CompanionEffect::Castle) => {
                 return Ok(if source_id != owner_id && fastrand::u32(0..100) < 20 * level as u32 {
                     vec![SwapPositions {
                         source_id,
@@ -158,7 +156,7 @@ impl ScriptSkillService {
                     vec![]
                 });
             }
-            "HLIF_HEAL" => {
+            Some(CompanionEffect::OwnerHeal) => {
                 let healing =
                     Self::heal_amount(source, context.base_level, level).saturating_mul(100 + 2 * context.brain_level as u32) / 100;
                 return Ok(vec![Heal {
@@ -167,7 +165,7 @@ impl ScriptSkillService {
                     sp: 0,
                 }]);
             }
-            "HVAN_CHAOTIC" => {
+            Some(CompanionEffect::ChaoticHeal) => {
                 let level_index = level as usize - 1;
                 let roll = fastrand::u32(1..=100);
                 let recipient = if roll <= [20, 50, 25, 50, 34][level_index] {
@@ -183,48 +181,13 @@ impl ScriptSkillService {
                     sp: 0,
                 }]);
             }
-            "MER_RECUPERATE" => {
-                return Ok(
-                    [StatusChangeKind::Poison, StatusChangeKind::DeadlyPoison, StatusChangeKind::Silence]
-                        .into_iter()
-                        .map(|kind| EndStatus { target_id, kind })
-                        .collect(),
-                );
+            Some(CompanionEffect::TargetCure(kinds)) => {
+                return Ok(kinds.iter().map(|kind| EndStatus { target_id, kind: *kind }).collect());
             }
-            "MER_MENTALCURE" => {
-                return Ok(vec![EndStatus {
-                    target_id,
-                    kind: StatusChangeKind::Confusion,
-                }]);
+            Some(CompanionEffect::SourceCure(kinds)) => {
+                return Ok(kinds.iter().map(|kind| EndStatus { target_id: source_id, kind: *kind }).collect());
             }
-            "MER_REGAIN" => {
-                return Ok([StatusChangeKind::Stun, StatusChangeKind::Sleep]
-                    .into_iter()
-                    .map(|kind| EndStatus {
-                        target_id: source_id,
-                        kind,
-                    })
-                    .collect());
-            }
-            "MER_TENDER" => {
-                return Ok([StatusChangeKind::Freeze, StatusChangeKind::Stone]
-                    .into_iter()
-                    .map(|kind| EndStatus { target_id, kind })
-                    .collect());
-            }
-            "MER_BENEDICTION" => {
-                return Ok([StatusChangeKind::Curse, StatusChangeKind::Blind]
-                    .into_iter()
-                    .map(|kind| EndStatus { target_id, kind })
-                    .collect());
-            }
-            "MER_COMPRESS" => {
-                return Ok(vec![EndStatus {
-                    target_id: source_id,
-                    kind: StatusChangeKind::Bleeding,
-                }]);
-            }
-            "MER_SCAPEGOAT" => {
+            Some(CompanionEffect::Scapegoat) => {
                 return Ok(vec![
                     Heal {
                         target_id: owner_id,
@@ -234,7 +197,7 @@ impl ScriptSkillService {
                     SelfDestruct { delay_ms: 0 },
                 ]);
             }
-            "MER_LEXDIVINA" => {
+            Some(CompanionEffect::LexDivina) => {
                 if target.has_status_change(StatusChangeKind::Silence) {
                     return Ok(vec![EndStatus {
                         target_id,
@@ -254,33 +217,13 @@ impl ScriptSkillService {
                     delay_ms: 1000,
                 }]);
             }
-            "MER_DECAGI" | "MER_PROVOKE" => {
-                let kind = if metadata.name == "MER_DECAGI" {
-                    StatusChangeKind::DecreaseAgi
-                } else {
-                    StatusChangeKind::Provoke
-                };
-                if kind == StatusChangeKind::Provoke && Self::undead_target(target) {
-                    return Ok(vec![]);
-                }
-                let chance = if kind == StatusChangeKind::DecreaseAgi {
-                    50 + 3 * level as i32 + (context.base_level as i32 + source.int() as i32) / 5
-                } else {
-                    70 + 3 * level as i32 + context.base_level as i32 - context.target_base_level as i32
-                };
-                let mut request = StatusChangeRequest {
-                    kind,
-                    duration_ms: metadata.duration(level, false).unwrap_or(0),
-                    values: [level as i32, 0, 0, 0],
-                    rate: (chance.max(0) * 100).min(u16::MAX as i32) as u16,
-                    flags: 0,
-                };
-                if kind == StatusChangeKind::Provoke && level == 10 {
-                    request.values[2] = 100;
-                }
-                return Ok(vec![Status { target_id, request }]);
+            Some(CompanionEffect::MercenaryDecreaseAgi) => {
+                return Ok(Self::mercenary_debuff(metadata, level, source, target, target_id, context, StatusChangeKind::DecreaseAgi));
             }
-            "ML_DEVOTION" => {
+            Some(CompanionEffect::MercenaryProvoke) => {
+                return Ok(Self::mercenary_debuff(metadata, level, source, target, target_id, context, StatusChangeKind::Provoke));
+            }
+            Some(CompanionEffect::Devotion) => {
                 if target_id != owner_id
                     || context.base_level.abs_diff(context.target_base_level) > 10
                     || target.has_status_change(StatusChangeKind::HellPower)
@@ -306,37 +249,43 @@ impl ScriptSkillService {
                 )]);
             }
         }
-        let actual_skill = if metadata.name == "HVAN_CAPRICE" {
-            [
-                SkillEnum::MgColdbolt,
-                SkillEnum::MgFirebolt,
-                SkillEnum::MgLightningbolt,
-                SkillEnum::WzEarthspike,
-            ][fastrand::usize(0..4)]
-            .id()
+        let actual_skill = if effect == Some(CompanionEffect::Caprice) {
+            CAPRICE_SPELLS[fastrand::usize(0..CAPRICE_SPELLS.len())].id()
         } else {
             skill_id
         };
         let mut effects = vec![];
         let object = skills::skill_enums::to_object(SkillEnum::from_id(actual_skill), level);
-        let offensive = if matches!(metadata.name.as_str(), "HFLI_SBR44" | "HVAN_EXPLOSION") {
+        let has_formula = matches!(
+            effect,
+            Some(CompanionEffect::Moonlight | CompanionEffect::IntimacyStrike | CompanionEffect::BioExplosion | CompanionEffect::Weapon(_))
+        );
+        let offensive = if has_formula {
             None
         } else {
             object.as_ref().and_then(|skill| skill.as_offensive_skill())
         };
         let landed =
             metadata.damage_type.as_deref() != Some("Weapon") || server.battle_service().skill_hits(source, target, actual_skill, level);
-        let (damage, magic_context, battle_flags) = if Self::uses_metadata_magic(&metadata.name) {
+        let (damage, magic_context, battle_flags) = if Self::metadata_magic(metadata) {
             let (damage, context) = server.battle_service().metadata_magic_damage(source, target, metadata, level)?;
             if metadata.monster_skill() == Some(super::monster::MonsterSkill::MagicalAttack) {
-                effects.push(Status { target_id: source_id,
-                    request: StatusChangeRequest::guaranteed(StatusChangeKind::MagicalAttack, metadata.duration(level, false).unwrap_or(0), i32::from(level)) });
-            } else if metadata.name == "SL_SMA" {
-                effects.push(EndStatus { target_id: source_id, kind: StatusChangeKind::Sma });
-            } else if level >= 7 && !source.status_change(StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick)) {
-                let duration = SkillMetadata::find(SkillEnum::SlSma.id()).and_then(|metadata| metadata.duration(level, false)).unwrap_or(3000);
-                effects.push(Status { target_id: source_id,
-                    request: StatusChangeRequest::guaranteed(StatusChangeKind::Sma, duration, i32::from(level)) });
+                effects.push(Status {
+                    target_id: source_id,
+                    request: StatusChangeRequest::guaranteed(StatusChangeKind::MagicalAttack, metadata.duration(level, false).unwrap_or(0), i32::from(level)),
+                });
+            } else if let ActorBehaviour::Magic(profile) = Self::actor_behaviour(metadata, level) {
+                if profile.consumes_sma {
+                    effects.push(EndStatus { target_id: source_id, kind: StatusChangeKind::Sma });
+                } else if profile.grants_sma_from_level.is_some_and(|min| level >= min)
+                    && !source.status_change(StatusChangeKind::Sma).is_some_and(|ready| !ready.expired(tick))
+                {
+                    let duration = SkillMetadata::find(SkillEnum::SlSma.id()).and_then(|metadata| metadata.duration(level, false)).unwrap_or(3000);
+                    effects.push(Status {
+                        target_id: source_id,
+                        request: StatusChangeRequest::guaranteed(StatusChangeKind::Sma, duration, i32::from(level)),
+                    });
+                }
             }
             (damage, Some(context), metadata.battle_flags(true))
         } else if let Some(offensive) = offensive {
@@ -381,8 +330,8 @@ impl ScriptSkillService {
             }
         } else {
             let flags = metadata.battle_flags(metadata.range(level).unwrap_or(1) > 3 || metadata.damage_type.as_deref() == Some("Magic"));
-            match metadata.name.as_str() {
-                "HFLI_MOON" => (
+            match effect {
+                Some(CompanionEffect::Moonlight) => (
                     if landed {
                         server.battle_service().actor_physical_skill_damage_signed(
                             context.raw_attack,
@@ -401,7 +350,7 @@ impl ScriptSkillService {
                     None,
                     flags,
                 ),
-                "HFLI_SBR44" => {
+                Some(CompanionEffect::IntimacyStrike) => {
                     if context.intimacy < 400 {
                         return Err("SBR44 requires more than Hate with Passion intimacy".into());
                     }
@@ -423,7 +372,7 @@ impl ScriptSkillService {
                         flags,
                     )
                 }
-                "HVAN_EXPLOSION" => {
+                Some(CompanionEffect::BioExplosion) => {
                     if context.intimacy < 45000 {
                         return Err("Bio Explosion requires at least 450 intimacy".into());
                     }
@@ -437,11 +386,9 @@ impl ScriptSkillService {
                         flags,
                     )
                 }
-                "MS_BASH" | "MS_MAGNUM" | "MS_BOWLINGBASH" | "MA_DOUBLE" | "MA_SHOWER" | "MA_CHARGEARROW" | "MA_SHARPSHOOTING"
-                | "ML_PIERCE" | "ML_BRANDISH" | "ML_SPIRALPIERCE" | "MER_CRASH" => {
-                    let (ratio, hits, raw) =
-                        Self::mercenary_weapon_formula(metadata.name.as_str(), level, source, target, context.raw_attack)?;
-                    let element = if metadata.name == "MS_MAGNUM" {
+                Some(CompanionEffect::Weapon(weapon)) => {
+                    let (ratio, hits, raw) = Self::mercenary_weapon_formula(weapon, level, source, target, context.raw_attack);
+                    let element = if weapon == MercenaryWeapon::Magnum {
                         Element::Fire
                     } else {
                         server.battle_service().attack_element(source, None)
@@ -469,7 +416,8 @@ impl ScriptSkillService {
                 _ => return Err(format!("Companion damage skill {} has no resolved formula", metadata.name)),
             }
         };
-        let mut damage_event = crate::server::model::action::Damage { notification: None,
+        let mut damage_event = crate::server::model::action::Damage {
+            notification: None,
             source_kind: *source.combat_actor_kind(),
             skill_damage_adjusted: false,
             healing: 0,
@@ -493,27 +441,52 @@ impl ScriptSkillService {
         Ok(effects)
     }
 
-    pub fn mercenary_weapon_formula(
-        name: &str,
+    /// Mercenary Decrease AGI and Provoke: the chance follows the mercenary's level, and Provoke misses undead.
+    fn mercenary_debuff(
+        metadata: &SkillMetadata,
         level: u8,
         source: &StatusSnapshot,
         target: &StatusSnapshot,
-        raw: u32,
-    ) -> Result<(f32, i16, u32), String> {
+        target_id: u32,
+        context: &CompanionSkillContext,
+        kind: StatusChangeKind,
+    ) -> Vec<CompanionSkillEffect> {
+        if kind == StatusChangeKind::Provoke && Self::undead_target(target) {
+            return vec![];
+        }
+        let chance = if kind == StatusChangeKind::DecreaseAgi {
+            50 + 3 * level as i32 + (context.base_level as i32 + source.int() as i32) / 5
+        } else {
+            70 + 3 * level as i32 + context.base_level as i32 - context.target_base_level as i32
+        };
+        let mut request = StatusChangeRequest {
+            kind,
+            duration_ms: metadata.duration(level, false).unwrap_or(0),
+            values: [level as i32, 0, 0, 0],
+            rate: (chance.max(0) * 100).min(u16::MAX as i32) as u16,
+            flags: 0,
+        };
+        if kind == StatusChangeKind::Provoke && level == 10 {
+            request.values[2] = 100;
+        }
+        vec![CompanionSkillEffect::Status { target_id, request }]
+    }
+
+    /// Ratio of the weapon attack, its hit count and the raw attack it scales from.
+    pub fn mercenary_weapon_formula(weapon: MercenaryWeapon, level: u8, source: &StatusSnapshot, target: &StatusSnapshot, raw: u32) -> (f32, i16, u32) {
         let level = u32::from(level);
-        let (percent, hits, raw) = match name {
-            "MS_BASH" => (100 + 30 * level, 1, raw),
-            "MS_MAGNUM" => (100 + 10 * level, 1, raw),
-            "MS_BOWLINGBASH" => (100 + 40 * level, 1, raw),
-            "MA_DOUBLE" => ((90 + 10 * level) * 2, 2, raw),
-            "MA_SHOWER" => (75 + 5 * level, 1, raw),
-            "MA_CHARGEARROW" => (150, 1, raw),
-            "MA_SHARPSHOOTING" => (200 + 50 * level, 1, raw),
-            "ML_PIERCE" => {
+        let (percent, hits, raw) = match weapon {
+            MercenaryWeapon::Bash => (100 + 30 * level, 1, raw),
+            MercenaryWeapon::Magnum => (100 + 10 * level, 1, raw),
+            MercenaryWeapon::BowlingBash => (100 + 40 * level, 1, raw),
+            MercenaryWeapon::Double => ((90 + 10 * level) * 2, 2, raw),
+            MercenaryWeapon::ChargeArrow => (150, 1, raw),
+            MercenaryWeapon::SharpShooting => (200 + 50 * level, 1, raw),
+            MercenaryWeapon::Pierce => {
                 let hits = target.size().value() as i16 + 1;
                 ((100 + 10 * level) * hits as u32, hits, raw)
             }
-            "ML_BRANDISH" => {
+            MercenaryWeapon::Brandish => {
                 let base = 100 + 20 * level;
                 (
                     base + if level > 3 { base / 2 } else { 0 }
@@ -523,7 +496,7 @@ impl ScriptSkillService {
                     raw,
                 )
             }
-            "ML_SPIRALPIERCE" => {
+            MercenaryWeapon::SpiralPierce => {
                 let raw = raw.saturating_add(u32::from(source.str() / 10).pow(2));
                 let raw = raw.saturating_mul(match target.size() {
                     models::enums::size::Size::Small => 125,
@@ -532,9 +505,8 @@ impl ScriptSkillService {
                 }) / 100;
                 (500, 5, raw)
             }
-            "MER_CRASH" => (100 + 10 * level, 1, raw),
-            _ => return Err("Not a pre-renewal mercenary weapon skill".into()),
+            MercenaryWeapon::Crash => (100 + 10 * level, 1, raw),
         };
-        Ok((percent as f32 / 100.0, hits, raw))
+        (percent as f32 / 100.0, hits, raw)
     }
 }

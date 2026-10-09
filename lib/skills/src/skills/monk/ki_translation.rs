@@ -126,4 +126,9 @@ impl Skill for KiTranslation {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::KiTranslation)
+    }
 }

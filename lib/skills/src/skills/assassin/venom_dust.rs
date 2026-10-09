@@ -140,4 +140,9 @@ impl Skill for VenomDust {
         }
         effects
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::VenomDust)
+    }
 }

@@ -156,4 +156,9 @@ impl Skill for Pushcart {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::ServiceCall(ServiceCall::Pushcart)
+    }
 }

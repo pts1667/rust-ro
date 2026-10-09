@@ -113,7 +113,7 @@ impl ScriptSkillService {
         tick: u128,
         ignore_range: bool,
     ) -> Result<(u16, u16), String> {
-        let spring = super::super::metadata::SkillMetadata::find(skill_id).is_some_and(|metadata| metadata.name == "HT_SPRINGTRAP");
+        let spring = matches!(ScriptSkillService::skill_behaviour(skill_id, level), skills::ActorBehaviour::TrapControl { spring: true });
         if spring && character.options & PlayerOption::Falcon.as_flag() == 0 {
             return Err("Spring Trap requires a falcon".into());
         }

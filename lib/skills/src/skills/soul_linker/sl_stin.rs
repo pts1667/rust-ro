@@ -94,6 +94,16 @@ impl Skill for SlStin {
 
     #[inline(always)]
     fn actor_behaviour(&self) -> ActorBehaviour {
-        ActorBehaviour::Magic(MagicProfile { grants_sma_from_level: Some(7), ..MagicProfile::default() })
+        ActorBehaviour::Magic(MagicProfile { grants_sma_from_level: Some(7), es_magic: true, ..MagicProfile::default() })
+    }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { kaina_sp_reduction: true, ..CostRules::default() }
+    }
+
+    #[inline(always)]
+    fn magic_modifier(&self, target_small: bool, _source_base_level: u32) -> Option<f32> {
+        Some(if target_small { 1.0 + 0.1 * f32::from(self.level) } else { 0.01 })
     }
 }

@@ -150,4 +150,14 @@ impl Skill for HipShaker {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::Dancing, reach: PerformanceReach::Enemies, ensemble: false, effect: PerformanceEffect::Drain, lesson: models::enums::skill_enums::SkillEnum::DcDancinglesson })
+    }
+
+    #[inline(always)]
+    fn performance_amount(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> u32 {
+        (5 + 5 * level + level * lesson).max(0) as u32
+    }
 }

@@ -2,7 +2,8 @@ use configuration::configuration::PetSupportConfig;
 use models::enums::element::Element;
 use models::enums::mob::MobRace;
 use models::status::StatusSnapshot;
-use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use models::status_change::StatusChangeKind;
+use skills::{ActorBehaviour, SupportChance, SupportProfile};
 use script_sdk::{Function, Value};
 
 use super::{ScriptWorldService, companion_status_snapshot, pet_world_id, protocol, world_data};
@@ -13,6 +14,7 @@ use crate::server::model::events::map_event::{MapEvent, MobProvoke, MobDamage, M
 use crate::server::model::game_systems::{PetAttackSkill, PetRecord, PetSupportCast};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::script::skill::companion::{CompanionSkillContext, CompanionSkillEffect};
+use crate::server::script::skill::ScriptSkillService;
 use crate::server::script::skill::metadata::SkillMetadata;
 use crate::server::script::skill::{FixedGroundSkillDamage, GroundSkillSource};
 use crate::server::service::battle_service::BattleService;
@@ -28,19 +30,7 @@ pub(super) fn configure_pet_attack(function: Function, args: &[Value]) -> Result
     if !matches!(metadata.target_type.as_deref(), Some("Attack" | "Ground" | "Self")) {
         return Err("Pet attack requires an offensive skill".into());
     }
-    if metadata.target_type.as_deref() == Some("Ground")
-        && !matches!(
-            metadata.name.as_str(),
-            "BS_HAMMERFALL"
-                | "MA_SKIDTRAP"
-                | "MA_LANDMINE"
-                | "MA_SANDMAN"
-                | "MA_FREEZINGTRAP"
-                | "MA_SHOWER"
-                | "WZ_HEAVENDRIVE"
-                | "MG_THUNDERSTORM"
-        )
-    {
+    if metadata.target_type.as_deref() == Some("Ground") && !ScriptSkillService::pet_ground_attack(metadata) {
         return Err(format!("Pet ground attack {} has no implemented actor unit", metadata.name));
     }
     if metadata.target_type.as_deref() == Some("Self")
@@ -73,7 +63,7 @@ pub(super) fn configure_pet_attack(function: Function, args: &[Value]) -> Result
         if skill.as_ref().and_then(|skill| skill.as_offensive_skill()).is_none()
             && !(metadata.damage_flags.get("NoDamage").copied().unwrap_or(false) && metadata.status.is_some())
             && metadata.unit.is_none()
-            && npc_weapon_ratio(&metadata.name, level).is_none()
+            && ScriptSkillService::weapon_ratio(metadata, level).is_none()
         {
             return Err(format!("Pet attack {} has no implemented effect", metadata.name));
         }
@@ -383,14 +373,10 @@ impl ScriptWorldService {
         {
             return Ok(());
         }
-        if metadata.name == "BS_HAMMERFALL" {
-            let request = StatusChangeRequest {
-                kind: StatusChangeKind::Stun,
-                duration_ms: metadata.duration(attack.level, true).unwrap_or(0),
-                values: [i32::from(attack.level), 0, 0, 0],
-                rate: ((20 + 10 * u16::from(attack.level)).min(50 + 5 * u16::from(attack.level))) * 100,
-                flags: 0,
-            };
+        if let (ActorBehaviour::AreaStatus { at_target_point: true }, Some((request, delay))) = (
+            ScriptSkillService::skill_behaviour(attack.skill_id, attack.level),
+            ScriptSkillService::area_status_request(attack.skill_id, attack.level, false, 0),
+        ) {
             let radius = metadata.splash(attack.level).unwrap_or(2).unsigned_abs().min(u32::from(u16::MAX)) as u16;
             for mob in map
                 .state()
@@ -403,7 +389,7 @@ impl ScriptWorldService {
                         mob_id: mob.id,
                         request: request.clone(),
                     }),
-                    1000,
+                    delay,
                 );
             }
             for player in state.characters().values().filter(|player| {
@@ -416,7 +402,7 @@ impl ScriptWorldService {
                         char_id: player.char_id,
                         request: request.clone(),
                     }),
-                    1000,
+                    delay,
                 );
             }
             let mut packet = protocol::header(0x0117);
@@ -482,7 +468,7 @@ impl ScriptWorldService {
             };
             damage.set_signed_damage(signed);
             vec![CompanionSkillEffect::Damage(damage)]
-        } else if let Some(ratio) = npc_weapon_ratio(&metadata.name, attack.level) {
+        } else if let Some(ratio) = ScriptSkillService::weapon_ratio(metadata, attack.level) {
             let chance = ((80 + i32::from(source.hit()) - i32::from(target.status.flee())) * 120 / 100).clamp(5, 95);
             let hit = fastrand::i32(0..100) < chance;
             let flags = metadata.battle_flags(metadata.range(attack.level).unwrap_or(1).unsigned_abs() > 3);
@@ -543,7 +529,10 @@ impl ScriptWorldService {
                 },
             )?
         };
-        if metadata.name == "SM_PROVOKE" {
+        if matches!(
+            ScriptSkillService::skill_behaviour(attack.skill_id, attack.level),
+            ActorBehaviour::Support(SupportProfile { chance: SupportChance::Provoke, .. })
+        ) {
             if *target.status.race() == MobRace::RUndead || *target.status.element() == Element::Undead {
                 return Ok(());
             }
@@ -629,21 +618,4 @@ impl ScriptWorldService {
 
 fn pet_skill_element(server: &Server, source: &StatusSnapshot, metadata: &SkillMetadata, level: u8) -> Element {
     server.battle_service().skill_attack_element(source, metadata, level)
-}
-
-fn npc_weapon_ratio(name: &str, level: u8) -> Option<f32> {
-    match name {
-        "NPC_POISON" => Some(1.0),
-        "NPC_PIERCINGATT" => Some(0.75),
-        "NPC_WATERATTACK"
-        | "NPC_EARTHATTACK"
-        | "NPC_FIREATTACK"
-        | "NPC_WINDATTACK"
-        | "NPC_POISONATTACK"
-        | "NPC_HOLYATTACK"
-        | "NPC_DARKNESSATTACK"
-        | "NPC_TELEKINESISATTACK"
-        | "NPC_UNDEADATTACK" => Some(f32::from(level)),
-        _ => None,
-    }
 }

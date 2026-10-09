@@ -121,4 +121,9 @@ impl Skill for NpcPiercingatt {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn weapon_ratio(&self, _level: u8) -> Option<f32> {
+        Some(0.75)
+    }
 }

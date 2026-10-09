@@ -1406,7 +1406,7 @@ fn benedictio_is_accepted_on_a_ground_cell_and_leaves_a_caster_outside_the_area_
 
 #[test]
 fn basilica_covers_five_by_five_and_its_owner_cancels_it_without_a_new_unit() {
-    use crate::server::script::skill::ground::GroundKind;
+    use skills::GroundKind;
     use models::enums::EnumWithMaskValueU16 as _;
     let (context, _repository, mut character) = fixture(false, false);
     let instance = context.server.state().get_map_instance_from_character(&character).unwrap();
@@ -1462,7 +1462,7 @@ fn we_baby_needs_an_online_parent_nearby_and_protects_that_parent() {
 
 #[test]
 fn fog_wall_covers_its_five_by_three_layout_and_nothing_beyond_it() {
-    use crate::server::script::skill::ground::GroundKind;
+    use skills::GroundKind;
     use models::enums::EnumWithMaskValueU16 as _;
     let (context, _repository, mut character) = fixture(false, false);
     let instance = context.server.state().get_map_instance_from_character(&character).unwrap();

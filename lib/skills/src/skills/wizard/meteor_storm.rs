@@ -334,4 +334,9 @@ impl Skill for MeteorStorm {
         }
         effects
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Meteor)
+    }
 }

@@ -171,4 +171,9 @@ impl Skill for FreezingTrap {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Freeze, 10_000, self.level).delayed(StatusDelay::AfterAttackMotion(100))]
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::FreezingTrap)
+    }
 }

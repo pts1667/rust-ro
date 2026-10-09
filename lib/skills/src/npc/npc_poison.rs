@@ -121,4 +121,9 @@ impl Skill for NpcPoison {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Poison, 2000 * i32::from(self.level), self.level)]
     }
+
+    #[inline(always)]
+    fn weapon_ratio(&self, _level: u8) -> Option<f32> {
+        Some(1.0)
+    }
 }

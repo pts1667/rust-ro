@@ -6,6 +6,7 @@ use models::enums::mob::MobRace;
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use skills::{ActorBehaviour, MapRestriction, SupportChance};
 
 use super::metadata::SkillMetadata;
 use super::{ScriptSkillAction, ScriptSkillEffect, ScriptSkillService};
@@ -27,27 +28,23 @@ impl ScriptSkillService {
         issued_skill: bool,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Skill metadata is unavailable")?;
-        if metadata.name == "AL_TELEPORT" && level > 2 {
-            return Ok(());
-        }
         let flags = state.map_flags(&character.map_instance_key);
-        if metadata.name == "MC_VENDING" && flags.enabled(MapFlag::NoVending) {
-            return Err("Vending is disabled on this map".into());
+        if let Some(restriction) = Self::skill_object(metadata, level).and_then(|skill| skill.map_restriction()) {
+            let (flag, message) = match restriction {
+                MapRestriction::NoVending => (MapFlag::NoVending, "Vending is disabled on this map"),
+                MapRestriction::NoTeleport => (MapFlag::NoTeleport, crate::server::script::skill::actor::TELEPORT_DISABLED),
+                MapRestriction::NoWarp => (MapFlag::NoWarp, "Warp Portal is disabled on this map"),
+                MapRestriction::NoIceWall => (MapFlag::NoIceWall, "Ice Wall is disabled on this map"),
+            };
+            if flags.enabled(flag) {
+                return Err(message.into());
+            }
         }
         if !issued_skill && flags.enabled(MapFlag::NoSkill) {
             return Err("Skills cannot be used on this map".into());
         }
         if !issued_skill && Self::forbidden_on_map(skill_id, &flags) {
             return Err("This skill is forbidden on this kind of map".into());
-        }
-        if metadata.name == "AL_TELEPORT" && flags.enabled(MapFlag::NoTeleport) {
-            return Err(crate::server::script::skill::actor::TELEPORT_DISABLED.into());
-        }
-        if metadata.name == "AL_WARP" && flags.enabled(MapFlag::NoWarp) {
-            return Err("Warp Portal is disabled on this map".into());
-        }
-        if metadata.name == "WZ_ICEWALL" && flags.enabled(MapFlag::NoIceWall) {
-            return Err("Ice Wall is disabled on this map".into());
         }
         Ok(())
     }
@@ -129,28 +126,22 @@ impl ScriptSkillService {
         ((50 + 3 * u64::from(level) + (u64::from(source_level) + u64::from(source_int)) / 5) * 100).min(u64::from(u16::MAX)) as u16
     }
 
-    pub(super) fn endow_skill(name: &str) -> bool {
-        matches!(
-            name,
-            "SA_FLAMELAUNCHER" | "SA_FROSTWEAPON" | "SA_LIGHTNINGLOADER" | "SA_SEISMICWEAPON"
-        )
-    }
-
     pub(super) fn support_status_request(
         skill: &SkillConfig,
         kind: StatusChangeKind,
         level: u8,
+        chance: SupportChance,
         source_level: u32,
         source_int: u16,
         target_level: u32,
     ) -> StatusChangeRequest {
         let mut request = Self::skill_status_request(skill, kind, level);
-        request.rate = match skill.name().as_str() {
-            "SM_PROVOKE" | "MS_PROVOKE" => Self::provoke_rate(source_level, target_level, level),
-            "AL_DECAGI" => Self::decrease_agi_rate(source_level, source_int, level),
-            "BA_PANGVOICE" => 7000,
-            name if Self::endow_skill(name) => (6000 + 1000 * u16::from(level)).min(10000),
-            _ => 10000,
+        request.rate = match chance {
+            SupportChance::Certain => 10000,
+            SupportChance::Fixed(rate) => rate,
+            SupportChance::Provoke => Self::provoke_rate(source_level, target_level, level),
+            SupportChance::DecreaseAgi => Self::decrease_agi_rate(source_level, source_int, level),
+            SupportChance::Endow => (6000 + 1000 * u16::from(level)).min(10000),
         };
         request
     }
@@ -160,12 +151,13 @@ impl ScriptSkillService {
         state: &ServerState,
         source: &Character,
         skill_id: u32,
+        level: u8,
         target_id: u32,
     ) -> Result<(), String> {
         let Some(metadata) = SkillMetadata::find(skill_id) else {
             return Ok(());
         };
-        if Self::endow_skill(&metadata.name) {
+        if matches!(Self::actor_behaviour(metadata, level), ActorBehaviour::Support(profile) if profile.needs_weapon) {
             let target = if source.char_id == target_id {
                 Some(source)
             } else {
@@ -258,23 +250,23 @@ impl ScriptSkillService {
         effect: &ScriptSkillEffect,
         tick: u128,
     ) -> Result<bool, String> {
-        let metadata = SkillMetadata::find(effect.skill_id).ok_or("Skill metadata is unavailable")?;
+        SkillMetadata::find(effect.skill_id).ok_or("Skill metadata is unavailable")?;
         let source = if effect.source_char_id == character.char_id {
             &*character
         } else {
             state.get_character(effect.source_char_id).ok_or("Caster disconnected")?
         };
-        match metadata.name.as_str() {
-            name if Self::party_support_skill(name) => {
-                self.apply_party_support(server, state, character, effect, tick)?;
-                return Ok(true);
-            }
-            "PR_LEXDIVINA" => {
-                if character.status.has_status_change(StatusChangeKind::Silence) {
+        if matches!(Self::effect_behaviour(effect), ActorBehaviour::PartyBuff) {
+            self.apply_party_support(server, state, character, effect, tick)?;
+            return Ok(true);
+        }
+        match Self::effect_behaviour(effect) {
+            ActorBehaviour::Toggle(kind) => {
+                if character.status.has_status_change(kind) {
                     StatusEffectService::end(
                         server,
                         character,
-                        Some(StatusChangeKind::Silence),
+                        Some(kind),
                         tick,
                         &self.client_notification_sender,
                     );
@@ -283,11 +275,11 @@ impl ScriptSkillService {
                         server,
                         source,
                         effect,
-                        Self::delayed_support_request(effect, StatusChangeKind::Silence),
+                        Self::delayed_support_request(effect, kind),
                     );
                 }
             }
-            "AL_BLESSING" | "AL_INCAGI" if character.status.has_status_change(StatusChangeKind::ChangeUndead) => {
+            ActorBehaviour::UndeadBuffDamage if character.status.has_status_change(StatusChangeKind::ChangeUndead) => {
                 if character.status.hp > 1 {
                     let damage = Damage { notification: None,
                         source_kind: models::enums::actor::CombatActorKind::Player,
@@ -311,20 +303,19 @@ impl ScriptSkillService {
                     server.add_to_next_tick(GameEvent::CharacterDamage(CharacterDamage { damage }));
                 }
             }
-            "SM_PROVOKE" | "MS_PROVOKE" | "AL_DECAGI" | "SA_FLAMELAUNCHER" | "SA_FROSTWEAPON" | "SA_LIGHTNINGLOADER"
-            | "SA_SEISMICWEAPON" | "RG_CLOSECONFINE" => {
+            ActorBehaviour::Support(profile) => {
                 let skill = self
                     .configuration
                     .find_skill_config(&script_sdk::Value::Number(effect.skill_id as i32))
                     .ok_or("Unknown skill")?;
-                let kind = Self::status_for_skill(skill.name()).ok_or("Skill status is unavailable")?;
+                let kind = Self::skill_status(effect.skill_id).ok_or("Skill status is unavailable")?;
                 let source_status = StatusService::instance().to_snapshot(&source.status);
                 let target_status = StatusService::instance().to_snapshot(&character.status);
                 if kind == StatusChangeKind::Provoke && Self::undead_target(&target_status) {
                     self.notify_support_skill_result(character, effect, false);
                     return Ok(true);
                 }
-                if Self::endow_skill(skill.name()) && character.status.right_hand_weapon().is_none() {
+                if profile.needs_weapon && character.status.right_hand_weapon().is_none() {
                     self.notify_support_skill_result(character, effect, false);
                     return Ok(true);
                 }
@@ -332,6 +323,7 @@ impl ScriptSkillService {
                     skill,
                     kind,
                     effect.level,
+                    profile.chance,
                     source.status.base_level,
                     source_status.int(),
                     character.status.base_level,
@@ -364,7 +356,7 @@ impl ScriptSkillService {
                         StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
                     }
                 }
-                if !started && Self::endow_skill(skill.name()) {
+                if !started && profile.needs_weapon {
                     if let Some(weapon) = character.status.right_hand_weapon().copied() {
                         server.inventory_service().takeoff_equip_item(character, weapon.inventory_index);
                     }
@@ -372,7 +364,7 @@ impl ScriptSkillService {
                 self.notify_support_skill_result(character, effect, started);
                 return Ok(true);
             }
-            "PR_STRECOVERY" => {
+            ActorBehaviour::Cure { kinds, undead_follow_up: true } => {
                 let target_status = StatusService::instance().to_snapshot(&character.status);
                 if Self::undead_target(&target_status) {
                     self.queue_delayed_status(
@@ -382,13 +374,7 @@ impl ScriptSkillService {
                         Self::delayed_support_request(effect, StatusChangeKind::Blind),
                     );
                 } else {
-                    for kind in [
-                        StatusChangeKind::Stone,
-                        StatusChangeKind::StoneWait,
-                        StatusChangeKind::Freeze,
-                        StatusChangeKind::Stun,
-                        StatusChangeKind::Sleep,
-                    ] {
+                    for kind in kinds.iter().copied().filter(|kind| *kind != StatusChangeKind::NoRecovery) {
                         StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
                     }
                 }

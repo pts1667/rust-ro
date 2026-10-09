@@ -126,4 +126,9 @@ impl Skill for SaFullrecovery {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::FullRecovery)
+    }
 }

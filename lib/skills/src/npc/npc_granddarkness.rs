@@ -126,4 +126,9 @@ impl Skill for NpcGranddarkness {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::GrandDarkness)
+    }
 }

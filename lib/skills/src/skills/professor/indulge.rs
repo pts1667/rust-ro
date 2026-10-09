@@ -181,4 +181,9 @@ impl Skill for Indulge {
         }
         0
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::HpConversion)
+    }
 }

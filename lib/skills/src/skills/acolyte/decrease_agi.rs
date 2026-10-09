@@ -262,4 +262,9 @@ impl Skill for DecreaseAgi {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::DecreaseAgi)
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Support(SupportProfile { chance: SupportChance::DecreaseAgi, ..SupportProfile::default() })
+    }
 }

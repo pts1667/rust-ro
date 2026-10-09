@@ -116,4 +116,9 @@ impl Skill for Zen {
     fn base_cast_time(&self) -> u32 {
        2000
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Spheres(SphereGrant::Five)
+    }
 }

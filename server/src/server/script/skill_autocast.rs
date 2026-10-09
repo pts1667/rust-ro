@@ -24,9 +24,10 @@ impl ScriptSkillService {
             (u64::from(fixed.max(0) as u32) + if rate > 0 { u64::from(current) * rate as u64 / 100 }
                 else { u64::from(maximum) * u64::from(rate.unsigned_abs()) / 100 }).min(u64::from(current)) as u32
         };
-        let hp = if matches!(metadata.name.as_str(), "SM_MAGNUM" | "MS_MAGNUM") { 0 }
+        let rules = Self::cost_rules(metadata, level);
+        let hp = if rules.no_hp { 0 }
             else { pool_cost(amount("HpCost"), amount("HpRateCost"), character.status.hp, snapshot.max_hp()) };
-        let sp = if metadata.name == "AL_HOLYLIGHT" {
+        let sp = if rules.autocast_sp {
             let mut sp = pool_cost(amount("SpCost"), amount("SpRateCost"), character.status.sp, snapshot.max_sp());
             let modifier = snapshot.bonuses_raw().iter().filter_map(|bonus| if let BonusType::SpConsumption(value) = bonus { Some(i32::from(*value)) } else { None }).sum::<i32>();
             sp = (u64::from(sp) * (100 + modifier).max(0) as u64 / 100).min(u64::from(u32::MAX)) as u32;
@@ -36,7 +37,7 @@ impl ScriptSkillService {
         let spheres = character.script_skill_state.spirit_spheres.iter().filter(|expiry| **expiry > tick).count().min(u8::MAX as usize) as u8;
         Ok(SkillRequirementPlan {
             minimum_hp: 1, maximum_hp_percent: None, allow_hp_death: true,
-            hp, sp, zeny: if metadata.name == "NJ_ZENYNAGE" { 0 } else { (amount("ZenyCost").max(0) as u32).min(character.status.zeny) },
+            hp, sp, zeny: if rules.no_zeny { 0 } else { (amount("ZenyCost").max(0) as u32).min(character.status.zeny) },
             spirit_spheres: if amount("SpiritSphereCost") < 0 { spheres } else { (amount("SpiritSphereCost").max(0).min(i32::from(spheres))) as u8 },
             removals: vec![],
         })
@@ -52,17 +53,17 @@ impl ScriptSkillService {
             self.validate_skill(skill, u32::from(level))?;
             if character.status.hp == 0 || character.status.blocks_casting() { return Err("Autocast source cannot cast now".into()); }
             Self::validate_stealth_cast(state, &character, skill_id)?;
-            self.validate_support_target(state, &character, skill_id, target_id)?;
+            self.validate_support_target(state, &character, skill_id, level, target_id)?;
             if !server.player_skill_target_allowed(state, &character, target_id, skill_id, true) { return Err("Autocast target is unavailable".into()); }
             let plan = self.autocast_requirements_plan(&character, skill_id, level, tick)?;
             server.item_service().pay_requirement_plan(server, &mut character, &plan, None, tick)?;
-            if metadata.name == "TF_POISON" && trigger == CombatTrigger::Hit {
+            if Self::actor_behaviour(metadata, level) == skills::ActorBehaviour::PoisonReact && trigger == CombatTrigger::Hit {
                 Self::spend_poison_react(&mut character, tick, &self.client_notification_sender);
             }
-            if metadata.name == "PA_SACRIFICE" {
+            if Self::actor_behaviour(metadata, level) == skills::ActorBehaviour::Martyr {
                 Self::pay_martyrs_reckoning(server, &mut character, tick, &self.client_notification_sender);
             }
-            let result = if metadata.name == "CG_TAROTCARD" {
+            let result = if Self::actor_behaviour(metadata, level) == skills::ActorBehaviour::Tarot {
                 self.cast_equipment_tarot(server, state, &mut character, target_id, level, tick, depth)
             } else {
                 self.cast_skill_depth(server, state, &mut character, skill_id, level, target_id, false, tick, true, depth)

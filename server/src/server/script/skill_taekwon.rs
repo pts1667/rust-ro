@@ -10,42 +10,15 @@ const PERMANENT: i32 = -1;
 
 impl ScriptSkillService {
     /// Stances and Tumbling last until they are cast again.
-    fn taekwon_toggle(name: &str) -> Option<StatusChangeKind> {
-        match name {
-            "TK_READYSTORM" => Some(StatusChangeKind::ReadyStorm),
-            "TK_READYDOWN" => Some(StatusChangeKind::ReadyDown),
-            "TK_READYTURN" => Some(StatusChangeKind::ReadyTurn),
-            "TK_READYCOUNTER" => Some(StatusChangeKind::ReadyCounter),
-            "TK_DODGE" => Some(StatusChangeKind::Dodge),
-            _ => None,
+    pub(super) fn apply_stance(&self, server: &Server, character: &mut Character, effect: &ScriptSkillEffect, kind: StatusChangeKind, tick: u128) -> Result<(), String> {
+        if character.status.has_status_change(kind) {
+            StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
+            return Ok(());
         }
+        self.start_taekwon_status(server, character, effect, kind, PERMANENT, tick)
     }
 
-    pub(super) fn is_taekwon_skill(name: &str) -> bool {
-        Self::taekwon_toggle(name).is_some() || name == "TK_SEVENWIND"
-    }
-
-    pub(super) fn apply_taekwon_skill(
-        &self,
-        server: &Server,
-        character: &mut Character,
-        effect: &ScriptSkillEffect,
-        name: &str,
-        tick: u128,
-    ) -> Result<(), String> {
-        let level = i32::from(effect.level);
-        let start = |character: &mut Character, kind: StatusChangeKind, duration_ms: i32| {
-            let mut request = StatusChangeRequest::guaranteed(kind, duration_ms, level);
-            request.flags = 0;
-            StatusEffectService::start(server, character, request, tick, &self.client_notification_sender).map(|_| ())
-        };
-        if let Some(kind) = Self::taekwon_toggle(name) {
-            if character.status.has_status_change(kind) {
-                StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
-                return Ok(());
-            }
-            return start(character, kind, PERMANENT);
-        }
+    pub(super) fn apply_seven_wind(&self, server: &Server, character: &mut Character, effect: &ScriptSkillEffect, tick: u128) -> Result<(), String> {
         let metadata = SkillMetadata::find(effect.skill_id).ok_or("Seven Wind metadata is unavailable")?;
         let weapon = match metadata.element(effect.level) {
             Some("Earth") => StatusChangeKind::EarthWeapon,
@@ -58,7 +31,13 @@ impl ScriptSkillService {
             _ => return Err("Seven Wind has no element at this level".into()),
         };
         let duration_ms = metadata.duration(effect.level, false).unwrap_or(0);
-        start(character, weapon, duration_ms)?;
-        start(character, StatusChangeKind::SevenWind, duration_ms)
+        self.start_taekwon_status(server, character, effect, weapon, duration_ms, tick)?;
+        self.start_taekwon_status(server, character, effect, StatusChangeKind::SevenWind, duration_ms, tick)
+    }
+
+    fn start_taekwon_status(&self, server: &Server, character: &mut Character, effect: &ScriptSkillEffect, kind: StatusChangeKind, duration_ms: i32, tick: u128) -> Result<(), String> {
+        let mut request = StatusChangeRequest::guaranteed(kind, duration_ms, i32::from(effect.level));
+        request.flags = 0;
+        StatusEffectService::start(server, character, request, tick, &self.client_notification_sender).map(|_| ())
     }
 }

@@ -25,6 +25,14 @@ impl ScriptSkillService {
         SkillMetadata::find_by_name(name).is_some_and(Self::metadata_magic)
     }
 
+    /// The magic profile the skill object declares; skills without one get the default.
+    pub(crate) fn magic_profile(metadata: &SkillMetadata, level: u8) -> skills::MagicProfile {
+        match Self::actor_behaviour(metadata, level) {
+            ActorBehaviour::Magic(profile) => profile,
+            _ => skills::MagicProfile::default(),
+        }
+    }
+
     /// Whether the actor path deals this skill's damage with the metadata magic formula.
     pub(crate) fn metadata_magic(metadata: &SkillMetadata) -> bool {
         matches!(Self::actor_behaviour(metadata, 1), ActorBehaviour::Magic(_))
@@ -89,7 +97,8 @@ impl ScriptSkillService {
             return Err("Magic target is hidden or unavailable".into());
         }
         let metadata = SkillMetadata::find(effect.skill_id).ok_or("Magic skill metadata is unavailable")?;
-        if metadata.name == "SL_SMA" {
+        let magic = Self::magic_profile(metadata, effect.level);
+        if magic.consumes_sma {
             StatusEffectService::end(
                 server,
                 character,
@@ -98,7 +107,7 @@ impl ScriptSkillService {
                 &self.client_notification_sender,
             );
         }
-        if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN" | "SL_SMA")
+        if magic.es_magic
             && *target.map_item().object_type() != MapItemType::Mob
             && !self.configuration.config().game.allow_es_magic_players
         {
@@ -180,8 +189,7 @@ impl ScriptSkillService {
                 tick,
                 &self.client_notification_sender,
             )?;
-        } else if matches!(metadata.name.as_str(), "SL_STIN" | "SL_STUN")
-            && effect.level >= 7
+        } else if magic.grants_sma_from_level.is_some_and(|from| effect.level >= from)
             && !character
                 .status
                 .status_change(StatusChangeKind::Sma)

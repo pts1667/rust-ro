@@ -121,4 +121,9 @@ impl Skill for SpringTrap {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::TrapControl { spring: true }
+    }
 }

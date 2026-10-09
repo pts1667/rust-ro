@@ -3,7 +3,7 @@ use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
 use models::status_bonus::{BattleFlag, CombatTrigger};
 
 use super::super::ScriptSkillService;
-use super::super::ground::GroundKind;
+use skills::GroundKind;
 use super::super::metadata::SkillMetadata;
 use crate::server::Server;
 use crate::server::model::action::Damage;
@@ -209,7 +209,7 @@ impl ScriptSkillService {
                     .and_then(|knockback| knockback.value(damage.skill_level, "Amount"))
                     .unwrap_or(0)
                     .max(0) as u16;
-                if cells > 0 && metadata.name != "KN_BOWLINGBASH" {
+                if cells > 0 && Self::skill_behaviour(damage.skill_id, damage.skill_level) != skills::ActorBehaviour::Bowling {
                     if let Some(source) = state.map_item_snapshot(damage.attacker_id, map.map_name(), map.map_instance()) {
                         self.knockback_ground_unit(map, damage.target_id, source.x(), source.y(), cells, state, tick);
                     }

@@ -135,4 +135,9 @@ impl Skill for TwilightAlchemy1 {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::Twilight(TwilightStage::WhitePotion))
+    }
 }

@@ -122,4 +122,9 @@ impl Skill for CloseConfine {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::CloseConfine2)
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Support(SupportProfile::default())
+    }
 }

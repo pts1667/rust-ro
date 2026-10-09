@@ -111,4 +111,9 @@ impl Skill for FliptheCoin {
     fn validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {
         if status.sp() > 2 { Ok(2) } else {Err(())}
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Spheres(SphereGrant::Glitter)
+    }
 }

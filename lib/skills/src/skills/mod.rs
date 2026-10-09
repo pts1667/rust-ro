@@ -26,6 +26,8 @@ pub mod gypsy;
 pub mod lordknight;
 pub mod novicehigh;
 pub mod star_gladiator;
+pub mod wedding;
+pub mod homunculus;
 pub mod gunslinger;
 pub mod sniper;
 pub mod knight;

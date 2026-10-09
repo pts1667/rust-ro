@@ -458,7 +458,7 @@ impl ScriptWorldService {
             )?;
             (source.clone(), Position { x, y, dir: 0 })
         } else {
-            let (target, position, _) = if metadata.name == "MA_REMOVETRAP" {
+            let (target, position, _) = if is_remove_trap(metadata) {
                 trap_target(server, character, &source, target_id, now)?
             } else {
                 self.skill_target(state, character, target_id)?
@@ -608,7 +608,7 @@ impl ScriptWorldService {
                 u32::from(super::companion_health(character, id).unwrap().2),
             )
         } else {
-            if metadata.name == "MA_REMOVETRAP" {
+            if is_remove_trap(metadata) {
                 trap_target(server, character, &source, cast.target_id, now)?
             } else {
                 self.skill_target(state, character, cast.target_id)?
@@ -661,7 +661,7 @@ impl ScriptWorldService {
                 level: cast.level,
                 target_id: 0,
             }]
-        } else if metadata.name == "MA_REMOVETRAP" {
+        } else if is_remove_trap(metadata) {
             Vec::new()
         } else {
             server.script_skill_service().resolve_companion_skill_with_context(
@@ -683,7 +683,10 @@ impl ScriptWorldService {
         if metadata.target_type.as_deref() == Some("Attack") && map.state().get_mob(cast.target_id).is_some_and(|mob| mob.summon_ai != 0) {
             return Err("Companions cannot attack friendly summoned monsters".into());
         }
-        if metadata.name == "HVAN_EXPLOSION" {
+        if matches!(
+            crate::server::script::skill::ScriptSkillService::companion_effect(metadata, cast.level),
+            Some(skills::CompanionEffect::BioExplosion)
+        ) {
             let radius = metadata.splash(cast.level).unwrap_or(5).unsigned_abs();
             effects.retain(|effect| !matches!(effect, CompanionSkillEffect::Damage(_)));
             for mob in map.state().mobs().values().filter(|mob| {
@@ -806,7 +809,7 @@ impl ScriptWorldService {
         }
         self.send_homunculus(character)?;
         self.send_mercenary(character, now)?;
-        if metadata.name == "MA_REMOVETRAP" {
+        if is_remove_trap(metadata) {
             server.script_skill_service().remove_ground_trap(
                 character.current_map_name(),
                 character.current_map_instance(),
@@ -1211,7 +1214,7 @@ fn validate_cost(source: &StatusSnapshot, metadata: &SkillMetadata, level: u8) -
         Err("Companion has insufficient HP or SP".into())
     } else {
         Ok((
-            if matches!(metadata.name.as_str(), "SM_MAGNUM" | "MS_MAGNUM") {
+            if crate::server::script::skill::ScriptSkillService::cost_rules(metadata, level).no_hp {
                 0
             } else {
                 hp
@@ -1221,11 +1224,21 @@ fn validate_cost(source: &StatusSnapshot, metadata: &SkillMetadata, level: u8) -
     }
 }
 
+/// Mercenary Trap removal: the companion removes a trap on its map instead of casting at a target.
+fn is_remove_trap(metadata: &SkillMetadata) -> bool {
+    matches!(
+        crate::server::script::skill::ScriptSkillService::actor_behaviour(metadata, metadata.max_level),
+        skills::ActorBehaviour::TrapControl { spring: false }
+    )
+}
+
 fn validate_companion_target_job(metadata: &SkillMetadata, owner_job: u32) -> Result<(), String> {
     use models::enums::EnumWithNumberValue;
     use models::enums::class::JobName;
-    if metadata.name == "ML_DEVOTION"
-        && matches!(
+    if matches!(
+        crate::server::script::skill::ScriptSkillService::companion_effect(metadata, metadata.max_level),
+        Some(skills::CompanionEffect::Devotion)
+    ) && matches!(
             JobName::from_value(owner_job as usize),
             JobName::Crusader | JobName::Paladin | JobName::BabyCrusader
         )

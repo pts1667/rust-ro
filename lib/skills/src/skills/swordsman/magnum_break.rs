@@ -213,4 +213,9 @@ impl Skill for MagnumBreak {
             ..SplashProfile::default()
         })
     }
+
+    #[inline(always)]
+    fn cost_rules(&self) -> CostRules {
+        CostRules { no_hp: true, ..CostRules::default() }
+    }
 }

@@ -266,4 +266,9 @@ impl Skill for LordofVermilion {
         }
         effects
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Vermilion)
+    }
 }

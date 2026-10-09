@@ -38,10 +38,6 @@ impl Summon {
 }
 
 impl ScriptSkillService {
-    pub(super) fn is_alchemist_summon(skill_id: u32) -> bool {
-        skill_id == SkillEnum::AmSpheremine.id() || skill_id == SkillEnum::AmCannibalize.id()
-    }
-
     fn owned_summons(state: &ServerState, character: &Character, class: i32) -> usize {
         state.get_map_instance_from_character(character).map_or(0, |instance| {
             instance

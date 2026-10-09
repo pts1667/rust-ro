@@ -47,23 +47,31 @@ impl ScriptSkillService {
         use StatusChangeKind::*;
         let metadata = SkillMetadata::find(skill_id)?;
         let monster = metadata.monster_skill();
-        let (kind, chance, delay) = match monster {
-            Some(MonsterSkill::AreaStatus(kind)) => (kind, 10_000, 0),
-            Some(MonsterSkill::DragonFear) => ([Stun, Silence, Confusion, Bleeding][dragon_choice % 4], 10_000, 0),
-            _ => match metadata.name.as_str() {
-                "BA_FROSTJOKER" => (Freeze, 1500 + 500 * level as i32, 3000),
-                "DC_SCREAM" => (Stun, 2500 + 500 * level as i32, 3000),
-                "AL_CRUCIS" => (SignumCrucis, 2500 + 400 * level as i32, 0),
-                "BS_HAMMERFALL" => (Stun, (2000 + 1000 * level as i32).min(5000 + 500 * level as i32), 1000),
-                "PR_BENEDICTIO" => (Benedictio, 10_000, 0),
-                _ => return None,
+        let profile = match monster {
+            Some(MonsterSkill::AreaStatus(kind)) => skills::AreaStatusProfile {
+                kind,
+                chance: 10_000,
+                delay_ms: 0,
+                duration: skills::AreaDuration::Adjusted,
+                party_quarter_chance: false,
+                undead_only: false,
+                level_rate: false,
             },
+            Some(MonsterSkill::DragonFear) => skills::AreaStatusProfile {
+                kind: [Stun, Silence, Confusion, Bleeding][dragon_choice % 4],
+                chance: 10_000,
+                delay_ms: 0,
+                duration: skills::AreaDuration::Adjusted,
+                party_quarter_chance: false,
+                undead_only: false,
+                level_rate: false,
+            },
+            _ => Self::skill_object(metadata, level)?.area_status()?,
         };
-        let name = metadata.name.as_str();
-        let party_exception = party_member && matches!(name, "BA_FROSTJOKER" | "DC_SCREAM");
-        let duration = if name == "AL_CRUCIS" {
+        let party_exception = party_member && profile.party_quarter_chance;
+        let duration = if profile.duration == skills::AreaDuration::Permanent {
             Some(-1)
-        } else if party_exception || name == "PR_BENEDICTIO" {
+        } else if party_exception || profile.duration == skills::AreaDuration::Plain {
             metadata.duration(level, false)
         } else if monster == Some(MonsterSkill::DragonFear) {
             metadata.duration((dragon_choice % 4 + 1) as u8, true)
@@ -73,13 +81,13 @@ impl ScriptSkillService {
         .unwrap_or(0);
         Some((
             StatusChangeRequest {
-                kind,
+                kind: profile.kind,
                 duration_ms: duration,
                 values: [level as i32, 0, 0, 0],
-                rate: (if party_exception { chance / 4 } else { chance }).clamp(0, 10_000) as u16,
+                rate: (if party_exception { profile.chance / 4 } else { profile.chance }).clamp(0, 10_000) as u16,
                 flags: 0,
             },
-            delay,
+            profile.delay_ms,
         ))
     }
 
@@ -207,18 +215,22 @@ impl ScriptSkillService {
         tick: u128,
     ) -> Result<(), String> {
         let metadata = SkillMetadata::find(skill_id).ok_or("Area skill has no pre-renewal definition")?;
-        if metadata.name == "PR_BENEDICTIO" {
+        if Self::actor_behaviour(metadata, level) == skills::ActorBehaviour::Benedictio {
             return self.cast_benedictio(server, state, character, skill_id, level, x, y, tick);
         }
         let radius = metadata.splash(level).unwrap_or(15);
         let radius = if radius < 0 { 15 } else { radius.min(u16::MAX as i32) as u16 };
+        let area = Self::skill_object(metadata, level).and_then(|skill| skill.area_status());
+        let party_quarter_chance = area.is_some_and(|profile| profile.party_quarter_chance);
+        let undead_only = area.is_some_and(|profile| profile.undead_only);
+        let level_rate = area.is_some_and(|profile| profile.level_rate);
         let instance = state
             .get_map_instance_from_character(character)
             .ok_or("Map instance is unavailable")?;
         for mob in instance.state().mobs().values().filter(|mob| {
             mob.status.hp() > 0 && (!mob.summoned || mob.summon_ai == 0) && mob.x.abs_diff(x).max(mob.y.abs_diff(y)) <= radius
         }) {
-            if metadata.name == "AL_CRUCIS"
+            if undead_only
                 && *mob.status.element() != Element::Undead
                 && !matches!(mob.status.race(), MobRace::Demon | MobRace::RUndead)
             {
@@ -242,7 +254,7 @@ impl ScriptSkillService {
             } else if let Some((mut request, delay)) =
                 Self::area_status_request(skill_id, level, false, fastrand::usize(0..4))
             {
-                if metadata.name == "AL_CRUCIS" {
+                if level_rate {
                     request.rate = Self::signum_crucis_rate(level, character.status.base_level, mob.status_effects.base_level);
                 }
                 if metadata.is_monster() {
@@ -257,7 +269,7 @@ impl ScriptSkillService {
                 && target.x.abs_diff(x).max(target.y.abs_diff(y)) <= radius
         }) {
             let same_party = character.game_systems.party_id != 0 && target.game_systems.party_id == character.game_systems.party_id;
-            if same_party && matches!(metadata.name.as_str(), "BA_FROSTJOKER" | "DC_SCREAM") {
+            if same_party && party_quarter_chance {
                 if let Some((request, delay)) = Self::area_status_request(skill_id, level, true, 0) {
                     server.add_to_delayed_tick(
                         GameEvent::CharacterStatusChange(crate::server::model::events::game_event::CharacterStatusChange {

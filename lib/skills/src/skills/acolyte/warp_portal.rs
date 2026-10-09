@@ -149,4 +149,19 @@ impl Skill for WarpPortal {
     fn base_cast_time(&self) -> u32 {
        1000
     }
+
+    #[inline(always)]
+    fn map_restriction(&self) -> Option<MapRestriction> {
+        Some(MapRestriction::NoWarp)
+    }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::WarpPortal)
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::WarpPortal)
+    }
 }

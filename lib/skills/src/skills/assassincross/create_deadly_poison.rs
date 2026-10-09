@@ -116,4 +116,14 @@ impl Skill for CreateDeadlyPoison {
     fn base_after_cast_act_delay(&self) -> u32 {
        500
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::DeadlyPoison)
+    }
+
+    #[inline(always)]
+    fn crafting_rule(&self) -> Option<CraftingRule> {
+        Some(CraftingRule::DeadlyPoison)
+    }
 }

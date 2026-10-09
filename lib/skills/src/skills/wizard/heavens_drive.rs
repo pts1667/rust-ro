@@ -216,4 +216,14 @@ impl Skill for HeavensDrive {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![]
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::HeavenDrive)
+    }
+
+    #[inline(always)]
+    fn pet_ground_attack(&self) -> bool {
+        true
+    }
 }

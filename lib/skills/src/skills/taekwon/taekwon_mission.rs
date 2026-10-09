@@ -116,4 +116,9 @@ impl Skill for TaekwonMission {
     fn base_cast_time(&self) -> u32 {
        1000
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Mission
+    }
 }

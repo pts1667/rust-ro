@@ -136,4 +136,9 @@ impl Skill for Envenom {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::PoisonReact
+    }
 }

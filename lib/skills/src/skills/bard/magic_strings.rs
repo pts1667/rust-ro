@@ -180,4 +180,14 @@ impl Skill for MagicStrings {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Performance(PerformanceProfile { status: models::status_change::StatusChangeKind::PoemBragi, reach: PerformanceReach::Everyone, ensemble: false, effect: PerformanceEffect::Aura, lesson: models::enums::skill_enums::SkillEnum::BaMusicallesson })
+    }
+
+    #[inline(always)]
+    fn performance_values(&self, level: i32, stats: &StatusSnapshot, lesson: i32) -> (i32, i32) {
+        (3 * level + i32::from(stats.dex()) / 10 + lesson, (if level < 10 { 3 * level } else { 50 }) + i32::from(stats.int()) / 5 + 2 * lesson)
+    }
 }

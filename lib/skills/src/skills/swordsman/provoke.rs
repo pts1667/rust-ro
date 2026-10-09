@@ -192,4 +192,9 @@ impl Skill for Provoke {
     fn status_kind(&self) -> Option<StatusChangeKind> {
         Some(StatusChangeKind::Provoke)
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Support(SupportProfile { chance: SupportChance::Provoke, ..SupportProfile::default() })
+    }
 }

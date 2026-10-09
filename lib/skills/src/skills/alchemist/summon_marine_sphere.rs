@@ -130,4 +130,9 @@ impl Skill for SummonMarineSphere {
     fn base_after_cast_act_delay(&self) -> u32 {
        500
     }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::Summon)
+    }
 }

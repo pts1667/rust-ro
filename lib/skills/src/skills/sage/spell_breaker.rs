@@ -116,4 +116,9 @@ impl Skill for SpellBreaker {
     fn base_cast_time(&self) -> u32 {
        700
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::SpellBreaker
+    }
 }

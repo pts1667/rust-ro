@@ -121,7 +121,7 @@ impl ItemService {
         let mut rng = fastrand::Rng::new();
         let chance = self.crafting_chance(character, recipe, session.trigger, stars, element != 0, &counts, &mut rng);
         let success = rng.i32(0..10_000) < chance;
-        let alchemy = self.configuration_service.find_skill_config(&(recipe.skill_id as i32).into()).is_some_and(|skill| skill.name() == "AM_PHARMACY");
+        let alchemy = crate::server::script::skill::ScriptSkillService::crafting_rule(recipe.skill_id as u32) == Some(skills::CraftingRule::Pharmacy);
         let creator = [character.char_id as u16 as i16, (character.char_id >> 16) as u16 as i16];
         let cards = if weapon { [255, (stars * 5 * 256 + i32::from(element)) as i16, creator[0], creator[1]] }
             else if alchemy { [254, 0, creator[0], creator[1]] } else { [0; 4] };
@@ -179,21 +179,21 @@ impl ItemService {
         let snapshot = StatusService::instance().to_snapshot(&character.status);
         let skill = |name: &str| character.status.known_skills.iter().find(|skill| skill.value.to_name() == name).map_or(0, |skill| i32::from(skill.level));
         let level = character.status.known_skills.iter().find(|skill| skill.value.id() == recipe.skill_id).map_or(0, |skill| i32::from(skill.level));
-        let name = self.configuration_service.find_skill_config(&(recipe.skill_id as i32).into()).map(|skill| skill.name().as_str()).unwrap_or("");
+        let rule = crate::server::script::skill::ScriptSkillService::crafting_rule(recipe.skill_id as u32);
         let item = self.configuration_service.get_item(recipe.item_id);
         let mut chance = if item.item_type == models::enums::item::ItemType::Weapon {
             let weapon_level = i32::from(item.weapon_level.unwrap_or(1)).clamp(1, 3);
             character.status.job_level as i32 * 20 + i32::from(snapshot.dex()) * 10 + i32::from(snapshot.luk()) * 10 + rng.i32(1..=100) * 10
                 + 4 / weapon_level * 1000 + level * 500 + skill("BS_WEAPONRESEARCH") * 100 - if elemental { 2500 } else { 0 } - stars * 1500
                 + if counts.contains_key(&989) { 1000 } else if counts.contains_key(&988) { 500 } else if counts.contains_key(&987) { 250 } else { 0 }
-        } else { match name {
-            "BS_IRON" | "BS_STEEL" | "BS_ENCHANTEDSTONE" => {
+        } else { match rule {
+            Some(skills::CraftingRule::Forge) => {
                 let base = character.status.job_level as i32 * 20 + i32::from(snapshot.dex()) * 10 + i32::from(snapshot.luk()) * 10 + rng.i32(1..=100) * 10;
                 match recipe.item_id { 998 => base + 4000 + level * 500, 999 => base + 3000 + level * 500, 1000 => 100_000, _ => base + 1000 + level * 500 }
             }
-            "ASC_CDP" => 2000 + 40 * i32::from(snapshot.dex()) + 20 * i32::from(snapshot.luk()),
-            "AL_HOLYWATER" | "SA_CREATECON" => 100_000,
-            "AM_PHARMACY" => {
+            Some(skills::CraftingRule::DeadlyPoison) => 2000 + 40 * i32::from(snapshot.dex()) + 20 * i32::from(snapshot.luk()),
+            Some(skills::CraftingRule::FixedSuccess) => 100_000,
+            Some(skills::CraftingRule::Pharmacy) => {
                 let base = skill("AM_LEARNINGPOTION") * 50 + skill("AM_PHARMACY") * 300 + character.status.job_level as i32 * 20
                     + i32::from(snapshot.int()) / 2 * 10 + i32::from(snapshot.dex()) * 10 + i32::from(snapshot.luk()) * 10;
                 base + match recipe.item_id { 501 | 503 | 504 => rng.i32(1..=100) * 10 + 2000, 970 => rng.i32(1..=100) * 10 + 1000,
@@ -206,7 +206,7 @@ impl ItemService {
             _ => 5000,
         }};
         let baby = JobName::try_from_value(character.status.job as usize).is_ok_and(|job| job.mask() & models::enums::class::JOB_BABY_MASK != 0);
-        if baby && (item.item_type == models::enums::item::ItemType::Weapon || name == "AM_PHARMACY") { chance = chance * 70 / 100; }
+        if baby && (item.item_type == models::enums::item::ItemType::Weapon || rule == Some(skills::CraftingRule::Pharmacy)) { chance = chance * 70 / 100; }
         chance.clamp(1, 100_000)
     }
 }

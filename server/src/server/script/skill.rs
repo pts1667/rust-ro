@@ -9,6 +9,7 @@ use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::StatusSnapshot;
 use models::status_bonus::BattleFlag;
 use models::status_change::{StatusChangeKind, StatusChangeRequest};
+use skills::ActorBehaviour;
 use packets::packets::{Packet, PacketZcUseSkill};
 use script_sdk::Value;
 
@@ -289,7 +290,7 @@ impl ScriptSkillService {
         if level == 0 || level > u8::MAX as u32 {
             return Err("Item skill level must be between 1 and 255".into());
         }
-        if skill.name() != "AL_TELEPORT" && level > skill.max_level() {
+        if level > skill.max_level() && !matches!(Self::skill_behaviour(skill.id, level as u8), skills::ActorBehaviour::Teleport) {
             return Err(format!("Item skill level exceeds {}", skill.name()));
         }
         if SkillEnum::try_from_value(skill.id).is_err() {
@@ -372,7 +373,7 @@ impl ScriptSkillService {
         if character.status.blocks_casting() {
             return Err("A status change prevents item skills".into());
         }
-        if skill.name() == "AL_TELEPORT" {
+        if Self::skill_behaviour(skill.id, level as u8) == ActorBehaviour::Teleport {
             let (map, x, y) = Self::teleport_destination(character, level)?;
             server
                 .server_service
@@ -387,7 +388,7 @@ impl ScriptSkillService {
             source_item: None,
             expires_at: tick + 120_000,
         });
-        if skill.name() == "MC_IDENTIFY" {
+        if Self::skill_behaviour(skill.id, level as u8) == ActorBehaviour::Identify {
             return self.send_identification_list(character);
         }
         let source = StatusService::instance().to_snapshot(&character.status);
@@ -586,7 +587,8 @@ impl ScriptSkillService {
             });
         }
         self.end_cloaking_on_skill(server, character, skill_id, tick);
-        if matches!(skill.name().as_str(), "HT_REMOVETRAP" | "HT_SPRINGTRAP") {
+        let behaviour = Self::skill_behaviour(skill_id, level);
+        if let ActorBehaviour::TrapControl { spring } = behaviour {
             self.validate_player_trap_control(state, character, target_id, skill_id, level, tick, instant)?;
             let effect = ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -600,7 +602,7 @@ impl ScriptSkillService {
                 action: ScriptSkillAction::TrapControl {
                     trap_id: target_id,
                     map: character.map_instance_key.clone(),
-                    spring: skill.name() == "HT_SPRINGTRAP",
+                    spring,
                     ignore_range: instant,
                 },
                 deferred_requirements: None,
@@ -617,11 +619,8 @@ impl ScriptSkillService {
         if (matches!(
             Self::operation(skill.name()),
             Some(callbacks::SkillOperation::Spirit | callbacks::SkillOperation::Movement)
-        ) && skill.name() != "RG_INTIMIDATE")
-            || matches!(
-                skill.name().as_str(),
-                "MC_VENDING" | "MC_PUSHCART" | "AM_CALLHOMUN" | "AM_REST" | "AM_RESURRECTHOMUN" | "WE_CALLPARTNER" | "WE_CALLBABY" | "WE_CALLPARENT"
-            )
+        ) && behaviour != ActorBehaviour::Intimidate)
+            || matches!(behaviour, ActorBehaviour::ServiceCall(_))
         {
             let effect = ScriptSkillEffect {
                 source_char_id: character.char_id,
@@ -669,14 +668,14 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        if matches!(skill.name().as_str(), "BS_GREED" | "WE_BABY") {
+        if matches!(behaviour, ActorBehaviour::CollectItems | ActorBehaviour::BondBaby) {
             if instant {
-                return match skill.name().as_str() {
-                    "WE_BABY" => self.bond_family_baby(server, state, character, level),
+                return match behaviour {
+                    ActorBehaviour::BondBaby => self.bond_family_baby(server, state, character, level),
                     _ => self.collect_nearby_items(server, state, character),
                 };
             }
-            if skill.name() == "WE_BABY" {
+            if behaviour == ActorBehaviour::BondBaby {
                 Self::baby_protected_parents(state, character)?;
             }
             let effect = ScriptSkillEffect {
@@ -704,7 +703,7 @@ impl ScriptSkillService {
         }
         .ok_or("Item skill target is not on this map")?;
         self.validate_damage_target(state, character, skill_id, target_id)?;
-        self.validate_support_target(state, character, skill_id, target_id)?;
+        self.validate_support_target(state, character, skill_id, level, target_id)?;
         if !server.player_skill_target_allowed(state, character, target_id, skill_id, instant) {
             return Err("Hidden actors cannot be targeted by this skill".into());
         }
@@ -761,7 +760,7 @@ impl ScriptSkillService {
                 depth,
             );
         }
-        if skill.name() == "WZ_ESTIMATION" {
+        if behaviour == ActorBehaviour::Estimation {
             if instant {
                 return self.show_monster_estimation(server, state, character, target_id, level);
             }
@@ -783,8 +782,8 @@ impl ScriptSkillService {
             self.queue_target_effect(server, character, skill, effect, tick);
             return Ok(());
         }
-        let martyr_hit = instant && skill.name() == "PA_SACRIFICE";
-        if !martyr_hit && (Self::status_for_skill(skill.name()).is_some() || Self::is_special_skill(skill.name())) {
+        let martyr_hit = instant && behaviour == ActorBehaviour::Martyr;
+        if !martyr_hit && (Self::skill_status(skill_id).is_some() || Self::is_special_skill(skill.name())) {
             if !matches!(target.map_item.object_type(), MapItemType::Character) {
                 if *target.map_item.object_type() != MapItemType::Mob {
                     return Err("Skill target does not support this effect".into());
@@ -818,10 +817,10 @@ impl ScriptSkillService {
             } else {
                 state.get_character(target_id).ok_or("Player target disappeared")?.status.hp
             };
-            if skill.name() == "AL_HEAL" && target_hp == 0 {
+            if matches!(Self::skill_behaviour(skill.id, level), skills::ActorBehaviour::Heal) && target_hp == 0 {
                 return Err("Heal cannot resurrect a dead target".into());
             }
-            if skill.name() == "ALL_RESURRECTION" && target_hp > 0 {
+            if matches!(Self::skill_behaviour(skill.id, level), skills::ActorBehaviour::Resurrect) && target_hp > 0 {
                 return Err("Resurrection requires a dead target".into());
             }
             let effect = ScriptSkillEffect {
@@ -1042,7 +1041,7 @@ impl ScriptSkillService {
             self.notify_support_skill(character, effect);
             return Ok(());
         }
-        if let Some(kind) = Self::status_for_skill(skill.name()) {
+        if let Some(kind) = Self::effect_status(effect) {
             let toggled = metadata::SkillMetadata::find(effect.skill_id)
                 .is_some_and(|metadata| metadata.flag("Toggleable") || kind == StatusChangeKind::AutoBerserk)
                 && character.status.has_status_change(kind);
@@ -1059,8 +1058,8 @@ impl ScriptSkillService {
                 self.reveal_from_actor(server, state, &self.reveal_actor(character, kind), tick)?;
             }
         } else {
-            match skill.name().as_str() {
-                "AL_HEAL" => {
+            match Self::effect_behaviour(effect) {
+                ActorBehaviour::Heal => {
                     if character.status.hp == 0 {
                         return Err("Heal cannot resurrect a dead target".into());
                     }
@@ -1077,7 +1076,7 @@ impl ScriptSkillService {
                         character.status.sp,
                     );
                 }
-                "ALL_RESURRECTION" => {
+                ActorBehaviour::Resurrect => {
                     if character.status.hp != 0 {
                         return Err("Resurrection requires a dead target".into());
                     }
@@ -1093,41 +1092,13 @@ impl ScriptSkillService {
                     packet.extend_from_slice(&0_u16.to_le_bytes());
                     self.notify_area(character, packet);
                 }
-                "TF_DETOXIFY" => {
-                    StatusEffectService::end(
-                        server,
-                        character,
-                        Some(StatusChangeKind::Poison),
-                        tick,
-                        &self.client_notification_sender,
-                    );
-                    StatusEffectService::end(
-                        server,
-                        character,
-                        Some(StatusChangeKind::DeadlyPoison),
-                        tick,
-                        &self.client_notification_sender,
-                    );
-                }
-                "AL_CURE" => {
-                    for kind in [StatusChangeKind::Silence, StatusChangeKind::Blind, StatusChangeKind::Confusion] {
-                        StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
+                ActorBehaviour::Cure { kinds, .. } => {
+                    for kind in kinds {
+                        StatusEffectService::end(server, character, Some(*kind), tick, &self.client_notification_sender);
                     }
                 }
-                "PR_STRECOVERY" => {
-                    for kind in [
-                        StatusChangeKind::Stone,
-                        StatusChangeKind::StoneWait,
-                        StatusChangeKind::Freeze,
-                        StatusChangeKind::Stun,
-                        StatusChangeKind::Sleep,
-                        StatusChangeKind::NoRecovery,
-                    ] {
-                        StatusEffectService::end(server, character, Some(kind), tick, &self.client_notification_sender);
-                    }
-                }
-                "SA_DISPELL" => {
-                    if fastrand::u32(0..100) < 50 + 10 * effect.level as u32 {
+                ActorBehaviour::Dispel { chance } => {
+                    if fastrand::u32(0..100) < u32::from(chance) {
                         let removed = StatusEffectService::dispel_statuses(&mut character.status, false);
                         for kind in removed {
                             StatusEffectService::send_icon(character, kind, false, tick, &self.client_notification_sender);
@@ -1136,22 +1107,22 @@ impl ScriptSkillService {
                         StatusEffectService::send_visual_status(character, &self.client_notification_sender);
                     }
                 }
-                "NV_FIRSTAID" => {
+                ActorBehaviour::FixedHeal(hp) => {
                     let snapshot = StatusService::instance().to_snapshot(&character.status);
                     server.character_service().update_hp_sp(
                         character,
-                        character.status.hp.saturating_add(5).min(snapshot.max_hp()),
+                        character.status.hp.saturating_add(hp).min(snapshot.max_hp()),
                         character.status.sp,
                     );
                 }
-                "AL_TELEPORT" => {
+                ActorBehaviour::Teleport => {
                     Self::validate_skill_map(state, character, effect.skill_id, effect.level, true)?;
                     let (map, x, y) = Self::teleport_destination(character, effect.level as u32)?;
                     server
                         .server_service
                         .schedule_warp_to_walkable_cell_by_character(&map, x, y, character.char_id);
                 }
-                "ALL_REVERSEORCISH" | "SA_REVERSEORCISH" => {
+                ActorBehaviour::ReverseOrcish => {
                     StatusEffectService::start(
                         server,
                         character,
@@ -1160,7 +1131,7 @@ impl ScriptSkillService {
                         &self.client_notification_sender,
                     )?;
                 }
-                "ITEM_ENCHANTARMS" => {
+                ActorBehaviour::EnchantArms => {
                     let request = StatusChangeRequest::guaranteed(
                         StatusChangeKind::EnchantArms,
                         Self::duration(skill, effect.level).max(90000) as i32,
@@ -1168,9 +1139,9 @@ impl ScriptSkillService {
                     );
                     StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
                 }
-                "MC_IDENTIFY" => self.send_identification_list(character)?,
-                "SA_ABRACADABRA" => self.hocus_pocus(server, character, effect.level)?,
-                "TF_PICKSTONE" => {
+                ActorBehaviour::Identify => self.send_identification_list(character)?,
+                ActorBehaviour::HocusPocus => self.hocus_pocus(server, character, effect.level)?,
+                ActorBehaviour::FindStone => {
                     let item = self.configuration.find_item(7049).ok_or("Stone item asset is unavailable")?;
                     server.add_to_next_tick(GameEvent::CharacterAddItems(CharacterAddItems {
                         char_id: character.char_id,
@@ -1277,13 +1248,6 @@ impl ScriptSkillService {
         packet.push(0);
         self.queue_notification(Notification::Char(CharNotification::new(character.char_id, packet)));
         Ok(pending.item_index)
-    }
-
-    fn status_for_skill(name: &str) -> Option<StatusChangeKind> {
-        if let Some(monster::MonsterSkill::SelfStatus(kind)) = monster::MonsterSkill::of_name(name) {
-            return Some(kind);
-        }
-        metadata::SkillMetadata::find_by_name(name).and_then(Self::status_for_metadata)
     }
 
     /// The status a skill applies: its monster self-status, else the status its object declares, else its metadata.

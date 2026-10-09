@@ -139,4 +139,9 @@ impl Skill for FiberLock {
     fn client_type(&self) -> usize {
         16
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::SpiderWeb)
+    }
 }

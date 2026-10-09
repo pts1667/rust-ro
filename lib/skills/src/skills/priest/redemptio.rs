@@ -121,4 +121,9 @@ impl Skill for Redemptio {
     fn client_type(&self) -> usize {
         4
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::Redemptio)
+    }
 }

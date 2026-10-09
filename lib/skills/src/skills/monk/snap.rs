@@ -116,4 +116,9 @@ impl Skill for Snap {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::BodyRelocation
     }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
 }

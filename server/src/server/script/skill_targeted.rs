@@ -6,6 +6,7 @@ use models::enums::{EnumWithMaskValueU32, EnumWithMaskValueU64};
 use models::status::{Status, StatusSnapshot};
 use models::status_change::{StatusChangeKind, StatusChangeRequest, StatusStartFlag};
 use script_sdk::Value;
+use skills::ActorBehaviour;
 
 use super::metadata::SkillMetadata;
 use super::ground_unit_effects::GANBANTEIN_SUCCESS_PERCENT;
@@ -44,20 +45,22 @@ pub struct ScriptSkillCompletionPlan {
 
 impl ScriptSkillService {
     pub fn conditional_mob_immunity(mob: &crate::server::state::mob::Mob, effect: &ScriptSkillEffect) -> bool {
-        if effect.skill_id == SkillEnum::MgStonecurse.id() {
+        let behaviour = Self::effect_behaviour(effect);
+        if behaviour == ActorBehaviour::StoneCurse {
             return mob.resists_status(&Self::stone_curse_request(effect.level, effect.source_char_id));
         }
-        effect.skill_id == SkillEnum::CgTarotcard.id()
+        behaviour == ActorBehaviour::Tarot
             && (mob.mob_id == 1288
                 || mob.status.mob_groups().contains(&models::enums::mob::MobGroup::Battlefield)
                 || mob.status.has_status_change(StatusChangeKind::Basilica))
     }
 
     pub fn conditional_player_immunity(character: &Character, effect: &ScriptSkillEffect) -> bool {
-        if effect.skill_id == SkillEnum::CgTarotcard.id() {
+        let behaviour = Self::effect_behaviour(effect);
+        if behaviour == ActorBehaviour::Tarot {
             return character.status.has_status_change(StatusChangeKind::Basilica);
         }
-        effect.skill_id == SkillEnum::MgStonecurse.id()
+        behaviour == ActorBehaviour::StoneCurse
             && *StatusService::instance().to_snapshot(&character.status).element() == Element::Undead
     }
 
@@ -83,14 +86,15 @@ impl ScriptSkillService {
         let mut planned = effect.clone();
         let mut succeeded = true;
         let mut effects = vec![];
-        if effect.skill_id == SkillEnum::CgTarotcard.id() {
+        let behaviour = Self::effect_behaviour(effect);
+        if behaviour == ActorBehaviour::Tarot {
             succeeded = target.hp > 0 && !immune && fastrand::u8(0..100) <= effect.level.saturating_mul(8);
             if succeeded {
                 effects = Self::draw_tarot_effects(effect.level, effect.source_char_id, 0);
             }
-        } else if effect.skill_id == SkillEnum::HwGanbantein.id() {
+        } else if behaviour == ActorBehaviour::Ganbantein {
             succeeded = fastrand::u8(0..100) < GANBANTEIN_SUCCESS_PERCENT;
-        } else if effect.skill_id == SkillEnum::MgStonecurse.id() {
+        } else if behaviour == ActorBehaviour::StoneCurse {
             succeeded = false;
             if target.hp > 0 && !immune {
                 let request = StatusEffectService::request_with_resistance(
@@ -241,12 +245,12 @@ impl ScriptSkillService {
             ScriptSkillAction::ExplodeSplasher => {
                 self.explode_splasher(server, state, character, effect, tick)?;
             }
-            ScriptSkillAction::AreaStatus { x, y } => match SkillMetadata::find(effect.skill_id).map(|metadata| metadata.name.as_str()) {
-                Some("HW_GANBANTEIN") => self.clear_ground_units(character, x, y),
-                Some("MO_BODYRELOCATION") => self.body_relocation(server, state, character, x, y, tick),
-                Some("NJ_SHADOWJUMP") => self.shadow_leap(server, state, character, x, y, tick),
-                Some("CR_SLIMPITCHER") => self.aid_condensed_potion(server, state, character, effect, x, y)?,
-                Some("CR_CULTIVATION") => self.cultivate(state, character, effect, x, y)?,
+            ScriptSkillAction::AreaStatus { x, y } => match Self::effect_behaviour(effect) {
+                ActorBehaviour::Ganbantein => self.clear_ground_units(character, x, y),
+                ActorBehaviour::BodyRelocation => self.body_relocation(server, state, character, x, y, tick),
+                ActorBehaviour::ShadowLeap => self.shadow_leap(server, state, character, x, y, tick),
+                ActorBehaviour::CondensedPotion => self.aid_condensed_potion(server, state, character, effect, x, y)?,
+                ActorBehaviour::Cultivate => self.cultivate(state, character, effect, x, y)?,
                 _ => self.cast_area_status(server, state, character, effect.skill_id, effect.level, x, y, tick)?,
             },
             ScriptSkillAction::Summon { x, y } => self.summon_alchemist_creature(state, character, effect, x, y)?,
@@ -403,8 +407,7 @@ impl ScriptSkillService {
         effect: &ScriptSkillEffect,
         tick: u128,
     ) -> Result<bool, String> {
-        let skill = self
-            .configuration
+        self.configuration
             .find_skill_config(&Value::Number(effect.skill_id as i32))
             .ok_or("Unknown skill")?;
         let source = if effect.source_char_id == character.char_id {
@@ -414,15 +417,15 @@ impl ScriptSkillService {
         };
         let source_status = StatusService::instance().to_snapshot(&source.status);
         let target_status = StatusService::instance().to_snapshot(&character.status);
-        match skill.name().as_str() {
-            "CR_DEVOTION" => {
+        match Self::effect_behaviour(effect) {
+            ActorBehaviour::Devotion => {
                 self.start_devotion(server, state, character, effect, tick)?;
             }
-            "AS_SPLASHER" => {
+            ActorBehaviour::VenomSplasher => {
                 let request = Self::splasher_request(effect, target_status.hp(), target_status.max_hp(), false)?;
                 StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
             }
-            "MG_STONECURSE" => {
+            ActorBehaviour::StoneCurse => {
                 if let Some(prepared) = &effect.prepared_outcome {
                     if !prepared.succeeded {
                         return Err("Stone Curse failed".into());
@@ -443,7 +446,7 @@ impl ScriptSkillService {
                 let request = Self::stone_curse_request(effect.level, effect.source_char_id);
                 StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
             }
-            "DC_WINKCHARM" => {
+            ActorBehaviour::WinkCharm => {
                 let duration = SkillMetadata::find(effect.skill_id)
                     .and_then(|skill| skill.duration(effect.level, false))
                     .unwrap_or(0);
@@ -467,24 +470,22 @@ impl ScriptSkillService {
                     )?;
                 }
             }
-            "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
-                let requests = Self::strip_profile(effect.skill_id, effect.level).map_or_else(Vec::new, |(kinds, full)| {
-                    Self::strip_requests(
-                        kinds,
-                        full,
-                        effect.skill_id,
-                        effect.level,
-                        source_status.dex(),
-                        target_status.dex(),
-                        true,
-                        fastrand::u16(0..1000),
-                    )
-                });
+            ActorBehaviour::Strip { kinds, full } => {
+                let requests = Self::strip_requests(
+                    kinds,
+                    full,
+                    effect.skill_id,
+                    effect.level,
+                    source_status.dex(),
+                    target_status.dex(),
+                    true,
+                    fastrand::u16(0..1000),
+                );
                 for request in requests {
                     StatusEffectService::start(server, character, request, tick, &self.client_notification_sender)?;
                 }
             }
-            "CG_TAROTCARD" => {
+            ActorBehaviour::Tarot => {
                 if let Some(prepared) = &effect.prepared_outcome {
                     if !prepared.succeeded {
                         return Err("Tarot Card failed".into());
@@ -502,7 +503,7 @@ impl ScriptSkillService {
                     self.apply_player_tarot_effect(server, character, effect, target_effect, tick)?;
                 }
             }
-            "SA_SPELLBREAKER" => {
+            ActorBehaviour::SpellBreaker => {
                 if character.status.has_status_change(StatusChangeKind::MagicRod) {
                     let amount = source_status.max_sp() / 5;
                     self.followup_action(server, effect, effect.source_char_id, ScriptSkillAction::SetResources {
@@ -603,9 +604,7 @@ impl ScriptSkillService {
             }
             return Ok(());
         }
-        if effect.prepared_outcome.is_none()
-            && matches!(effect.skill_id, id if id == SkillEnum::MgStonecurse.id() || id == SkillEnum::CgTarotcard.id())
-        {
+        if effect.prepared_outcome.is_none() && matches!(Self::effect_behaviour(effect), ActorBehaviour::StoneCurse | ActorBehaviour::Tarot) {
             let plan = self.prepare_conditional_completion(
                 effect,
                 &target.status_effects,
@@ -626,35 +625,32 @@ impl ScriptSkillService {
             character.script_skill_state.casting_until = 0;
             character.script_skill_state.casting_skill_id = 0;
         }
-        if skill.name() == "WZ_ESTIMATION" {
+        let behaviour = Self::effect_behaviour(effect);
+        if behaviour == ActorBehaviour::Estimation {
             return self.show_monster_estimation(server, state, character, effect.target_id, effect.level);
         }
         if self.apply_class_mob_skill(server, character, effect, &instance, target)?.is_some() {
             return Ok(());
         }
-        if skill.name() == "PR_LEXDIVINA" {
-            if target.status.has_status_change(StatusChangeKind::Silence) {
+        if let ActorBehaviour::Toggle(kind) = behaviour {
+            if target.status.has_status_change(kind) {
                 instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                     mob_id: target.id,
-                    kind: Some(StatusChangeKind::Silence),
+                    kind: Some(kind),
                 }));
             } else {
-                self.queue_delayed_status(
-                    server,
-                    character,
-                    effect,
-                    Self::delayed_support_request(effect, StatusChangeKind::Silence),
-                );
+                self.queue_delayed_status(server, character, effect, Self::delayed_support_request(effect, kind));
             }
             self.notify_support_skill(character, effect);
             return Ok(());
         }
-        if let Some(kind) = Self::status_for_skill(skill.name()) {
+        if let Some(kind) = Self::effect_status(effect) {
             let source = StatusService::instance().to_snapshot(&character.status);
             let request = Self::support_status_request(
                 skill,
                 kind,
                 effect.level,
+                Self::support_chance(effect.skill_id, effect.level),
                 character.status.base_level,
                 source.int(),
                 target.status_effects.base_level,
@@ -683,8 +679,8 @@ impl ScriptSkillService {
                 ));
             }
         } else {
-            match skill.name().as_str() {
-                "AS_SPLASHER" => {
+            match behaviour {
+                ActorBehaviour::VenomSplasher => {
                     let immune = target.mode & models::enums::mob::MobMode::Boss.as_flag() != 0;
                     let request = Self::splasher_request(effect, target.status.hp(), target.status.max_hp(), immune)?;
                     instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
@@ -692,7 +688,7 @@ impl ScriptSkillService {
                         request,
                     }));
                 }
-                "MG_STONECURSE" => {
+                ActorBehaviour::StoneCurse => {
                     if let Some(prepared) = &effect.prepared_outcome {
                         if !prepared.succeeded {
                             return Err("Stone Curse failed".into());
@@ -707,7 +703,7 @@ impl ScriptSkillService {
                         }));
                     }
                 }
-                "DC_WINKCHARM" => {
+                ActorBehaviour::WinkCharm => {
                     let mut request = StatusChangeRequest::guaranteed(
                         StatusChangeKind::WinkCharm,
                         SkillMetadata::find(effect.skill_id)
@@ -724,27 +720,25 @@ impl ScriptSkillService {
                         request,
                     }));
                 }
-                "RG_STRIPWEAPON" | "RG_STRIPSHIELD" | "RG_STRIPARMOR" | "RG_STRIPHELM" | "ST_FULLSTRIP" => {
+                ActorBehaviour::Strip { kinds, full } => {
                     let source = StatusService::instance().to_snapshot(&character.status);
-                    for request in Self::strip_profile(effect.skill_id, effect.level).map_or_else(Vec::new, |(kinds, full)| {
-                        Self::strip_requests(
-                            kinds,
-                            full,
-                            effect.skill_id,
-                            effect.level,
-                            source.dex(),
-                            target.status.dex(),
-                            false,
-                            fastrand::u16(0..1000),
-                        )
-                    }) {
+                    for request in Self::strip_requests(
+                        kinds,
+                        full,
+                        effect.skill_id,
+                        effect.level,
+                        source.dex(),
+                        target.status.dex(),
+                        false,
+                        fastrand::u16(0..1000),
+                    ) {
                         instance.add_to_next_tick(MapEvent::MobStatusChange(MobStatusChange {
                             mob_id: target.id,
                             request,
                         }));
                     }
                 }
-                "CG_TAROTCARD" => {
+                ActorBehaviour::Tarot => {
                     if let Some(prepared) = &effect.prepared_outcome {
                         if !prepared.succeeded {
                             return Err("Tarot Card failed".into());
@@ -761,7 +755,7 @@ impl ScriptSkillService {
                         }
                     }
                 }
-                "AL_HEAL" if Self::undead_target(&target.status) => {
+                ActorBehaviour::Heal if Self::undead_target(&target.status) => {
                     let source = StatusService::instance().to_snapshot(&character.status);
                     let damage = self
                         .offensive_heal_damage(server, &source, &target.status, effect, tick)
@@ -776,28 +770,20 @@ impl ScriptSkillService {
                         );
                     instance.add_to_next_tick(MapEvent::MobDamage(MobDamage { damage }));
                 }
-                "AL_HEAL" => instance.add_to_next_tick(MapEvent::MobHeal(MobHeal {
+                ActorBehaviour::Heal => instance.add_to_next_tick(MapEvent::MobHeal(MobHeal {
                     mob_id: target.id,
                     hp: Self::target_heal_amount(&target.status, effect.heal_value),
                     sp: 0,
                 })),
-                "TF_DETOXIFY" => {
-                    for kind in [StatusChangeKind::Poison, StatusChangeKind::DeadlyPoison] {
+                ActorBehaviour::Cure { kinds, undead_follow_up: false } => {
+                    for kind in kinds {
                         instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                             mob_id: target.id,
-                            kind: Some(kind),
+                            kind: Some(*kind),
                         }));
                     }
                 }
-                "AL_CURE" => {
-                    for kind in [StatusChangeKind::Silence, StatusChangeKind::Blind, StatusChangeKind::Confusion] {
-                        instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
-                            mob_id: target.id,
-                            kind: Some(kind),
-                        }));
-                    }
-                }
-                "PR_STRECOVERY" => {
+                ActorBehaviour::Cure { kinds, undead_follow_up: true } => {
                     if target.mode & models::enums::mob::MobMode::Boss.as_flag() != 0 {
                         self.notify_support_skill_result(character, effect, false);
                         return Ok(());
@@ -814,29 +800,23 @@ impl ScriptSkillService {
                             Self::delayed_support_request(effect, StatusChangeKind::Blind),
                         );
                     } else {
-                        for kind in [
-                            StatusChangeKind::Stone,
-                            StatusChangeKind::StoneWait,
-                            StatusChangeKind::Freeze,
-                            StatusChangeKind::Stun,
-                            StatusChangeKind::Sleep,
-                        ] {
+                        for kind in kinds.iter().filter(|kind| **kind != StatusChangeKind::NoRecovery) {
                             instance.add_to_next_tick(MapEvent::MobEndStatus(MobEndStatus {
                                 mob_id: target.id,
-                                kind: Some(kind),
+                                kind: Some(*kind),
                             }));
                         }
                         instance.add_to_next_tick(MapEvent::MobLoseTarget(MobLoseTarget { mob_id: target.id }));
                     }
                 }
-                "SA_DISPELL" => {
-                    if target.mode & models::enums::mob::MobMode::Boss.as_flag() == 0 && fastrand::u8(0..100) < 50 + 10 * effect.level {
+                ActorBehaviour::Dispel { chance } => {
+                    if target.mode & models::enums::mob::MobMode::Boss.as_flag() == 0 && fastrand::u8(0..100) < chance {
                         instance.add_to_next_tick(MapEvent::MobDispel(crate::server::model::events::map_event::MobDispel {
                             mob_id: target.id,
                         }));
                     }
                 }
-                "SA_SPELLBREAKER" => {}
+                ActorBehaviour::SpellBreaker => {}
                 _ => return Err(format!("Skill {} has no monster target effect", skill.name())),
             }
         }
@@ -852,14 +832,6 @@ impl ScriptSkillService {
             values: [level as i32, source_id as i32, metadata.duration(level, true).unwrap_or(0), 0],
             rate: 2000 + 400 * level as u16,
             flags: 0,
-        }
-    }
-
-    /// The equipment slots a strip skill removes, and whether it uses the Full Strip success rate.
-    pub(super) fn strip_profile(skill_id: u32, level: u8) -> Option<(&'static [StatusChangeKind], bool)> {
-        match SkillMetadata::find(skill_id).map(|metadata| Self::actor_behaviour(metadata, level)) {
-            Some(skills::ActorBehaviour::Strip { kinds, full }) => Some((kinds, full)),
-            _ => None,
         }
     }
 
@@ -1107,7 +1079,9 @@ mod tests {
     #[test]
     fn full_strip_has_one_shared_roll_and_dex_scaled_duration() {
         let metadata = SkillMetadata::all().iter().find(|skill| skill.name == "ST_FULLSTRIP").unwrap();
-        let (kinds, full) = ScriptSkillService::strip_profile(metadata.id, 5).unwrap();
+        let ActorBehaviour::Strip { kinds, full } = ScriptSkillService::actor_behaviour(metadata, 5) else {
+            panic!("ST_FULLSTRIP is a strip behaviour");
+        };
         let requests = ScriptSkillService::strip_requests(kinds, full, metadata.id, 5, 100, 80, false, 189);
         assert_eq!(requests.len(), 4);
         assert_eq!(requests[0].duration_ms, metadata.duration(5, false).unwrap() + 15000 + 10005);

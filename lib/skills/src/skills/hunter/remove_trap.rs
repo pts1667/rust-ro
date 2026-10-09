@@ -111,4 +111,9 @@ impl Skill for RemoveTrap {
     fn validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {
         if status.sp() > 5 { Ok(5) } else {Err(())}
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::TrapControl { spring: false }
+    }
 }

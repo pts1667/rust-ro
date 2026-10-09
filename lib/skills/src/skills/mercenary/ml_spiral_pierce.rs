@@ -97,4 +97,9 @@ impl Skill for MlSpiralPierce {
     fn inflict_status_effect_to_target(&self, _hit: &HitContext) -> Vec<StatusInfliction> {
         vec![StatusInfliction::secondary(StatusChangeKind::Ankle, 10_000, self.level)]
     }
+
+    #[inline(always)]
+    fn companion_effect(&self) -> Option<CompanionEffect> {
+        Some(CompanionEffect::Weapon(MercenaryWeapon::SpiralPierce))
+    }
 }

@@ -116,4 +116,9 @@ impl Skill for WeaponRepair {
     fn base_cast_time(&self) -> u32 {
        7500
     }
+
+    #[inline(always)]
+    fn menu(&self) -> Option<MenuKind> {
+        Some(MenuKind::RepairWeapon)
+    }
 }

@@ -145,4 +145,27 @@ impl Skill for HammerFall {
     fn actor_behaviour(&self) -> ActorBehaviour {
         ActorBehaviour::AreaStatus { at_target_point: true }
     }
+
+    #[inline(always)]
+    fn area_status(&self) -> Option<AreaStatusProfile> {
+        Some(AreaStatusProfile {
+            kind: StatusChangeKind::Stun,
+            chance: (2000 + 1000 * i32::from(self.level)).min(5000 + 500 * i32::from(self.level)),
+            delay_ms: 1000,
+            duration: AreaDuration::Adjusted,
+            party_quarter_chance: false,
+            undead_only: false,
+            level_rate: false,
+        })
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::AreaStatus)
+    }
+
+    #[inline(always)]
+    fn pet_ground_attack(&self) -> bool {
+        true
+    }
 }

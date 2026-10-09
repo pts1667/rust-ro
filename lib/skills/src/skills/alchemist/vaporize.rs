@@ -111,4 +111,9 @@ impl Skill for Vaporize {
     fn validate_sp(&self, status: &StatusSnapshot) -> SkillRequirementResult<u32> {
         if status.sp() > 50 { Ok(50) } else {Err(())}
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::ServiceCall(ServiceCall::RestHomunculus)
+    }
 }

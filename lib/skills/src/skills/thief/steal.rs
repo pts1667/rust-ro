@@ -151,4 +151,9 @@ impl Skill for Steal {
         }
         TemporaryStatusBonuses::default()
     }
+
+    #[inline(always)]
+    fn class_effect(&self) -> Option<ClassEffect> {
+        Some(ClassEffect::StealItem)
+    }
 }

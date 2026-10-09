@@ -171,4 +171,14 @@ impl Skill for FireWall {
     fn knocks_back_on_hit(&self) -> bool {
         false
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::Firewall)
+    }
+
+    #[inline(always)]
+    fn ground_placement(&self) -> Option<GroundPlacement> {
+        Some(GroundPlacement::Limit(3))
+    }
 }

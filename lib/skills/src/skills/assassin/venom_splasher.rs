@@ -240,4 +240,14 @@ impl Skill for VenomSplasher {
         }
         effects
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::VenomSplasher
+    }
+
+    #[inline(always)]
+    fn player_only_callback(&self) -> bool {
+        true
+    }
 }

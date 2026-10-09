@@ -120,4 +120,9 @@ impl Skill for Encore {
             Err(())
         }
     }
+
+    #[inline(always)]
+    fn actor_behaviour(&self) -> ActorBehaviour {
+        ActorBehaviour::Encore
+    }
 }

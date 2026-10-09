@@ -146,4 +146,9 @@ impl Skill for BlindingMist {
     fn client_type(&self) -> usize {
         2
     }
+
+    #[inline(always)]
+    fn ground_kind(&self) -> Option<GroundKind> {
+        Some(GroundKind::FogWall)
+    }
 }
