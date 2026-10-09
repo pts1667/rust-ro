@@ -19,6 +19,8 @@ mod npc_skill_object_test;
 #[cfg(test)]
 mod server_service_test;
 #[cfg(test)]
+mod script_constant_export_test;
+#[cfg(test)]
 mod skill_service_test;
 #[cfg(test)]
 mod skill_tree_service_test;

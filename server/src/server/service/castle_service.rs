@@ -101,6 +101,14 @@ pub(crate) fn castle_by_map(map: &str) -> Option<&'static Castle> {
     castles().iter().find(|castle| castle.map == map)
 }
 
+/// Agit (WoE:FE) castles, which the catalog above does not list: their maps and names from rathena's castle database, ids 20 to 23.
+const AGIT_CASTLES: [(&str, &str); 4] = [("nguild_alde", "Earth"), ("nguild_gef", "Air"), ("nguild_pay", "Water"), ("nguild_prt", "Fire")];
+
+fn castle_name(map: &str) -> Option<String> {
+    let map = normalize_map(map);
+    castle_by_map(&map).map(|castle| castle.name.clone()).or_else(|| AGIT_CASTLES.iter().find(|(agit, _)| *agit == map).map(|(_, name)| name.to_string()))
+}
+
 fn guardian_class(kind: u8) -> i32 {
     match kind {
         1 => 1287,
@@ -111,6 +119,7 @@ fn guardian_class(kind: u8) -> i32 {
 
 fn spawn_request(mob_id: i32, x: u16, y: u16, name: &str, amount: u16) -> ScriptSpawn {
     ScriptSpawn {
+        is_guardian: false,
         mob_id,
         x: i32::from(x),
         y: i32::from(y),
@@ -437,10 +446,22 @@ impl Server {
                     _ => Value::Number(i32::from(record.master_char_id == char_id)),
                 })
             }
+            Function::GetGuildMaster => {
+                let master = self.castle_script_call(char_id, Function::GetGuildInfo, &[arguments.first().cloned().ok_or("Missing guild")?, Value::Number(1)])?;
+                let unknown = master.string_value()?.is_empty();
+                Ok(if unknown { Value::String("null".into()) } else { master })
+            }
             Function::GetGuildSkillLevel => {
                 let guild = u32::try_from(number(0)?).map_err(|_| "Invalid guild")?;
                 let skill = u32::try_from(number(1)?).map_err(|_| "Invalid guild skill")?;
-                Ok(Value::Number(i32::from(self.guild_skill_level(guild, skill))))
+                let Some(record) = self.repository.guild(guild).map_err(|error| error.to_string())? else {
+                    return Ok(Value::Number(-1));
+                };
+                Ok(Value::Number(i32::from(record.skill_level(skill))))
+            }
+            Function::GetCastleName => {
+                let map = arguments.first().ok_or("Missing castle map")?.string_value()?;
+                Ok(Value::String(castle_name(map).unwrap_or_default()))
             }
             Function::GuardianSummon => {
                 let map = arguments.first().ok_or("Missing castle map")?.string_value()?.to_string();
@@ -472,4 +493,17 @@ impl Server {
 fn current_day() -> i64 {
     use chrono::Datelike;
     i64::from(chrono::Local::now().num_days_from_ce())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::castle_name;
+
+    #[test]
+    fn castle_name_covers_the_catalog_and_the_agit_castles() {
+        assert_eq!(castle_name("aldeg_cas01").as_deref(), Some("Neuschwanstein"));
+        assert_eq!(castle_name("nguild_alde").as_deref(), Some("Earth"));
+        assert_eq!(castle_name("nguild_prt").as_deref(), Some("Fire"));
+        assert_eq!(castle_name("prontera"), None);
+    }
 }

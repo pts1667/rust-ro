@@ -64,6 +64,7 @@ impl Host for RandomHost {
                 Function::ArrayGet => Value::Array(vec![]),
                 Function::GetMapXy => Value::Array(vec![Value::String("prontera".into()), Value::Number(100), Value::Number(100)]),
                 Function::GetPartyMember => Value::Array(vec![Value::Number(150_000), Value::Number(150_001)]),
+                Function::GetInventoryList => Value::Array(vec![]),
                 Function::CheckWeight => Value::Number(1),
                 Function::CountItem => Value::Number(self.rng.i32(0..4)),
                 Function::CheckQuest => Value::Number(self.rng.i32(-1..3)),

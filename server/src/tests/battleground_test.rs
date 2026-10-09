@@ -204,6 +204,7 @@ fn battleground_monsters_are_protected_from_their_own_team_and_honor_damage_immu
     join(&context, team, 150_000);
     let instance = context.server.state().get_map_instance(&"empty".into(), 0).unwrap();
     let request = ScriptSpawn {
+        is_guardian: false,
         mob_id: 1002,
         x: 50,
         y: 50,

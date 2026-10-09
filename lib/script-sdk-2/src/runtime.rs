@@ -219,6 +219,16 @@ pub fn arg(args: &[Val], index: i32, default: Val) -> Val {
     usize::try_from(index).ok().and_then(|index| args.get(index).cloned()).unwrap_or(default)
 }
 
+/// `set getarg(index), value`: changes an argument of this call only. Slots past the end read as 0 once written.
+pub fn set_arg(args: &mut Vec<Val>, index: i32, value: Val) -> Result<(), Stop> {
+    let index = usize::try_from(index).map_err(|_| Stop::from("Argument index is negative".to_string()))?;
+    if args.len() <= index {
+        args.resize(index + 1, Val::from(0));
+    }
+    args[index] = value;
+    Ok(())
+}
+
 /// `npcskill`: the three skills the legacy runtime supports, each with its legacy formula.
 pub fn npc_skill(ctx: &Ctx, skill: &Val, level: &Val, stat: &Val, npc_level: &Val) -> Result<(), Stop> {
     let (level, stat, npc_level) = (level.number()?, stat.number()?, npc_level.number()?);
@@ -263,25 +273,15 @@ pub fn inventory_list(ctx: &Ctx) -> Result<(), Stop> {
 
 /// `input` of a number: the entry clamped to `[min, max]` (default `0` to `10000000`), and the status: -1 below the minimum, 1 above the maximum, 0 inside.
 pub fn input_number(ctx: &Ctx, min: Option<i32>, max: Option<i32>) -> Result<(Val, i32), Stop> {
-    let (min, max) = (min.unwrap_or(0), max.unwrap_or(10_000_000));
-    let entered = ctx.call(Function::InputNumber, vec![])?.number()?;
-    Ok(match entered {
-        entered if entered > max => (Val::from(max), 1),
-        entered if entered < min => (Val::from(min), -1),
-        entered => (Val::from(entered), 0),
-    })
+    let input = ctx.input_number(min.unwrap_or(0), max.unwrap_or(10_000_000))?;
+    Ok((Val::from(input.value), input.bound.code()))
 }
 
 /// `input` of a text: its length against the bounds (default `0` to `2047`), and the status as for [`input_number`].
 pub fn input_text(ctx: &Ctx, min: Option<i32>, max: Option<i32>) -> Result<(Val, i32), Stop> {
-    let (min, max) = (min.unwrap_or(0), max.unwrap_or(2047));
-    let entered = ctx.call(Function::InputString, vec![])?.text();
-    let length = entered.chars().count() as i32;
-    Ok(match length {
-        length if length > max => (Val::from(entered.chars().take(max.max(0) as usize).collect::<String>()), 1),
-        length if length < min => (Val::from(entered), -1),
-        _ => (Val::from(entered), 0),
-    })
+    let length = |bound: Option<i32>, default: i32| bound.unwrap_or(default).max(0) as usize;
+    let input = ctx.input_text(length(min, 0), length(max, 2047))?;
+    Ok((Val::from(input.value), input.bound.code()))
 }
 
 pub fn strlen(text: &Val) -> Val {

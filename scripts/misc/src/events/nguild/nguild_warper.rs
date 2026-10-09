@@ -11,6 +11,132 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn novice_castles_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.mes("[Cita]")?;
+    if !(ctx.call(Function::GetCharacterId, vec![Val::from(2)])?.is_true()) {
+        ctx.mes("^FF0000You have to enter a guild to be able to hit Emperium!^000000")?;
+    } else {
+        if (ctx
+            .call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10013)],
+            )?
+            .is_true()
+            || ((((((((((((((ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10000)],
+            )? + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10001)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10002)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10003)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10004)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10005)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10006)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10007)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10008)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10009)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10010)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10011)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10012)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10013)],
+            )?) + ctx.call(
+                Function::GetGuildSkillLevel,
+                vec![ctx.call(Function::GetCharacterId, vec![Val::from(2)])?, Val::from(10014)],
+            )?)
+            .number()?
+                > 9)
+        {
+            ctx.lines(args![
+                "I see... your guild has Emergency Call mastered.",
+                "You cannot enter the Novice Castle area."
+            ])?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_SCRATCH")?])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_KEK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+        } else {
+            ctx.mes("I'm a new usher of Novice Castles.")?;
+            ctx.next()?;
+            ctx.mes("[Cita]")?;
+            if (runtime::op(
+                &ctx.call(Function::EaClass, vec![])?,
+                "&",
+                &runtime::op(&ctx.constant("EAJL_2")?, "|", &ctx.constant("EAJL_UPPER")?)?,
+            )?
+            .is_true()
+                || ctx.var("BaseLevel").get()?.number()? >= 60)
+            {
+                ctx.mes("I'm sorry, you can't enter the sacred Novice Castles place.")?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_SORRY")?])?;
+            } else {
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Warp me to Novice Castles"), Val::from("Cancel")],
+                )?) == 1
+                {
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_ASSUMPTIO")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_IMPOSITIO")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_SUFFRAGIUM")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_MAGNIFICAT")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_WEAPONPERFECTION")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_GOSPEL")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_BASILICA")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_MAGICPOWER")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_MARIONETTE")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_MARIONETTE2")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_DEVOTION")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_SACRIFICE")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_MAXOVERTHRUST")?])?;
+                    ctx.call(Function::EndStatus, vec![ctx.constant("SC_SPIRIT")?])?;
+                    ctx.call(
+                        Function::Warp,
+                        vec![
+                            Val::from("n_castle"),
+                            Val::from(102),
+                            (Val::from(93) + ctx.call(Function::Rand, vec![Val::from(14)])?),
+                        ],
+                    )?;
+                }
+            }
+        }
+    }
+    ctx.close_window()?;
+    return Err(Stop::End);
+}
+
+pub fn novice_castles(ctx: &Ctx) -> Script {
+    novice_castles_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn cita_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as(
         "Cita",

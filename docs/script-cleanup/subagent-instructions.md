@@ -66,6 +66,7 @@ Work through these in order and skip any that do not apply.
 4. **Remove dead code.** Delete locals that are never read, and `mut` that is not needed. Delete the `#![allow(..)]` lines at the top of the file only if the file compiles without them.
 5. **Turn step-by-step dialogue into state.** When a conversation moves through several menus and screens, and the screens lead back to each other, write one `enum` variant per screen (named for what it does, such as `AskJob`, `Confirm`) and a `loop { match state { .. } }`. Keep it only when the flow really loops or jumps. A straight-line conversation stays as plain code.
 6. **Use typed wrappers** only under rule 5 above.
+7. **Other** after steps 1-6, cleanup how you think would be best. Prioritise clean, readable code.
 
 **Warning on `match`.** `Val` compares loosely. In rathena, a text value is never equal to a number, and `.number()?` raises an error on text. So `match x.number()? { 1 => .. }` changes behaviour when `x` could hold text. Use `match` or `.number()?` only when the value is always a number, for example a local that only ever gets numeric literals or arithmetic results. When in doubt, keep `== 1` on the `Val`.
 

@@ -806,16 +806,16 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104783 => npc_call(npc_13609(ctx, 1, vec![])),
-        104784 => npc_call(npc_13610(ctx, 1, vec![])),
-        104785 => npc_call(npc_13614(ctx, 1, vec![])),
-        104786 => npc_call(npc_13614(ctx, 2, vec![])),
-        104787 => npc_call(npc_13614(ctx, 3, vec![])),
-        104788 => npc_call(npc_13614(ctx, 4, vec![])),
-        104789 => npc_call(npc_13614(ctx, 5, vec![])),
-        104790 => npc_call(npc_13614(ctx, 6, vec![])),
-        104791 => npc_call(npc_13614(ctx, 7, vec![])),
-        104792 => npc_call(npc_13614(ctx, 8, vec![])),
+        104786 => npc_call(npc_13609(ctx, 1, vec![])),
+        104787 => npc_call(npc_13610(ctx, 1, vec![])),
+        104788 => npc_call(npc_13614(ctx, 1, vec![])),
+        104789 => npc_call(npc_13614(ctx, 2, vec![])),
+        104790 => npc_call(npc_13614(ctx, 3, vec![])),
+        104791 => npc_call(npc_13614(ctx, 4, vec![])),
+        104792 => npc_call(npc_13614(ctx, 5, vec![])),
+        104793 => npc_call(npc_13614(ctx, 6, vec![])),
+        104794 => npc_call(npc_13614(ctx, 7, vec![])),
+        104795 => npc_call(npc_13614(ctx, 8, vec![])),
         _ => None,
     }
 }

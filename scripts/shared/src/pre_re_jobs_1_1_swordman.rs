@@ -40,3 +40,98 @@ pub fn f_jobswdstaff(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.close_window()?;
     return Err(Stop::End);
 }
+
+#[derive(Clone, Copy, Debug)]
+enum FJobswdteststaffStep {
+    Start,
+    OnTouch,
+}
+
+fn f_jobswdteststaff_run(ctx: &Ctx, mut step: FJobswdteststaffStep, args: Vec<Val>) -> Result<Val, Stop> {
+    'machine: loop {
+        match step {
+            FJobswdteststaffStep::Start => {
+                step = FJobswdteststaffStep::OnTouch;
+                continue 'machine;
+            }
+            FJobswdteststaffStep::OnTouch => {
+                ctx.lines_as(
+                    "Test Hall Staff",
+                    args![
+                        ((Val::from("Applicant ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                            + Val::from(". Do you surrender??"))
+                    ],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("job_sword1"),
+                            ((Val::from("Applicant ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                + Val::from(" quit the test..")),
+                            ctx.constant("BC_MAP")?,
+                        ],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("izlude_in"), Val::from(65), Val::from(165)])?;
+                    return Err(Stop::End);
+                }
+                ctx.call(
+                    Function::Warp,
+                    vec![
+                        Val::from("job_sword1"),
+                        runtime::arg(&args, 0, Val::from(0)),
+                        runtime::arg(&args, 1, Val::from(0)),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+        }
+    }
+}
+
+pub fn f_jobswdteststaff(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    f_jobswdteststaff_run(ctx, FJobswdteststaffStep::Start, args)
+}
+
+#[derive(Clone, Copy, Debug)]
+enum FJobswdteststaff2Step {
+    Start,
+    OnTouch,
+}
+
+fn f_jobswdteststaff2_run(ctx: &Ctx, mut step: FJobswdteststaff2Step, args: Vec<Val>) -> Result<Val, Stop> {
+    'machine: loop {
+        match step {
+            FJobswdteststaff2Step::Start => {
+                step = FJobswdteststaff2Step::OnTouch;
+                continue 'machine;
+            }
+            FJobswdteststaff2Step::OnTouch => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("job_sword1"),
+                        ((((Val::from("Applicant ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(". Pass the "))
+                            + runtime::arg(&args, 0, Val::from(0)))
+                            + Val::from(" course.")),
+                        ctx.constant("BC_MAP")?,
+                    ],
+                )?;
+                ctx.call(
+                    Function::Warp,
+                    vec![
+                        Val::from("job_sword1"),
+                        runtime::arg(&args, 1, Val::from(0)),
+                        runtime::arg(&args, 2, Val::from(0)),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+        }
+    }
+}
+
+pub fn f_jobswdteststaff2(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    f_jobswdteststaff2_run(ctx, FJobswdteststaff2Step::Start, args)
+}

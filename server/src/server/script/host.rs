@@ -54,6 +54,13 @@ impl PartialEq for ScriptRequest {
     }
 }
 
+/// The player `attachrid` moved the script onto; character commands act on them until `detachrid`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AttachedPlayer {
+    pub char_id: u32,
+    pub account_id: u32,
+}
+
 pub struct NpcScriptHost {
     pub server: Arc<Server>,
     pub session: Arc<Session>,
@@ -69,10 +76,21 @@ pub struct NpcScriptHost {
     pub logout_token: Option<u64>,
     /// The client shows a dialogue window the script has not closed yet.
     pub dialog_open: bool,
+    pub attached: Option<AttachedPlayer>,
     pub error: Option<String>,
 }
 
 impl NpcScriptHost {
+    async fn attach(&mut self, arguments: Vec<Value>) -> Reply {
+        let account_id = u32::try_from(arguments.first().ok_or("Missing account")?.number_value()?).map_err(|_| "Invalid account")?;
+        let char_id = u32::try_from(self.forward(Request::Call { function: Function::AttachRid, arguments }).await?.number_value()?).unwrap_or(0);
+        if char_id == 0 {
+            return Ok(Value::Number(0));
+        }
+        self.attached = Some(AttachedPlayer { char_id, account_id });
+        Ok(Value::Number(1))
+    }
+
     pub fn current(&self) -> bool {
         self.background || self.session.script_generation.load(Ordering::Acquire) == self.generation
     }
@@ -83,8 +101,8 @@ impl NpcScriptHost {
         }
         let (sender, receiver) = oneshot::channel();
         self.server.add_to_next_tick(GameEvent::ScriptRequest(ScriptRequest {
-            char_id: self.session.char_id(),
-            account_id: self.session.account_id,
+            char_id: self.attached.map_or_else(|| self.session.char_id(), |attached| attached.char_id),
+            account_id: self.attached.map_or(self.session.account_id, |attached| attached.account_id),
             npc_id: self.script.id,
             npc_entry: self.script.entry_id,
             npc_scope_instance: self.script.scope_instance,
@@ -134,6 +152,15 @@ impl Host for NpcScriptHost {
             Request::Call {
                 function: Function::Shop, ..
             } => self.shop().await,
+            Request::Call {
+                function: Function::AttachRid, arguments,
+            } => self.attach(arguments).await,
+            Request::Call {
+                function: Function::DetachRid, ..
+            } => {
+                self.attached = None;
+                Ok(Value::default())
+            }
             Request::Call { function, arguments }
                 if crate::server::service::npc_timer_service::handles(function) =>
             {
@@ -176,6 +203,9 @@ impl Host for NpcScriptHost {
                         | Function::Cutin
                 ) =>
             {
+                if self.attached.is_some_and(|attached| attached.char_id != self.session.char_id()) {
+                    return Err("Dialogue with an attached player is not supported".into());
+                }
                 self.interaction(function, arguments).await
             }
             Request::ReportError(error) => {

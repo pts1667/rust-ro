@@ -2,6 +2,7 @@
 //! announcements, counters and weight checks.
 
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU64, EnumWithNumberValue};
+use packets::packets::{Packet, PacketZcCongratulation, PacketZcPlayNpcBgm};
 use models::enums::item::{EquipmentLocation, ItemType};
 use models::enums::look::LookType;
 use script_sdk::{Function, Reply, Value};
@@ -60,6 +61,10 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::DisableWaitingRoomEvent
             | Function::GetWaitingRoomState
             | Function::WarpWaitingPc
+            | Function::PlayBgm
+            | Function::Wedding
+            | Function::RequestGuildInfo
+            | Function::SetItemScript
     )
 }
 
@@ -69,6 +74,7 @@ const COMPASS_PACKET: u16 = 0x0144;
 const READ_BOOK_PACKET: u16 = 0x0294;
 const NPC_SPRITE_PACKET: u16 = 0x01b0;
 const NOTIFY_CHAT_PACKET: u16 = 0x008d;
+const BGM_NAME_BYTES: usize = 24;
 const SOUND_NAME_BYTES: usize = 24;
 /// What rathena answers `openauction` with while `feature.auction` is off; there is no auction house here.
 const AUCTION_DISABLED: &str = "Auction System is disabled.";
@@ -377,6 +383,46 @@ impl Server {
                 let _ = self.server_service().notification_sender().try_send(Notification::Area(AreaNotification::new(map, instance, range, emotion_packet(actor_id, emotion))));
                 Ok(Value::default())
             }
+            Function::PlayBgm => {
+                if context.char_id == 0 {
+                    return Ok(Value::default());
+                }
+                let name = text(0)?;
+                if name.len() > BGM_NAME_BYTES {
+                    return Err("BGM file name is too long".into());
+                }
+                let mut bgm = [' '; BGM_NAME_BYTES];
+                for (slot, byte) in bgm.iter_mut().zip(name.bytes()) {
+                    *slot = char::from(byte);
+                }
+                let mut packet = PacketZcPlayNpcBgm::new(GlobalConfigService::instance().packetver());
+                packet.set_bgm(bgm);
+                packet.fill_raw();
+                let _ = self.server_service().notification_sender().try_send(Notification::Char(CharNotification::new(context.char_id, packet.raw)));
+                Ok(Value::default())
+            }
+            Function::Wedding => {
+                let (actor_id, map, instance, x, y) = match state.get_character(context.char_id) {
+                    Some(character) => (character.char_id, character.current_map_name().clone(), character.current_map_instance(), character.x(), character.y()),
+                    None => {
+                        let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("Wedding effect needs an NPC or a player")?;
+                        (npc.id, npc.map.clone(), npc.instance, npc.x, npc.y)
+                    }
+                };
+                let mut packet = PacketZcCongratulation::new(GlobalConfigService::instance().packetver());
+                packet.set_aid(actor_id);
+                packet.fill_raw();
+                let range = AreaNotificationRangeType::Fov { x, y, exclude_id: None };
+                let _ = self.server_service().notification_sender().try_send(Notification::Area(AreaNotification::new(map, instance, range, packet.raw)));
+                Ok(Value::default())
+            }
+            Function::RequestGuildInfo => {
+                if arguments.len() > 1 {
+                    return Err("requestguildinfo with an event callback is not supported".into());
+                }
+                Ok(Value::default())
+            }
+            Function::SetItemScript => Err("setitemscript is not supported: item bonus scripts are compiled into the item modules".into()),
             Function::SoundEffect => {
                 if context.char_id == 0 {
                     return Ok(Value::default());

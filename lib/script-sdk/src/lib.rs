@@ -416,6 +416,20 @@ pub enum Function {
     MoveNpc,
     GetMonsterInfo,
     NpcTalk,
+    GetGuildMaster,
+    GetCastleName,
+    Guardian,
+    FlagEmblem,
+    MapRespawnGuildId,
+    AttachRid,
+    DetachRid,
+    PlayBgm,
+    DelEquip,
+    Equip,
+    SetItemScript,
+    RequestGuildInfo,
+    Wedding,
+    IsLoggedIn,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

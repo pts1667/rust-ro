@@ -70,6 +70,7 @@ impl ScriptSkillService {
             .ok_or("Summon skill has no duration")?;
         let instance = state.get_map_instance_from_character(character).ok_or("Map instance is unavailable")?;
         instance.add_to_next_tick(MapEvent::ScriptSpawn(ScriptSpawn {
+            is_guardian: false,
             mob_id: summon.class,
             x: i32::from(x),
             y: i32::from(y),

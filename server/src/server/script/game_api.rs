@@ -13,9 +13,10 @@ use super::item_script_handler::{ItemScriptHost, status_variable};
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::Server;
 use crate::server::model::events::game_event::{
-    CharacterAddItems, CharacterChangeJob, CharacterLook, CharacterRemoveItem, CharacterRemoveItems, GameEvent,
+    CharacterAddItems, CharacterChangeJob, CharacterEquipItem, CharacterLook, CharacterRemoveItem, CharacterRemoveItems, GameEvent,
 };
 use crate::server::service::script_service::ScriptService;
+use models::enums::EnumWithMaskValueU64;
 use crate::server::state::server::ServerState;
 
 fn variable_name(name: &str) -> (VariableScope, String) {
@@ -265,6 +266,17 @@ impl ScriptService {
                 Ok(Value::Array(result))
             }
             Request::Write { name, value } => {
+                if name == "Hp" {
+                    if context.char_id == 0 { return Err("Hp requires an attached player".into()); }
+                    let hp = value.number_value()?;
+                    return state
+                        .with_character_taken(context.char_id, |_, character| {
+                            let hp = hp.clamp(1, character.status.max_hp() as i32) as u32;
+                            server.character_service().update_hp_sp(character, hp, character.status.sp());
+                            Value::default()
+                        })
+                        .ok_or_else(|| "Hp target character disconnected".to_string());
+                }
                 if name == "Zeny" {
                     if context.char_id == 0 { return Err("Zeny requires an attached player".into()); }
                     let amount = u32::try_from(value.number_value()?).map_err(|_| "Invalid zeny")?;
@@ -421,7 +433,8 @@ impl ScriptService {
                     return Ok(Value::default());
                 }
                 if (context.char_id == 0 && function == Function::Announce)
-                    || (matches!(function, Function::Monster | Function::AreaMonster) && super::unit_data::script_actor(state, context)?.is_some()) {
+                    || (matches!(function, Function::Monster | Function::AreaMonster | Function::Guardian | Function::FlagEmblem)
+                        && super::unit_data::script_actor(state, context)?.is_some()) {
                     return server.npc_background_call(state, context, function, &arguments);
                 }
                 if matches!(function, Function::Rand | Function::Min | Function::Max | Function::Pow | Function::GetTime | Function::GetItemInfo | Function::GetItemName) {
@@ -516,7 +529,7 @@ impl ScriptService {
                 if crate::server::service::battleground_queue_service::handles_script_call(function) {
                     return server.battleground_queue_script_call(state, function, &arguments);
                 }
-                if matches!(function, Function::GetGuildInfo | Function::GetGuildSkillLevel | Function::GuardianSummon) {
+                if matches!(function, Function::GetGuildInfo | Function::GetGuildMaster | Function::GetGuildSkillLevel | Function::GetCastleName | Function::GuardianSummon) {
                     return server.castle_script_call(context.char_id, function, &arguments);
                 }
                 if matches!(function, Function::AgitStart | Function::AgitEnd | Function::AgitCheck) {
@@ -531,6 +544,19 @@ impl ScriptService {
                         return server.map_flag_call_from(state, Some(&key), function, &arguments);
                     }
                     return server.map_flag_call(state, context.char_id, function, &arguments);
+                }
+                if function == Function::IsLoggedIn {
+                    let account_id = i64::from(arguments.first().ok_or("Missing account")?.number_value()?);
+                    let char_id = arguments.get(1).map(Value::number_value).transpose()?;
+                    let online = state.characters().values().any(|character| {
+                        i64::from(character.account_id) == account_id && char_id.is_none_or(|id| i64::from(character.char_id) == i64::from(id))
+                    });
+                    return Ok(Value::Number(i32::from(online)));
+                }
+                if function == Function::AttachRid {
+                    let account_id = i64::from(arguments.first().ok_or("Missing account")?.number_value()?);
+                    let char_id = state.characters().values().find(|character| i64::from(character.account_id) == account_id).map_or(0, |character| character.char_id);
+                    return Ok(Value::Number(char_id as i32));
                 }
                 if function == Function::GetCharacterId {
                     let kind = arguments.first().ok_or("Missing character identifier type")?.number_value()?;
@@ -550,6 +576,7 @@ impl ScriptService {
                 let number = |index: usize| arguments.get(index).ok_or_else(|| "Missing argument".to_string())?.number_value();
                 let target_argument = match function {
                     Function::ResetLevel | Function::AddFame => Some(1),
+                    Function::Warp => Some(3),
                     Function::GetFame | Function::GetFameRank => Some(0),
                     Function::SavePoint => Some(if arguments.len() > 4 { 5 } else { 3 }),
                     Function::GetSavePoint => Some(1),
@@ -632,6 +659,31 @@ impl ScriptService {
                     }
                     Function::ResetLevel => {
                         crate::server::service::script_character_service::reset_level(server, &mut character, &arguments)
+                    }
+                    Function::Equip => {
+                        let item_id = i64::from(number(0)?);
+                        let Some(index) = character.inventory_iter().find(|(_, item)| i64::from(item.item_id) == item_id && item.equip == 0).map(|(index, _)| index) else {
+                            return Ok(Value::Number(0));
+                        };
+                        let equip = CharacterEquipItem { char_id: character.char_id, index, requested_location: None };
+                        Ok(Value::Number(i32::from(server.inventory_service().equip_item(&mut character, equip).is_some())))
+                    }
+                    Function::DelEquip => {
+                        let location = crate::server::script::item_script_handler::equipment_slot(arguments.first().ok_or("Missing equipment slot")?.string_value()?)?.as_flag();
+                        let index = character
+                            .inventory_iter()
+                            .find(|(_, item)| u64::try_from(item.equip).is_ok_and(|equip| equip & location != 0))
+                            .map(|(index, _)| index)
+                            .ok_or("No item is equipped in that slot")?;
+                        server.inventory_service().takeoff_equip_item(&mut character, index).ok_or("Equipped item could not be removed")?;
+                        let remove = CharacterRemoveItems {
+                            char_id: character.char_id,
+                            sell: false,
+                            items: vec![CharacterRemoveItem { char_id: character.char_id, index, amount: 1, price: 0 }],
+                            notify_client: true,
+                        };
+                        server.inventory_service().remove_item_from_inventory(server.runtime(), remove, &mut character)?;
+                        Ok(Value::default())
                     }
                     Function::Skill => crate::server::service::script_character_service::grant_skill(server, &mut character, &arguments),
                     Function::GetFame => crate::server::service::script_character_service::get_fame(server, &character, false),

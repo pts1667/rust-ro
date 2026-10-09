@@ -453,6 +453,61 @@ pub fn mae_swd_1_success(ctx: &Ctx) -> Script {
     mae_swd_1_success_body(ctx, Vec::new()).map(|_| ())
 }
 
+fn test_hall_staff_swd_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff(ctx, vec![Val::from(10), Val::from(245)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_4(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_4_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn test_hall_staff_swd_5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff(ctx, vec![Val::from(11), Val::from(207)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_5(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_5_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn test_hall_staff_swd_6_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff(ctx, vec![Val::from(11), Val::from(169)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_6(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_6_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn test_hall_staff_swd_7_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff2(ctx, vec![Val::from("1st"), Val::from(215), Val::from(244)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_7(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_7_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn test_hall_staff_swd_8_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff2(ctx, vec![Val::from("2nd"), Val::from(215), Val::from(205)])?;
+    ctx.call(Function::Warp, vec![Val::from("job_sword1"), Val::from(215), Val::from(205)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_8(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_8_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn test_hall_staff_swd_9_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::pre_re_jobs_1_1_swordman::f_jobswdteststaff2(ctx, vec![Val::from("3rd"), Val::from(215), Val::from(167)])?;
+    Ok(Val::from(0))
+}
+
+pub fn test_hall_staff_swd_9(ctx: &Ctx) -> Script {
+    test_hall_staff_swd_9_body(ctx, Vec::new()).map(|_| ())
+}
+
 #[derive(Clone, Copy, Debug)]
 enum S1Blank1AStep {
     Start,

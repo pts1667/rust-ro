@@ -31,12 +31,20 @@
 //!
 //! Tests run the same scripts against [`MockTransport`], so no game host is needed.
 
+pub mod constants;
 mod ctx;
 mod dialogue;
 mod flow;
+mod fx;
+mod input;
+mod instance;
 mod items;
 mod module;
+mod npc;
+mod party;
+mod player;
 mod quests;
+mod random;
 pub mod runtime;
 #[doc(hidden)]
 pub mod registry;
@@ -48,10 +56,17 @@ mod world;
 
 pub use ctx::Ctx;
 pub use flow::{Script, Stop, finish};
+pub use input::{Bound, Input};
+pub use fx::Fx;
+pub use instance::Instance;
 pub use items::Items;
+pub use party::Party;
+pub use npc::Npc;
+pub use player::Player;
 pub use quests::Quests;
 pub use script_sdk::{Entry, Function, Request, Value, VariableScope};
 pub use timers::Timers;
 pub use transport::{MockTransport, Transport, WasmTransport};
 pub use value::Val;
 pub use vars::Var;
+pub use world::Area;

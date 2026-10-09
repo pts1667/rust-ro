@@ -14858,6 +14858,261 @@ pub fn researcher_2(ctx: &Ctx) -> Script {
 }
 
 #[derive(Clone, Copy, Debug)]
+enum SneakStep {
+    Start,
+    OnTouch,
+}
+
+fn sneak_run(ctx: &Ctx, mut step: SneakStep, args: Vec<Val>) -> Result<Val, Stop> {
+    'machine: loop {
+        match step {
+            SneakStep::Start => {
+                return Err(Stop::End);
+            }
+            SneakStep::OnTouch => {
+                if (ctx.var("lhz_boss").get()?.number()? > 27 && ctx.var("lhz_boss").get()?.number()? < 35) {
+                    ctx.var("@sneaktime")
+                        .set((ctx.call(Function::GetTimeTick, vec![Val::from(0)])?.try_rem(Val::from(100))?))?;
+                    if ((ctx.var("@sneaktime").get()?.number()? > 10 && ctx.var("@sneaktime").get()?.number()? < 59)
+                        || (ctx.var("@sneaktime").get()?.number()? < -10 && ctx.var("@sneaktime").get()?.number()? > -59))
+                    {
+                        ctx.lines(args![
+                            "^3355FFAs you approach",
+                            "the corner, you can",
+                            "hear hushed whispers",
+                            "just over the wall.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Senior Guard",
+                            args!["Hey, my shift is over.", "Hurry and get the next", "guy to relieve me, will you?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Rookie Guard",
+                            args!["Already?", "Wow, time sure", "flies fast. Fine,", "wait here a bit."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFOne of the guards left",
+                            "his post, and now there",
+                            "is only one remaining",
+                            "guard monitoring this area.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Senior Guard",
+                            args![
+                                "Criminy...",
+                                "I need to go to",
+                                "the bathroom. Well,",
+                                "I'm sure nothing will",
+                                "happen while I'm gone."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFYou listen to the",
+                            "guard's footsteps as",
+                            "they grow fainter and",
+                            "fainter into the distance.^000000"
+                        ])?;
+                        ctx.next()?;
+                        'b1: {
+                            let subject1 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Sneak in now."), Val::from("Wait for another chance.")],
+                            )?);
+                            let mut matched1 = false;
+                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines(args![
+                                    "^3355FFThis is the perfect",
+                                    "opportunity to infiltrate",
+                                    "the Secret Archive! You",
+                                    "approach the door and",
+                                    "find a device where you",
+                                    "can insert Lestin's card pass.^000000"
+                                ])?;
+                                ctx.next()?;
+                                'b2: {
+                                    let subject2 =
+                                        Val::from(runtime::select_values(ctx, &[Val::from("Insert Card"), Val::from("Retreat")])?);
+                                    let mut matched2 = false;
+                                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        if !(ctx.call(Function::CountItem, vec![Val::from(7349)])?.is_true()) {
+                                            ctx.lines(args![
+                                                "^3355FFYou forgot to bring",
+                                                "the card pass that",
+                                                "you got from Lestin.",
+                                                "You need it in order",
+                                                "to open this door.^000000"
+                                            ])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        ctx.lines(args![
+                                            "^3355FFAfter inserting the",
+                                            "pass, a panel within",
+                                            "the door slides open,",
+                                            "revealing a numeric keypad.",
+                                            "You need to input the correct",
+                                            "password to open the door.^000000"
+                                        ])?;
+                                        ctx.next()?;
+                                        'j3: loop {
+                                            let (input, status) = runtime::input_number(ctx, None, None)?;
+                                            ctx.var("@sneakpass").set(input)?;
+                                            if ctx.var("@sneakpass").get()? == 738495 {
+                                                ctx.lines(args![
+                                                    "^3355FF*Beep~*",
+                                                    "You hear a pleasant",
+                                                    "sounding electronic chirp,",
+                                                    "signaling that you have input",
+                                                    "the correct password. The door",
+                                                    "automatically slides open."
+                                                ])?;
+                                                ctx.next()?;
+                                                'b4: {
+                                                    let subject4 = Val::from(runtime::select_values(
+                                                        ctx,
+                                                        &[Val::from("Enter"), Val::from("Retreat")],
+                                                    )?);
+                                                    let mut matched4 = false;
+                                                    let no_case4 =
+                                                        !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                                        matched4 = true;
+                                                    }
+                                                    if matched4 {
+                                                        ctx.lines_as(
+                                                            "Security System",
+                                                            args![
+                                                                "You have 3 minutes to",
+                                                                "search the Information Archive.",
+                                                                "When this time elapses, you",
+                                                                "will be automatically sent",
+                                                                "outside for security reasons."
+                                                            ],
+                                                        )?;
+                                                        ctx.close_window()?;
+                                                        ctx.var("lhz_boss").set(Val::from(29))?;
+                                                        ctx.call(Function::DoNpcEvent, vec![Val::from("Timer_Sneak::OnEnter")])?;
+                                                        ctx.call(
+                                                            Function::Warp,
+                                                            vec![Val::from("lhz_in01"), Val::from(177), Val::from(35)],
+                                                        )?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                                        matched4 = true;
+                                                    }
+                                                    if matched4 {
+                                                        ctx.lines(args![
+                                                            "^3355FFPerhaps now would",
+                                                            "not be the best time to",
+                                                            "enter the Secret Archive.",
+                                                            "Or at least, that's what",
+                                                            "you've decided for yourself.^000000"
+                                                        ])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                }
+                                            }
+                                            ctx.lines(args![
+                                                "^3355FF*Eeeeeee*",
+                                                "The door emits an",
+                                                "unnerving, high pitched",
+                                                "screech after you input",
+                                                "the password. You really",
+                                                "should try to input it again.^000000"
+                                            ])?;
+                                            ctx.var("@sneakerror").set((ctx.var("@sneakerror").get()? + Val::from(1)))?;
+                                            ctx.next()?;
+                                            if ctx.var("@sneakerror").get()?.number()? > 2 {
+                                                ctx.lines_as(
+                                                    "Security System",
+                                                    args![
+                                                        "*Gzzzzz*",
+                                                        "You have entered the",
+                                                        "password incorrectly",
+                                                        "3 times. Please stand by",
+                                                        "for managerial assistance."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines(args![
+                                                    "^3355FFUh oh!",
+                                                    "You better get",
+                                                    "out of here before",
+                                                    "you get caught!^000000"
+                                                ])?;
+                                                ctx.close_window()?;
+                                                ctx.call(Function::Warp, vec![Val::from("lhz_in01"), Val::from(191), Val::from(49)])?;
+                                                return Err(Stop::End);
+                                            }
+                                            continue 'j3;
+                                            break 'j3;
+                                        }
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ctx.lines(args![
+                                            "^3355FFPerhaps now would",
+                                            "not be the best time to",
+                                            "enter the Secret Archive.",
+                                            "Or at least, that's what",
+                                            "you've decided for yourself.^000000"
+                                        ])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines(args![
+                                    "^3355FFPerhaps now would",
+                                    "not be the best time to",
+                                    "enter the Secret Archive.",
+                                    "Or at least, that's what",
+                                    "you've decided for yourself.^000000"
+                                ])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Door#sneak::OnSneak")])?;
+                        return Err(Stop::End);
+                    }
+                }
+                return Ok(Val::from(0));
+            }
+        }
+    }
+}
+
+pub fn sneak(ctx: &Ctx) -> Script {
+    sneak_run(ctx, SneakStep::Start, Vec::new()).map(|_| ())
+}
+
+pub fn sneak_ontouch(ctx: &Ctx) -> Script {
+    sneak_run(ctx, SneakStep::OnTouch, Vec::new()).map(|_| ())
+}
+
+#[derive(Clone, Copy, Debug)]
 enum TimerSneakStep {
     Start,
     OnTouch,

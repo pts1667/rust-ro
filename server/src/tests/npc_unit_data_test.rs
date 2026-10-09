@@ -441,6 +441,7 @@ fn compiled_wasm_npc_reads_and_writes_unit_data_through_the_real_host_and_map_lo
             timer_context: None,
             logout_token: None,
             dialog_open: false,
+            attached: None,
             error: None,
         },
         replies: vec![],

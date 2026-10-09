@@ -11,6 +11,1087 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+fn louise_kim_designer_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.lines_as(
+        "Designer Louise Kim",
+        args![
+            "Cone shaped red Santa hat is too ordinary.",
+            "It's old fashioned.",
+            "Maybe in 1980's?!",
+            "Haha~"
+        ],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Designer Louise Kim",
+        args![
+            "If you leave it on me,",
+            "I'll change it to lastest model.",
+            "You know what I mean~!"
+        ],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Designer Louise Kim",
+        args![
+            "You know Antonio's hat,right?",
+            "Guess who made it?",
+            "As you know, Antonio is hard to catch,",
+            "that's because I blowed some power in the hat. "
+        ],
+    )?;
+    ctx.next()?;
+    ctx.lines_as(
+        "Designer Louise Kim",
+        args![
+            "If you don't like your hat,",
+            "bring it to me.",
+            "I'll change it to brand new one.",
+            "Stylish Louise's hat."
+        ],
+    )?;
+    ctx.call(Function::Emotion, vec![ctx.constant("ET_THROB")?])?;
+    ctx.next()?;
+    if ctx.call(Function::CountItem, vec![Val::from(2236)])?.number()? > 0 {
+        if Val::from(runtime::select_values(ctx, &[Val::from("Here.:It's ok.")])?) == 1 {
+            ctx.lines_as(
+                "Designer Louise Kim",
+                args![
+                    "Nice choice!!",
+                    "If I do it like this ...",
+                    "and this and...",
+                    "finally it'll turn into fantastic hat.",
+                    "But before that,I need some materials to make with."
+                ],
+            )?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("What are the materials?:So what? I don't want to know.")],
+            )?) == 1
+            {
+                ctx.lines_as(
+                    "Designer Louise Kim",
+                    args![
+                        "Well, nothing special.",
+                        "Basically, you need Santa's hat of course.",
+                        "and with a touch of my magical fingers,",
+                        "it'll just turn into very special thing.",
+                        "Well,just little bit prettier and",
+                        "little bit more practical. Haha..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Designer Louise Kim",
+                    args![
+                        "Anyway,to sum up,required materials are....",
+                        "Basically ^0000FFSanta's Hat^000000 and",
+                        " ^0000FF 1 Cactus Needle ^000000 for sewing, ",
+                        "^0000FF 10 Holy Water ^000000 for blessing, ",
+                        "^0000FF 1 Rosary ^000000 for luckiness.",
+                        "It's pretty enough to make Louise Hat."
+                    ],
+                )?;
+                ctx.next()?;
+                if ((ctx.call(Function::CountItem, vec![Val::from(952)])?.number()? > 0
+                    && ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 9)
+                    && ctx.call(Function::CountItem, vec![Val::from(2608)])?.number()? > 0)
+                {
+                    let choice = runtime::select_values(ctx, &[Val::from("Here you are.....")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "Wow~~!! So fast!!",
+                            "I like your style~.",
+                            "Ok!! If everything is ready, no need to hesitate.",
+                            "I'll show you what Designer Louise Kim's power is."
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_BEST")?])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "-She puts the hat in a bucket -",
+                        "-filled with Holy Water.-",
+                        "-She rapidly takes it out and starts mending the hat-",
+                        "-humming a tune.-"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args!["~With the number one designer, Louise Kim,~", "~you are the most blessed soul.~"],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_DELIGHT")?])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BLESSING")?])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "-Immediately, she puts Rosary in an-",
+                        "-unknown liquid and dissolves it.-",
+                        "-And with a brush,-",
+                        "-neatly coats the liquid on -",
+                        "-a thread of the hat.-"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args!["~With the number one designer, Louise Kim,~", "~you are the luckiest soul.~"],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_DELIGHT")?])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_GLORIA")?])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "-She starts sewing the hat with -",
+                        "-a Cactus Needle and a thread.-",
+                        " "
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "~This is called the Louise's miracle.~",
+                            "~The most talented disigner,~",
+                            "~L_O_U_I_S_E K_I_M~"
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_THROB")?])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BENEDICTIO")?])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "Here!! All done~~",
+                            "How do you like it?",
+                            "Isn't it so wonderful?",
+                            "Take it!! It's a gift."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "I should have called high price for it",
+                            "but as you know it's Christmas!",
+                            "It's a gift for you!",
+                            "I won't charge anything.",
+                            "Just tell many people how good it is."
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "Wherever you go,",
+                            "whatever you do,",
+                            "never take off the hat.",
+                            "You won't have a chance to buy it",
+                            "no matter how much you pay."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "Alright~Go ahead~",
+                            "Go brag yourself!",
+                            "~Who would be happier than~",
+                            "~being with Louise.~"
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_DELIGHT")?])?;
+                    ctx.call(Function::DelItem, vec![Val::from(2236), Val::from(1)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(952), Val::from(1)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(523), Val::from(10)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(2608), Val::from(1)])?;
+                    ctx.call(Function::GetItem, vec![Val::from(5136), Val::from(1)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Designer Louise Kim",
+                        args![
+                            "Come on~If you just get me the materials,",
+                            "I won't charge anything,",
+                            "Call me if you change your mind."
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_THROB")?])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            ctx.lines_as("Designer Louise Kim", args!["You'll regret!", "Think again!"])?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Designer Louise Kim",
+            args!["Ok~ whatever~", "It's not me,", "who's going to lose whose own luck."],
+        )?;
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Designer Louise Kim",
+            args![
+                "Perhaps you get the chance to acheive Santa's Hat later some time,",
+                "think about it carefully.",
+                "You can get the better designed hat,",
+                "and I can show off my talent."
+            ],
+        )?;
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+}
+
+pub fn louise_kim_designer(ctx: &Ctx) -> Script {
+    louise_kim_designer_body(ctx, Vec::new()).map(|_| ())
+}
+
+#[derive(Clone, Copy, Debug)]
+enum EnjoyEnjoyStep {
+    Start,
+    OnMyMobDead,
+    OnCommandGo,
+    OnCommandStop,
+    OnTimer3000,
+    OnTimer5000,
+    OnTimer7000,
+    OnTimer9000,
+    OnTimer11000,
+    OnTimer13000,
+    OnTimer180000,
+}
+
+fn enjoy_enjoy_run(ctx: &Ctx, mut step: EnjoyEnjoyStep, args: Vec<Val>) -> Result<Val, Stop> {
+    'machine: loop {
+        match step {
+            EnjoyEnjoyStep::Start => {
+                if !(ctx.var("christ_solo05").get()?.is_true()) {
+                    ctx.lines_as(
+                        "Enjoy",
+                        args![
+                            "Oh~~~",
+                            "It's already winter again~~!",
+                            "This chilling weather makes",
+                            "my body freeze~",
+                            "And also makes my heart freeze.",
+                            "Who said that christmas is only for lovers~",
+                            "Oh~~I'm so lonely~!!!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Enjoy",
+                        args![
+                            "Pitiless sister!!",
+                            "How can she leave me alone on a christmas day~",
+                            "'Spend your days with family on a chirstmas day'",
+                            "is our family precept",
+                            "Hm...I need to get some rest.",
+                            "I'm so nervous these days~"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Enjoy",
+                        args![
+                            "Lets make a joyful christmas for ",
+                            "lonely singles.",
+                            "Who's with me?!!",
+                            "!!!!!!!!!!!",
+                            "!!!!!!!!!!!!!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b1: {
+                        let subject1 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Wow!:Hm...I'm not interested.:I have ~")],
+                        )?);
+                        let mut matched1 = false;
+                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                            && !subject1.loosely_equals(&Val::from(2))
+                            && !subject1.loosely_equals(&Val::from(3));
+                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "Alright~~!!!",
+                                    "Let's rock and roll!!",
+                                    "Here's my plan!!",
+                                    "Let's punish those couples",
+                                    "who are so excited about christmas.",
+                                    "I just don't want to see them happy."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "To put in action,",
+                                    "we need to gather many phalanges.",
+                                    "Ok!!Bring our phalanges in every town on a way back here. ",
+                                    "Alright?Let's go!!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "Each should have one person's phone number.",
+                                    "We must keep it secret before we put in action.",
+                                    "So we must be very careful.",
+                                    "Well...",
+                                    "I know ^0000FFHappymerry^000000's phone number."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "First of all, go look for ^0000FFHappymerry^000000",
+                                    "and tell him about our plan.",
+                                    "On a way back, bring as many phalanges as you can. "
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Alright,sir!!!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "Oh,and don't forget to bring",
+                                    "5 branch of dead trees!!!",
+                                    "Must bring item to attack town~",
+                                    "hahahaha~~"
+                                ],
+                            )?;
+                            ctx.call(Function::Emotion, vec![ctx.constant("ET_KIK")?])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "Get it?!!!!",
+                                    "Let's go punish!!!",
+                                    "We are not being jealous,",
+                                    "It's just not right leading a loose life!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Let's punish!!!!!!!!!!!!!!!!!!!!!!!!!!!"],
+                            )?;
+                            ctx.var("christ_solo05").set(Val::from(1))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines_as("Enjoy", args!["If you are not with me, get away~!!", "Get out of my sight!!!!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines_as("Enjoy", args!["......"])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BLESSING")?])?;
+                            ctx.next()?;
+                            ctx.lines_as("Enjoy", args!["............."])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_INCAGIDEX")?])?;
+                            ctx.next()?;
+                            ctx.lines_as("Enjoy", args!["........................"])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_STEELBODY")?])?;
+                            ctx.next()?;
+                            ctx.lines_as("Enjoy", args!["........................", "Get lost,you devil!!!!!!"])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINASURA")?])?;
+                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
+                            ctx.var("Hp").set((ctx.var("Hp").get()?.try_div(Val::from(2))?))?;
+                            ctx.var("Hp").set((ctx.var("Hp").get()?.try_div(Val::from(2))?))?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(155), Val::from(230)])?;
+                            return Err(Stop::End);
+                        }
+                    }
+                } else {
+                    if (ctx.var("christ_solo05").get()?.number()? > 0 && ctx.var("christ_solo05").get()?.number()? < 5) {
+                        ctx.lines_as(
+                            "Enjoy",
+                            args![
+                                "Each should have one person's phone number.",
+                                "We must keep it secret before we put in action.",
+                                "So we must be very careful.",
+                                "Well...",
+                                "I know ^0000FFHappymerry^000000's phone number."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Enjoy",
+                            args![
+                                "First of all, go look for ^0000FFHappymerry^000000",
+                                "and tell him about our plan.",
+                                "On a way back, bring as many phalanges as you can."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Enjoy",
+                            args![
+                                "Oh,and don't forget to bring",
+                                "5 branch of dead trees!!!",
+                                "Let's go punish couples!!!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if ctx.var("christ_solo05").get()? == 5 {
+                            if ctx.call(Function::CountItem, vec![Val::from(604)])?.number()? > 4 {
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "Did you do as I told you to do?!!!",
+                                        "Did you bring branch of dead trees?Let me see~~!!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Enjoy", args!["Fine!!", "You are all ready!!!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    args!["Wait!!", "Where's other people??"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Enjoy", args!["What are you talking about?!", "They are already here......."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Enjoy", args!["Can't you see?!", "Please~!!!!Are you ok?!!!"])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Happymerry#happymerry02::OnCommandOn")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Christ#christ02::OnCommandOn")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Mas#mas02::OnCommandOn")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Event#event02::OnCommandOn")])?;
+                                ctx.next()?;
+                                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Oh.. Yup!!!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "Welcome!! Welcome,my phalanges!!!",
+                                        "Being a single is not a sin.",
+                                        "Why do we have to hide ourselves from ",
+                                        "their sight!",
+                                        "I hate couples!!",
+                                        "Poor single!!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "For those of who have friend who just met his/her mate,",
+                                        "or who had to turn his/her back from kissing couples!!",
+                                        "What are you waiting for!!",
+                                        "Why do we have to be the victim!!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Enjoy", args!["It's christmas season again!!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "Are we the soldiers",
+                                        "who have beaten up monsters with our bare hand.",
+                                        "Don't you remember the days?!!We have jumped down from Air ship!!",
+                                        "We are well trained singles!!Haha~!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "We don't have to wipe our tears",
+                                        "looking at party players anymore.",
+                                        "No need to envy!!",
+                                        "This christmas is for singles!! ",
+                                        "Yahoo~"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "All",
+                                    args![
+                                        "Christmas for singles!!!",
+                                        "No more envy!!No more sorrow!!No more anger!!!",
+                                        "Christmas for singles!!!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["-Enjoy takes away branches of dead trees.", "-Grabs them tight.-"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "Let's punish couples,",
+                                        "those of who leading a loose life!!",
+                                        " ",
+                                        "[All]",
+                                        "Let's punish!!!!!"
+                                    ],
+                                )?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_GO")?])?;
+                                ctx.call(
+                                    Function::Emotion,
+                                    vec![
+                                        ctx.constant("ET_GO")?,
+                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::DoNpcEvent,
+                                    vec![Val::from("Happymerry#happymerry02::OnCommandEmotion")],
+                                )?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Christ#christ02::OnCommandEmotion")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Mas#mas02::OnCommandEmotion")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Event#event02::OnCommandEmotion")])?;
+                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HITLINE2")?])?;
+                                ctx.call(Function::DelItem, vec![Val::from(604), Val::from(5)])?;
+                                ctx.var("christ_solo05").set(Val::from(6))?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Happymerry#happymerry02::OnCommandOff")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Christ#christ02::OnCommandOff")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Mas#mas02::OnCommandOff")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Event#event02::OnCommandOff")])?;
+                                ctx.close_window()?;
+                                ctx.call(
+                                    Function::MapAnnounce,
+                                    vec![
+                                        Val::from("prontera"),
+                                        ((Val::from("Single soldiers ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s sorrow spread all over the town.")),
+                                        ctx.constant("BC_MAP")?,
+                                        Val::from(6750156),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(155),
+                                        Val::from(300),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s anguish")),
+                                        Val::from(1062),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(156),
+                                        Val::from(300),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s jealousy")),
+                                        Val::from(1062),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(157),
+                                        Val::from(300),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s despair")),
+                                        Val::from(1062),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(158),
+                                        Val::from(300),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s frustration")),
+                                        Val::from(1062),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(154),
+                                        Val::from(300),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s bombing")),
+                                        Val::from(1062),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(158),
+                                        Val::from(299),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s grudge")),
+                                        Val::from(1246),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(157),
+                                        Val::from(299),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s curse")),
+                                        Val::from(1246),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(156),
+                                        Val::from(299),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s anger")),
+                                        Val::from(1246),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(155),
+                                        Val::from(299),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s grief")),
+                                        Val::from(1246),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(154),
+                                        Val::from(299),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s hatred")),
+                                        Val::from(1246),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(158),
+                                        Val::from(298),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s a bitter taste of solo")),
+                                        Val::from(1245),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(157),
+                                        Val::from(298),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s couple punisher")),
+                                        Val::from(1245),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(156),
+                                        Val::from(298),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s loneliness")),
+                                        Val::from(1245),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(155),
+                                        Val::from(298),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s sobbing")),
+                                        Val::from(1245),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(154),
+                                        Val::from(298),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s darkness")),
+                                        Val::from(1245),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(158),
+                                        Val::from(297),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s depression")),
+                                        Val::from(1244),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(157),
+                                        Val::from(297),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s estrangement")),
+                                        Val::from(1244),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(156),
+                                        Val::from(297),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s nightmare")),
+                                        Val::from(1244),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(155),
+                                        Val::from(297),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s wail")),
+                                        Val::from(1244),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(154),
+                                        Val::from(297),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s whisper")),
+                                        Val::from(1244),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(158),
+                                        Val::from(296),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s regret")),
+                                        Val::from(1588),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(157),
+                                        Val::from(296),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s shadow")),
+                                        Val::from(1588),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(156),
+                                        Val::from(296),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s couplebreaker")),
+                                        Val::from(1588),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(155),
+                                        Val::from(296),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'s sadness")),
+                                        Val::from(1588),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::Monster,
+                                    vec![
+                                        Val::from("prontera"),
+                                        Val::from(154),
+                                        Val::from(296),
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("'s symbol of brokenheart")),
+                                        Val::from(1588),
+                                        Val::from(1),
+                                        Val::from("Enjoy#enjoy::OnMyMobDead"),
+                                    ],
+                                )?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Enjoy#enjoy::OnCommandGo")])?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines_as(
+                                    "Enjoy",
+                                    args![
+                                        "There's no much time left!!!",
+                                        "No time to hesitate!!",
+                                        "Couples will enjoy their christmas day",
+                                        "so happily.",
+                                        "Are you going to leave them like that!!!!!",
+                                        "Let's go let's go!!",
+                                        "Go get ^0000FF 5 branch of dead tree^000000s!!!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        } else {
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "Hm.... ",
+                                    "It's no use just blaming oneself!",
+                                    "We lonely fellows can build our own hopeful future.",
+                                    "Let's go!!",
+                                    "Let's go phalanges!!!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Enjoy",
+                                args![
+                                    "For the day we all get happy~!!",
+                                    "Let's go for it!!!",
+                                    "Cheer up everybody!!!",
+                                    "Let's rock till you get happy~!"
+                                ],
+                            )?;
+                            ctx.var("christ_solo05").set(Val::from(0))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                }
+                step = EnjoyEnjoyStep::OnMyMobDead;
+                continue 'machine;
+            }
+            EnjoyEnjoyStep::OnMyMobDead => {
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnCommandGo => {
+                ctx.call(Function::DisableNpc, vec![Val::from("Enjoy#enjoy")])?;
+                ctx.call(Function::InitNpcTimer, vec![])?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnCommandStop => {
+                ctx.call(Function::EnableNpc, vec![Val::from("Enjoy#enjoy")])?;
+                ctx.call(
+                    Function::KillMonster,
+                    vec![Val::from("prontera"), Val::from("Enjoy#enjoy::OnMyMobDead")],
+                )?;
+                ctx.call(Function::StopNpcTimer, vec![])?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer3000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("You must refine by yourself to satisfy!!!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer5000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("It's a waste to organize party at dungeon!!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer7000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("There is a NPC flirting me!!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer9000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("I was always alone from the day I was born!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer11000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("We dig herbs even on a christmas day!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer13000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("...We are the insuperable single soldiers!!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                return Err(Stop::End);
+            }
+            EnjoyEnjoyStep::OnTimer180000 => {
+                ctx.call(
+                    Function::MapAnnounce,
+                    vec![
+                        Val::from("prontera"),
+                        Val::from("Wish every single soldiers have a merry christmas!!"),
+                        ctx.constant("BC_MAP")?,
+                        Val::from(6750156),
+                    ],
+                )?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Enjoy#enjoy::OnCommandStop")])?;
+                return Err(Stop::End);
+            }
+        }
+    }
+}
+
+pub fn enjoy_enjoy(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::Start, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_onmymobdead(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnMyMobDead, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_oncommandgo(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnCommandGo, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_oncommandstop(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnCommandStop, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer3000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer3000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer5000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer5000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer7000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer7000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer9000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer9000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer11000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer11000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer13000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer13000, Vec::new()).map(|_| ())
+}
+
+pub fn enjoy_enjoy_ontimer180000(ctx: &Ctx) -> Script {
+    enjoy_enjoy_run(ctx, EnjoyEnjoyStep::OnTimer180000, Vec::new()).map(|_| ())
+}
+
 #[derive(Clone, Copy, Debug)]
 enum HappymerryHappymerry02Step {
     Start,

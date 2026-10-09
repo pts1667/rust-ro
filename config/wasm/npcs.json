@@ -108695,10 +108695,11 @@
     "dir": 0,
     "name": "#Sneak",
     "sprite": "HIDDEN_NPC",
-    "entry_id": 12701,
     "x_size": 4,
     "y_size": 3,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "#Sneak"
   },
   {
     "map_name": "lhz_in01",
@@ -118393,6 +118394,19 @@
     "constructor_args": [],
     "module": "jobs",
     "entry": "nameless_one"
+  },
+  {
+    "map_name": "in_moc_16",
+    "x": 21,
+    "y": 165,
+    "dir": 2,
+    "name": "Standby Room#ASNTEST",
+    "sprite": "725",
+    "x_size": 0,
+    "y_size": 0,
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Standby Room#ASNTEST"
   },
   {
     "map_name": "in_moc_16",
@@ -129022,10 +129036,11 @@
     "dir": 0,
     "name": "Kienna#1st",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129034,10 +129049,11 @@
     "dir": 0,
     "name": "Kienna#2nd",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129046,10 +129062,11 @@
     "dir": 0,
     "name": "Kienna#3rd",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129058,10 +129075,11 @@
     "dir": 0,
     "name": "Kienna#4th",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129070,10 +129088,11 @@
     "dir": 0,
     "name": "Kienna#5th",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129082,10 +129101,11 @@
     "dir": 0,
     "name": "Kienna#6th",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129094,10 +129114,11 @@
     "dir": 0,
     "name": "Kienna#7th",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "prt_are01",
@@ -129106,10 +129127,11 @@
     "dir": 0,
     "name": "Kienna#8th",
     "sprite": "700",
-    "entry_id": 13687,
     "x_size": 1,
     "y_size": 1,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "quests",
+    "entry": "Kienna#1st"
   },
   {
     "map_name": "in_rogue",
@@ -133217,10 +133239,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_4",
     "sprite": "45",
-    "entry_id": 13802,
     "x_size": 1,
     "y_size": 3,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_4"
   },
   {
     "map_name": "job_sword1",
@@ -133229,10 +133252,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_5",
     "sprite": "45",
-    "entry_id": 13803,
     "x_size": 1,
     "y_size": 6,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_5"
   },
   {
     "map_name": "job_sword1",
@@ -133241,10 +133265,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_6",
     "sprite": "45",
-    "entry_id": 13804,
     "x_size": 1,
     "y_size": 6,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_6"
   },
   {
     "map_name": "job_sword1",
@@ -133253,10 +133278,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_7",
     "sprite": "45",
-    "entry_id": 13805,
     "x_size": 1,
     "y_size": 3,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_7"
   },
   {
     "map_name": "job_sword1",
@@ -133265,10 +133291,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_8",
     "sprite": "45",
-    "entry_id": 13806,
     "x_size": 1,
     "y_size": 3,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_8"
   },
   {
     "map_name": "job_sword1",
@@ -133277,10 +133304,11 @@
     "dir": 0,
     "name": "Test Hall Staff#swd_9",
     "sprite": "45",
-    "entry_id": 13807,
     "x_size": 1,
     "y_size": 3,
-    "constructor_args": []
+    "constructor_args": [],
+    "module": "jobs",
+    "entry": "Test Hall Staff#swd_9"
   },
   {
     "map_name": "job_sword1",

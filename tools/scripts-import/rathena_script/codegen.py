@@ -4,6 +4,7 @@ Everything the converter cannot lower faithfully is recorded as a blocker instea
 blockers is not emitted.
 """
 
+import dataclasses
 import pathlib
 import re
 
@@ -34,7 +35,7 @@ SDK_CALLS = {name: variant for name, variant in SDK_CALLS.items() if variant}
 
 # rathena parameters the host answers through `Request::Read`
 READABLE_PARAMETERS = {"zeny", "class", "upper", "baselevel", "joblevel", "skillpoint", "hp", "sp", "maxhp", "maxsp", "sex", "baseclass", "basejob", "weight", "maxweight"}
-WRITABLE_PARAMETERS = {"zeny"}
+WRITABLE_PARAMETERS = {"zeny", "hp"}
 
 # Dragons, Wargs and Mado Gear belong to renewal jobs: the commands do nothing and the queries answer "not mounted" on a pre-renewal server.
 # set by the host before it runs `OnPCKillEvent` and `OnPCDieEvent`, readable as character temporary variables
@@ -897,12 +898,32 @@ NEW_CALLS = {
     "setmapflag": "SetMapFlag", "getsavepoint": "GetSavePoint", "resetlvl": "ResetLevel", "pushpc": "PushPc", "areaannounce": "AreaAnnounce",
     "mercenary_get_faith": "MercenaryGetFaith", "mercenary_set_faith": "MercenarySetFaith", "unloadnpc": "UnloadNpc", "movenpc": "MoveNpc",
     "getmonsterinfo": "GetMonsterInfo", "npctalk": "NpcTalk", "cloakonnpc": "DisableNpc", "cloakoffnpc": "EnableNpc",
+    "gvgon": "GvgOn", "gvgoff": "GvgOff", "divorce": "Divorce",
+    "getguildmaster": "GetGuildMaster", "getcastlename": "GetCastleName", "getgdskilllv": "GetGuildSkillLevel", "guardian": "Guardian",
+    "flagemblem": "FlagEmblem",
+    "maprespawnguildid": "MapRespawnGuildId", "attachrid": "AttachRid", "detachrid": "DetachRid", "playbgm": "PlayBgm",
+    "misceffect": "NpcSpecialEffect", "delequip": "DelEquip", "equip": "Equip", "setitemscript": "SetItemScript",
+    "requestguildinfo": "RequestGuildInfo", "wedding": "Wedding", "warpchar": "Warp", "isloggedin": "IsLoggedIn", "marriage": "Marriage",
 }
 for _name in ("getcastledata", "setcastledata"):
     SDK_CALLS.pop(_name, None)
 
 STRING_FUNCTIONS = {"insertchar": "insertchar", "charisalpha": "charisalpha", "getstrlen": "strlen", "substr": "substr", "charat": "charat", "atoi": "atoi", "compare": "compare",
                     "strtolower": "strtolower", "strtoupper": "strtoupper", "countstr": "countstr", "delchar": "delchar"}
+
+
+def fold_is_function(node, world):
+    """`if (is_function("X"))` is decided at conversion time: the converted sources either define X or they do not."""
+    if isinstance(node, list):
+        return [fold_is_function(item, world) for item in node]
+    if isinstance(node, If) and isinstance(node.condition, Call) and node.condition.name.lower() == "is_function" and node.condition.args and isinstance(node.condition.args[0], Str):
+        defined = node.condition.args[0].value.lower() in world.functions
+        branch = node.then if defined else node.otherwise
+        return fold_is_function(branch, world) if branch is not None else Block([])
+    if dataclasses.is_dataclass(node) and not isinstance(node, type):
+        for field in dataclasses.fields(node):
+            setattr(node, field.name, fold_is_function(getattr(node, field.name), world))
+    return node
 
 
 def expand_local_functions(statements):
@@ -1042,7 +1063,7 @@ def label_only_jumped_to_within(name, root, region):
 def generate_function(world, name, body, entry_labels=()):
     """Returns (rust source, blockers, labels). `body` is a statement list."""
     generator = BodyGenerator(world, name)
-    statements, generator.local_functions = expand_local_functions(list(body))
+    statements, generator.local_functions = expand_local_functions(fold_is_function(list(body), world))
     statements = wrap_backward_labels(hoist_nested_labels(statements, [0]))
     generator.array_locals = find_array_locals(statements)
     labels = [statement.name for statement in statements if isinstance(statement, Label)]

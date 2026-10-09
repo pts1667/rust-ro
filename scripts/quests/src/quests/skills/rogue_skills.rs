@@ -2007,6 +2007,23 @@ pub fn s_1stmove_ondisable(ctx: &Ctx) -> Script {
     s_1stmove_run(ctx, S1stmoveStep::OnDisable, Vec::new()).map(|_| ())
 }
 
+fn kienna_1st_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    return Err(Stop::End);
+}
+
+pub fn kienna_1st(ctx: &Ctx) -> Script {
+    kienna_1st_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn kienna_1st_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    shared::quests_skills_rogue_skills::f_kienna(ctx, vec![ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?])?;
+    return Err(Stop::End);
+}
+
+pub fn kienna_1st_ontouch(ctx: &Ctx) -> Script {
+    kienna_1st_ontouch_body(ctx, Vec::new()).map(|_| ())
+}
+
 #[derive(Clone, Copy, Debug)]
 enum WaitingRoomRogue10Step {
     Start,

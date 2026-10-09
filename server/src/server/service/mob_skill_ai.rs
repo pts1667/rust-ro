@@ -548,6 +548,7 @@ impl MapInstanceService {
                 for _ in 0..amount {
                     let class = classes[fastrand::usize(..classes.len())];
                     let request = ScriptSpawn {
+                        is_guardian: false,
                         mob_id: class,
                         x: i32::from(x),
                         y: i32::from(y),

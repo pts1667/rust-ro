@@ -102,3 +102,111 @@ pub fn linkflag(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.close_window()?;
     return Err(Stop::End);
 }
+
+pub fn returnflag(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    let mut l_gid = Val::from(0);
+    let mut l_i: Vec<Val> = Vec::new();
+    let mut l_map_s = Val::from("");
+    let mut l_str_s = Val::from("");
+    l_map_s = runtime::arg(&args, 0, Val::from(0));
+    l_str_s = (if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, &Val::from("aru")).is_true() {
+        Val::from("Arunafeltz")
+    } else {
+        Val::from("Schwarzwald")
+    });
+    l_gid = ctx.call(Function::GetCastleData, vec![l_map_s.clone(), ctx.constant("CD_GUILD_ID")?])?;
+    if !(l_gid.clone().is_true()) {
+        ctx.lines(args![
+            ((Val::from("[ ") + l_str_s.clone()) + Val::from(" Royal Edict ]")),
+            "The Holy Kingdom of",
+            (l_str_s.clone() + Val::from(" declares that")),
+            "one has yet to claim lordship",
+            "over this stronghold. The one",
+            "that breaks the Emperium will",
+            "be recognized as its new owner."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    if (ctx
+        .call(Function::GetCharacterId, vec![Val::from(2)])?
+        .loosely_equals(&l_gid.clone())
+        && runtime::arg(&args, 1, Val::from(0)).is_true())
+    {
+        ctx.lines_as(
+            " Ringing Voice ",
+            args!["Courageous one,", "do you wish to return", "to your stronghold?"],
+        )?;
+        ctx.next()?;
+        if (Val::from(runtime::select_values(ctx, &[Val::from("Return to the Stronghold:Cancel")])?) == 1
+            && ctx
+                .call(Function::GetCharacterId, vec![Val::from(2)])?
+                .loosely_equals(&ctx.call(Function::GetCastleData, vec![l_map_s.clone(), ctx.constant("CD_GUILD_ID")?])?))
+        {
+            if runtime::compare(&l_map_s.clone(), &Val::from("arug")).is_true() {
+                if l_map_s.clone() == "arug_cas01" {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(67), false);
+                    runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(193), false);
+                } else {
+                    if l_map_s.clone() == "arug_cas02" {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(43), false);
+                        runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(256), false);
+                    } else {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(121), false);
+                        runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(318), false);
+                    }
+                }
+            } else {
+                if l_map_s.clone() == "schg_cas02" {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(136), false);
+                    runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(188), false);
+                } else {
+                    if l_map_s.clone() == "schg_cas03" {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(308), false);
+                        runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(202), false);
+                    } else {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(120), false);
+                        runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(290), false);
+                    }
+                }
+            }
+            ctx.call(
+                Function::Warp,
+                vec![
+                    l_map_s.clone(),
+                    runtime::local_get(&l_i, &Val::from(0), false),
+                    runtime::local_get(&l_i, &Val::from(1), false),
+                ],
+            )?;
+        }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    }
+    ctx.lines(args![
+        ((Val::from("[ ") + l_str_s.clone()) + Val::from(" Royal Edict ]")),
+        "The Holy Kingdom of",
+        (l_str_s.clone() + Val::from(" decrees that")),
+        "this stronghold is owned",
+        ((Val::from("by the ^FF0000") + ctx.call(Function::GetGuildInfo, vec![l_gid.clone(), Val::from(0)])?)
+            + Val::from("^000000 Guild."))
+    ])?;
+    ctx.next()?;
+    ctx.lines(args![
+        ((Val::from("[ ") + l_str_s.clone()) + Val::from(" Royal Edict ]")),
+        ((Val::from("^FF0000") + ctx.call(Function::GetGuildMaster, vec![l_gid.clone()])?) + Val::from("^000000 is")),
+        ((Val::from("Guild Master of ^FF0000") + ctx.call(Function::GetGuildInfo, vec![l_gid.clone(), Val::from(0)])?)
+            + Val::from("^000000.")),
+        "Any that object must claim this",
+        "stronghold through strength of",
+        "steel and magic during the",
+        "appointed Guild Siege times."
+    ])?;
+    ctx.close_window()?;
+    return Err(Stop::End);
+}

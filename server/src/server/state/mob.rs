@@ -7,6 +7,13 @@ use movement::position::Position;
 use crate::server::model::map_item::{MapItem, MapItemSnapshot, MapItemType, ToMapItem, ToMapItemSnapshot};
 use crate::server::model::movement::{Movable, Movement};
 
+pub(crate) const EMPERIUM_MOB_ID: i16 = 1288;
+
+/// rathena's clone class range (`MOB_CLONE_START..=MOB_CLONE_END`).
+pub(crate) fn is_clone_class(mob_id: i16) -> bool {
+    (3999..=20020).contains(&i32::from(mob_id))
+}
+
 /// Mob action state machine
 #[derive(Clone, Debug)]
 pub enum MobAction {
@@ -156,6 +163,8 @@ pub struct Mob {
     pub looted: bool,
     pub friendly_guilds: Vec<u32>,
     pub castle_owner: u32,
+    /// Castle guardian or script guardian; `maprespawnguildid` leaves these standing.
+    pub guardian: bool,
     pub trickcasting_until: u128,
     pub trickcasting_speed_lost: u16,
     pub bg_id: u32,
@@ -640,6 +649,7 @@ impl Mob {
             looted: false,
             friendly_guilds: Vec::new(),
             castle_owner: 0,
+            guardian: false,
             trickcasting_until: 0,
             trickcasting_speed_lost: 0,
             bg_id: 0,

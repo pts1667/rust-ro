@@ -42978,7 +42978,10 @@
     "module": "quests",
     "entry": "Mysterious Woman::OnInit"
   },
-  "#Sneak::OnTouch": 103636,
+  "#Sneak::OnTouch": {
+    "module": "quests",
+    "entry": "#Sneak::OnTouch_"
+  },
   "Timer_Sneak::OnTouch": {
     "module": "quests",
     "entry": "Timer_Sneak::OnTouch_"
@@ -45758,6 +45761,18 @@
   "nameless_one::OnTouch": {
     "module": "jobs",
     "entry": "nameless_one::OnTouch_"
+  },
+  "Standby Room#ASNTEST::OnInit": {
+    "module": "jobs",
+    "entry": "Standby Room#ASNTEST::OnInit"
+  },
+  "Standby Room#ASNTEST::OnStartArena": {
+    "module": "jobs",
+    "entry": "Standby Room#ASNTEST::OnStartArena"
+  },
+  "Standby Room#ASNTEST::OnStart": {
+    "module": "jobs",
+    "entry": "Standby Room#ASNTEST::OnStart"
   },
   "Test Guide#ASN::OnTouch": {
     "module": "jobs",
@@ -50307,14 +50322,38 @@
     "module": "quests",
     "entry": "#1stmove::OnDisable"
   },
-  "Kienna#1st::OnTouch": 104842,
-  "Kienna#2nd::OnTouch": 104842,
-  "Kienna#3rd::OnTouch": 104842,
-  "Kienna#4th::OnTouch": 104842,
-  "Kienna#5th::OnTouch": 104842,
-  "Kienna#6th::OnTouch": 104842,
-  "Kienna#7th::OnTouch": 104842,
-  "Kienna#8th::OnTouch": 104842,
+  "Kienna#1st::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#2nd::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#3rd::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#4th::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#5th::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#6th::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#7th::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
+  "Kienna#8th::OnTouch": {
+    "module": "quests",
+    "entry": "Kienna#1st::OnTouch_"
+  },
   "Waiting Room#rogue10::OnEnable": {
     "module": "quests",
     "entry": "Waiting Room#rogue10::OnEnable"
@@ -50515,7 +50554,7 @@
     "module": "quests",
     "entry": "#arm1::OnTouch"
   },
-  "Dorian::OnTouch": 104846,
+  "Dorian::OnTouch": 104849,
   "#Piano3::OnTouch": {
     "module": "quests",
     "entry": "Piano3::OnTouch_"
@@ -51252,5 +51291,5 @@
     "module": "jobs",
     "entry": "Monster Summon#cr5::OnEnd"
   },
-  "Knight De Thomas::OnTouch": 104846
+  "Knight De Thomas::OnTouch": 104849
 }

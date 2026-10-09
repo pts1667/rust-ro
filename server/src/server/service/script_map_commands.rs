@@ -28,8 +28,12 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::EnableNpc
             | Function::DisableNpc
             | Function::SetCell
+            | Function::MapRespawnGuildId
     )
 }
+
+/// rathena's `guild_maprespawn_clones: no`: `maprespawnguildid` with flag 4 keeps clones standing.
+const RESPAWN_REMOVES_CLONES: bool = false;
 
 struct Area {
     map: String,
@@ -223,6 +227,37 @@ impl Server {
                 let instance = resolved.unwrap_or_else(|| npc.filter(|npc| normalize_map(&npc.map) == map).map_or(0, |npc| npc.instance));
                 let map_instance = state.get_map_instance(&map, instance).ok_or("Cell map is unavailable")?;
                 map_instance.add_to_next_tick(MapEvent::ScriptMapCommand(ScriptMapCommand::SetCell { area, cell, enabled: number(6)? != 0 }));
+                Ok(Value::default())
+            }
+            Function::MapRespawnGuildId => {
+                let (map, resolved) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
+                let guild_id = i64::from(number(1)?);
+                let flags = number(2)?;
+                let instance = resolved.unwrap_or(0);
+                let warps: Vec<ScriptWarp> = state
+                    .characters()
+                    .values()
+                    .filter(|character| normalize_map(character.current_map_name()) == map && character.current_map_instance() == instance)
+                    .filter(|character| {
+                        let member = i64::from(character.game_systems.guild_id) == guild_id;
+                        (member && flags & 1 != 0) || (!member && flags & 2 != 0) || (character.game_systems.guild_id == 0 && flags & 2 != 0)
+                    })
+                    .map(|character| ScriptWarp {
+                        char_id: character.char_id,
+                        map: normalize_map(&character.save_map),
+                        x: character.save_x,
+                        y: character.save_y,
+                        destination_instance: None,
+                    })
+                    .collect();
+                for warp in warps {
+                    self.add_to_next_tick(GameEvent::ScriptWarp(warp));
+                }
+                if flags & 4 != 0 {
+                    if let Some(map_instance) = state.get_map_instance(&map, instance) {
+                        map_instance.add_to_next_tick(MapEvent::ScriptMobCommand(ScriptMobCommand::RemoveRespawnable { remove_clones: RESPAWN_REMOVES_CLONES }));
+                    }
+                }
                 Ok(Value::default())
             }
             Function::MapWarp | Function::AreaWarp | Function::AreaPercentHeal => {

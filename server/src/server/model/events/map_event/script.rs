@@ -13,6 +13,8 @@ pub struct ScriptSpawn {
     pub ai: Option<u16>,
     pub owner_id: u32,
     pub guardian: Option<GuardianSpawn>,
+    /// Spawned by `guardian`: `maprespawnguildid` leaves it standing.
+    pub is_guardian: bool,
     pub bg_id: u32,
     pub max_hp: Option<u32>,
     pub lifetime_ms: Option<u32>,
@@ -25,6 +27,8 @@ pub struct ScriptSpawn {
 #[derive(Debug, PartialEq, Clone)]
 pub enum ScriptMobCommand {
     Kill { event_entry: Option<u32> },
+    /// Removes script monsters the way `maprespawnguildid` does, sparing guardians, Emperium and clones unless asked.
+    RemoveRespawnable { remove_clones: bool },
     SetDamageImmunity { event_entry: u32, immune: bool },
     SetTeam { mob_id: u32, bg_id: u32 },
 }
@@ -50,6 +54,11 @@ pub enum ScriptMapCommand {
     },
     FlagEmblem {
         castle_map: String,
+        guild_id: u32,
+        version: u16,
+    },
+    NpcEmblem {
+        npc_id: u32,
         guild_id: u32,
         version: u16,
     },

@@ -1479,6 +1479,82 @@ pub fn nameless_one_ontouch(ctx: &Ctx) -> Script {
     nameless_one_run(ctx, NamelessOneStep::OnTouch, Vec::new()).map(|_| ())
 }
 
+fn standby_room_asntest_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    return Err(Stop::End);
+}
+
+pub fn standby_room_asntest(ctx: &Ctx) -> Script {
+    standby_room_asntest_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn standby_room_asntest_oninit_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.call(Function::DisableNpc, vec![Val::from("Standby Room#ASNTEST")])?;
+    ctx.call(
+        Function::WaitingRoom,
+        vec![
+            Val::from("Standby Room"),
+            Val::from(10),
+            Val::from("Standby Room#ASNTEST::OnStartArena"),
+            Val::from(1),
+        ],
+    )?;
+    ctx.call(Function::EnableWaitingRoomEvent, vec![])?;
+    return Err(Stop::End);
+}
+
+pub fn standby_room_asntest_oninit(ctx: &Ctx) -> Script {
+    standby_room_asntest_oninit_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn standby_room_asntest_onstartarena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.call(
+        Function::WarpWaitingPc,
+        vec![Val::from("in_moc_16"), Val::from(66), Val::from(151)],
+    )?;
+    ctx.call(
+        Function::AttachRid,
+        vec![ctx.var("$@warpwaitingpc").get_at(runtime::index(&Val::from(0))?)?],
+    )?;
+    if ctx.var("assin_q2").get()?.number()? < 5 {
+        ctx.call(
+            Function::Warp,
+            vec![
+                Val::from("in_moc_16"),
+                Val::from(20),
+                Val::from(145),
+                ctx.call(Function::GetCharacterId, vec![Val::from(0)])?,
+            ],
+        )?;
+        return Err(Stop::End);
+    }
+    ctx.call(Function::DoNpcEvent, vec![Val::from("Beholder#ASNTEST::OnEnable")])?;
+    ctx.call(Function::DoNpcEvent, vec![Val::from("Keeper of the Door#ASN::OnDisable")])?;
+    ctx.call(
+        Function::SetVariableOfNpc,
+        vec![
+            Val::from(".disabletraps"),
+            Val::from("Beholder#ASNTEST"),
+            Val::from(0),
+            Val::from(0),
+        ],
+    )?;
+    ctx.call(Function::DisableWaitingRoomEvent, vec![])?;
+    return Err(Stop::End);
+}
+
+pub fn standby_room_asntest_onstartarena(ctx: &Ctx) -> Script {
+    standby_room_asntest_onstartarena_body(ctx, Vec::new()).map(|_| ())
+}
+
+fn standby_room_asntest_onstart_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
+    ctx.call(Function::EnableWaitingRoomEvent, vec![])?;
+    return Err(Stop::End);
+}
+
+pub fn standby_room_asntest_onstart(ctx: &Ctx) -> Script {
+    standby_room_asntest_onstart_body(ctx, Vec::new()).map(|_| ())
+}
+
 fn test_guide_asn_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     return Err(Stop::End);
 }

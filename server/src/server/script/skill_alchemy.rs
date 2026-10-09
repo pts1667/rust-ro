@@ -186,6 +186,7 @@ impl ScriptSkillService {
         };
         let instance = state.get_map_instance_from_character(caster).ok_or("Map instance is unavailable")?;
         instance.add_to_next_tick(MapEvent::ScriptSpawn(ScriptSpawn {
+            is_guardian: false,
             mob_id: mob_id as i32,
             x: i32::from(x),
             y: i32::from(y),

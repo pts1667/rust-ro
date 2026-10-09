@@ -815,7 +815,7 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104818 => npc_call(npc_13672(ctx, 1, vec![])),
+        104821 => npc_call(npc_13672(ctx, 1, vec![])),
         _ => None,
     }
 }

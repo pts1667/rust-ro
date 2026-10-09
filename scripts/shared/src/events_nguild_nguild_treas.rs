@@ -11,6 +11,66 @@
 
 use script_sdk_2::{Ctx, Function, Script, Stop, Val, args, runtime};
 
+pub fn f_gldtreas(ctx: &Ctx, mut args: Vec<Val>) -> Result<Val, Stop> {
+    let mut l_i = Val::from(0);
+    let mut l_map_s = Val::from("");
+    l_map_s = runtime::arg(&args, 0, Val::from(0));
+    if runtime::arg(&args, 10, Val::from(0)) != 1 {
+        ctx.call(Function::SetCastleData, vec![l_map_s.clone(), Val::from(4), Val::from(0)])?;
+        ctx.call(Function::SetCastleData, vec![l_map_s.clone(), Val::from(5), Val::from(0)])?;
+        if (ctx.call(Function::GetCastleData, vec![l_map_s.clone(), Val::from(2)])?.number()? > 100
+            || ctx.call(Function::GetCastleData, vec![l_map_s.clone(), Val::from(1)])? == 0)
+        {
+            return Ok(Val::from(0));
+        }
+        if runtime::compare(&l_map_s.clone(), &Val::from("nguild")).is_true() {
+            let index = 2;
+            let value = Val::from(1);
+            runtime::set_arg(&mut args, index, value)?;
+        } else {
+            let index = 2;
+            let value = ((ctx
+                .call(Function::GetCastleData, vec![l_map_s.clone(), Val::from(2)])?
+                .try_div(Val::from(5))?)
+                + Val::from(4));
+            runtime::set_arg(&mut args, index, value)?;
+        }
+        if runtime::arg(&args, 2, Val::from(0)).number()? <= 0 {
+            return Ok(Val::from(0));
+        }
+        let index = 3;
+        let value = runtime::arg(&args, 2, Val::from(0));
+        runtime::set_arg(&mut args, index, value)?;
+    }
+    l_i = Val::from(1);
+    'l1: loop {
+        if !(runtime::op(&l_i.clone(), "<=", &runtime::arg(&args, 3, Val::from(0)))?.is_true()) {
+            break 'l1;
+        }
+        'b1: {
+            let index = 4;
+            let value = (runtime::arg(&args, 5, Val::from(0)) + ((l_i.clone() + Val::from(1)).try_rem(Val::from(2))?));
+            runtime::set_arg(&mut args, index, value)?;
+            ctx.call(
+                Function::AreaMonster,
+                vec![
+                    l_map_s.clone(),
+                    runtime::arg(&args, 6, Val::from(0)),
+                    runtime::arg(&args, 7, Val::from(0)),
+                    runtime::arg(&args, 8, Val::from(0)),
+                    runtime::arg(&args, 9, Val::from(0)),
+                    Val::from("Treasure Chest"),
+                    runtime::arg(&args, 4, Val::from(0)),
+                    Val::from(1),
+                    ((Val::from("Treasure_") + runtime::arg(&args, 1, Val::from(0))) + Val::from("::OnDied")),
+                ],
+            )?;
+        }
+        l_i = (l_i.clone() + Val::from(1));
+    }
+    return Ok(Val::from(0));
+}
+
 pub fn f_gldtreassw(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines(args![" ", "There's a small lever. Will you pull it?"])?;
     ctx.next()?;

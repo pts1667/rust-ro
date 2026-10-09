@@ -41,7 +41,7 @@ use crate::server::service::script_service::ScriptService;
 use crate::server::service::status_effect_service::StatusEffectService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::map_instance::MapInstanceState;
-use crate::server::state::mob::{Mob, MobMovement};
+use crate::server::state::mob::{EMPERIUM_MOB_ID, Mob, MobMovement, is_clone_class};
 use crate::util::tick::{delayed_tick, get_tick, get_tick_client};
 
 #[path = "map_pet_capture.rs"]
@@ -756,6 +756,7 @@ impl MapInstanceService {
                     status.set_hp(max_hp);
                 }
             }
+            mob.guardian = request.is_guardian || request.guardian.is_some();
             if let Some(guardian) = &request.guardian {
                 Self::apply_castle_strength(&mut mob, guardian);
             }
@@ -1687,6 +1688,17 @@ impl MapInstanceService {
                     self.remove_mob_silently(state, id);
                 }
             }
+            ScriptMobCommand::RemoveRespawnable { remove_clones } => {
+                let doomed: Vec<u32> = state
+                    .mobs()
+                    .values()
+                    .filter(|mob| mob.is_present() && !mob.guardian && mob.mob_id != EMPERIUM_MOB_ID && (remove_clones || !is_clone_class(mob.mob_id)))
+                    .map(|mob| mob.id)
+                    .collect();
+                for id in doomed {
+                    self.remove_mob_silently(state, id);
+                }
+            }
             ScriptMobCommand::SetTeam { mob_id, bg_id } => {
                 if let Some(mob) = state.mobs_mut().get_mut(&mob_id) {
                     mob.bg_id = bg_id;
@@ -1760,6 +1772,14 @@ impl MapInstanceService {
                     if !npc.hidden {
                         self.refresh_npc(state, &npc);
                     }
+                }
+            }
+            ScriptMapCommand::NpcEmblem { npc_id, guild_id, version } => {
+                let Some(npc) = state.script_skill_state.npcs.get_mut(&npc_id) else { return };
+                npc.emblem = (guild_id, version);
+                let npc = npc.clone();
+                if !npc.hidden {
+                    self.refresh_npc(state, &npc);
                 }
             }
             ScriptMapCommand::SetCell { area, cell, enabled } => {

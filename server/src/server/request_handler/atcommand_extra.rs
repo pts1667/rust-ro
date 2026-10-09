@@ -305,6 +305,7 @@ fn monster(state: &mut ServerState, char_id: u32, args: &[&str]) -> Option<Vec<S
     let instance = state.get_map_instance_from_character(character)?;
     let (x, y) = (i32::from(character.x()), i32::from(character.y()));
     instance.add_to_next_tick(MapEvent::ScriptSpawn(ScriptSpawn {
+        is_guardian: false,
         mob_id: model.id,
         x: x - SPAWN_SPREAD,
         y: y - SPAWN_SPREAD,

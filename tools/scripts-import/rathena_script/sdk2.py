@@ -11,11 +11,11 @@ host requests in the same order.
 
 import re
 
-from .codegen import (EVENT_VARIABLES, NEW_CALLS, READABLE_PARAMETERS, RENEWAL_MOUNT_COMMANDS, RENEWAL_MOUNT_QUERIES, RENEWAL_OPTIONS, SDK_CALLS,
+from .codegen import (EVENT_VARIABLES, NEW_CALLS, fold_is_function, READABLE_PARAMETERS, RENEWAL_MOUNT_COMMANDS, RENEWAL_MOUNT_QUERIES, RENEWAL_OPTIONS, SDK_CALLS,
                       SDK_FUNCTIONS, STATUS_CALLS, STORED_SCOPES, WRITABLE_PARAMETERS, expand_local_functions, find_array_locals,
-                      hoist_nested_labels, local_identifier, rust_string, walk, wrap32)
-from .parser import (Assign, Binary, Block, Break, Call, Case, Command, Continue, DoWhile, ExprStatement, For, FunctionDefinition, Goto, If,
-                     IncDec, Index, Label, Menu, Name, Num, Return, Str, Switch, Ternary, Unary, While)
+                      hoist_nested_labels, local_identifier, rust_string, walk, wrap32, wrap_backward_labels)
+from .parser import (Assign, BackLoop, Binary, Block, Break, Call, Case, Command, Continue, DoWhile, ExprStatement, For, FunctionDefinition, Goto,
+                     If, IncDec, Index, Label, Menu, Name, Num, Return, Str, Switch, Ternary, Unary, While)
 
 COMPARISONS = ("==", "!=", "<", "<=", ">", ">=")
 ARITHMETIC_METHODS = {"-": "try_sub", "*": "try_mul", "/": "try_div", "%": "try_rem"}
@@ -112,6 +112,7 @@ class Emitter:
         self.array_locals = set()
         self.local_functions = {}  # lower-case name -> label spelling
         self.targets = []  # (kind, id) for break and continue
+        self.back_targets = {}  # label -> loop id of the `BackLoop` being emitted
         self.counter = 0
 
     # ---- output
@@ -528,6 +529,8 @@ class Emitter:
             self.emit(f"return Ok({self.value(node.value) if node.value else 'Val::from(0)'});")
         elif isinstance(node, Goto):
             self.goto(node.label)
+        elif isinstance(node, BackLoop):
+            self.back_loop(node)
         elif isinstance(node, Label):
             self.block(f"construct:label {node.name} inside a block")
         elif isinstance(node, Menu):
@@ -541,7 +544,21 @@ class Emitter:
         else:
             self.block(f"construct:statement {type(node).__name__}")
 
+    def back_loop(self, node):
+        identifier = self.fresh()
+        self.emit(f"'j{identifier}: loop {{")
+        self.back_targets[node.name] = identifier
+        self.depth += 1
+        self.statements(node.body)
+        self.emit(f"break 'j{identifier};")
+        self.depth -= 1
+        self.emit("}")
+        del self.back_targets[node.name]
+
     def goto(self, label):
+        if label in self.back_targets:
+            self.emit(f"continue 'j{self.back_targets[label]};")
+            return
         if not self.known_label(label):
             self.block(f"construct:goto {label}")
             return
@@ -656,6 +673,15 @@ class Emitter:
             if op != "=":
                 value = Binary(op[:-1], target, value)
             self.setd(target.args[0], value)
+            return
+        if isinstance(target, Call) and target.name.lower() == "getarg" and len(target.args) == 1:
+            if op != "=":
+                value = Binary(op[:-1], target, value)
+            index, rendered = self.number(target.args[0]), self.value(value)
+            # Read the index and value before `args` is borrowed mutably
+            self.emit(f"let index = {index};")
+            self.emit(f"let value = {rendered};")
+            self.emit("runtime::set_arg(&mut args, index, value)?;")
             return
         if isinstance(target, Call):
             parts = self.npc_variable_parts(target.args) if target.name.lower() == "getvariableofnpc" else None
@@ -901,6 +927,19 @@ class Emitter:
         return [line.replace(LOCALS_REF, f"[{refs}]").replace(LOCALS_MUT, f"[{muts}]") for line in lines]
 
 
+def writes_arguments(statements):
+    """Whether a body sets an argument with `set getarg(n), ..` or `getarg(n)++`, which needs `args` to be mutable."""
+    for node in walk(statements):
+        expression = node.expression if isinstance(node, ExprStatement) else node
+        if isinstance(expression, (Assign, IncDec)) and isinstance(expression.target, Call) and expression.target.name.lower() == "getarg":
+            return True
+    return False
+
+
+def args_parameter(statements):
+    return ("mut " if writes_arguments(statements) else "") + "args: Vec<Val>"
+
+
 def needs_machine(statements, labels):
     """Whether the body is a state machine: a label other than an event, a jump, a callsub or a local function, or a segment
     that falls into the next label. Such a body cannot be split into one function per event."""
@@ -948,15 +987,15 @@ class Lowered:
         self.step_type = step_type
 
 
-def prepare(body):
-    statements, local_functions = expand_local_functions(list(body))
-    return hoist_nested_labels(statements, [0]), local_functions
+def prepare(body, world):
+    statements, local_functions = expand_local_functions(fold_is_function(list(body), world))
+    return wrap_backward_labels(hoist_nested_labels(statements, [0])), local_functions
 
 
 def lower_script(script, world, base):
     """Lowers an NPC script whose functions are named from `base`. Raises `Unsupported` with the first construct it cannot translate."""
     source = list(script.body)
-    statements, local_functions = prepare(source)
+    statements, local_functions = prepare(source, world)
     labels = [node for node in statements if isinstance(node, Label)]
     machine = needs_machine(statements, labels) or bool(local_functions) or falls_through(statements)
     if not machine:
@@ -966,9 +1005,9 @@ def lower_script(script, world, base):
 
 def lower_function(definition, world, base):
     """Lowers a `function script` whose Rust function is named `base`. It takes its arguments as `args` and returns a value."""
-    statements, local_functions = prepare(list(definition.body))
+    statements, local_functions = prepare(list(definition.body), world)
     labels = [node for node in statements if isinstance(node, Label)]
-    if not needs_machine(statements, labels) and not local_functions:
+    if not needs_machine(statements, labels) and not local_functions and not labels:
         emitter = Emitter(world, base, None, machine=False)
         emitter.depth = 1
         emitter.array_locals = find_array_locals(statements)
@@ -976,7 +1015,7 @@ def lower_function(definition, world, base):
         if statements and not terminal(statements[-1]):
             emitter.emit("Ok(Val::from(0))")
         check(emitter)
-        text = f"pub fn {base}(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {{\n" + "\n".join(emitter.declarations() + emitter.substitute(emitter.lines)) + "\n}"
+        text = f"pub fn {base}(ctx: &Ctx, {args_parameter(statements)}) -> Result<Val, Stop> {{\n" + "\n".join(emitter.declarations() + emitter.substitute(emitter.lines)) + "\n}"
         return Lowered(base, [text])
     return lower_machine(statements, local_functions, world, base, npc=False)
 
@@ -998,7 +1037,7 @@ def lower_segments(statements, world, base):
         if not code or not terminal(code[-1]):
             emitter.emit("Ok(Val::from(0))")
         check(emitter)
-        items.append(f"fn {name}_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {{\n" + "\n".join(emitter.declarations() + emitter.substitute(emitter.lines)) + "\n}")
+        items.append(f"fn {name}_body(ctx: &Ctx, {args_parameter(code)}) -> Result<Val, Stop> {{\n" + "\n".join(emitter.declarations() + emitter.substitute(emitter.lines)) + "\n}")
         items.append(f"pub fn {name}(ctx: &Ctx) -> Script {{\n    {name}_body(ctx, Vec::new()).map(|_| ())\n}}")
         if label is not None:
             events.append((label, name))
@@ -1057,7 +1096,7 @@ def lower_machine(statements, local_functions, world, base, npc):
     enum_lines = "".join("    " + variant + ",\n" for variant in variants)
     enum_text = "#[derive(Clone, Copy, Debug)]\nenum " + step_type + " {\n" + enum_lines + "}"
     run_text = (
-        "fn " + base + "_run(ctx: &Ctx, mut step: " + step_type + ", args: Vec<Val>) -> Result<Val, Stop> {\n"
+        "fn " + base + "_run(ctx: &Ctx, mut step: " + step_type + ", " + args_parameter(statements) + ") -> Result<Val, Stop> {\n"
         + "\n".join(emitter.declarations())
         + "\n    'machine: loop {\n        match step {\n"
         + "\n".join(arm_texts)

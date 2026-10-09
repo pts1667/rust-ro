@@ -84,11 +84,11 @@ pub fn run_npc(ctx: &Context, id: u32) -> Option<Result<(), String>> {
 
 pub fn run_event(ctx: &Context, id: u32) -> Option<Result<(), String>> {
     match id {
-        104893 => npc_call(npc_13814(ctx, 1, vec![])),
-        104894 => npc_call(npc_13815(ctx, 1, vec![])),
-        104895 => npc_call(npc_13815(ctx, 2, vec![])),
-        104896 => npc_call(npc_13815(ctx, 3, vec![])),
-        104897 => npc_call(npc_13815(ctx, 4, vec![])),
+        104896 => npc_call(npc_13814(ctx, 1, vec![])),
+        104897 => npc_call(npc_13815(ctx, 1, vec![])),
+        104898 => npc_call(npc_13815(ctx, 2, vec![])),
+        104899 => npc_call(npc_13815(ctx, 3, vec![])),
+        104900 => npc_call(npc_13815(ctx, 4, vec![])),
         _ => None,
     }
 }

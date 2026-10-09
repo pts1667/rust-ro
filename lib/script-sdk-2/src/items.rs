@@ -25,7 +25,27 @@ impl Items<'_, '_> {
         self.ctx.call(Function::GetItem, args![item, amount]).map(|_| ())
     }
 
+    /// Whether the player wears `item`.
+    pub fn is_equipped(&self, item: i32) -> Result<bool, Stop> {
+        Ok(self.ctx.call(Function::IsEquipped, args![item])?.number()? != 0)
+    }
+
     pub fn take(&self, item: i32, amount: i32) -> Script {
         self.ctx.call(Function::DelItem, args![item, amount]).map(|_| ())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use script_sdk::{Function, Value};
+
+    use crate::transport::MockTransport;
+    use crate::Ctx;
+
+    #[test]
+    fn is_equipped_reads_the_host_flag() {
+        let transport = MockTransport::new(|_| Ok(Value::Number(1)));
+        assert_eq!(Ctx::new(&transport).items().is_equipped(2101), Ok(true));
+        assert_eq!(transport.calls(Function::IsEquipped), vec![vec![Value::new_number(2101)]]);
     }
 }

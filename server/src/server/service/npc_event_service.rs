@@ -340,7 +340,7 @@ impl Server {
                 _ => None,
             },
             logout_token: None,
-            dialog_open: false,
+            dialog_open: false, attached: None,
             error: None,
         };
         if let Some(guard) = event.timer_guard { state.script_timers.consume(guard); }
@@ -412,6 +412,35 @@ impl Server {
         let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
         if function == Function::Monster {
             let request = self.item_service().spawn_request(arguments, context.char_id)?;
+            self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
+            return Ok(Value::default());
+        }
+        if function == Function::FlagEmblem {
+            let requested = arguments.first().ok_or("flagemblem needs a guild")?.number_value()?;
+            if requested < 0 {
+                return Ok(Value::default());
+            }
+            let guild_id = requested as u32;
+            let version = match self.repository.guild(guild_id).map_err(|error| error.to_string())? {
+                Some(guild) if guild_id != 0 => guild.emblem_version as u16,
+                _ => 0,
+            };
+            if let Some(instance) = state.get_map_instance(&npc.map, npc.instance) {
+                instance.add_to_next_tick(crate::server::model::events::map_event::MapEvent::ScriptMapCommand(
+                    crate::server::model::events::map_event::ScriptMapCommand::NpcEmblem { npc_id: npc.id, guild_id, version },
+                ));
+            }
+            return Ok(Value::default());
+        }
+        if function == Function::Guardian {
+            if arguments.len() < 5 {
+                return Err("guardian needs a map, a position, a name and a class".into());
+            }
+            // `guardian(map, x, y, name, class, "label", index)`: the label may come before or after the index
+            let event = arguments[5..].iter().find(|value| matches!(value, Value::String(_))).cloned().unwrap_or_default();
+            let spawn_arguments = [arguments[0].clone(), arguments[1].clone(), arguments[2].clone(), arguments[3].clone(), arguments[4].clone(), Value::Number(1), event];
+            let mut request = self.item_service().spawn_request(&spawn_arguments, context.char_id)?;
+            request.is_guardian = true;
             self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
             return Ok(Value::default());
         }

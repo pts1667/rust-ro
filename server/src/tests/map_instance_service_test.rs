@@ -1350,6 +1350,7 @@ mod tests {
         track.spawned_amount = 3;
         state.mob_spawns_tracks_mut().insert(0, track);
         let request = crate::server::model::events::map_event::ScriptSpawn {
+            is_guardian: false,
             event_npc: None,
             mob_id: 1002,
             x: 1,
@@ -1377,6 +1378,50 @@ mod tests {
         invalid.event = "Missing::OnKill".into();
         assert!(context.map_instance_service.script_spawn(&mut state, invalid).is_err());
         assert_eq!(state.mobs().len(), 2);
+    }
+
+    #[test]
+    fn respawn_removal_spares_guardians_and_emperium() {
+        use crate::server::model::events::map_event::{ScriptMobCommand, ScriptSpawn};
+        let context = before_each();
+        let mut state = create_empty_map_instance_state();
+        let spawn = |mob_id: i32, is_guardian: bool| ScriptSpawn {
+            is_guardian,
+            event_npc: None,
+            mob_id,
+            x: 1,
+            y: 1,
+            name: "Respawn Target".into(),
+            amount: 1,
+            event: String::new(),
+            size: None,
+            ai: None,
+            owner_id: 0,
+            guardian: None,
+            bg_id: 0,
+            max_hp: None,
+            lifetime_ms: None,
+            reserved_id: None,
+            area_end: None,
+        };
+        let ordinary = context.map_instance_service.script_spawn(&mut state, spawn(1002, false)).unwrap()[0];
+        let guardian = context.map_instance_service.script_spawn(&mut state, spawn(1002, true)).unwrap()[0];
+        let emperium = context.map_instance_service.script_spawn(&mut state, spawn(1288, false)).unwrap()[0];
+
+        context.map_instance_service.script_mob_command(&mut state, ScriptMobCommand::RemoveRespawnable { remove_clones: false });
+        assert!(state.get_mob(ordinary).is_none_or(|mob| !mob.is_present()));
+        assert!(state.get_mob(guardian).is_some_and(|mob| mob.is_present()));
+        assert!(state.get_mob(emperium).is_some_and(|mob| mob.is_present()));
+    }
+
+    #[test]
+    fn clone_class_range_matches_rathena() {
+        use crate::server::state::mob::is_clone_class;
+        assert!(!is_clone_class(1002));
+        assert!(!is_clone_class(3998));
+        assert!(is_clone_class(3999));
+        assert!(is_clone_class(20020));
+        assert!(!is_clone_class(20021));
     }
 
     #[test]
