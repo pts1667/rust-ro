@@ -10,7 +10,7 @@ use wasmtime::{
 };
 
 pub const MAX_CONCURRENT_RUNS: u32 = 4000;
-pub const MEMORY_LIMIT_BYTES: usize = 4 * 1024 * 1024;
+pub const MEMORY_LIMIT_BYTES: usize = 1024 * 1024;
 const MAX_TABLE_ELEMENTS: usize = 20_000;
 
 /// Every module compiles against this engine so that they draw runs from one pool.
